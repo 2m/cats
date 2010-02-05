@@ -1,0 +1,22 @@
+#summary Some information on how to set up eclipse
+
+= Eclipse =
+
+You can find eclipse at http://www.eclipse.org/downloads/ . Use the classic version (should work better).
+
+= SubClipse =
+
+Can be found at: http://subclipse.tigris.org/servlets/ProjectProcess?pageID=p4wYuA . Follow instuctions on the website
+
+You need to have subversion installed. Can be found at: http://subversion.tigris.org/ .
+
+= leJOS eclipse plugin =
+
+Instructions from: http://lejos.sourceforge.net/ .
+
+    * Name: leJOS NXJ (or whatever you like)
+    * URL: http://lejos.sourceforge.net/tools/eclipse/plugin/nxj/
+
+= Links =
+
+The IT project wiki: http://code.google.com/p/projectit/wiki/tipsAndTricksMain
