@@ -1,0 +1,13 @@
+#summary Plan of the project with phases and milestones
+
+= Introduction =
+Info about phases and milestones
+
+= Phase 1 (proposed) =
+
+  * 2 fixed cat sensors
+  * Dead mouse
+
+= Phase 2 (proposed) = 
+ * 3 fixed cat sensors
+ * Living but slow mouse
