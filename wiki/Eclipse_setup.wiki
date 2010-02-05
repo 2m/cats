@@ -6,7 +6,9 @@ You can find eclipse at http://www.eclipse.org/downloads/ . Use the classic vers
 
 = SubClipse =
 
-Can be found at: http://subclipse.tigris.org/servlets/ProjectProcess?pageID=p4wYuA . Follow instuctions on the website
+Can be found at: http://subclipse.tigris.org/servlets/ProjectProcess?pageID=p4wYuA . Follow instuctions on the website.
+
+Eclipse update site URL: http://subclipse.tigris.org/update_1.6.x
 
 You need to have subversion installed. Can be found at: http://subversion.tigris.org/ .
 
