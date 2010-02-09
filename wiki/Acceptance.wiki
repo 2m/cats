@@ -1,0 +1,8 @@
+#summary Acceptance criterions and constraints
+
+= Basic assignment =
+
+http://www.it.uu.se/edu/course/homepage/styrsystem/vt10/Projekt/CoLEGO
+
+= Hardware =
+Base set of lego, nothing more nothing less.
