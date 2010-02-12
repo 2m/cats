@@ -1,0 +1,36 @@
+#summary Information relating to the prorposed particle filter
+#labels Featured
+
+= Benchmarks =
+
+*Using stack variables*
+
+ * 200000 intv add: 564 ms  354609/sec
+ * 200000 intv sub: 563 ms  355239/sec
+ * 200000 intv mul: 595 ms  336134/sec
+ * 200000 intv div: 852 ms  234741/sec
+ * 200000 longv add: 1044 ms  191570/sec
+ * 200000 longv sub: 1053 ms  189933/sec
+ * 200000 longv mul: 1499 ms  133422/sec
+ * 200000 longv div: 2436 ms  82101/sec
+ * 200000 float add: 1127 ms  177462/sec
+ * 200000 float sub: 1136 ms  176056/sec
+ * 200000 float mul: 1014 ms  197238/sec
+ * 200000 float div: 1862 ms  107411/sec
+ * 200000 double add: 1702 ms  117508/sec
+ * 200000 double sub: 1766 ms  113250/sec
+ * 200000 double mul: 1658 ms  120627/sec
+ * 200000 double div: 6065 ms  32976/sec
+
+*Using class variables*
+
+  * 200000 intc add: 2248 ms  88967/sec
+  * 200000 intc sub: 2248 ms  88967/sec
+  * 200000 intc mul: 2280 ms  87719/sec
+  * 200000 intc div: 2541 ms  78709/sec 
+
+From http://lejos.sourceforge.net/forum/viewtopic.php?t=1685&highlight=fixed+point
+
+= Links =
+
+http://en.wikipedia.org/wiki/Particle_filter
