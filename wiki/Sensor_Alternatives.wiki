@@ -1,0 +1,11 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+As the ultrasonic sensor included in the Lego NXT-kit had insufficient range (maximum measured distance is 0.5 m) some alternative have to be found.
+
+We also need some way of determining the absoulte position of each of the targeting robots.
+
+
+= Details =
+
