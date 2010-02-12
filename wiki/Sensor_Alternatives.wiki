@@ -12,31 +12,38 @@ We also need some way of determining the absoulte position of each of the target
 We have discussed three different sensor approaches for locating the target:
 * Video camera
    Pros:
+
     +Available API for object tracking.
 
     +Probably good angular resolution.
 
    Cons:
+
     -Limited field of view.
 
     -Computationally intensive(?)
 
 * IR-sensor with target marked with a IR-light.
    Pros:
+
     +Cheaper that video camera
 
     +Computationally cheap
+
    Cons:
+
     -Only point measurements are available, if the target moves we have to scan for it.
 
     -Angular resolution unknown.
 
 * Compass sensor with a electro magnet on the target.
    Pros:
+
     +360 degree "view", no need to scan for the target
     
     +Good angular resolution of the compass (1 degree)
    Cons:
+
     -Need electromagnets, potentially quite strong.
 
     -For absolute positioning, we need to multiple synchronized electromagnets (only one switched on at a time). Probably we need relays to control the current to the electro magnets.
