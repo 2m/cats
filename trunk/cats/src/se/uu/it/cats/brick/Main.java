@@ -8,7 +8,10 @@ public class Main
 {	
 	public static void main(String[] args)
 	{
-		ColorSensorTest cst = new ColorSensorTest();
-		cst.run();
+		//ColorSensorTest cst = new ColorSensorTest();
+		//cst.run();
+		
+		PilotTest pt = new PilotTest();
+		pt.run();
 	}
 }
