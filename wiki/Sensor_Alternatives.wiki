@@ -25,7 +25,7 @@ We have discussed three different sensor approaches for locating the target:
 
     -Computationally intensive(?)
 
-* IR-sensor with target marked with a IR-light.
+* IR-sensor with target marked with an IR-light.
 
    Pros:
 
@@ -46,6 +46,8 @@ We have discussed three different sensor approaches for locating the target:
     +360 degree "view", no need to scan for the target
     
     +Good angular resolution of the compass (1 degree)
+
+    +Cheap sensor.
 
    Cons:
 
