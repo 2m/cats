@@ -10,7 +10,9 @@ We also need some way of determining the absoulte position of each of the target
 = Details =
 
 We have discussed three different sensor approaches for locating the target:
+
 * Video camera
+
    Pros:
 
     +Available API for object tracking.
@@ -24,6 +26,7 @@ We have discussed three different sensor approaches for locating the target:
     -Computationally intensive(?)
 
 * IR-sensor with target marked with a IR-light.
+
    Pros:
 
     +Cheaper that video camera
@@ -37,11 +40,13 @@ We have discussed three different sensor approaches for locating the target:
     -Angular resolution unknown.
 
 * Compass sensor with a electro magnet on the target.
+
    Pros:
 
     +360 degree "view", no need to scan for the target
     
     +Good angular resolution of the compass (1 degree)
+
    Cons:
 
     -Need electromagnets, potentially quite strong.
