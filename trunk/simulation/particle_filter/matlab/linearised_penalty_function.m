@@ -2,7 +2,7 @@ close all
 clear all
 
 tic
-d = 0:0.5:180;					% Interval in degrees
+d = 0:0.25:180;					% Interval in degrees
 r = d*(pi/180);					% Convert degrees to radians
 mu = 0;						% Mean of normal distribution
 s = 3;						% Standard deviation in degrees
@@ -27,8 +27,8 @@ iupper = i;
 xs = x(ilower:iupper);
 ys = y(ilower:iupper);
 g = zeros(size(ys));	% Allocate memory
-ilen = iupper - ilower;
-i = [0 0 0 0];
+ilen = iupper - ilower + 1;
+i = [0 0 0];
 e = 1e10;
 c = zeros(4, 2);
 for i1 = 1:ilen-3
