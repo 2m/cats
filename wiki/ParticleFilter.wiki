@@ -1,5 +1,14 @@
 #summary Information relating to the prorposed particle filter
-#labels Featured
+
+= Basic idea =
+
+  * Randomise hypotheses about the states in the tracked object, visualised as particles.
+  * Value the particles from 0 to 1 according to how well they conform with evidence from the sensors. 
+  * Let the good particle reproduce and remove the worst ones
+
+= Getting it to work on 48MHz =
+
+New penalty function
 
 = Benchmarks =
 
