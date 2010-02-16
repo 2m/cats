@@ -11,7 +11,10 @@ public class Main
 		//ColorSensorTest cst = new ColorSensorTest();
 		//cst.run();
 		
-		PilotTest pt = new PilotTest();
-		pt.run();
+		//PilotTest pt = new PilotTest();
+		//pt.run();
+		
+		NetworkTest nt = new NetworkTest();
+		nt.run();
 	}
 }
