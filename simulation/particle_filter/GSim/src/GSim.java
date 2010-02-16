@@ -48,9 +48,9 @@ public class GSim extends JFrame {
 
 	public void run() {
 		openWindow();
-		for (int i = 1; i <10; i++) {
+		while (true) {
 			repaint();
-			sleep(100);
+			sleep(100);	// Wait before new update
 		}
 	}
 
