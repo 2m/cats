@@ -34,6 +34,11 @@ Enter description here
 Enter description here
 
 = Mouse tracking =
+
+== IR ==
+
+Can this be done without knowing more about the sensors?
+
 == Particle filter ==
 *Owner: Fredrik*
 
