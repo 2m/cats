@@ -1,13 +1,13 @@
-#summary Plan of the project with phases and milestones
+#summary Plan of the project with phases
 
 = Introduction =
-Info about phases and milestones
+Info about phases
 
-= Phase 1 (proposed) =
+= State of the art =
 
-  * 2 fixed cat sensors
-  * Dead mouse
+  * Presentation on the current state of the field we are studying.
+  * Make a 10 min presentation 2010-02-17
 
-= Phase 2 (proposed) = 
- * 3 fixed cat sensors
- * Living but slow mouse
+= Proposed solution = 
+  * We need to examine what solution we will use Proposed_Solutions
+  * Make a short presentation
