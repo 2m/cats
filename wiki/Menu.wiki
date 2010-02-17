@@ -19,4 +19,4 @@ Sensor_Alternatives
 
 Root_Localization_Thesis
 
-Eclipse_setup
+[http://code.google.com/p/cats/wiki/Eclipse_setup Eclipse_setup]
