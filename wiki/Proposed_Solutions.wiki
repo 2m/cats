@@ -1,0 +1,54 @@
+#summary Summary of the proposed solutions
+
+= Introduction =
+
+We need to find a feasible solution to our problem. Here our different approaches and preliminary results are presented. All sub projects have owners that are responsible for delivering a viable solution (if it can be found) until _Friday 2010-03-01_.
+
+The solution proposed does only have to be feasible, we can not know which one will be best until after simulation.
+
+= Robot design =
+*Owner: Cheewin?*
+
+Designing and building a robot capable of turning a specified angle and driving a given distance with minor errors.
+
+= Absolute positioning =
+== Magnetic fields ==
+*Owner: Christian*
+
+Enter description here
+
+== Particle filter ==
+*Owner: Fredrik*
+
+Find a filter that with some kind of landmarks and information from the driver class can find the cats absolute position. More description here?
+
+== Kalman filters ==
+*Owner: Nils*
+
+Enter description here
+
+== Colour tracking ==
+*Owner: Nils*
+
+Enter description here
+
+= Mouse tracking =
+== Particle filter ==
+*Owner: Fredrik*
+
+Finding an algorithm that 
+
+== Kalman filters ==
+*Owner: Nils*
+
+Enter description here
+
+== Magnetic fields ==
+*Owner: Christian*
+
+Enter description here
+
+= Networking =
+*Owner: Martin*
+
+Benchmark communication and see how much data can be sent and at what speed. More description here?
