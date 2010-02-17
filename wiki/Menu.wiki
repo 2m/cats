@@ -2,11 +2,11 @@
 
 = Organisation =
 
-Plan
+[http://code.google.com/p/cats/wiki/Plan Plan]
 
-Meetings
+[http://code.google.com/p/cats/wiki/Meetings Meetings]
 
-Acceptance
+[http://code.google.com/p/cats/wiki/Acceptance Acceptance]
 
 = Tech =
 Proposed_Solutions
