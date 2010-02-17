@@ -28,10 +28,10 @@ Find a filter that with some kind of landmarks and information from the driver c
 
 Enter description here
 
-== Colour tracking ==
-*Owner: Nils*
+== Grid positioning ==
+*Owner: Nils and Christian*
 
-Enter description here
+Using color or light sensor, construct a grid that can accurately find the position (and orientation) of the cats. Also this can be used to position the mouse so we can compare with our bearings only position later on.
 
 = Mouse tracking =
 
@@ -47,7 +47,7 @@ Finding an algorithm that
 == Kalman filters ==
 *Owner: Nils*
 
-Enter description here
+Given the measurements of the bearings with realistic errors, find a Kalman filter that can run on the bricks with good accuracy. First find a mathematical model, simulate it in Matlab and finally benchmark it on the bricks.
 
 == Magnetic fields ==
 *Owner: Christian*
