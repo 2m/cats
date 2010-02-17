@@ -8,7 +8,11 @@
 
 = Getting it to work on 48MHz =
 
-New penalty function
+Linearised penalty function
+
+= Distributed algorithm =
+
+Making particles for one filter live on many nodes.
 
 = Benchmarks =
 
