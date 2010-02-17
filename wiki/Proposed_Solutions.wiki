@@ -1,4 +1,5 @@
 #summary Summary of the proposed solutions
+#labels Featured
 
 = Introduction =
 
