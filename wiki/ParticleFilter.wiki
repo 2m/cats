@@ -5,14 +5,20 @@
   * Randomise hypotheses about the states in the tracked object, visualised as particles.
   * Value the particles from 0 to 1 according to how well they conform with evidence from the sensors. 
   * Let the good particle reproduce and remove the worst ones
+  * The more descriptive states are probably x, y, angle and speed.
 
 = Getting it to work on 48MHz =
 
-Linearised penalty function
+  * Make the penalty a function of cos \\theta
+  * Linearised penalty function
+  * Use fixed point
+  * Approximate FP sqrt
 
 = Distributed algorithm =
 
-Making particles for one filter live on many nodes.
+Making particles for one filter live on many nodes. The heavy parts are the evaluation of particle weights and resampling (integration?).
+
+How fast can the data be transferred?
 
 = Benchmarks =
 
