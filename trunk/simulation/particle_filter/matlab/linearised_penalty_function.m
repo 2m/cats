@@ -52,7 +52,7 @@ for i1 = 1:ilen-3
 	end
 end
 toc
-cosine_cutoff = x(iupper + 1);
+cosine_cutoff = [x(ilower) xs(i1) xs(i2) xs(i3) x(iupper + 1)];
 cosine_cutoff_12_20 = int32(cosine_cutoff * 2^20)
 c_12_20 = int32(c * 2^20)
 
