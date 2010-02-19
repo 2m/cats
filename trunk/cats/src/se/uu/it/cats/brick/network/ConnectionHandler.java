@@ -59,6 +59,6 @@ public class ConnectionHandler implements Runnable
 	@Override
 	public void run()
 	{
-		_btc.close();
+		//_btc.close();
 	}
 }
