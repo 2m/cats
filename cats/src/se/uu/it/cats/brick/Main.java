@@ -14,7 +14,7 @@ public class Main
 {	
 	public static void main(String[] args) throws InterruptedException
 	{
-		//Logger.init();
+		Logger.init();
 		
 		//ColorSensorTest cst = new ColorSensorTest();
 		//cst.run();
@@ -25,10 +25,10 @@ public class Main
 		//NetworkTest nt = new NetworkTest();
 		//nt.run();
 		
-		ColorSensorTest2 cst2 = new ColorSensorTest2();
-		cst2.run();
+		//ColorSensorTest2 cst2 = new ColorSensorTest2();
+		//cst2.run();
 		
-		/*Thread listenerThread = new Thread(new ConnectionListener());
+		Thread listenerThread = new Thread(new ConnectionListener());
 		listenerThread.start();
 		
 		Button.LEFT.addButtonListener(new ButtonListener() {
@@ -58,6 +58,8 @@ public class Main
 			{
 				Thread initiatorThread = new Thread(new SendData("cat3"));
 				initiatorThread.start();
+				//SendData sd = new SendData("cat3");
+				//sd.run();
 			}
 		});
 		
@@ -67,6 +69,6 @@ public class Main
 		}
 		
 		if (RConsole.isOpen())
-			RConsole.close();*/
+			RConsole.close();
 	}
 }

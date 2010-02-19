@@ -6,22 +6,40 @@ import lejos.nxt.comm.Bluetooth;
 
 public class ConnectionListener implements Runnable
 {
+	public static volatile boolean _canListen = true;
+	
 	public void run()
 	{
 		while (true)
 		{
-			BTConnection btc = Bluetooth.waitForConnection();
+			if (_canListen)
+			{
+				BTConnection btc = Bluetooth.waitForConnection();
 			
-			if (btc != null)
-			{			
-				Logger.println("Received connection from: "+btc.getAddress());
-			
-				Thread t = new Thread(new ReceiveAndAckData(btc));
-				t.start();
+				if (btc != null)
+				{			
+					Logger.println("Received connection from: "+btc.getAddress());
+				
+					Thread t = new Thread(new ReceiveAndAckData(btc));
+					t.start();
+					//ReceiveAndAckData raad = new ReceiveAndAckData(btc);
+					//raad.run();
+				}
+				else
+				{
+					Logger.println("ConnectionListener got NP");
+				}
 			}
 			else
 			{
-				Logger.println("ConnectionListener got NP");
+				try
+				{
+					Thread.sleep(100);					
+				}
+				catch (InterruptedException ex)
+				{
+					
+				}
 			}
 		}
 	}

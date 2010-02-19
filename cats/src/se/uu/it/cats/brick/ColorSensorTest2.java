@@ -1,8 +1,8 @@
 package se.uu.it.cats.brick;
 
 import lejos.nxt.Button;
-import lejos.nxt.LightSensor;
 import lejos.nxt.SensorPort;
+import lejos.nxt.addon.ColorSensor;
 
 public class ColorSensorTest2
 {
@@ -11,91 +11,100 @@ public class ColorSensorTest2
 		System.out.println("Program started, press button to continue");
 		Button.waitForPress();
 
-		//ColorSensor cs = new ColorSensor(SensorPort.S1);
+		ColorSensor cs = new ColorSensor(SensorPort.S1);
 
-		LightSensor ls = new LightSensor(SensorPort.S2);
-
-		System.out.println("Place sensor 15mm from white surface");
+		System.out.println("Place sensor 15mm from ''white'' surface");
 		Button.waitForPress();
-		//cs.initWhiteBalance();
-		ls.calibrateHigh();
-
+		cs.initWhiteBalance();
 
 		System.out.println("Place sensor 15mm from black surface");
 		Button.waitForPress();
-		//cs.initBlackLevel();
-		ls.calibrateLow();
+		cs.initBlackLevel();
 		
-		int[] surf = new int[5];
+		int[] black = new int[3];
+		int[] white = new int[3];
+		int[] red = new int[3];
+		int[] green = new int[3];
+		int[] blue = new int[3];
 		
 		System.out.println("Place on black line");
 		Button.waitForPress();
-		surf[0] = ls.readValue();
-		if (surf[0] < 0){
-			surf[0] = 0;
-		}
-		System.out.println("Value: "+String.valueOf(surf[0]));
+		black = cs.getColor();
+		System.out.println("K: "+"r:"+String.valueOf(black[0])+" g:"+String.valueOf(black[1])+" b:"+String.valueOf(black[2]));
 
-		System.out.println("Place on surface 1");
+		System.out.println("Place on white surface");
 		Button.waitForPress();
-		surf[1] = ls.readValue();
-		System.out.println("Value: "+String.valueOf(surf[1]));
+		white = cs.getColor();
+		System.out.println("W: "+"r:"+String.valueOf(white[0])+" g:"+String.valueOf(white[1])+" b:"+String.valueOf(white[2]));
 		
-		System.out.println("Place on surface 2");
+		System.out.println("Place on red line");
 		Button.waitForPress();
-		surf[2] = ls.readValue();
-		System.out.println("Value: "+String.valueOf(surf[2]));
+		red = cs.getColor();
+		System.out.println("R: "+"r:"+String.valueOf(red[0])+" g:"+String.valueOf(red[1])+" b:"+String.valueOf(red[2]));
 		
-		System.out.println("Place on surface 3");
+		System.out.println("Place on green line");
 		Button.waitForPress();
-		surf[3] = ls.readValue();
-		System.out.println("Value: "+String.valueOf(surf[3]));
+		green = cs.getColor();
+		System.out.println("G: "+"r:"+String.valueOf(green[0])+" g:"+String.valueOf(green[1])+" b:"+String.valueOf(green[2]));
 		
-		System.out.println("Place on surface 4");
+		System.out.println("Place on blue line");
 		Button.waitForPress();
-		surf[4] = ls.readValue();
-		System.out.println("Value: "+String.valueOf(surf[4]));
+		blue = cs.getColor();
+		System.out.println("B: "+"r:"+String.valueOf(blue[0])+" g:"+String.valueOf(blue[1])+" b:"+String.valueOf(blue[2]));
 		
-		int[] thresh = new int[4];
-		thresh[0]=surf[0]+(surf[1]-surf[0])/2+(surf[1]-surf[0])/4;
-		System.out.println("thresh   : "+String.valueOf(thresh[0]));
+		Button.waitForPress();
 		
-		 for (int i=1; i<=3; i++) {
-			 thresh[i]=surf[i]+(surf[i+1]-surf[i])/2;
-			 System.out.println("thresh: "+String.valueOf(thresh[i]));
-		 }
-		 Button.waitForPress();
+		int[] rThresh = new int[3];
+		int[] gThresh = new int[3];
+		int[] bThresh = new int[3];
+		int[] kThresh = new int[3];
 		
-		//int[] result = new int[3];
-		int lv;
-		int newNum = -1;
+		rThresh[0]=(red[0]-black[0])/2;
+		rThresh[1]=(int) ((double) 0.77*(white[1]-red[1]));
+		rThresh[2]=(int) ((double) 0.77*(white[2]-red[2]));
+		
+		gThresh[0]=(int) ((double) 0.77*(white[0]-green[0]));
+		gThresh[1]=(green[1]- black[0])/2;
+		gThresh[2]=(int) ((double) 0.77*(white[2]-green[2]));
+		
+		bThresh[0]=(int) ((double) 0.77*(white[0]-blue[0]));
+		bThresh[1]=(int) ((double) 0.77*(white[1]-blue[1]));
+		bThresh[2]=(blue[2]-black[0])/2;
+		
+		kThresh[0]=(int) ((double) 0.77*(white[0]-black[0]));
+		kThresh[1]=(int) ((double) 0.77*(white[1]-black[1]));
+		kThresh[2]=(int) ((double) 0.77*(white[2]-black[2]));
+		
+		System.out.println("rThresh: "+"r:"+String.valueOf(rThresh[0])+" g:"+String.valueOf(rThresh[1])+" b:"+String.valueOf(rThresh[2]));
+		System.out.println("gThresh: "+"r:"+String.valueOf(gThresh[0])+" g:"+String.valueOf(gThresh[1])+" b:"+String.valueOf(gThresh[2]));
+		System.out.println("bThresh: "+"r:"+String.valueOf(bThresh[0])+" g:"+String.valueOf(bThresh[1])+" b:"+String.valueOf(bThresh[2]));
+		System.out.println("kThresh: "+"r:"+String.valueOf(kThresh[0])+" g:"+String.valueOf(kThresh[1])+" b:"+String.valueOf(kThresh[2]));
+		
+		Button.waitForPress();
+		
+		int[] cv = new int[3];
+		String c = "";
 		for (;;)
 		{
-			//result = cs.getColor();
-			//System.out.println("r:"+String.valueOf(result[0])+" g:"+String.valueOf(result[1])+" b:"+String.valueOf(result[2]));
-			lv = ls.readValue();
-			if (lv<thresh[0]) {
-				newNum = 0;
-				System.out.println("Surf: "+String.valueOf(0));
+			cv = cs.getColor();
+			
+			if (cv[0] > rThresh[0] && cv[1] < rThresh[1] && cv[2] < rThresh[2]) {
+				c = "R";
 			}
-			else if (lv<thresh[1]) {
-				System.out.println("Surf: "+String.valueOf(1));
-				newNum = 1;
+			/*else if (cv[0] < gThresh[0] && cv[1] > gThresh[1] && cv[2] < gThresh[2]) {
+				c = "G";
+			}*/
+			else if (cv[0] < bThresh[0] && cv[1] < bThresh[1] && cv[2] > bThresh[2]) {
+				c = "B";
 			}
-			else if (lv<thresh[2]) {
-				System.out.println("Surf: "+String.valueOf(2));
-				newNum = 2;
+			else if (cv[0] < kThresh[0] && cv[1] < kThresh[1] && cv[2] < kThresh[2]) {
+				c = "K";
 			}
-			else if (lv<thresh[3]) {
-				System.out.println("Surf: "+String.valueOf(3));
-				newNum = 3;
-			}
-			else {
-				System.out.println("Surf: "+String.valueOf(4));
-				newNum = 4;
+			else if (cv[0] > rThresh[0] && cv[1] > gThresh[1] && cv[2] > bThresh[2]) {
+				c = "W";
 			}
 			
-
+			System.out.println(c + "|" + "r:"+String.valueOf(cv[0])+" g:"+String.valueOf(cv[1])+" b:"+String.valueOf(cv[2]));
 		}
 	}
 
