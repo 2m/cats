@@ -57,4 +57,4 @@ Enter description here
 = Networking =
 *Owner: Martin*
 
-Benchmark communication and see how much data can be sent and at what speed. More description here?
+Benchmark communication and see how much data can be sent and at what speed. [Networking]
