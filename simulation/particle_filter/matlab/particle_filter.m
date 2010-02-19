@@ -97,7 +97,7 @@ for theta = 0:0.05:2*pi
 
 	% Update frame counter and save frame
 	frame = frame + 1;
-	%f2 = getframe(gcf);
+	f2 = getframe(gcf);
 	%mov = addframe(mov, f2);
 
 	% Save stuff for next iteration
