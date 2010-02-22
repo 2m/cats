@@ -3,7 +3,7 @@
 
 = Introduction =
 
-We need to find a feasible solution to our problem. Here our different approaches and preliminary results are presented. All sub projects have owners that are responsible for delivering a viable solution (if it can be found) until _Friday 2010-03-01_.
+We need to find a feasible solution to our problem. Here our different approaches and preliminary results are presented. All sub projects have owners that are responsible for delivering a viable solution (if it can be found) until Monday 2010-03-01.
 
 The solution proposed does only have to be feasible, we can not know which one will be best until after simulation.
 
