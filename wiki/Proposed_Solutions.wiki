@@ -58,3 +58,5 @@ Enter description here
 *Owner: Martin*
 
 Benchmark communication and see how much data can be sent and at what speed. [Networking]
+
+Hierarchical or distributed model?
