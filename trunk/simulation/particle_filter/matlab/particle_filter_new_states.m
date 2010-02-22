@@ -14,8 +14,12 @@ stddegrees = 3;
 s = stddegrees*(pi/180);	% Standard deviation in radians
 titletext = sprintf('Prototype of particle filter (\\sigma_{sensors}=%i degrees)', stddegrees);
 
-p = [rand(N, 2)*2 ,rand(N, 1)*255, rand(N, 1)*0.04-0.02, ones(N, 1), zeros(N, 1)];	% x, y, theta, |v|, w, age
-T = 0.5;
+p = [rand(N, 2)*2, rand(N, 1)*360, rand(N, 1)*0.04-0.02, ones(N, 1)*(1/N), zeros(N, 1)];	% x, y, theta, |v|, w, age
+T = 0.5;	% Time step length
+Nuc = floor(N*0.8);	% Set up cut-offs
+Nlc = floor(N*0.2);
+x_std = [];
+x_std_approx = [];
 
 figure
 frame = 1;
@@ -36,6 +40,9 @@ for theta = 0:0.05:2*pi
 	movement = mouse - lastmouse;
 
 	% Update sensors and add noise
+	%v = (mouse - cat) .* exp(i*randn(1, 3)*s);
+	%d = abs(v);
+	%v = v ./ d;
 	v1 = (mouse - cat(1)) * exp(i*randn(1)*s);
 	v2 = (mouse - cat(2)) * exp(i*randn(1)*s);
 	v3 = (mouse - cat(3)) * exp(i*randn(1)*s);
@@ -48,19 +55,18 @@ for theta = 0:0.05:2*pi
 
 	% Update particles
 	% Integrate
-	p(:, 1) = p(:, 1) + cos(p(:, 3)*(pi/256)).*(T*p(:, 4));
-	p(:, 2) = p(:, 2) + sin(p(:, 3)*(pi/256)).*(T*p(:, 4));
+	p(:, 1) = p(:, 1) + cos(p(:, 3)*(pi/360)).*(T*p(:, 4));
+	p(:, 2) = p(:, 2) + sin(p(:, 3)*(pi/360)).*(T*p(:, 4));
 
 	% Compare particles to sensors
 	A = p(:, 1) + i*p(:, 2);
 
 	% Reinit since we have access to all three sensors
-	p(:, 5) = ones(N, 1);
 	for g = 1:3
 		z = angle(A - cat(g));
 		mu = angle(mouse - cat(g));
 		% Penalty function
-		w = exp(-((z - mu).^2)/(2*s^2));
+		w = exp(-((z - mu).^2)/(2*s^2));	% Is at most 1
 		%w = (1/sqrt(2*pi*s^2))*exp(-((z - mu).^2)/(2*s^2));
 		p(:, 5) = p(:, 5) .* w;	% Update weights
 	end
@@ -68,32 +74,44 @@ for theta = 0:0.05:2*pi
 	% Increase age
 	p(:, 6) = p(:, 6) + 1;
 
+	% Check for errors
 	if (sum(isnan(p(:, 5)))>0)
 		nan = sum(isnan(p(:, 5)))
 		break
 	end
-
-	% Normalise
-	p(:, 5) = p(:, 5)/sum(p(:, 5));
-	p(:, 3) = mod(p(:, 3), 256);
-
-	% Set up cut-offs
-	Nuc = floor(N*0.8);
-	Nlc = floor(N*0.2);
-	%standard_deviation_in_degrees = sqrt(var(c))*(180/pi)
 
 	% Sort according to weights
 	A = p;
 	[OldRowNumber, NewRowNumber] = sort(A(:, 5));
 	p = A(NewRowNumber, :);
 
+	% Normalise
+	p(:, 5) = p(:, 5)/sum(p(:, 5));
+	p(:, 3) = mod(p(:, 3), 360);
+
 	% Calculate mean
-	m = [mean(p(Nuc:N, 1)) mean(p(Nuc:N, 2))];
+	m = [sum(p(:, 1).*p(:, 5)) sum(p(:, 2).*p(:, 5))];
+	%m = [mean(p(:, 1)) mean(p(:, 2))];
+
+	% Check std
+	x_std(end+1) = std(p(:, 1));
+	temp = zeros(1, 6);
+	sumw = 0;
+	for g = 1:N	% Extract particles in a propability mass
+		sumw = sumw + p(g, 5);
+		if (sumw <= 0.68)
+			temp(g, :) = p(g, :);
+		end
+	end
+	x_std_approx(end+1) = (max(temp(:, 1)) - min(temp(:, 1)))/4;
+
+	%standard_deviation_in_degrees = sqrt(var(c))*(180/pi)
 
 	% Resample
 	A = [p(Nuc:N, 1:5), zeros(N-Nuc+1, 1)];
 	B = [randn(N-Nuc+1, 2)*0.015, randn(N-Nuc+1, 1)*2, randn(N-Nuc+1, 1)*0.05, ones(N-Nuc+1, 1)*mean(A(:, 5)), zeros(N-Nuc+1, 1) ];
 	p(1:Nlc+1,:) = A + B;
+	p(:, 5) = ones(N, 1)*(1/N);	% Reset weights
 
 	% Plot
 	l1 = [cat(1) cat(1)+d1*1.2*v1];
@@ -120,6 +138,8 @@ for theta = 0:0.05:2*pi
 	lastmouse = mouse;
 end
 
+std_approx_error = (x_std_approx - x_std)./x_std;
+
 % Sort according to weights
 A = p;
 [OldRowNumber, NewRowNumber] = sort(A(:, 5));
@@ -127,12 +147,12 @@ p = A(NewRowNumber, :);
 
 for i = 1:N
 	if (p(i, 4)<0)
-		p(i, 3) = p(i, 3) + 128;
+		p(i, 3) = p(i, 3) + 180;
 		p(i, 4) = -p(i, 4);
 	end
 end
 
-p(:, 3) = mod(p(:, 3), 256) * (360/256);
+p(:, 3) = mod(p(:, 3), 360);
 
 p = p(Nuc:N, :);	% Only use the best
  
