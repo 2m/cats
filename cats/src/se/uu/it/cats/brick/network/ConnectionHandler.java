@@ -7,22 +7,29 @@ import javax.bluetooth.RemoteDevice;
 
 import se.uu.it.cats.brick.Logger;
 
-import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
+import lejos.nxt.comm.NXTCommDevice;
+import lejos.util.Stopwatch;
 
 public class ConnectionHandler implements Runnable
 {
+	public static final RemoteDevice CAT1 = new RemoteDevice("cat1", "00165302CC4E", new byte[] {0, 0, 8, 4});
+	public static final RemoteDevice CAT2 = new RemoteDevice("cat2", "0016530E6938", new byte[] {0, 0, 8, 4});
+	public static final RemoteDevice CAT3 = new RemoteDevice("cat3", "00165302CDC3", new byte[] {0, 0, 8, 4});
+		
 	protected BTConnection _btc = null;
 	
 	protected DataInputStream _dis = null;
 	protected DataOutputStream _dos = null;
 	
-	protected String _peerName = null;
+	protected RemoteDevice _peerDevice = null;
 	
-	public ConnectionHandler(String name)
+	protected Stopwatch sw = null;
+	
+	public ConnectionHandler(RemoteDevice device)
 	{
-		_peerName = name;
+		_peerDevice = device;
 	}
 	
 	public ConnectionHandler(BTConnection btc)
@@ -30,30 +37,26 @@ public class ConnectionHandler implements Runnable
 		_btc = btc;
 	}
 	
-	protected void connect()
-	{
+	protected boolean connect()
+	{	
+		sw = new Stopwatch();
+		sw.reset();
+		
 		if (_btc == null)
 		{
-			RemoteDevice btrd = Bluetooth.getKnownDevice(_peerName);
-			if (btrd == null)
-			{
-				Logger.println("No such device: "+_peerName);
-			    Button.waitForPress();
-			    System.exit(1);
-			}
+			_btc = Bluetooth.connect(_peerDevice);
 			
-			_btc = Bluetooth.connect(btrd);
-
 		    if (_btc == null)
 		    {
-		    	Logger.println("Connect fail to: "+_peerName);
-		    	Button.waitForPress();
-		    	System.exit(1);
+		    	Logger.println("Connect fail to: "+_peerDevice.getFriendlyName(false));
+		    	return false;
 		    }
 		}
 		
 		_dis = _btc.openDataInputStream();
 		_dos = _btc.openDataOutputStream();
+		
+		return true;
 	}
 
 	@Override

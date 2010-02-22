@@ -8,8 +8,9 @@ import lejos.nxt.comm.BTConnection;
 
 public class ReceiveAndAckData extends ConnectionHandler
 {
-	private static final int NUM_RECVS = 100;
-	private static final int PACKET_LENGTH = 10;
+	private static final int NUM_SENDS = 100;
+	private static int PACKET_LENGTH = 1;
+	private static final int ACK_LENGTH = 0;
 	
 	public ReceiveAndAckData(BTConnection btc)
 	{
@@ -20,7 +21,11 @@ public class ReceiveAndAckData extends ConnectionHandler
 	
 	public void run()
 	{
-		connect();
+		if (!connect())
+			return;
+		
+		int elapsed = sw.elapsed();
+		Logger.println("Connected in: "+elapsed+"ms");
 		
 		int readErrCount = 0;
 		int flushErrCount = 0;
@@ -28,9 +33,17 @@ public class ReceiveAndAckData extends ConnectionHandler
 		
 		boolean success = false;
 		
-		int data = 0;
+		/*if (PACKET_LENGTH == 0)
+			PACKET_LENGTH = 1;
+		else
+			PACKET_LENGTH = PACKET_LENGTH * 2;*/
 		
-		for (int i = 0; i < NUM_RECVS; i++)
+		long data = 0;
+		
+		// reset the stopwatch
+		sw.reset();
+		
+		for (int i = 0; i < NUM_SENDS; i++)
 		{
 			for (int j = 0; j < PACKET_LENGTH; j++)
 			{
@@ -39,7 +52,7 @@ public class ReceiveAndAckData extends ConnectionHandler
 				{
 					try
 					{
-						data = _dis.readInt();
+						data = _dis.readLong();
 						success = true;
 					}
 					catch (IOException ioe)
@@ -52,20 +65,23 @@ public class ReceiveAndAckData extends ConnectionHandler
 				}
 			}
 			
-			success = false;
-			while (!success)
+			for (int j = 0; j < ACK_LENGTH; j++)
 			{
-				try
+				success = false;
+				while (!success)
 				{
-					_dos.writeInt(-data);
-					success = true;
-				}
-				catch (IOException ioe)
-				{
-					Logger.println("RAAD: IO Exception writing bytes, i:"+i);
-					writeErrCount++;
-					//Button.waitForPress();
-			    	//System.exit(1);
+					try
+					{
+						_dos.writeLong(-data);
+						success = true;
+					}
+					catch (IOException ioe)
+					{
+						Logger.println("RAAD: IO Exception writing bytes, i:"+i);
+						writeErrCount++;
+						//Button.waitForPress();
+				    	//System.exit(1);
+					}
 				}
 			}
 			
@@ -87,11 +103,19 @@ public class ReceiveAndAckData extends ConnectionHandler
 			}
 		}
 		
+		elapsed = sw.elapsed();
+		
 		_btc.close();
 		Logger.println("Got to the end.");
 		Logger.print("readErrCount: "+readErrCount);
 		Logger.print(" flushErrCount: "+flushErrCount);
 		Logger.println(" readErrCount: "+readErrCount);
-		ConnectionListener._canListen = true;
+		Logger.print("PL: "+(PACKET_LENGTH * 8)+"B ");
+		Logger.print("Took: "+elapsed+"ms ");
+		Logger.print("Rountrip: "+(elapsed / NUM_SENDS)+"ms ");
+		Logger.print("Sent: "+(NUM_SENDS * (PACKET_LENGTH + ACK_LENGTH) * 8)+"B ");
+		Logger.println("BW: "+((NUM_SENDS * (PACKET_LENGTH + ACK_LENGTH) * 8) / ((float)elapsed / 1000))+"B/s");
+		
+		ConnectionListener._canListen = true;		
 	}
 }
