@@ -18,7 +18,16 @@ According to [http://lejos.sourceforge.net/forum/viewtopic.php?t=1331 this sourc
 || *Test* || *Roundtrip CATS* || *B/W CATS* || *Roundtrip Source* || *B/W Source* || 
 || 1B -->, 1B <-- || 110ms || 18B/s || 46.6ms || N/A ||
 || 512B -->, 1B <-- || 260ms || 1.9kB/s || 132.4ms || 3.9kB/s ||
+|| 2B -->, 0B <-- || 2ms || 442B/s || N/A || N/A ||
+|| 4B -->, 0B <-- || 2ms || 1.7kB/s || N/A || N/A ||
+|| 8B -->, 0B <-- || 5ms || 1.5kB/s || N/A || N/A ||
+|| 16B -->, 0B <-- || 6ms || 2.3kB/s || N/A || N/A ||
+|| 32B -->, 0B <-- || 11ms || 2.7kB/s || N/A || N/A ||
+|| 64B -->, 0B <-- || 19ms || 3.2kB/s || N/A || N/A ||
+|| 128B -->, 0B <-- || 34ms || 3.6kB/s || N/A || N/A ||
+|| 256B -->, 0B <-- || 67ms || 3.8kB/s || N/A || N/A ||
 || 512B -->, 0B <-- || 133ms || 3.8kB/s || 45.2ms || 11.3kB/s ||
+|| 1024B -->, 0B <-- || 273ms || 3.7kB/s || N/A || N/A ||
 
 To send 512B and wait nothing takes less time than sending one byte and waiting for one byte to get back. It seems that waiting for other end to respond is very time consuming.
 
