@@ -36,7 +36,7 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				Thread initiatorThread = new Thread(new SendData("cat1"));
+				Thread initiatorThread = new Thread(new SendData(SendData.CAT1));
 				initiatorThread.start();
 			}
 		});
@@ -46,7 +46,7 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				Thread initiatorThread = new Thread(new SendData("cat2"));
+				Thread initiatorThread = new Thread(new SendData(SendData.CAT2));
 				initiatorThread.start();
 			}
 		});
@@ -56,7 +56,7 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				Thread initiatorThread = new Thread(new SendData("cat3"));
+				Thread initiatorThread = new Thread(new SendData(SendData.CAT3));
 				initiatorThread.start();
 				//SendData sd = new SendData("cat3");
 				//sd.run();
