@@ -13,21 +13,39 @@ I have tested incoming connections, and it seems until the one accepted connecti
 
 = Communication speeds =
 
-According to [http://lejos.sourceforge.net/forum/viewtopic.php?t=1331 this source] and to our tests BT communication speed between NXT bricks is:
+According to [http://lejos.sourceforge.net/forum/viewtopic.php?t=1331 this source] BT communication speed between NXT bricks is:
 
-|| *Test* || *Roundtrip CATS* || *B/W CATS* || *Roundtrip Source* || *B/W Source* || 
-|| 1B -->, 1B <-- || 110ms || 18B/s || 46.6ms || N/A ||
-|| 512B -->, 1B <-- || 260ms || 1.9kB/s || 132.4ms || 3.9kB/s ||
+= Communication speeds =
+
+According to [http://lejos.sourceforge.net/forum/viewtopic.php?t=1331 this source] BT communication speed between NXT bricks is:
+
+ * *One byte forward, one byte back*
+
+ BT NXT->NXT : 46.6ms
+
+ * *512 bytes forward, one byte back*
+
+ BT NXT->NXT : 132.4ms (3.9KB/s) 
+
+ * *512 bytes forward, no bytes back (streaming with no acknowledgements)*
+
+ BT NXT->NXT : 45.2ms (11.3KB/s), which takes less time than sending one byte and waiting for one byte to get back. It seems that waiting for other end to respond is very time consuming.
+
+Our tests
+
+|| *Test* || *Roundtrip byte* || *B/W byte* || *Roundtrip int* || *B/W int* || 
+|| 1B -->, 1B <-- || 110ms || 18B/s || N/A || N/A ||
+|| 512B -->, 1B <-- || 260ms || 1.9kB/s || N/A || N/A ||
 || 2B -->, 0B <-- || 2ms || 442B/s || N/A || N/A ||
 || 4B -->, 0B <-- || 2ms || 1.7kB/s || N/A || N/A ||
-|| 8B -->, 0B <-- || 5ms || 1.5kB/s || N/A || N/A ||
-|| 16B -->, 0B <-- || 6ms || 2.3kB/s || N/A || N/A ||
-|| 32B -->, 0B <-- || 11ms || 2.7kB/s || N/A || N/A ||
-|| 64B -->, 0B <-- || 19ms || 3.2kB/s || N/A || N/A ||
-|| 128B -->, 0B <-- || 34ms || 3.6kB/s || N/A || N/A ||
-|| 256B -->, 0B <-- || 67ms || 3.8kB/s || N/A || N/A ||
-|| 512B -->, 0B <-- || 133ms || 3.8kB/s || 45.2ms || 11.3kB/s ||
-|| 1024B -->, 0B <-- || 273ms || 3.7kB/s || N/A || N/A ||
+|| 8B -->, 0B <-- || 5ms || 1.5kB/s || 2ms || 2.7kB/s ||
+|| 16B -->, 0B <-- || 6ms || 2.3kB/s || 5ms || 3.1kB/s ||
+|| 32B -->, 0B <-- || 11ms || 2.7kB/s || 7ms || 4.2kB/s ||
+|| 64B -->, 0B <-- || 19ms || 3.2kB/s || 12ms || 5.1kB/s ||
+|| 128B -->, 0B <-- || 34ms || 3.6kB/s || 22ms || 5.6kB/s ||
+|| 256B -->, 0B <-- || 67ms || 3.8kB/s || 38ms || 6.6kB/s ||
+|| 512B -->, 0B <-- || 133ms || 3.8kB/s || 82ms || 6.1kB/s ||
+|| 1024B -->, 0B <-- || 273ms || 3.7kB/s || 170ms || 6.0kB/s ||
 
 To send 512B and wait nothing takes less time than sending one byte and waiting for one byte to get back. It seems that waiting for other end to respond is very time consuming.
 
