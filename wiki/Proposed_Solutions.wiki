@@ -21,7 +21,7 @@ Enter description here
 == Particle filter ==
 *Owner: Fredrik*
 
-Find a filter that with some kind of landmarks and information from the driver class can find the cats absolute position. More description here?
+Find a filter that with some kind of landmarks and information from the driver class can find the cats absolute position. It does not need to be able to find the absolute position in it self at every instant but use old knowledge and just update it. There are plenty of information coming from the motors about movement and the filter fixes errors in the state estimation when it sees a landmark.
 
 == Kalman filters ==
 *Owner: Nils*
@@ -42,7 +42,7 @@ Can this be done without knowing more about the sensors?
 == Particle filter ==
 *Owner: Fredrik*
 
-Finding an algorithm that 
+Finding a particle filter that tracks the mouse with tolerable error using 2 or more sensor readings.
 
 == Kalman filters ==
 *Owner: Nils*
