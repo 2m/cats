@@ -6,10 +6,8 @@ clear all
 N = 80
 stddegrees = 3;
 T = 0.5;
-cat(1) = 0.1 + i * 0.1;
-cat(2) = 1.9 + i * 0.1;
-cat(3) = 1 + i * 1.9;
-no_sensors = 3;
+landmark = [0.05 + i * 0.05 1.95 + i * 0.05 0.05 + i * 1.95 1.95 + i * 1.95];
+cat = 0.1 + i * 0.1;
 
 %% Set settings for methods and plotting
 make_mov = 0;			% Record movie
@@ -18,13 +16,13 @@ survival_of_fittest = 1;	% Resampling method (alt. complete resampling)
 
 % Init movie
 if (make_mov)
-	mov = avifile('particle_filter.avi');
+	mov = avifile('particle_filter_absolute_position.avi');
 end
 
 
 %% Init data
-% Init particles (x, y, vx, vy, w, age)
-p = [rand(N, 2)*2 , rand(N, 2)*0.04-0.02, ones(N, 1)*(1/N), zeros(N, 1)];
+% Init particles (x, y, angle, w, age)
+p = [rand(N, 2)*2 , rand(N, 1)*2*pi, ones(N, 1)*(1/N), zeros(N, 1)];
 Nuc = floor(N*3/4);	% Set up cut-offs
 Nlc = floor(N*1/4);
 % Init misc data
@@ -32,20 +30,21 @@ Nlc = floor(N*1/4);
 sensor_std = stddegrees*(pi/180);	% Standard deviation in radians
 titletext = sprintf('Prototype of particle filter (\\sigma_{sensors}=%i degrees)', stddegrees);
 frame = 1;
-lastmouse = 1.6 + i;
+lastcat = cat;
 time = 0:T:60;	% Time span of simulation
-real_states = zeros(size(time, 2), 4);
-est_states = zeros(size(time, 2), 4);
+real_states = zeros(size(time, 2), 3);
+est_states = zeros(size(time, 2), 3);
 
 figure
 tic
 for t = time
 	% Update mouse
 	theta = t*(2*pi/max(time));
-	mouse = 1 + 0.6*cos(theta) + i*(1 + 0.6*sin(theta));
-	movement = mouse - lastmouse;
+	cat = 1 + 0.6*cos(theta) + i*(1 + 0.6*sin(theta));
+	looking = cat - lastcat;
 
 	% Update sensor data and add noise
+	%jhasdf
 	sensor_v = (mouse - cat) .* exp(i*randn(1, 3)*sensor_std);
 	sensor_d = abs(sensor_v);
 	sensor_v = sensor_v ./ sensor_d;
@@ -112,8 +111,8 @@ for t = time
 	hold off
 
 	% Save stuff for next iteration
-	%lasttheta = theta;
-	lastmouse = mouse;
+	lastcat = cat;
+	lastlooking = looking;
 	real_states(frame, :) = [real(mouse) imag(mouse) ...
 				real(movement)/T imag(movement)/T];
 	est_states(frame, :) = [m(1) m(2) m_v(1) m_v(2)];
@@ -135,17 +134,17 @@ hold on
 plot(est_states(:, 1), est_states(:, 2), 'bx')
 hold off
 if (make_images)
-	print('particle_filter_position.png', '-dpng')
+	%print('particle_filter_position.png', '-dpng')
 end
 
 % Plot speed
-figure
-plot(time(2:end), abs(real_states(2:end, 3) + i*real_states(2:end, 4)), 'r+')
-hold on
-plot(time(2:end), abs(est_states(2:end, 3) + i*est_states(2:end, 4)), 'bx')
-hold off
+%figure
+%plot(time(2:end), abs(real_states(2:end, 3) + i*real_states(2:end, 4)), 'r+')
+%hold on
+%plot(time(2:end), abs(est_states(2:end, 3) + i*est_states(2:end, 4)), 'bx')
+%hold off
 if (make_images)
-	print('particle_filter_speed.png', '-dpng')
+	%print('particle_filter_speed.png', '-dpng')
 end
 
 if (make_mov)
