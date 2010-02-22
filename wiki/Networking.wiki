@@ -13,12 +13,12 @@ I have tested incoming connections, and it seems until the one accepted connecti
 
 = Communication speeds =
 
-According to [http://lejos.sourceforge.net/forum/viewtopic.php?t=1331 this source] BT communication speed between NXT bricks is:
+According to [http://lejos.sourceforge.net/forum/viewtopic.php?t=1331 this source] and to our tests BT communication speed between NXT bricks is:
 
-|| *Test* || *Roundtrip Source* || *B/W Source* || *Roundtrip us* || *B/W us* || 
-|| 1B -->, 1B <-- || 46.6ms || N/A || N/A || N/A ||
-|| 512B -->, 1B <-- || 132.4ms || 3.9KB/s || N/A || N/A ||
-|| 512B -->, 0B <-- || 45.2ms || 11.3KB/s || N/A || N/A ||
+|| *Test* || *Roundtrip CATS* || *B/W CATS* || *Roundtrip Source* || *B/W Source* || 
+|| 1B -->, 1B <-- || 110ms || 18B/s || 46.6ms || N/A ||
+|| 512B -->, 1B <-- || 260ms || 1.9kB/s || 132.4ms || 3.9kB/s ||
+|| 512B -->, 0B <-- || 133ms || 3.8kB/s || 45.2ms || 11.3kB/s ||
 
 To send 512B and wait nothing takes less time than sending one byte and waiting for one byte to get back. It seems that waiting for other end to respond is very time consuming.
 
