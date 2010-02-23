@@ -9,7 +9,6 @@ import se.uu.it.cats.brick.Logger;
 
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
-import lejos.nxt.comm.NXTCommDevice;
 import lejos.util.Stopwatch;
 
 public class ConnectionHandler implements Runnable

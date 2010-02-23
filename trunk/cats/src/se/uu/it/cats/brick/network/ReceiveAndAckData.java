@@ -1,7 +1,5 @@
 package se.uu.it.cats.brick.network;
 
-import java.io.IOException;
-
 import se.uu.it.cats.brick.Logger;
 
 import lejos.nxt.comm.BTConnection;
@@ -9,7 +7,7 @@ import lejos.nxt.comm.BTConnection;
 public class ReceiveAndAckData extends ConnectionHandler
 {
 	private static final int NUM_SENDS = 100;
-	private static int PACKET_LENGTH = 1;
+	private static int PACKET_LENGTH = 5;
 	private static final int ACK_LENGTH = 0;
 	
 	public ReceiveAndAckData(BTConnection btc)
@@ -25,13 +23,14 @@ public class ReceiveAndAckData extends ConnectionHandler
 			return;
 		
 		int elapsed = sw.elapsed();
-		Logger.println("Connected in: "+elapsed+"ms");
+		//Logger.println("Connected in: "+elapsed+"ms");
 		
 		int readErrCount = 0;
 		int flushErrCount = 0;
 		int writeErrCount = 0;
 		
 		boolean success = false;
+		long checksum = 0;
 		
 		/*if (PACKET_LENGTH == 0)
 			PACKET_LENGTH = 1;
@@ -39,6 +38,7 @@ public class ReceiveAndAckData extends ConnectionHandler
 			PACKET_LENGTH = PACKET_LENGTH * 2;*/
 		
 		long data = 0;
+		byte[] input = new byte[200];
 		
 		// reset the stopwatch
 		sw.reset();
@@ -47,27 +47,35 @@ public class ReceiveAndAckData extends ConnectionHandler
 		{
 			for (int j = 0; j < PACKET_LENGTH; j++)
 			{
-				success = false;
+				_btc.read(input, 200);
+				for (int k = 0; k < input.length; k++)
+					checksum += input[k];
+				
+				try { Thread.sleep(100); } catch (Exception e) {}
+				
+				/*success = false;
 				while (!success)
 				{
 					try
 					{
+						//Logger.println("Available:"+_btc.available(0));
 						data = _dis.readLong();
 						success = true;
 					}
-					catch (IOException ioe)
+					catch (Exception ioe)
 					{
 						Logger.println("RAAD: IO Exception reading bytes, i:"+i+" j:"+j);
 						readErrCount++;
 						//Button.waitForPress();
 				    	//System.exit(1);
 					}
-				}
+				}*/
 			}
 			
 			for (int j = 0; j < ACK_LENGTH; j++)
 			{
-				success = false;
+				_btc.write(input, 1);
+				/*success = false;
 				while (!success)
 				{
 					try
@@ -75,17 +83,17 @@ public class ReceiveAndAckData extends ConnectionHandler
 						_dos.writeLong(-data);
 						success = true;
 					}
-					catch (IOException ioe)
+					catch (Exception ioe)
 					{
 						Logger.println("RAAD: IO Exception writing bytes, i:"+i);
 						writeErrCount++;
 						//Button.waitForPress();
 				    	//System.exit(1);
 					}
-				}
+				}*/
 			}
 			
-			success = false;
+			/*success = false;
 			while (!success)
 			{
 				try
@@ -93,14 +101,14 @@ public class ReceiveAndAckData extends ConnectionHandler
 					_dos.flush();
 					success = true;
 				}
-				catch (IOException ioe)
+				catch (Exception ioe)
 				{
 					Logger.println("RADD: IO Exception flushing, i:"+i);
 					flushErrCount++;
 					//Button.waitForPress();
 			    	//System.exit(1);
 				}
-			}
+			}*/
 		}
 		
 		elapsed = sw.elapsed();
@@ -109,12 +117,13 @@ public class ReceiveAndAckData extends ConnectionHandler
 		Logger.println("Got to the end.");
 		Logger.print("readErrCount: "+readErrCount);
 		Logger.print(" flushErrCount: "+flushErrCount);
-		Logger.println(" readErrCount: "+readErrCount);
+		Logger.println(" readErrCount: "+writeErrCount);
 		Logger.print("PL: "+(PACKET_LENGTH * 8)+"B ");
 		Logger.print("Took: "+elapsed+"ms ");
 		Logger.print("Rountrip: "+(elapsed / NUM_SENDS)+"ms ");
 		Logger.print("Sent: "+(NUM_SENDS * (PACKET_LENGTH + ACK_LENGTH) * 8)+"B ");
 		Logger.println("BW: "+((NUM_SENDS * (PACKET_LENGTH + ACK_LENGTH) * 8) / ((float)elapsed / 1000))+"B/s");
+		Logger.println("Checksum:"+String.valueOf(checksum));
 		
 		ConnectionListener._canListen = true;		
 	}
