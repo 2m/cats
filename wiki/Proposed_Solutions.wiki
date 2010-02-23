@@ -16,7 +16,7 @@ Designing and building a robot capable of turning a specified angle and driving 
 == Magnetic fields ==
 *Owner: Christian*
 
-Enter description here
+An initial idea of robot positioning with two electromagnetes generating two seperate magnetic fields, strong enough to cover a large enough area of interest (maybe 2x2 m). By shifting these fields on and off, we were hoping to extract field-vectors of these fields with a magnetic sensor (compass), and triangulate the position of the robot by calculating the direction of the magnetic source. 
 
 == Particle filter ==
 *Owner: Fredrik*
