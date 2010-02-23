@@ -2,6 +2,7 @@ package se.uu.it.cats.brick;
 
 import lejos.nxt.Button;
 import lejos.nxt.ButtonListener;
+import lejos.nxt.comm.Bluetooth;
 import lejos.nxt.comm.RConsole;
 import se.uu.it.cats.brick.network.ConnectionListener;
 import se.uu.it.cats.brick.network.SendData;
@@ -63,7 +64,17 @@ public class Main
 			}
 		});
 		
-		while (!Button.ESCAPE.isPressed())
+		Button.ESCAPE.addButtonListener(new ButtonListener() {
+			public void buttonPressed(Button b) {}
+			
+			public void buttonReleased(Button b)
+			{
+				Logger.println("Escape pressed");
+			}
+		});
+		
+		int test = 0;
+		while (test == 0)
 		{
 			Thread.sleep(100);
 		}
