@@ -6,6 +6,8 @@ We need a way of getting the bearing of the mouse and probably need to know the 
 
 As the ultrasonic sensor included in the Lego NXT-kit had insufficient range (maximum measured distance is 0.5 m) some alternative have to be found.
 
+*NXTCAMs have been ordered!* (2010-02-24)
+
 = Sensors =
 
 We have discussed three different sensor approaches for locating the target.
