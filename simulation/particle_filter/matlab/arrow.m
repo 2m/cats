@@ -1,8 +1,11 @@
 function arrow(data, length, opt, width)
 	for g=1:size(data, 1)
 		a = data(g, 1) + i*data(g, 2);
-		b = a + exp(i*data(g, 3)) * length;
-		c = [a b];
-		plot(real(c), imag(c), opt, 'Linewidth', width)
+		b = [a, ...
+a + exp(i*data(g, 3)) * length, ...
+a + exp(i*(data(g, 3)+5*(pi/180))) * length*0.9, ...
+a + exp(i*data(g, 3)) * length, ...
+a + exp(i*(data(g, 3)-5*(pi/180))) * length*0.9];
+		plot(real(b), imag(b), opt, 'Linewidth', width)
 	end
 end
