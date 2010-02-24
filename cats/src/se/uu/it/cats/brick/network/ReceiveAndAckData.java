@@ -7,13 +7,12 @@ import lejos.nxt.comm.BTConnection;
 public class ReceiveAndAckData extends ConnectionHandler
 {
 	private static final int NUM_SENDS = 100;
-	private static int PACKET_LENGTH = 5;
+	private static int PACKET_LENGTH = 128;
 	private static final int ACK_LENGTH = 0;
 	
 	public ReceiveAndAckData(BTConnection btc)
 	{
-		super(btc);
-		
+		super(btc);		
 		ConnectionListener._canListen = false;
 	}
 	
@@ -38,7 +37,7 @@ public class ReceiveAndAckData extends ConnectionHandler
 			PACKET_LENGTH = PACKET_LENGTH * 2;*/
 		
 		long data = 0;
-		byte[] input = new byte[200];
+		byte[] input = new byte[8];
 		
 		// reset the stopwatch
 		sw.reset();
@@ -47,11 +46,13 @@ public class ReceiveAndAckData extends ConnectionHandler
 		{
 			for (int j = 0; j < PACKET_LENGTH; j++)
 			{
-				_btc.read(input, 200);
+				//if (available() > 0)
+					read(input);
+				
 				for (int k = 0; k < input.length; k++)
 					checksum += input[k];
 				
-				try { Thread.sleep(100); } catch (Exception e) {}
+				//try { Thread.sleep(100); } catch (Exception e) {}
 				
 				/*success = false;
 				while (!success)

@@ -9,12 +9,17 @@ import se.uu.it.cats.brick.Logger;
 public class SendData extends ConnectionHandler
 {
 	private static final int NUM_SENDS = 100;
-	private static int PACKET_LENGTH = 5;
+	private static int PACKET_LENGTH = 128;
 	private static final int ACK_LENGTH = 0;
 	
 	public SendData(RemoteDevice device)
 	{
 		super(device);
+	}
+	
+	public void test()
+	{
+		Logger.println("asd2");
 	}
 	
 	public void run()
@@ -34,7 +39,7 @@ public class SendData extends ConnectionHandler
 		
 		Random r = new Random();
 		
-		byte[] output = new byte[200];
+		byte[] output = new byte[8];
 		for (int i = 0; i < output.length; i++)
 			output[i] = (byte)r.nextInt();
 		
@@ -50,11 +55,11 @@ public class SendData extends ConnectionHandler
 		{
 			for (int j = 1; j <= PACKET_LENGTH; j++)
 			{
-				_btc.write(output, 200, true);
+				write(output);
 				for (int k = 0; k < output.length; k++)
 					checksum += output[k];
 				
-				try { Thread.sleep(100); } catch (Exception e) {}
+				//try { Thread.sleep(100); } catch (Exception e) {}
 				
 				/*success = false;
 				while (!success)
@@ -73,6 +78,8 @@ public class SendData extends ConnectionHandler
 					}
 				}*/
 			}
+			
+			flush();
 			
 			/*success = false;
 			while (!success)
