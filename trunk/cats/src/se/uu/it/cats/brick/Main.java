@@ -57,8 +57,10 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				Thread initiatorThread = new Thread(new SendData(SendData.CAT3));
+				SendData sd = new SendData(SendData.CAT3);
+				Thread initiatorThread = new Thread(sd);
 				initiatorThread.start();
+				sd.test();
 				//SendData sd = new SendData("cat3");
 				//sd.run();
 			}
