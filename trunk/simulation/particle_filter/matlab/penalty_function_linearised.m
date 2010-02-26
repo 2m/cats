@@ -9,7 +9,7 @@ s = 3;						% Standard deviation in degrees
 y = 1/sqrt(2*pi*s^2)*exp(-((d - mu).^2)/(2*s^2));	% Gaussian pdf
 y = y*(1/max(y));					% Normalise
 x = cos(r);					% Cosine of interval
-e = 1e-10;
+e = 1e-4;
 
 % Find interesting interval
 i = 1;
