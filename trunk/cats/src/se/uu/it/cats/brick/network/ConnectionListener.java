@@ -20,10 +20,7 @@ public class ConnectionListener implements Runnable
 				{			
 					Logger.println("Received connection from: "+btc.getAddress());
 				
-					Thread t = new Thread(new ReceiveAndAckData(btc));
-					t.start();
-					//ReceiveAndAckData raad = new ReceiveAndAckData(btc);
-					//raad.run();
+					ConnectionManager.getInstance().openConnection(btc);
 				}
 				else
 				{

@@ -128,4 +128,9 @@ public class ReceiveAndAckData extends ConnectionHandler
 		
 		ConnectionListener._canListen = true;		
 	}
+	
+	public void sendByte()
+	{
+		// stub
+	}
 }

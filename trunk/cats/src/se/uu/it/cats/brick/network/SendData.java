@@ -17,11 +17,6 @@ public class SendData extends ConnectionHandler
 		super(device);
 	}
 	
-	public void test()
-	{
-		Logger.println("asd2");
-	}
-	
 	public void run()
 	{
 		if (!connect())
@@ -136,4 +131,10 @@ public class SendData extends ConnectionHandler
 		Logger.println("BW: "+((NUM_SENDS * (PACKET_LENGTH + ACK_LENGTH * 8)) / ((float)elapsed / 1000))+"B/s");
 		Logger.println("Checksum:"+String.valueOf(checksum));
 	}
+	
+	public void sendByte()
+	{
+		// stub
+	}
+	
 }

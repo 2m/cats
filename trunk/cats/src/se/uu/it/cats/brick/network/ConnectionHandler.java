@@ -2,7 +2,6 @@ package se.uu.it.cats.brick.network;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 
 import javax.bluetooth.RemoteDevice;
 
@@ -12,18 +11,16 @@ import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 import lejos.util.Stopwatch;
 
-public class ConnectionHandler implements Runnable
+public abstract class ConnectionHandler implements Runnable
 {
-	public static final RemoteDevice CAT1 = new RemoteDevice("cat1", "00165302CC4E", new byte[] {0, 0, 8, 4});
-	public static final RemoteDevice CAT2 = new RemoteDevice("cat2", "0016530E6938", new byte[] {0, 0, 8, 4});
-	public static final RemoteDevice CAT3 = new RemoteDevice("cat3", "00165302CDC3", new byte[] {0, 0, 8, 4});
-		
 	protected BTConnection _btc = null;
 	
 	protected DataInputStream _dis = null;
 	protected DataOutputStream _dos = null;
 	
 	protected RemoteDevice _peerDevice = null;
+	
+	protected boolean _alive = false;
 	
 	protected Stopwatch sw = null;
 	
@@ -48,12 +45,13 @@ public class ConnectionHandler implements Runnable
 	
 	public ConnectionHandler(BTConnection btc)
 	{
-		this();
+		this();		
 		_btc = btc;
+		_peerDevice = ConnectionManager.getInstance().getDeviceByAddress(_btc.getAddress());
 	}
 	
 	protected boolean connect()
-	{	
+	{
 		sw = new Stopwatch();
 		sw.reset();
 		
@@ -81,7 +79,7 @@ public class ConnectionHandler implements Runnable
     		flush();
     	}
 		_outputBuffer[_outBufSize] = b;
-		_outBufSize++;  	
+		_outBufSize++;
 	}
 	
 	protected void write(byte[] bArray)
@@ -94,7 +92,7 @@ public class ConnectionHandler implements Runnable
 	{
 		if (_outBufSize > 0)
 		{
-			int result = _btc.write(_outputBuffer, _outBufSize);
+			int result = _btc.write(_outputBuffer, _outBufSize, false);
 			if (result < 0) return result;
 			_outBufSize = 0;
 		}
@@ -112,7 +110,7 @@ public class ConnectionHandler implements Runnable
 		if (_inReturnedUntil >= _inBufSize) _inBufSize = 0;
 		if (_inBufSize <= 0)
 		{
-			_inBufSize = _btc.read(_inputBuffer, _inputBuffer.length);
+			_inBufSize = _btc.read(_inputBuffer, _inputBuffer.length, false);
 			if (_inBufSize < -1) return _inBufSize;
 			if (_inBufSize <= 0) return -1;
 			_inReturnedUntil = 0;
@@ -137,10 +135,34 @@ public class ConnectionHandler implements Runnable
 		for (int i = 0; i < bArray.length; i++)
 			bArray[i] = (byte)read();
 	}
+	
+	protected void close()
+	{
+		if (_btc != null)
+			_btc.close();
+		_alive = false;
+	}
+	
+	protected boolean isAlive()
+	{
+		return _alive;
+	}
+	
+	protected void setAlive(boolean alive)
+	{
+		_alive = alive;
+	}
 
 	@Override
 	public void run()
 	{
 		//_btc.close();
+	}
+	
+	abstract void sendByte();
+	
+	protected String getPeerName()
+	{
+		return _peerDevice.getFriendlyName(false);
 	}
 }
