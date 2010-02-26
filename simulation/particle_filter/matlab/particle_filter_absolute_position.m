@@ -4,14 +4,14 @@ clear all
 
 %% Set basic options
 N = 40
-stddegrees = 1;
+stddegrees = 3;
 T = 0.5;
 landmarks = [0.05 + i * 0.05 1.95 + i * 0.05 0.05 + i * 1.95 1.95 + i * 1.95 ...
 0.05 + i 1.95 + i 1 + i * 1.95 1 + i * 0.05];
 cat = 1.6 + i * 1;
-no_landmarks = 8;
+no_landmarks = 4;
 looking = i*1;
-vision = 180;	% Field of vision in degrees
+vision = 120;	% Field of vision in degrees
 
 %% Set settings for methods and plotting
 do_plotting = 1;		% Flag for doing continous plotting
@@ -27,9 +27,9 @@ end
 
 %% Init data
 % Init particles (x, y, angle, w, age)
-p = [ones(N, 1)*real(cat) + randn(N,1)*0.2 , ...
-	ones(N, 1)*imag(cat) + randn(N, 1)*0.2, ...
-	ones(N, 1)*angle(looking) + randn(N, 1)*10*(pi/180), ...
+p = [ones(N, 1)*real(cat) + randn(N,1)*0.1 , ...
+	ones(N, 1)*imag(cat) + randn(N, 1)*0.1, ...
+	ones(N, 1)*angle(looking) + randn(N, 1)*3*(pi/180), ...
 	ones(N, 1)*(1/N), zeros(N, 1)];
 Nuc = floor(N*3/4);	% Set up cut-offs
 Nlc = floor(N*1/4);
@@ -76,47 +76,55 @@ for t = time
 
 	% Compare particles to sensors inputs
 	landmark_seen = [];
+	mu = [];
 	re_sample = 0;
 	vision_angle = abs(angle((landmarks - cat)*looking'))*(180/pi);
+	mu = angle((landmarks - cat)*looking');	% Sensor readings
 	% Input from sensor (angle in radians from forward direction)
-	mu = (angle(landmarks - cat)-angle(looking))+randn(1, 8)*sensor_std;
 	% Go through landmarks
 	for g = 1:no_landmarks
-		landmark = landmarks(g) - cat;
 		% Check if landmark is seen
 		if (vision_angle(g) < (vision/2))
-			re_sample = 1;
-			landmark_seen(end + 1) = g;
-
+			re_sample = 1;			% Flag re-sampling
+			landmark_seen(end + 1) = g;	% Add landmark to list
+			z = ones(N, 1)*(-1);		% Make room
 			% --- Filter implementation on robot ---
 
-			% Guess sensor
-			% TODO: rewrite with vector product
-			z = zeros(N, 1);
+			u = [cos(mu(g)); sin(mu(g))];	% Sensor vector
 			for g1 = 1:N
-				%ph = angle((landmarks-(p(g1,1)+i*p(g1,2)))*...
-				%	exp(i*p(g1, 3))');
-				%[a, b] = min(abs(ph - mu(g)));
-				%z(g1, 1) = ph(b);
-				z(g1) = pi;
-				l = 1;
+				rot_p = [cos(-p(g1, 3)) -sin(-p(g1, 3)); ...
+					sin(-p(g1, 3)) cos(-p(g1, 3))];
+				% Vector towards landmark in ??
 				for g2 = 1:no_landmarks
-					% Find which sensor is seen
-					c = landmarks(g2) - (p(g1,1)+i*p(g1,2));
-					v = [real(c) imag(c)];
+					v=rot_p*[real(landmarks(g))-p(g1,1) ;...
+						imag(landmarks(g)) - p(g1, 2)];
 					v = v./norm(v);
-					u = [cos(mu(g)) sin(mu(g))];
-					a = acos(u*v');
-					if (a<b)
-						b = a;
-						l = g2;
+					a = u'*v;
+					if (a>z(g1))
+						z(g1) = a;
 					end
 				end
 			end
 
 			% Penalty function
-			% TODO: linearise this:
-			w = exp(-((z - mu(g)).^2)/(2*sensor_std^2));
+			% TODO: linearise this
+			%w = exp(-((z - mu(g)).^2)/(2*sensor_std^2));
+			%w = exp(-(acos(z).^2)/(2*sensor_std^2));
+			w = zeros(N, 1);		% Make room
+			for g1 = 1:N
+				if (0.97630>=z(g1)) && (z(g1)>0.97437)
+					w(g1) = z(g1)*5.9788e-05 + 6.1299e-05;
+				elseif (0.97732>=z(g1)) && (z(g1)>0.97630)
+					w(g1) = z(g1)*8.4904e-05 + 8.6965e-05;
+				elseif (0.97815>=z(g1)) && (z(g1)>0.97723)
+					w(g1) = z(g1)*1.1974e-04 + 1.2253e-04;
+				elseif (1>=z(g1)) && (z(g1)>0.97815)
+					w(g1) = z(g1)*4.3212e+01 - 4.2577e+01;
+				else
+					w(g1) = 0;
+				end
+			end
+			% Cutoffs: 1.00000, 0.97815, 0.97723, 0.97630, 0.97437
 
 			% --- end ---
 
