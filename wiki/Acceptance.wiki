@@ -5,4 +5,5 @@
 http://www.it.uu.se/edu/course/homepage/styrsystem/vt10/Projekt/CoLEGO
 
 = Hardware =
-Base set of lego, nothing more nothing less.
+
+Three base sets of lego (more or less) and six NXTCAMs to share with two other groups.
