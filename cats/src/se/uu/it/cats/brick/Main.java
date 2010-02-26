@@ -2,10 +2,9 @@ package se.uu.it.cats.brick;
 
 import lejos.nxt.Button;
 import lejos.nxt.ButtonListener;
-import lejos.nxt.comm.Bluetooth;
 import lejos.nxt.comm.RConsole;
 import se.uu.it.cats.brick.network.ConnectionListener;
-import se.uu.it.cats.brick.network.SendData;
+import se.uu.it.cats.brick.network.ConnectionManager;
 
 /**
  * Example leJOS Project with an ant build file
@@ -37,8 +36,10 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				Thread initiatorThread = new Thread(new SendData(SendData.CAT1));
-				initiatorThread.start();
+				if (ConnectionManager.getInstance().isAlive(1))
+					ConnectionManager.getInstance().sendByteTo(1);
+				else
+					ConnectionManager.getInstance().openConnection(1);
 			}
 		});
 		
@@ -47,8 +48,10 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				Thread initiatorThread = new Thread(new SendData(SendData.CAT2));
-				initiatorThread.start();
+				if (ConnectionManager.getInstance().isAlive(2))
+					ConnectionManager.getInstance().sendByteTo(2);
+				else
+					ConnectionManager.getInstance().openConnection(2);
 			}
 		});
 		
@@ -57,12 +60,10 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				SendData sd = new SendData(SendData.CAT3);
-				Thread initiatorThread = new Thread(sd);
-				initiatorThread.start();
-				sd.test();
-				//SendData sd = new SendData("cat3");
-				//sd.run();
+				if (ConnectionManager.getInstance().isAlive(3))
+					ConnectionManager.getInstance().sendByteTo(3);
+				else
+					ConnectionManager.getInstance().openConnection(3);
 			}
 		});
 		
@@ -71,7 +72,8 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				Logger.println("Escape pressed");
+				if (ConnectionManager.getInstance().isAlive(4))
+					ConnectionManager.getInstance().sendByteTo(4);
 			}
 		});
 		
