@@ -10,7 +10,7 @@
 
 = Tech =
 
-Solution
+[http://code.google.com/p/cats/wiki/Solution Solution]
 
 Proposed_Solutions
 
