@@ -3,6 +3,8 @@ package se.uu.it.cats.brick;
 import lejos.nxt.Button;
 import lejos.nxt.ButtonListener;
 import lejos.nxt.comm.RConsole;
+import lejos.util.Timer;
+import lejos.util.TimerListener;
 import se.uu.it.cats.brick.network.ConnectionListener;
 import se.uu.it.cats.brick.network.ConnectionManager;
 
@@ -37,7 +39,16 @@ public class Main
 			public void buttonReleased(Button b)
 			{
 				if (ConnectionManager.getInstance().isAlive(1))
-					ConnectionManager.getInstance().sendByteTo(1);
+				{
+					Timer t = new Timer(50, new TimerListener() {
+						public void timedOut()
+						{
+							if (ConnectionManager.getInstance().isAlive(1))
+								ConnectionManager.getInstance().getConnection(1).sendByte();
+						}
+					});
+					t.start();
+				}
 				else
 					ConnectionManager.getInstance().openConnection(1);
 			}
@@ -49,7 +60,16 @@ public class Main
 			public void buttonReleased(Button b)
 			{
 				if (ConnectionManager.getInstance().isAlive(2))
-					ConnectionManager.getInstance().sendByteTo(2);
+				{
+					Timer t = new Timer(50, new TimerListener() {
+						public void timedOut()
+						{
+							if (ConnectionManager.getInstance().isAlive(2))
+								ConnectionManager.getInstance().getConnection(2).sendByte();
+						}
+					});
+					t.start();
+				}
 				else
 					ConnectionManager.getInstance().openConnection(2);
 			}
@@ -61,7 +81,16 @@ public class Main
 			public void buttonReleased(Button b)
 			{
 				if (ConnectionManager.getInstance().isAlive(3))
-					ConnectionManager.getInstance().sendByteTo(3);
+				{
+					Timer t = new Timer(50, new TimerListener() {
+						public void timedOut()
+						{
+							if (ConnectionManager.getInstance().isAlive(3))
+								ConnectionManager.getInstance().getConnection(3).sendByte();
+						}
+					});
+					t.start();					
+				}
 				else
 					ConnectionManager.getInstance().openConnection(3);
 			}

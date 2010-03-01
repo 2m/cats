@@ -8,6 +8,8 @@ import se.uu.it.cats.brick.Logger;
 
 public class KeepAlive extends ConnectionHandler
 {
+	private int counter;
+	
 	public KeepAlive(RemoteDevice device)
 	{
 		super(device);
@@ -15,7 +17,7 @@ public class KeepAlive extends ConnectionHandler
 	
 	public KeepAlive(BTConnection btc)
 	{
-		super(btc);		
+		super(btc);
 		ConnectionListener._canListen = false;
 	}
 	
@@ -23,11 +25,20 @@ public class KeepAlive extends ConnectionHandler
 	{
 		setAlive(connect());
 		
+		sw.reset();
 		while (isAlive())
-		{
+		{			
 			int b = read();
 			if (b >= 0)
-				Logger.println("Received "+b+" from "+getPeerName());
+			{
+				counter++;
+				if (sw.elapsed() > 2000)
+				{
+					Logger.println("BW from "+getPeerName()+":"+(counter/((float)sw.elapsed()/1000)+"B/s"));
+					sw.reset();
+					counter = 0;
+				}
+			}
 			try { Thread.sleep(100); } catch (Exception ex) {}
 		}
 		
@@ -36,7 +47,7 @@ public class KeepAlive extends ConnectionHandler
 	
 	public void sendByte()
 	{
-		Logger.println("Sent 66 to "+getPeerName());
+		//Logger.println("S 66 to "+getPeerName());
 		write((byte)66);
 		
 		if (flush() < 0)
