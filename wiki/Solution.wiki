@@ -1,26 +1,104 @@
 #summary Description of the solution we are going to use
+#labels Featured
 
 = Introduction =
 
-Add your content here.
+This is a description of the system we will use. The different components here should not be interpreted as classes. All estimated times are in work weeks and should be overestimated rather that underestimated.
 
+<wiki:toc max_depth="3" />
+
+= Priorities =
+
+  # Simulation
+    # Particle filter
+    # Non-linear Kalman filter
+    # Linear Kalman for colour system
+    # Basic networking (with benchmarks)
+  # System implementation phase 1
+    # Basic data synchronisation (positions)
+    # Basic movement (just relative)
+    # Basic visualisation (positions of cats)
+    # Basic camera (no correction, track ball)
+  # System implementation phase 2
+    # Filters implemented in Java
+    # Visualisation (positions of cats and mouse)
+  # System implementation phase 3
+    # Visualisation (uncertainties and commands to cats)
+
+= Other problems =
+
+Some problems that needs attention but are not a part of any specific component.
+
+  * Figure out priorities and execution times.
+  * Design structure of classes and interfaces between them.
 
 = System components =
 
-== Eyes ==
+== Main controller / AI ==
+*Owner: Cheewin*
 
-Camera control.
+*Estimated time:*
+
+Get the robot to decide where to move and possibly where to look.
+
+== Eyes ==
+*Owner: NA*
+
+*Estimated time: 2 weeks*
+
+We need a camera to start this work.
+
+Camera control
+  * Controls where to look.
+  * Controls motor on which the motor is mounted.
+  * Outputs data of how the world looks.
+  * Can take input on where to look but can make its own decisions.
+
+=== NXTCAM ===
+
+Compensate for distortions due to the lens.
 
 == Feet ==
 *Owner: Cheewin*
 
-Motor control
+*Estimated time: 2 weeks*
+
+Movement control (in priority order)
+  # Moving to a relative location
+  # Record relative movements (for filters)
+  # Moving to specified location (i.e. path finding)
 
 == Data storage ==
 *Owner: Martin*
 
+Some kind of data storage for feeding the filters data from other nodes, sharing estimates etc. This should present the data from the other nodes so that no other component needs to worry about networking.
+
+== Shared real time clock ==
+
+We would like a clock with ms precision. Can be implemented by using the stoptimer(?) class in leJOS. A wrapper class around a stop watch can convert from local to share time with an offset variable. Syncing between nodes is done by the network component.
+
 == Network ==
 *Owner: Martin*
+
+Build a basic network and try to get different networks so sync. The bluetooth can only handle 1 outgoing and 3 incoming connections so the more basic networks will be small.
+
+  * Needs to be able to get data to all nodes as fast as possible (hopefully exchange data many times per second.
+  * Synchronise time between nodes (BSD algorithm?)
+  * Re-establish network if a node disconnects or disappears.
+  * Minimise CPU consumption (check for waits)
+
+== Colour sensors ==
+*Owner: Nils*
+
+
+== Filters ==
+
+=== Particle filter ===
+*Owner: Fredrik*
+*Estimated time: 3 weeks*
+
+=== Non-linear Kalman filter ===
+*Owner: Nils*
 
 
 = GUI =
@@ -28,8 +106,19 @@ Motor control
 == Visualisation ==
 *Owner: Christian*
 
+Basic visualisation of where the cats this they are and where the mouse is. All data used here will pass through the data storage component, even the "commands".
+
+  * Should contain information on landmarks to download to the cats
+  * Should show positions of objects
+  * Should be able to visualise uncertainty of filters
+  * Basic UI for setting stuff like waypoints or selecting objects (to show their states etc)
+
 == Data storage ==
 *Owner: Martin*
 
+Same as above.
+
 == Network ==
 *Owner: Martin*
+
+Same as above.
