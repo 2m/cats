@@ -1,8 +1,11 @@
 #summary Information on meetings
+#labels Featured
 
 = Meetings =
 
-*2010-03-01 08:00 Design meeting in P1457*
+*2010-03-03 08:00 Design meeting in P1457*
+
+2010-03-01 08:00 Design meeting in P1457
 
 2010-02-12 Design meeting in P1457
 
