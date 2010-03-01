@@ -20,6 +20,8 @@ Sensor_Alternatives
 
 = Misc =
 
+CodeStandard
+
 Root_Localization_Thesis
 
 [http://code.google.com/p/cats/wiki/Eclipse_setup Eclipse_setup]
