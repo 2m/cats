@@ -1,0 +1,35 @@
+#summary Description of the solution we are going to use
+
+= Introduction =
+
+Add your content here.
+
+
+= System components =
+
+== Eyes ==
+
+Camera control.
+
+== Feet ==
+*Owner: Cheewin*
+
+Motor control
+
+== Data storage ==
+*Owner: Martin*
+
+== Network ==
+*Owner: Martin*
+
+
+= GUI =
+
+== Visualisation ==
+*Owner: Christian*
+
+== Data storage ==
+*Owner: Martin*
+
+== Network ==
+*Owner: Martin*
