@@ -1,0 +1,12 @@
+#summary Some guide lines on how to write code
+
+= Introduction =
+
+Some notes on how to write the code.
+
+= Matlab =
+
+
+= Java =
+
+  * Use javadoc
