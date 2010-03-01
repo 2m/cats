@@ -159,7 +159,7 @@ public abstract class ConnectionHandler implements Runnable
 		//_btc.close();
 	}
 	
-	abstract void sendByte();
+	public abstract void sendByte();
 	
 	protected String getPeerName()
 	{

@@ -76,7 +76,7 @@ public class ConnectionManager
 		t.start();
 	}
 	
-	private ConnectionHandler getConnection(int i)
+	public ConnectionHandler getConnection(int i)
 	{
 		if (i < 4)
 		{
