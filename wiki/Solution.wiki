@@ -128,7 +128,7 @@ Particle filter for estimating the position of cats and mouse (i.e. two differen
 More on ParticleFilter.
 
 === Non-linear Kalman filter ===
-*Owner: Edward* Re-assigned
+*Owner: Edward* (Re-assigned)
 
 *Estimated time: 3 weeks*
 
