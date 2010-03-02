@@ -10,20 +10,20 @@ This is a description of the system we will use. The different components here s
 = Priorities =
 
   # Simulation
-    # Particle filter
-    # Non-linear Kalman filter
-    # Linear Kalman for colour system
-    # Basic networking (with benchmarks)
+    * Particle filter
+    * Non-linear Kalman filter
+    * Linear Kalman for colour system
+    * Basic networking (with benchmarks)
   # System implementation phase 1
-    # Basic data synchronisation (positions)
-    # Basic movement (just relative)
-    # Basic visualisation (positions of cats)
-    # Basic camera (no correction, track ball)
+    * Basic data synchronisation (positions)
+    * Basic movement (just relative)
+    * Basic visualisation (positions of cats)
+    * Basic camera (no correction, track ball)
   # System implementation phase 2
-    # Filters implemented in Java
-    # Visualisation (positions of cats and mouse)
+    * Filters implemented in Java
+    * Visualisation (positions of cats and mouse)
   # System implementation phase 3
-    # Visualisation (uncertainties and commands to cats)
+    * Visualisation (uncertainties and commands to cats)
 
 = Other problems =
 
