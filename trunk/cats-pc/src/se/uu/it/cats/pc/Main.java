@@ -3,6 +3,7 @@ package se.uu.it.cats.pc;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Vector;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -20,18 +21,125 @@ import lejos.pc.comm.*;
 
 public class Main extends JFrame
 {
-/*	public class Threshold
+	public class Threshold
 	{
-		float[] rel;
-		int abs;
+		float[][] rel;
+		Col abs;
+		Vector<Col>[] order;
 		
-		public Threshold(float[] r, int a)
+		public Threshold(float[][] r, Vector<Col>[] o, Col a)
 		{
 			rel = r;
+			order = o;
 			abs = a;
 		}
+		
+		public int getThresholdValue(int absValue, int thIndex, int boundIndex)
+		{
+			if (abs == Col.RED)
+			{
+				switch (thIndex)
+				{
+					case 0:
+						return (int)(absValue * rel[Col.GREEN.index()][boundIndex]);
+					case 1:
+						return (int)(absValue * rel[Col.BLUE.index()][boundIndex]);
+				}
+			}
+			else if (abs == Col.GREEN)
+			{
+				switch (thIndex)
+				{
+					case 0:
+						return (int)(absValue * rel[Col.RED.index()][boundIndex]);
+					case 1:
+						return (int)(absValue * rel[Col.BLUE.index()][boundIndex]);
+				}
+			}
+			else if (abs == Col.BLUE)
+			{
+				switch (thIndex)
+				{
+					case 0:
+						return (int)(absValue * rel[Col.RED.index()][boundIndex]);
+					case 1:
+						return (int)(absValue * rel[Col.GREEN.index()][boundIndex]);
+				}
+			}
+			
+			return 0;
+		}
+		
+		public boolean detected(int red, int green, int blue, int threshMarg)
+		{
+			if (abs == Col.RED)
+			{
+				if (green < (getThresholdValue(red, 0, 0)) && green > (getThresholdValue(red, 0, 1)) &&
+					blue  < (getThresholdValue(red, 1, 0)) && blue  > (getThresholdValue(red, 1, 1)))
+				{
+					if (order[0].contains(getLowestColor(red, green, blue)) &&
+						order[1].contains(getMiddleColor(red, green, blue)) &&
+						order[2].contains(getHighestColor(red, green, blue)))
+						return true;
+				}
+			}
+			else if (abs == Col.GREEN)
+			{
+				if (red   < (getThresholdValue(green, 0, 0)) && red   > (getThresholdValue(green, 0, 1)) &&
+					blue  < (getThresholdValue(green, 1, 0)) && blue  > (getThresholdValue(green, 1, 1)))
+				{
+					if (order[0].contains(getLowestColor(red, green, blue)) &&
+						order[1].contains(getMiddleColor(red, green, blue)) &&
+						order[2].contains(getHighestColor(red, green, blue)))
+						return true;
+				}
+			}
+			else if (abs == Col.BLUE)
+			{
+				if (red   < (getThresholdValue(blue, 0, 0)) && red   > (getThresholdValue(blue, 0, 1)) &&
+					green < (getThresholdValue(blue, 1, 0)) && green > (getThresholdValue(blue, 1, 1)))
+				{
+					if (order[0].contains(getLowestColor(red, green, blue)) &&
+						order[1].contains(getMiddleColor(red, green, blue)) &&
+						order[2].contains(getHighestColor(red, green, blue)))
+						return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		public Col getLowestColor(int red, int green, int blue)
+		{
+			if (red < green && red < blue)
+				return Col.RED;
+			else if (green < red && green < blue)
+				return Col.GREEN;
+			else 
+				return Col.BLUE;
+		}
+		
+		public Col getMiddleColor(int red, int green, int blue)
+		{
+			if ((red < green && red > blue) || (red < blue && red > green))
+				return Col.RED;
+			else if ((green < red && green > blue) || (green < blue && green > red))
+				return Col.GREEN;
+			else 
+				return Col.BLUE;
+		}
+		
+		public Col getHighestColor(int red, int green, int blue)
+		{
+			if (red > green && red > blue)
+				return Col.RED;
+			else if (green > red && green > blue)
+				return Col.GREEN;
+			else 
+				return Col.BLUE;
+		}
 	}
-	*/
+	
 	
 	public enum Col
 	{
@@ -53,13 +161,13 @@ public class Main extends JFrame
 		}
 	}
 	
-	public class Threshold
+	public class Threshold2
 	{
 		Col abs; // color with highest readings
 		
 		int[][] bound;
 		
-		public Threshold(int[][] b, Col a)
+		public Threshold2(int[][] b, Col a)
 		{
 			bound = b;
 			abs = a;
@@ -162,17 +270,107 @@ public class Main extends JFrame
     Threshold[] ths = null;
     boolean[] activeThs = null;
     
-    public Main()
+    @SuppressWarnings("unchecked")
+	public Main()
     {
     	values = new int[WORLD_WIDTH];
     	
-    	/*ths = new Threshold[4];
-    	ths[0] = new Threshold(new float[] {0.934f, 0f, 0.209f}, 1);
-    	ths[1] = new Threshold(new float[] {0f, 0.242f, 0.14f}, 0);
-    	ths[2] = new Threshold(new float[] {0.717f, 0f, 0.415f}, 1);
-    	ths[3] = new Threshold(new float[] {0.051f, 0.205f, 0f}, 2);*/
+    	// red
+    	Vector<Col> o1 = new Vector<Col>();
+    	o1.add(Col.RED);
+    	o1.add(Col.GREEN);
+    	o1.add(Col.BLUE);
+    	
+    	Vector<Col> o2 = new Vector<Col>();
+    	o2.add(Col.RED);
+    	o2.add(Col.GREEN);
+    	o2.add(Col.BLUE);
+    	
+    	Vector<Col> o3 = new Vector<Col>();
+    	o3.add(Col.RED);
+    	o3.add(Col.GREEN);
+    	o3.add(Col.BLUE);
     	
     	ths = new Threshold[4];
+    	ths[0] = new Threshold(
+    			new float[][] {
+    					{0f, 0f},
+    					{0.91f, 0.2f},
+    					{0.85f, 0.2f}
+    			},
+    			new Vector[] {o1, o2, o3},
+    			Col.RED
+    	);
+    	
+    	// green
+    	o1 = new Vector<Col>();
+    	o1.add(Col.RED);
+    	o1.add(Col.BLUE);
+    	
+    	o2 = new Vector<Col>();
+    	o2.add(Col.RED);
+    	o2.add(Col.BLUE);
+    	
+    	o3 = new Vector<Col>();    	
+    	o3.add(Col.GREEN);
+    	
+    	ths[1] = new Threshold(
+    			new float[][] {
+    					{1f, 0.2f},
+    					{0f, 0f},
+    					{1f, 0.2f}
+    			},
+    			new Vector[] {o1, o2, o3},
+    			Col.GREEN
+    	);
+    	
+    	// blue
+    	o1 = new Vector<Col>();
+    	o1.add(Col.RED);
+    	
+    	o2 = new Vector<Col>();
+    	o2.add(Col.GREEN);
+    	
+    	o3 = new Vector<Col>();
+    	o3.add(Col.BLUE);
+    	
+    	ths[2] = new Threshold(
+    			new float[][] {
+    					{1f, 0.05f},
+    					{1f, 0.05f},
+    					{0f, 0f}
+    			},
+    			new Vector[] {o1, o2, o3},
+    			Col.BLUE
+    	);
+    	
+    	// yellow
+    	o1 = new Vector<Col>();
+    	o1.add(Col.RED);
+    	o1.add(Col.GREEN);
+    	o1.add(Col.BLUE);
+    	
+    	o2 = new Vector<Col>();
+    	o2.add(Col.RED);
+    	o2.add(Col.GREEN);
+    	o2.add(Col.BLUE);
+    	
+    	o3 = new Vector<Col>();
+    	o3.add(Col.RED);
+    	o3.add(Col.GREEN);
+    	o3.add(Col.BLUE);
+    	
+    	ths[3] = new Threshold(
+				new float[][] {
+						{0.934f, 0.87f},
+						{0f, 0f},
+						{0.80f, 0.2f}
+				},
+				new Vector[] {o1, o2, o3},
+				Col.GREEN
+    	);
+    	
+    	/*ths = new Threshold[4];
     	
     	// threshold for red color
     	ths[0] = new Threshold(new int[][] {
@@ -200,7 +398,7 @@ public class Main extends JFrame
     			{219, 166},
     			{232, 193},
     			{97, 56}
-    	}, Col.GREEN);
+    	}, Col.GREEN);*/
     	
     	activeThs = new boolean[4];
     }
@@ -393,21 +591,21 @@ public class Main extends JFrame
 				
 				// drawing borders
 				g2.setColor(absColor);
-				g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 0) + threshMarg), i, invScale(ths[j].getThresholdValue(abs, 0) + threshMarg));
-				g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 0) - threshMarg), i, invScale(ths[j].getThresholdValue(abs, 0) - threshMarg));
+				g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 0, 0)), i, invScale(ths[j].getThresholdValue(abs, 0, 0)));
+				g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 0, 1)), i, invScale(ths[j].getThresholdValue(abs, 0, 1)));
 				
-				g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 1) + threshMarg), i, invScale(ths[j].getThresholdValue(abs, 1) + threshMarg));
-				g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 1) - threshMarg), i, invScale(ths[j].getThresholdValue(abs, 1) - threshMarg));
+				g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 1, 0)), i, invScale(ths[j].getThresholdValue(abs, 1, 0)));
+				g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 1, 1)), i, invScale(ths[j].getThresholdValue(abs, 1, 1)));
 				
 				if (i % ths.length == j)
 				{
 					// drawing the first threshold
 					g2.setColor(rel1Color);
-					g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 0) + threshMarg), i, invScale(ths[j].getThresholdValue(abs, 0) - threshMarg));
+					g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 0, 0)), i, invScale(ths[j].getThresholdValue(abs, 0, 1)));
 					
 					// drawing the second threshold
 					g2.setColor(rel2Color);
-					g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 1) + threshMarg), i, invScale(ths[j].getThresholdValue(abs, 1) - threshMarg));
+					g2.drawLine(i, invScale(ths[j].getThresholdValue(abs, 1, 0)), i, invScale(ths[j].getThresholdValue(abs, 1, 1)));
 				}
 			}
 			
@@ -486,14 +684,14 @@ public class Main extends JFrame
     			int r = (data & 0x000000FF);*/
 				values[current] = data;
 				current = (current + 1) % WORLD_WIDTH;
-				System.out.println("R:"+r+" G:"+g+" B:"+b);
+				//System.out.println("R:"+r+" G:"+g+" B:"+b);
 			}
         	catch (IOException ioe)
         	{
         		System.out.println("IO Exception reading bytes:");
         	}
 	        repaint();
-	        sleep(100); // Wait before new update
+	        //sleep(0); // Wait before new update
         }
 	}
 	
