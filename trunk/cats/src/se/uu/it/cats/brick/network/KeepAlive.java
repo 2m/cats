@@ -5,8 +5,9 @@ import javax.bluetooth.RemoteDevice;
 import lejos.nxt.comm.BTConnection;
 
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.storage.StorageManager;
 
-public class KeepAlive extends ConnectionHandler
+public class KeepAlive extends LowLevelHandler
 {
 	private int counter;
 	
@@ -27,28 +28,33 @@ public class KeepAlive extends ConnectionHandler
 		
 		sw.reset();
 		while (isAlive())
-		{			
-			int b = read();
-			if (b >= 0)
+		{
+			byte[] bArr = new byte[255];
+			int received = read(bArr);
+			
+			if (received > 0)
+				StorageManager.getInstance().dataInput(bArr[0]);
+			
+			//Logger.println("Received bytes:"+received);
+			counter += received;
+			
+			if (sw.elapsed() > 3000)
 			{
-				counter++;
-				if (sw.elapsed() > 2000)
-				{
-					Logger.println("BW from "+getPeerName()+":"+(counter/((float)sw.elapsed()/1000)+"B/s"));
-					sw.reset();
-					counter = 0;
-				}
+				Logger.println("BW from "+getPeerName()+":"+(counter/((float)3)+"B/s"));
+				sw.reset();
+				counter = 0;
 			}
+			
 			try { Thread.sleep(100); } catch (Exception ex) {}
 		}
 		
 		ConnectionManager.getInstance().closeConnection(this);
 	}
 	
-	public void sendByte()
+	public void sendByte(byte b)
 	{
 		//Logger.println("S 66 to "+getPeerName());
-		write((byte)66);
+		write(new byte[] {b});
 		
 		if (flush() < 0)
 			ConnectionManager.getInstance().closeConnection(this);

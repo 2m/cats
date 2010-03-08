@@ -6,7 +6,7 @@ import javax.bluetooth.RemoteDevice;
 
 import se.uu.it.cats.brick.Logger;
 
-public class SendData extends ConnectionHandler
+public class SendData extends LowLevelHandler
 {
 	private static final int NUM_SENDS = 100;
 	private static int PACKET_LENGTH = 128;

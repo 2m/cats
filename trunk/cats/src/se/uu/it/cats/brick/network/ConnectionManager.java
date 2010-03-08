@@ -12,17 +12,12 @@ public class ConnectionManager
 	public static final RemoteDevice CAT2 = new RemoteDevice("cat2", "0016530E6938", new byte[] {0, 0, 8, 4});
 	public static final RemoteDevice CAT3 = new RemoteDevice("cat3", "00165302CDC3", new byte[] {0, 0, 8, 4});
 	
-	private static ConnectionManager _instanceHolder = null;
+	private static ConnectionManager _instanceHolder = new ConnectionManager();
 	private ConnectionHandler[] _outboundConnectionHolder = null;
 	private ConnectionHandler _inboundConnectionHolder = null;
 	
 	public static ConnectionManager getInstance()
 	{
-		if (_instanceHolder == null)
-		{
-			_instanceHolder = new ConnectionManager();
-		}
-		
 		return _instanceHolder;
 	}
 	
@@ -131,9 +126,18 @@ public class ConnectionManager
 		return isCreated(i) && getConnection(i).isAlive();
 	}
 	
-	public void sendByteTo(int i)
+	public void sendByteTo(int i, byte b)
 	{
-		getConnection(i).sendByte();
+		getConnection(i).sendByte(b);
+	}
+	
+	public void sendByteToAll(byte b)
+	{
+		for (int i = 1; i <= 4; i++)
+		{
+			if (isAlive(i))
+				sendByteTo(i, b);
+		}
 	}
 	
 	public RemoteDevice getDeviceByAddress(String address)
