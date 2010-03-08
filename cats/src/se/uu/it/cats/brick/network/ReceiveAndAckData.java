@@ -4,7 +4,7 @@ import se.uu.it.cats.brick.Logger;
 
 import lejos.nxt.comm.BTConnection;
 
-public class ReceiveAndAckData extends ConnectionHandler
+public class ReceiveAndAckData extends LowLevelHandler
 {
 	private static final int NUM_SENDS = 100;
 	private static int PACKET_LENGTH = 128;
