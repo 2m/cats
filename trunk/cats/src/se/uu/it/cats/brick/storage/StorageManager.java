@@ -13,9 +13,11 @@ public class StorageManager
 		return _instanceHolder;
 	}
 	
-	public void dataInput(byte b)
+	public void dataInput(byte b, String source)
 	{
 		sb.updateData(b);
+		
+		ConnectionManager.getInstance().sendByteToAllExcept(sb.getData(), source);
 	}
 	
 	public void informAboutUpdate(SharedByte sb)

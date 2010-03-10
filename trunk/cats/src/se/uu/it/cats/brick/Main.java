@@ -40,7 +40,7 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				if (ConnectionManager.getInstance().isAlive(1))
+				if (ConnectionManager.getInstance().isAlive(0))
 				{
 					/*Timer t = new Timer(50, new TimerListener() {
 						public void timedOut()
@@ -50,11 +50,11 @@ public class Main
 						}
 					});
 					t.start();*/
-					byte data = (byte)(StorageManager.getInstance().getData() + 1);					
+					byte data = (byte)(StorageManager.getInstance().getData() + 1);
 					StorageManager.getInstance().setData(data);
 				}
 				else
-					ConnectionManager.getInstance().openConnection(1);
+					ConnectionManager.getInstance().openConnection(0);
 			}
 		});
 		
@@ -63,7 +63,7 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				if (ConnectionManager.getInstance().isAlive(2))
+				if (ConnectionManager.getInstance().isAlive(1))
 				{
 					/*Timer t = new Timer(50, new TimerListener() {
 						public void timedOut()
@@ -77,7 +77,7 @@ public class Main
 					StorageManager.getInstance().setData(data);
 				}
 				else
-					ConnectionManager.getInstance().openConnection(2);
+					ConnectionManager.getInstance().openConnection(1);
 			}
 		});
 		
@@ -86,7 +86,7 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				if (ConnectionManager.getInstance().isAlive(3))
+				if (ConnectionManager.getInstance().isAlive(2))
 				{
 					/*Timer t = new Timer(100, new TimerListener() {
 						public void timedOut()
@@ -100,7 +100,7 @@ public class Main
 					StorageManager.getInstance().setData(data);
 				}
 				else
-					ConnectionManager.getInstance().openConnection(3);
+					ConnectionManager.getInstance().openConnection(2);
 			}
 		});
 		
@@ -109,8 +109,13 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				if (ConnectionManager.getInstance().isAlive(4))
-					ConnectionManager.getInstance().sendByteTo(4, (byte)0x66);
+				if (ConnectionManager.getInstance().isAlive(3))
+				{
+					//ConnectionManager.getInstance().sendByteTo(4, (byte)0x66);
+					byte data = (byte)(StorageManager.getInstance().getData() + 1);					
+					StorageManager.getInstance().setData(data);
+				}
+
 			}
 		});
 		

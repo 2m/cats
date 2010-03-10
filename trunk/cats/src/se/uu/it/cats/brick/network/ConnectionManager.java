@@ -12,6 +12,8 @@ public class ConnectionManager
 	public static final RemoteDevice CAT2 = new RemoteDevice("cat2", "0016530E6938", new byte[] {0, 0, 8, 4});
 	public static final RemoteDevice CAT3 = new RemoteDevice("cat3", "00165302CDC3", new byte[] {0, 0, 8, 4});
 	
+	public static final int MAX_OUTBOUND_CONN = 3;
+	
 	private static ConnectionManager _instanceHolder = new ConnectionManager();
 	private ConnectionHandler[] _outboundConnectionHolder = null;
 	private ConnectionHandler _inboundConnectionHolder = null;
@@ -23,7 +25,7 @@ public class ConnectionManager
 	
 	public ConnectionManager()
 	{
-		_outboundConnectionHolder = new ConnectionHandler[3];
+		_outboundConnectionHolder = new ConnectionHandler[MAX_OUTBOUND_CONN];
 	}
 	
 	public void openConnection(int i)
@@ -34,33 +36,30 @@ public class ConnectionManager
 			return;
 		}
 		
+		ConnectionHandler ch = null;
+		
 		switch (i)
 		{
+			case 0:
+			{
+				ch = new KeepAlive(CAT1);				
+				break;
+			}
 			case 1:
 			{
-				ConnectionHandler ch = new KeepAlive(CAT1);
-				_outboundConnectionHolder[0] = ch;
-				Thread initiatorThread = new Thread(ch);
-				initiatorThread.start();
+				ch = new KeepAlive(CAT2);
 				break;
 			}
 			case 2:
 			{
-				ConnectionHandler ch = new KeepAlive(CAT2);
-				_outboundConnectionHolder[1] = ch;
-				Thread initiatorThread = new Thread(ch);
-				initiatorThread.start();
-				break;
-			}
-			case 3:
-			{
-				ConnectionHandler ch = new KeepAlive(CAT3);
-				_outboundConnectionHolder[2] = ch;
-				Thread initiatorThread = new Thread(ch);
-				initiatorThread.start();
+				ch = new KeepAlive(CAT3);
 				break;
 			}
 		}
+		
+		_outboundConnectionHolder[i] = ch;
+		Thread initiatorThread = new Thread(ch);
+		initiatorThread.start();
 	}
 	
 	public void openConnection(BTConnection btc)
@@ -73,9 +72,9 @@ public class ConnectionManager
 	
 	public ConnectionHandler getConnection(int i)
 	{
-		if (i < 4)
+		if (i < MAX_OUTBOUND_CONN)
 		{
-			return _outboundConnectionHolder[i-1];
+			return _outboundConnectionHolder[i];
 		}
 		else
 		{
@@ -88,13 +87,14 @@ public class ConnectionManager
 		Logger.println("Closing connection to:"+getConnection(i).getPeerName());
 		getConnection(i).close();
 		
-		if (i < 4)
+		if (i < MAX_OUTBOUND_CONN)
 		{
-			_outboundConnectionHolder[i-1] = null;			
+			_outboundConnectionHolder[i] = null;			
 		}
 		else
 		{
 			_inboundConnectionHolder = null;
+			ConnectionListener.setListen(true);
 		}
 	}
 	
@@ -103,12 +103,12 @@ public class ConnectionManager
 		for (int i = 0; i < _outboundConnectionHolder.length; i++)
 			if (_outboundConnectionHolder[i] == conn)
 			{
-				closeConnection(i+1);
+				closeConnection(i);
 				return;
 			}
 		
 		if (_inboundConnectionHolder == conn)
-			closeConnection(4);
+			closeConnection(MAX_OUTBOUND_CONN);
 	}
 	
 	public boolean canListen()
@@ -133,9 +133,15 @@ public class ConnectionManager
 	
 	public void sendByteToAll(byte b)
 	{
-		for (int i = 1; i <= 4; i++)
+		sendByteToAllExcept(b, null);
+	}
+	
+	public void sendByteToAllExcept(byte b, String name)
+	{
+		Logger.println("Sending byte "+String.valueOf(b)+" to all exc "+name);
+		for (int i = 0; i < MAX_OUTBOUND_CONN + 1; i++)
 		{
-			if (isAlive(i))
+			if (isAlive(i) && !getConnection(i).getPeerName().equals(name))
 				sendByteTo(i, b);
 		}
 	}

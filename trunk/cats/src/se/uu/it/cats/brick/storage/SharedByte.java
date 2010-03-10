@@ -11,15 +11,22 @@ public class SharedByte
 	
 	public void setData(byte b)
 	{
+		setData(b, true);
+	}
+	
+	public void setData(byte b, boolean inform)
+	{
 		_data = b;
 		
-		// inform StorageManager about the update
-		StorageManager.getInstance().informAboutUpdate(this);
+		if (inform)
+			// inform StorageManager about the update
+			StorageManager.getInstance().informAboutUpdate(this);
 	}
 	
 	public void updateData(byte b)
 	{
 		// should be called by StorageManager
-		setData(b);
+		// new data from network, so do not need to inform anyone
+		setData(b, false);
 	}
 }
