@@ -19,7 +19,7 @@ public class KeepAlive extends LowLevelHandler
 	public KeepAlive(BTConnection btc)
 	{
 		super(btc);
-		ConnectionListener._canListen = false;
+		ConnectionListener.setListen(false);
 	}
 	
 	public void run()
@@ -33,7 +33,7 @@ public class KeepAlive extends LowLevelHandler
 			int received = read(bArr);
 			
 			if (received > 0)
-				StorageManager.getInstance().dataInput(bArr[0]);
+				StorageManager.getInstance().dataInput(bArr[0], getPeerName());
 			
 			//Logger.println("Received bytes:"+received);
 			counter += received;

@@ -6,13 +6,23 @@ import lejos.nxt.comm.Bluetooth;
 
 public class ConnectionListener implements Runnable
 {
-	public static volatile boolean _canListen = true;
+	private static volatile boolean _canListen = true;
+	
+	public static boolean canListen()
+	{
+		return _canListen;
+	}
+	
+	public static void setListen(boolean l)
+	{
+		_canListen = l;
+	}
 	
 	public void run()
 	{
 		while (true)
 		{
-			if (_canListen)
+			if (canListen())
 			{
 				BTConnection btc = Bluetooth.waitForConnection();
 			
