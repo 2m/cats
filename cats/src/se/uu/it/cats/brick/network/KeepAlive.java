@@ -33,6 +33,7 @@ public class KeepAlive extends LowLevelHandler
 			int received = read(bArr);
 			
 			if (received > 0)
+				//PacketManager.getInstance().addToBuffer(bArr, received);
 				StorageManager.getInstance().dataInput(bArr[0], getPeerName());
 			
 			//Logger.println("Received bytes:"+received);
