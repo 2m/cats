@@ -11,7 +11,7 @@ This is a description of the system we will use. The different components here s
 
   # Simulation and prototyping
     * ~~Particle filter (matlab)~~
-    * Non-linear Kalman filter (matlab)
+    * ~~Non-linear Kalman filter (matlab)~~
     * Prototype for colour positioning system
     * Linear Kalman for positioning colour system
     * ~~Basic networking (with benchmarks)~~
