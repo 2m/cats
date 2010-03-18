@@ -91,6 +91,11 @@ Some kind of data storage for feeding the filters data from other nodes, sharing
 
 We would like a clock with ms precision. Can be implemented by using the stoptimer(?) class in leJOS. A wrapper class around a stop watch can convert from local to share time with an offset variable. Syncing between nodes is done by the network component.
 
+http://en.wikipedia.org/wiki/Cristian%27s_algorithm
+
+http://en.wikipedia.org/wiki/Berkeley_Algorithm
+
+
 == Network ==
 *Owner: Martin*
 
