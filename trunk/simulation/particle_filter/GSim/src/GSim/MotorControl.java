@@ -1,3 +1,4 @@
+package GSim;
 public class MotorControl {
 	public double x;
 	public double y;

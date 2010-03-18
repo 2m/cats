@@ -1,3 +1,5 @@
+package GSim;
+
 public class Cat extends Actor {
 
 	public Cat() {
