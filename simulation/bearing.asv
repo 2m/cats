@@ -1,4 +1,0 @@
-function theta = bearing(catPos, mouse)
-    v = mouse - catPos;
-    v_pol = cart2pol(v(1), v(2));
-    theta = v_pol(1);
