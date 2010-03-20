@@ -11,13 +11,14 @@ This is a description of the system we will use. The different components here s
 
   # Simulation and prototyping
     * ~~Particle filter (matlab)~~
-    * ~~Non-linear Kalman filter (matlab)~~
-    * Prototype for colour positioning system
-    * Linear Kalman for positioning colour system
+    * ~~Non-linear Kalman filter for tracking (matlab)~~
+    * Non-linear Kalman filter for absolute positioning (matlab)
+    * ~~Prototype for colour positioning system~~ (suspended)
+    * ~~Linear Kalman for positioning colour system~~ (suspended)
     * ~~Basic networking (with benchmarks)~~
   # System implementation phase 1
     * Particle filter (java)
-    * Colour positioning system (java, no filter)
+    * ~~Colour positioning system (java, no filter)~~  (suspended)
     * Basic data synchronisation (positions)
     * Basic movement (just relative)
     * Basic visualisation (positions of cats)
@@ -25,7 +26,7 @@ This is a description of the system we will use. The different components here s
     * Sync data through network with 2 cats
   # System implementation phase 2
     * Filters implemented in Java
-    * Colour positioning system (with filter)
+    * ~~Colour positioning system (with filter)~~ (suspended)
     * Visualisation (positions of cats and mouse)
     * Basic camera (with correction for lens)
     * Sync data through network with 3 cats + PC
@@ -89,12 +90,9 @@ Some kind of data storage for feeding the filters data from other nodes, sharing
 
 *Estimated time: 1 week*
 
-We would like a clock with ms precision. Can be implemented by using the stoptimer(?) class in leJOS. A wrapper class around a stop watch can convert from local to share time with an offset variable. Syncing between nodes is done by the network component.
+We would like a clock with ms precision. Syncing between nodes is done by the network component.
 
-http://en.wikipedia.org/wiki/Cristian%27s_algorithm
-
-http://en.wikipedia.org/wiki/Berkeley_Algorithm
-
+More on ClockSync.
 
 == Network ==
 *Owner: Martin*
