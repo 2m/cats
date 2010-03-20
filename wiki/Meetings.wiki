@@ -11,7 +11,7 @@
 
 *2010-03-23 15:00 Design meeting in P1457*
 
-2010-03-18 10:00 Design meeting in P1457
+2010-03-18 10:00 Design meeting in P1457 ([http://code.google.com/p/cats/wiki/Meeting_20100318 Notes])
 
 2010-03-03 08:00 Design meeting in P1457
 
