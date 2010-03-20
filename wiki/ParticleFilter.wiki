@@ -5,43 +5,53 @@
   * Randomise hypotheses about the states in the tracked object, visualised as particles.
   * Value the particles from 0 to 1 according to how well they conform with evidence from the sensors. 
   * Let the good particle reproduce and remove the worst ones or re-sample all.
-  * The more descriptive states are probably x, y, x_v and y_v.
+  * The more descriptive states are probably x, y, dx/dt and dy/dt.
 
 = Getting it to work on 48MHz =
 
   * Make the penalty a function of cos
   * Linearised penalty function
-  * Use fixed point
+  * Use fixed point math (floats are emulated in firmware on the NXT)
   * Approximate FP sqrt (binary sqrt algorithm)
+  * Use survival of the fittest as an alternative to complete resampling
   * Use quicksort with some extra conditions from exit
   * Adaptive amount of particles?
+  * Gaussian approximations for distributed filter?
 
 = Distributed algorithm =
 
-Making particles for one filter live on many nodes. The heavy parts are the evaluation of particle weights, re-sampling, calculation of means, sorting (if needed) and integration.
+Making particles for one filter live on many nodes. The computationally heavy parts are the evaluation of particle weights, re-sampling, calculation of means, sorting (if needed) and integration.
 
 *Basic idea:*
 
   # Random generation and precalc
+    * Take knowledge of initial position in account? (not necessary)
   # Transmit sensor data
   # Integrate particles
+    * Poll from buffer or just use particle data
   # Receive sensor data
-  # Compare particles to sensor readings and generate weights (linear approximation)
+  # Compare particles to sensor readings and generate weights
+    * Linear approximation instead of exponential function-
   # Transmit sum of probability mass from weight generation
-  # Normalise (from local sum only)
-  # Calculate mean and std/var or similar
+  # Normalise
+    * from local sum only?
+  # Parametrise the distribution of particles
+    * Calculate mean and std/var or similar
   # Transmit probability distribution parameters
-  # Sort particle according to weights (modified quicksort)
+  # Sort particle according to weights
+    * modified quicksort?
   # Reset weights to 1/N
+    * All particles are now equally likely.
   # Receive probability distribution parameters
-  # Re-sample (all or perhaps just the worst 25%)
+  # Re-sample
+    * Do full resampling or perhaps just the worst 12.5%-25%
   # GOTO 2
 
 = Network =
 
-In a distributed algorithm it is not necessary to transmit all particle data. The particles of one node could for example be described by two parameters per dimension. This of course depends on how fast the parametrisation can be done.
+In a distributed algorithm it is not necessary to transmit all particle data. The particles of one node could for example be described by two parameters per dimension, if a Gaussian approximation is used.  Which type of parameters that are feasible of course depends on how fast the parametrisation can be done.
 
-How fast can the data be transferred?
+Data transfer rate could be a bottle neck, but that is probably not the case here.
 
 = Benchmarks =
 
