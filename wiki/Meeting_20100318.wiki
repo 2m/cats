@@ -1,0 +1,11 @@
+#summary Notes from the meeting on the 18:th of march
+
+
+= To do until next meeting =
+
+  * Fredrik
+    * Continue to implement particle filter in a simulated environment.
+  * Cheewin
+    * Research motor controls
+  * Christian
+    * Start implementing the GUI
