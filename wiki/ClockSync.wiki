@@ -2,12 +2,12 @@
 
 = Introduction =
 
-Add your content here.
+Can be implemented by using the stoptimer(?) class in leJOS. A wrapper class around a stop watch can convert from local to share time with an offset variable.
 
+= Christian's method =
 
-= Details =
+http://en.wikipedia.org/wiki/Cristian%27s_algorithm
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+= Berkeley Algorithm =
+
+http://en.wikipedia.org/wiki/Berkeley_Algorithm
