@@ -1,4 +1,4 @@
-#summary Information relating to the prorposed particle filter
+#summary Information relating to the particle filter
 
 = Basic idea =
 
