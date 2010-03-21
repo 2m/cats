@@ -17,4 +17,5 @@
   * Edward
     * Decide what needs to be sent over the network for the kalman filter.
   * Nils
+    *Kalman filter simulation for absolute cat positioning
   * Martin
