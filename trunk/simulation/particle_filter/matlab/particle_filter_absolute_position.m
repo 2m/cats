@@ -4,19 +4,20 @@ clear all
 
 %% Set basic options
 N = 40
-stddegrees = 3;
+stddegrees = 2;
 T = 0.5;
-landmarks = [0.05 + i * 0.05 1.95 + i * 0.05 0.05 + i * 1.95 1.95 + i * 1.95 ...
-0.05 + i 1.95 + i 1 + i * 1.95 1 + i * 0.05];
-cat = 1.6 + i * 1;
+landmarks = [0.05+i*0.05 2.95+i*0.05 0.05+i*2.95 2.95+i*2.95 ...
+		0.05+i*1.5 2.95+i*1.5 1.5+i*2.95 1.5+i*0.05];
 no_landmarks = 4;
 looking = i*1;
-vision = 120;	% Field of vision in degrees
+vision = 42;		% Field of vision in degrees
+time = -6:T:60;		% Time span of simulation
+cat_f = mouse_init(1.5, 1.5, pi/2, 1, max(time), T);
 
 %% Set settings for methods and plotting
-do_plotting = 1;		% Flag for doing continous plotting
+do_plotting = 0;		% Flag for doing continous plotting
 make_mov = 0;			% Record movie
-make_images = 0;		% Write plots to images
+make_images = 1;		% Write plots to images
 survival_of_fittest = 1;	% Resampling method (alt. complete resampling)
 
 % Init movie
@@ -26,80 +27,80 @@ end
 
 
 %% Init data
+[x, y, ang, dxy, dang, cat_f] = mouse_pos(time(1), cat_f);
+cat = x + i*y;
 % Init particles (x, y, angle, w, age)
-p = [ones(N, 1)*real(cat) + randn(N,1)*0.1 , ...
-	ones(N, 1)*imag(cat) + randn(N, 1)*0.1, ...
-	ones(N, 1)*angle(looking) + randn(N, 1)*3*(pi/180), ...
+p = [ones(N, 1)*x + randn(N,1)*0.2 , ...
+	ones(N, 1)*y + randn(N, 1)*0.2, ...
+	ones(N, 1)*ang + randn(N, 1)*5*(pi/180), ...
 	ones(N, 1)*(1/N), zeros(N, 1)];
 Nuc = floor(N*3/4);	% Set up cut-offs
 Nlc = floor(N*1/4);
+w = zeros(N, 1);	% Make room for weights
+
 % Init misc data
-%[X, Y] = meshgrid(0:.02:2, 0:.02:2);
 sensor_std = stddegrees*(pi/180);	% Standard deviation in radians
+init_particles = 1;
 frame = 1;
 lastcat = cat-i*0.1;
 lastlooking = looking;
-time = -6:T:60;	% Time span of simulation
 real_states = zeros(size(time, 2), 3);
 est_states = zeros(size(time, 2), 3);
-speed = [];
 
 if (do_plotting)
 	figure
 end
 tic
 for t = time
-	disp(['Frame: ', num2str(frame)]);
-
 	% Update cat position and angle
+	[x, y, ang, dxy, dang, cat_f] = mouse_pos(t, cat_f);
+	cat = x + i*y;
 	if (t>=0)
-		theta = t*(2*pi/max(time));
-		cat = 1 + 0.6*cos(theta) + i*(1 + 0.6*sin(theta));
-	else
-		cat = 1.6 + i*(1 + t*0.005);
-		theta = 0;
+		init_particles = 0;
 	end
 
 	% Update the direction the cat is facing
-	looking = cat - lastcat;
-	looking = looking/abs(looking);
+	looking = cos(ang) + i*sin(ang);
 
 	% Calc deltas
-	movement = abs(cat-lastcat);
-	rotation = angle(looking) - angle(lastlooking);
-	speed(end + 1) = movement/T;	% Save speed
+	movement = dxy;
+	rotation = dang;
 
 	% Move and rotate particles while adding some gaussian noise
-	p(:, 1) = p(:, 1) + (1 + randn(N, 1)*0.01)*movement.*cos(p(:, 3));
-	p(:, 2) = p(:, 2) + (1 + randn(N, 1)*0.01)*movement.*sin(p(:, 3));
-	p(:, 3) = p(:, 3) + (1 + randn(N, 1)*0.01)*rotation;
+	% Move
+	p(:, 1) = p(:, 1) + (0.98 + rand(N, 1)*0.04)*movement.*cos(p(:, 3));
+	p(:, 2) = p(:, 2) + (0.98 + rand(N, 1)*0.04)*movement.*sin(p(:, 3));
+	% Rotate
+	p(:, 3) = p(:, 3) + (0.98 + rand(N, 1)*0.04)*rotation;
 
 	% Compare particles to sensors inputs
 	landmark_seen = [];
 	mu = [];
 	re_sample = 0;
 	vision_angle = abs(angle((landmarks - cat)*looking'))*(180/pi);
-	mu = angle((landmarks - cat)*looking');	% Sensor readings
+	mu = angle((landmarks - cat)*looking') + randn(size(landmarks))*sensor_std;	% Sensor readings
 	% Input from sensor (angle in radians from forward direction)
 	% Go through landmarks
 	for g = 1:no_landmarks
 		% Check if landmark is seen
-		if (vision_angle(g) < (vision/2))
+		if (vision_angle(g) < (vision/2)) || (init_particles)
 			re_sample = 1;			% Flag re-sampling
 			landmark_seen(end + 1) = g;	% Add landmark to list
 			z = ones(N, 1)*(-1);		% Make room
 			% --- Filter implementation on robot ---
 
-			u = [cos(mu(g)); sin(mu(g))];	% Sensor vector
+			u = [cos(0); sin(0)];	% Sensor vector
 			for g1 = 1:N
-				rot_p = [cos(-p(g1, 3)) -sin(-p(g1, 3)); ...
-					sin(-p(g1, 3)) cos(-p(g1, 3))];
+				theta = -p(g1, 3) - mu(g);
+				rot_p = [cos(theta) -sin(theta); ...
+					sin(theta) cos(theta)];
 				% Vector towards landmark in ??
 				for g2 = 1:no_landmarks
 					v=rot_p*[real(landmarks(g))-p(g1,1) ;...
 						imag(landmarks(g)) - p(g1, 2)];
 					v = v./norm(v);
-					a = u'*v;
+					%a = u'*v;
+					a = v(1);	% Assumes u=[1; 0]
 					if (a>z(g1))
 						z(g1) = a;
 					end
@@ -107,24 +108,9 @@ for t = time
 			end
 
 			% Penalty function
-			% TODO: linearise this
-			%w = exp(-((z - mu(g)).^2)/(2*sensor_std^2));
-			%w = exp(-(acos(z).^2)/(2*sensor_std^2));
-			w = zeros(N, 1);		% Make room
 			for g1 = 1:N
-				if (0.97630>=z(g1)) && (z(g1)>0.97437)
-					w(g1) = z(g1)*5.9788e-05 + 6.1299e-05;
-				elseif (0.97732>=z(g1)) && (z(g1)>0.97630)
-					w(g1) = z(g1)*8.4904e-05 + 8.6965e-05;
-				elseif (0.97815>=z(g1)) && (z(g1)>0.97723)
-					w(g1) = z(g1)*1.1974e-04 + 1.2253e-04;
-				elseif (1>=z(g1)) && (z(g1)>0.97815)
-					w(g1) = z(g1)*4.3212e+01 - 4.2577e+01;
-				else
-					w(g1) = 0;
-				end
+				w(g1) = penalty(z(g1));
 			end
-			% Cutoffs: 1.00000, 0.97815, 0.97723, 0.97630, 0.97437
 
 			% --- end ---
 
@@ -190,7 +176,7 @@ for t = time
 	%% Plot playing field
 	if (do_plotting)
 	scatter(p(:,1), p(:,2), 'g.')
-	axis([0 2 0 2])
+	axis([0 3 0 3])
 	hold on
 	arrow(p, 0.1, 'g-', 1)
 	for g = 1:no_landmarks
@@ -240,10 +226,13 @@ end
 
 % Plot position
 figure
-plot(real_states(:, 1), real_states(:, 2), 'r+')
-axis([0 2 0 2])
+plot(real_states(:, 1), real_states(:, 2), 'r-')
+axis([0 3 0 3])
 hold on
-plot(est_states(:, 1), est_states(:, 2), 'bx')
+title('Real and estimated position')
+ylabel('Y [m]')
+xlabel('X [m]')
+plot(est_states(:, 1), est_states(:, 2), 'bd')
 for g = 1:no_landmarks
 	plot(real(landmarks(g)),imag(landmarks(g)),'ro','LineWidth', 2)
 end
@@ -252,14 +241,34 @@ if (make_images)
 	print('particle_filter_absolute_position_xy.png', '-dpng')
 end
 
-break
-
-% Plot angle
 figure
-plot(time(2:end), real_states(2:end, 3), 'r+')
+conv_gap = find(time==0);	% Gap for convergence (used in calculation of mean)
+% Remove first element for nicer plots
+est_error = real_states(2:end, :) - est_states(2:end, :);
+pos_error = abs(est_error(:, 1) + i*est_error(:, 2));
+pos_error_mean = mean(pos_error(conv_gap:end));
+angle_error = mod(abs(est_error(:, 3)*(180/pi)), 360);
+angle_error = abs((angle_error<=180).*angle_error+(angle_error>180).*(angle_error-360));
+angle_error_mean = mean(angle_error(conv_gap:end));
+
+subplot(2, 1, 1)
+plot(time(2:end), pos_error, 'b-')
 hold on
-plot(time(2:end), est_states(2:end, 3), 'bx')
+title(['Error in position estimation and average (mean=' num2str(pos_error_mean, '%1.3f') ')'])
+ylabel('Estimation error [m]')
+xlabel(['Time [s] (T=' num2str(T) ')'])
+plot(time(conv_gap:end), pos_error_mean*ones(size(time(conv_gap:end))), 'r--')
 hold off
+
+subplot(2, 1, 2)
+plot(time(2:end), angle_error, 'b-')
+hold on
+title(['Error in angle estimation and average (mean=' num2str(angle_error_mean, '%1.3f') ')'])
+ylabel('Estimation error [degrees]')
+xlabel(['Time [s] (T=' num2str(T) ')'])
+plot(time(conv_gap:end), angle_error_mean*ones(size(time(conv_gap:end))), 'r--')
+hold off
+
 if (make_images)
-	print('particle_filter_absolute_position_angle.png', '-dpng')
+	print('particle_filter_absolute_position_error.png', '-dpng')
 end
