@@ -50,6 +50,8 @@ Some problems that needs attention but are not a part of any specific component.
 
 Get the robot to decide where to move and possibly where to look.
 
+Move on MovementAI.
+
 == Eyes ==
 *Owner: NA*
 
