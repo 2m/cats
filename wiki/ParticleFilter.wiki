@@ -27,22 +27,27 @@ Making particles for one filter live on many nodes. The computationally heavy pa
   # Random generation and precalc
     * Take knowledge of initial position in account? (not necessary)
   # Transmit sensor data
+    * Time stamp, cat id, x and y coordinate, angle toward mouse needs to be transmitted
   # Integrate particles
     * Poll from buffer or just use particle data
   # Receive sensor data
+    * Timestamp, x and y coordinates, angle toward mouse needs to be transmitted
   # Compare particles to sensor readings and generate weights
-    * Linear approximation instead of exponential function-
+    * Linear approximation instead of exponential function
   # Transmit sum of probability mass from weight generation
+    * Cats id, time stamp and sun
   # Normalise
     * from local sum only?
   # Parametrise the distribution of particles
     * Calculate mean and std/var or similar
   # Transmit probability distribution parameters
+    * Time stamp, id and parameters (which depends on parameterisation method) needs to be transmitted
   # Sort particle according to weights
     * modified quicksort?
   # Reset weights to 1/N
     * All particles are now equally likely.
   # Receive probability distribution parameters
+    * Time stamp, id and parameters
   # Re-sample
     * Do full resampling or perhaps just the worst 12.5%-25%
   # GOTO 2
