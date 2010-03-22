@@ -22,7 +22,16 @@
 = Schedules =
 
 This is a link to the timeedit website with most of the courses we are taking.
-
-http://schema.angstrom.uu.se/4DACTION/WebShowSearch/2/1-0?wv_type=4&wv_ts=20100205T162941X2168&wv_search=digital+kommunikation&wv_startWeek=1005&wv_stopWeek=1015&wv_first=0&wv_addObj=&wv_delObj=&wv_obj1=2426000&wv_obj2=417000&wv_obj3=309000&wv_obj4=298000&wv_obj5=2380000&wv_obj6=2382000&wv_obj7=2381000&wv_obj8=418000&wv_graphic=Grafiskt+format
-
 Please change this link to include all courses project members are taking.
+
+http://schema.angstrom.uu.se/4DACTION/WebShowSearch/2/1-0?wv_type=4&wv_ts=20100322T114109X0-12&wv_search=1TT577&wv_startWeek=1012&wv_stopWeek=1025&wv_first=0&wv_addObj=&wv_delObj=&wv_obj1=418000&wv_obj2=309000&wv_obj3=2382000&wv_obj4=2381000&wv_obj5=487000&wv_graphic=Grafiskt+format
+
+Included courses are as of now:
+1TT852	   	Digital kommunikation II:Trådlösa system	   	
+1TT901	   	Inbyggda styrsystem	   	
+1DT026	   	Kryptologi	   	
+1DT022	   	Maskininlärning	   	
+1TT577	   	Projektkurs i adaptiv signalbehandling
+
+To edit use:
+http://schema.angstrom.uu.se/4DACTION/WebShowSearch/2/1-0?wv_type=4&wv_ts=20100322T114108X%3C%3C%3C%3C&wv_search=1TT577&wv_startWeek=1011&wv_stopWeek=1013&wv_first=0&wv_addObj=487000&wv_delObj=&wv_obj1=418000&wv_obj2=309000&wv_obj3=2382000&wv_obj4=2381000
