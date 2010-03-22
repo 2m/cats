@@ -28,7 +28,7 @@ http://schema.angstrom.uu.se/4DACTION/WebShowSearch/2/1-0?wv_type=4&wv_ts=201003
 
 Included courses are as of now:
 
-Inbyggda styrsystem (1TT901), Digital kommunikation II: Trådlösa system (1TT852), Kryptologi (1DT026), Maskininlärning (1DT022), Projektkurs i adaptiv signalbehandling (1TT577),
+Inbyggda styrsystem (1TT901), Digital kommunikation II: Trådlösa system (1TT852), Kryptologi (1DT026), Maskininlärning (1DT022), Projektkurs i adaptiv signalbehandling (1TT577)
 
 To edit use:
 http://schema.angstrom.uu.se/4DACTION/WebShowSearch/2/1-0?wv_type=4&wv_ts=20100322T114108X%3C%3C%3C%3C&wv_search=1TT577&wv_startWeek=1011&wv_stopWeek=1013&wv_first=0&wv_addObj=487000&wv_delObj=&wv_obj1=418000&wv_obj2=309000&wv_obj3=2382000&wv_obj4=2381000
