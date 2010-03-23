@@ -1,13 +1,21 @@
 #summary Notes from the meeting on 2010-03-23
 
-= Introduction =
+= Work in progress =
 
-Add your content here.
+  * Fredrik
+  * Cheewin
+  * Christian
+  * Edward
+  * Nils
+  * Martin
 
+= Issues =
 
-= Details =
+= To do until next meeting =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+  * Fredrik
+  * Cheewin
+  * Christian
+  * Edward
+  * Nils
+  * Martin
