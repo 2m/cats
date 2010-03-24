@@ -18,6 +18,10 @@ ParticleFilter
 
 Sensor_Alternatives
 
+= Report =
+
+ProjectReport
+
 = Misc =
 
 CodeStandard
