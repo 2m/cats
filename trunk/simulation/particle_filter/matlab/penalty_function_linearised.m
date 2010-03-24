@@ -31,6 +31,7 @@ ilen = iupper - ilower + 1;
 i = [0 0 0];
 e = 1e10;
 c = zeros(4, 2);
+c_save = zeros(4, 2);
 for i1 = 1:ilen-3
 	c(1, :) = polyfit(xs(1:i1),ys(1:i1), 1);
 	g(1:i1) = c(1, 1)*xs(1:i1) + c(1, 2);
@@ -46,13 +47,16 @@ for i1 = 1:ilen-3
 			if (t<e)
 				yc = g;
 				e = t;
+				c_save = c;
 				i = [i1 i2 i3];
 			end
 		end
 	end
 end
+c = c_save;
+
 toc
-cosine_cutoff = [x(ilower) xs(i1) xs(i2) xs(i3) x(iupper + 1)];
+cosine_cutoff = [x(ilower) xs(i(1)) xs(i(2)) xs(i(3)) x(iupper + 1)];
 cosine_cutoff_12_20 = int32(cosine_cutoff * 2^20)
 c_12_20 = int32(c * 2^20)
 
