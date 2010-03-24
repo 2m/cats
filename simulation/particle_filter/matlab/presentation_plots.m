@@ -27,7 +27,7 @@ figure
 plot(c1, yn)
 title('Gaussian pdf')
 ylabel('Probability')
-xlabel('Deviation (cos on angle)')
+xlabel('Deviation (cos of angle)')
 %print('fig2.png', '-dpng')
 
 figure
@@ -36,7 +36,7 @@ hold on
 plot(c2, w, 'r')
 title('Gaussian pdf (not normalised)')
 ylabel('Probability')
-xlabel('Deviation (cos on angle)')
+xlabel('Deviation (cos of angle)')
 legend('Exact function', 'Approximation', 'Location', 'NorthWest')
 hold off
 %print('fig3.png', '-dpng')
