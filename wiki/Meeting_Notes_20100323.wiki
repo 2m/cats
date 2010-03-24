@@ -3,19 +3,33 @@
 = Work in progress =
 
   * Fredrik
+    * Improve particle filter simulation
+    * Write filter code in Java
   * Cheewin
+    * Researching motor controls
   * Christian
+    * Researching GUI
   * Edward
+    * ??
   * Nils
+    * Simulation of absolute positioning with kalman filter
   * Martin
+    * ??
 
 = Issues =
 
 = To do until next meeting =
 
   * Fredrik
+    * Continue implementing particle filter in Java
+    * Look at threading in Java
   * Cheewin
+    * Start to implement motor controls
   * Christian
+    * ??
   * Edward
+    * ??
   * Nils
+    * Finish simulation of absolute positioning with kalman filter
   * Martin
+    * ??
