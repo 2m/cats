@@ -1,20 +1,27 @@
 function w = penalty(z)
 	% Penalty function
 	% Takes cosine of angle between lines
-	% Cutoffs: 1.00000, 0.97815, 0.97723, 0.97630, 0.97437
-	%w = exp(-(acos(z).^2)/(2*sensor_std^2));
-	if (z>=0.97437)
-		if (0.97732<z)
-			if (0.97815<z)
-				w = z*4.3212e+01 - 4.2577e+01;
+	c = [	292.8173 -291.8267
+		139.2145 -138.4522
+		42.0960  -41.7202
+		2.0903   -2.0474];
+	cut = [1.0000 0.9986 0.9962 0.9920 0.9744];
+	if (z>=cut(5))
+		if (cut(3)<z)
+			if (cut(2)<z)
+				% cut(1) - cut(2)
+				w = z*c(1, 1) + c(1, 2);
 			else
-				w = z*1.1974e-04 + 1.2253e-04;
+				% cut(2) - cut(3)
+				w = z*c(2, 1) + c(2, 2);
 			end
 		else
-			if (0.97630<z)
-				w = z*8.4904e-05 + 8.6965e-05;
+			if (cut(4)<z)
+				% cut(3) - cut(4)
+				w = z*c(3, 1) + c(3, 2);
 			else
-				w = z*5.9788e-05 + 6.1299e-05;
+				% cut(4) - cut(5)
+				w = z*c(4, 1) + c(4, 2);
 			end
 		end
 	else
