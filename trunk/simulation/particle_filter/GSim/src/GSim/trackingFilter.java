@@ -1,13 +1,15 @@
 package GSim;
 
 public class trackingFilter {
-	private sortedBuffer sensorData;
-	private sortedBuffer movementData;
+	private buffer sensorData;
+	private buffer movementData;
 	private int[] weights;
 	protected int N;
+	protected double T;
 	
-	public trackingFilter(int N, sortedBuffer sensorData, sortedBuffer movementData) {
+	public trackingFilter(int N, double T, buffer sensorData, buffer movementData) {
 		this.N = N;
+		this.T = T;
 		this.sensorData = sensorData;
 		this.movementData = movementData;
 	}

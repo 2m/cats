@@ -46,7 +46,7 @@ public class GSim extends JFrame implements MouseListener {
 		}
 		actors[4] = new Cat(0.1, 0.1, Math.PI/6);
 		actors[5] = new Cat(1.0, 1.0, 0);
-		// TODO: Create more actors
+		// TODO: Add a mouse
 	}
 
 	/**
@@ -121,10 +121,10 @@ public class GSim extends JFrame implements MouseListener {
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		saySomething("Mouse clicked", e);
+		//saySomething("Mouse clicked", e);
 		double x = Actor.g2eX(e.getX());
 		double y = Actor.g2eY(e.getY());
-		System.out.println(x +", "+ y);
+		//System.out.println(x +", "+ y);
 		if (marked){
 			for (int i = landmarkX.length; i < actors.length; i++){
 				if (actors[i].marked()) {

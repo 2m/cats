@@ -4,8 +4,8 @@ public class trackingParticleFilter extends trackingFilter {
 
 	private int particles[][];
 	
-	public trackingParticleFilter(int N, sensorStore sensorData, bufferFIFO movementData) {
-		super(N, sensorData, movementData);
+	public trackingParticleFilter(int N, double T, buffer sensorData, buffer movementData) {
+		super(N, T, sensorData, movementData);
 	}
 
 	public void initParticles() {
