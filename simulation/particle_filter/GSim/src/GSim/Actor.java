@@ -15,16 +15,13 @@ public class Actor {
 	private boolean marked = false;
 	private int type;
 	private buffer motorBuffer = new bufferFIFO();
-	private MotorControl motor;
+	private realTimeClock clock = new realTimeClock();
+	private sensorHandler sensor;
+	private motorControl motor;
 
-	public Actor() {
-		motor = new MotorControl(0.0, 0.0, 0.0, motorBuffer);
-		gotox = 0;
-		gotoy = 0;
-	}
-
-	public Actor(double tx, double ty, double tangle, int ttype) {
-		motor = new MotorControl(tx, ty, tangle, motorBuffer);
+	public Actor(Actor mouse, double tx, double ty, double tangle, int ttype) {
+		motor = new motorControl(tx, ty, tangle, motorBuffer, clock);
+		sensor = new sensorHandler(motor);
 		type = ttype;
 		gotox = tx;
 		gotoy = ty;
