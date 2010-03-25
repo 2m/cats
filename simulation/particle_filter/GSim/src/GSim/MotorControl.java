@@ -4,11 +4,10 @@ public class MotorControl {
 	public double x;
 	public double y;
 	public double angle;
-
+	public buffer updateBuffer;
 	public final double MAX_SPEED = 0.05;
 
-	// TODO: add buffer
-	// TODO: max speed and acc
+	// TODO: max acceleration of motor?
 
 	public MotorControl() {
 		this.x = 10;
@@ -16,10 +15,11 @@ public class MotorControl {
 		this.angle = 0;
 	}
 
-	public MotorControl(double x, double y, double angle) {
+	public MotorControl(double x, double y, double angle, buffer motorUpdate) {
 		this.x = x;
 		this.y = y;
 		this.angle = angle;
+		updateBuffer = motorUpdate;
 	}
 
 	public void drive(double distance) {
@@ -28,12 +28,12 @@ public class MotorControl {
 		}
 		setX(getX() + Math.cos(angle) * distance);
 		setY(getY() + Math.sin(angle) * distance);
-		// TODO: write distance to buffer
+		updateBuffer.push(new movementData(0, distance, 0.0));
 	}
 
 	public void turn(double turnangle) {
 		setAngle(getAngle() + turnangle);
-		// TODO: write angle to buffer
+		updateBuffer.push(new movementData(0, 0.0, turnangle));
 	}
 
 	public void setPos(double x, double y) {
@@ -66,8 +66,8 @@ public class MotorControl {
 				+ Math.pow(getY() - y, 2));
 		if (distance > 0) {
 			turnTo(x, y);
+			drive(distance);
 		}
-		drive(distance);
 	}
 
 	// Get/Set methods
