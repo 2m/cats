@@ -1,4 +1,5 @@
 package GSim;
+
 /*
  * GSim.java
  * Version 0.1
@@ -6,28 +7,50 @@ package GSim;
  */
 
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-
 /** Main class of simulation. Initialises graphics and objects then runs
  * a main loop.
  * @version 0.1
  * @author 	Fredrik Wahlberg
  */
-public class GSim extends JFrame {
-	public static final int WORLD_WIDTH = 400;
-	public static final int WORLD_HEIGHT = 400;
-	private Actor t;
+public class GSim extends JFrame implements MouseListener {
+	// Size of window
+	public static final int WINDOW_WIDTH = 400;
+	public static final int WINDOW_HEIGHT = 400;
+
+	// Size of arena
+	public static final double ARENA_WIDTH = 3;
+	public static final double ARENA_HEIGHT = 3;
+
+	// Array with all the actors
+	private Actor[] actors = new Actor[2 + 4];
+
+	private boolean marked = false;
+
+	// TODO: Real time clock for timestamps
+
+	// Positions of landmarks
+	public final double[] landmarkX = { 0.05, 0.05, 2.95, 2.95 };
+	public final double[] landmarkY = { 0.05, 2.95, 0.05, 2.95 };
 
 	public GSim() {
-		t = new Cat();
+		addMouseListener(this);
+		for (int i = 0; i < landmarkX.length; i++) {
+			actors[i] = new landMark(landmarkX[i], landmarkY[i]);
+		}
+		actors[4] = new Cat(0.1, 0.1, Math.PI/6);
+		actors[5] = new Cat(1.0, 1.0, 0);
 		// TODO: Create more actors
 	}
 
 	/**
-	 *  Open the graphics window and set up painting hooks.
+	 * Open the graphics window and set up painting hooks.
 	 */
 	private void openWindow() {
 		setContentPane(new JPanel() {
@@ -38,20 +61,22 @@ public class GSim extends JFrame {
 		});
 		setVisible(true);
 		setResizable(false);
-		setSize(WORLD_WIDTH + 10, WORLD_HEIGHT + 40);
+		setSize(WINDOW_WIDTH + 10, WINDOW_HEIGHT + 40);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	private void paintActors(Graphics g) {
-		// TODO: Add loop for actors.draw
-		t.draw(g);
+		for (int i = 0; i < actors.length; i++) {
+			actors[i].draw(g);
+		}
 	}
 
 	/**
-	 *  Pause the excution this many milliseconds
+	 * Pause the excution this many milliseconds
 	 * 
-	 * @param millis to pause as a long int
-	 * @return Result as boolean 
+	 * @param millis
+	 *            to pause as a long int
+	 * @return Result as boolean
 	 */
 	private boolean sleep(long millis) {
 		if (Thread.interrupted())
@@ -63,21 +88,80 @@ public class GSim extends JFrame {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Main loop
 	 */
 	public void run() {
-		openWindow();
-		while (true) {
-			// TODO: Call run() or similar in cat
-			repaint();
+		openWindow(); // Open window
+		while (true) { // Main loop
+			// Update all actors
+			for (int i = 0; i < actors.length; i++) {
+				actors[i].update();
+			}
+			repaint(); // Redraw all objects
 			sleep(100); // Wait before new update
 		}
 	}
 
+	public void mousePressed(MouseEvent e) {
+		// saySomething("Mouse pressed", e);
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// saySomething("Mouse released", e);
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// saySomething("Mouse entered", e);
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// saySomething("Mouse exited", e);
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		saySomething("Mouse clicked", e);
+		double x = Actor.g2eX(e.getX());
+		double y = Actor.g2eY(e.getY());
+		System.out.println(x +", "+ y);
+		if (marked){
+			for (int i = landmarkX.length; i < actors.length; i++){
+				if (actors[i].marked()) {
+					actors[i].goTo(x, y);
+					actors[i].unmark();					
+				}
+			}
+			marked = false;			
+		} else {
+			double dist, mindist = ARENA_WIDTH*ARENA_WIDTH + ARENA_HEIGHT*ARENA_HEIGHT;
+			int j = 0;
+			for (int i = landmarkX.length; i < actors.length; i++){
+				dist = Math.pow(actors[i].getX() - x, 2) + Math.pow(actors[i].getY() - y, 2);
+				if (dist<mindist)
+				{
+					mindist = dist;
+					j = i;
+				}
+			}
+			actors[j].mark();
+			marked = true;
+		}
+	}
+
+	public void saySomething(String eventDescription, MouseEvent e) {
+		System.out.println("Mouse event detected: " + e);
+	}
+
+	/**
+	 * Simple main Creates GSim object and runs the thread
+	 * 
+	 * @param arg
+	 *            input from command line
+	 */
 	public static void main(String[] arg) {
 		GSim sim = new GSim();
+		System.out.println("Simulation started");
 		sim.run();
 	}
 }
