@@ -58,7 +58,7 @@ public class bufferFIFO extends buffer {
 	public String toString() {
 		node ptr = first;
 		String ret = "{";
-		while (ptr!=null){
+		while (ptr != null) {
 			ret += " " + ptr.value;
 			ptr = ptr.next;
 		}

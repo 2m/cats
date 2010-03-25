@@ -9,11 +9,7 @@ package GSim;
 
 public class landMark extends Actor {
 
-	public landMark() {
-		super(30.0, 30.0, 0.0, LANDMARK);
-	}
-
-	public landMark(double x, double y) {
-		super(x, y, 0, LANDMARK);
+	public landMark(Actor mouse, double x, double y) {
+		super(mouse, x, y, 0.0, LANDMARK);
 	}
 }

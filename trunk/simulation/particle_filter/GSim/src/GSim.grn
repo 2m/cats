@@ -11,43 +11,36 @@
       <name="=GSim/src<GSim{Actor.java[Actor"/>
       <height="-1"/>
       <width="-1"/>
-      <x="10"/>
-      <y="253"/>
+      <x="376"/>
+      <y="216"/>
    </type>
    <type>
       <name="=GSim/src<GSim{Cat.java[Cat"/>
       <height="-1"/>
       <width="-1"/>
       <x="25"/>
-      <y="474"/>
+      <y="493"/>
    </type>
-   <relationship>
-      <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
-      <sourceType="=GSim/src<GSim{Cat.java[Cat"/>
-      <targetType="=GSim/src<GSim{Actor.java[Actor"/>
-      <bendpoints>
-      </bendpoints>
-   </relationship>
-   <relationship>
-      <class="edu.buffalo.cse.green.relationship.composition.CompositionPart"/>
-      <sourceType="=GSim/src<GSim{GSim.java[GSim"/>
-      <targetType="=GSim/src<GSim{Actor.java[Actor"/>
-      <bendpoints>
-      </bendpoints>
-   </relationship>
    <type>
       <name="=GSim/src<GSim{trackingParticleFilter.java[trackingParticleFilter"/>
       <height="-1"/>
       <width="-1"/>
-      <x="394"/>
-      <y="28"/>
+      <x="638"/>
+      <y="8"/>
    </type>
    <type>
       <name="=GSim/src<GSim{trackingFilter.java[trackingFilter"/>
       <height="-1"/>
       <width="-1"/>
-      <x="415"/>
-      <y="225"/>
+      <x="728"/>
+      <y="201"/>
+   </type>
+   <type>
+      <name="=GSim/src<GSim{sortedBuffer.java[sortedBuffer"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="757"/>
+      <y="398"/>
    </type>
    <relationship>
       <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
@@ -56,12 +49,19 @@
       <bendpoints>
       </bendpoints>
    </relationship>
-   <type>
-      <name="=GSim/src<GSim{sortedBuffer.java[sortedBuffer"/>
-      <height="-1"/>
-      <width="-1"/>
-      <x="421"/>
-      <y="386"/>
-   </type>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.association.AssociationPart"/>
+      <sourceType="=GSim/src<GSim{trackingFilter.java[trackingFilter"/>
+      <targetType="=GSim/src<GSim{sortedBuffer.java[sortedBuffer"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
+      <sourceType="=GSim/src<GSim{Cat.java[Cat"/>
+      <targetType="=GSim/src<GSim{Actor.java[Actor"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
 </uml>
 

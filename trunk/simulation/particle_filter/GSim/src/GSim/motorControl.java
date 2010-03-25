@@ -1,25 +1,28 @@
 package GSim;
 
-public class MotorControl {
+
+public class motorControl {
 	public double x;
 	public double y;
 	public double angle;
 	public buffer updateBuffer;
+	public realTimeClock clock;
 	public final double MAX_SPEED = 0.05;
 
 	// TODO: max acceleration of motor?
 
-	public MotorControl() {
+	public motorControl() {
 		this.x = 10;
 		this.y = 10;
 		this.angle = 0;
 	}
 
-	public MotorControl(double x, double y, double angle, buffer motorUpdate) {
+	public motorControl(double x, double y, double angle, buffer motorUpdate, realTimeClock clock) {
 		this.x = x;
 		this.y = y;
 		this.angle = angle;
 		updateBuffer = motorUpdate;
+		this.clock = clock;
 	}
 
 	public void drive(double distance) {
@@ -28,12 +31,12 @@ public class MotorControl {
 		}
 		setX(getX() + Math.cos(angle) * distance);
 		setY(getY() + Math.sin(angle) * distance);
-		updateBuffer.push(new movementData(0, distance, 0.0));
+		updateBuffer.push(new movementData(clock.getTime(), distance, 0.0));
 	}
 
 	public void turn(double turnangle) {
 		setAngle(getAngle() + turnangle);
-		updateBuffer.push(new movementData(0, 0.0, turnangle));
+		updateBuffer.push(new movementData(clock.getTime(), 0.0, turnangle));
 	}
 
 	public void setPos(double x, double y) {
