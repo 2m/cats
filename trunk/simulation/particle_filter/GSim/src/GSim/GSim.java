@@ -2,7 +2,7 @@ package GSim;
 
 /*
  * GSim.java
- * Version 0.1
+ * Version $Rev$
  * Date 2010-02-16
  */
 
@@ -29,11 +29,9 @@ public class GSim extends JFrame implements MouseListener {
 	public static final double ARENA_HEIGHT = 3;
 
 	// Array with all the actors
-	private Actor[] actors = new Actor[2 + 4];
-
+	private Actor[] actors = new Actor[2 + 1 + 4];
+	private sensorHandler sensors;
 	private boolean marked = false;
-
-	// TODO: Real time clock for timestamps
 
 	// Positions of landmarks
 	public final double[] landmarkX = { 0.05, 0.05, 2.95, 2.95 };
@@ -41,12 +39,13 @@ public class GSim extends JFrame implements MouseListener {
 
 	public GSim() {
 		addMouseListener(this);
+		//sensors = new sensorHandler(actors);
 		for (int i = 0; i < landmarkX.length; i++) {
 			actors[i] = new landMark(null, landmarkX[i], landmarkY[i]);
 		}
-		actors[4] = new Cat(null, 0.1, 0.1, Math.PI/6);
-		actors[5] = new Cat(null, 1.0, 1.0, 0);
-		// TODO: Add a mouse
+		actors[4] = new Mouse(null, 1.5, 1.5, 0.0);
+		actors[5] = new Cat(sensors, 0.1, 0.1, Math.PI/6);
+		actors[6] = new Cat(sensors, 1.0, 1.0, 0);
 	}
 
 	/**
@@ -121,7 +120,6 @@ public class GSim extends JFrame implements MouseListener {
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		//saySomething("Mouse clicked", e);
 		double x = Actor.g2eX(e.getX());
 		double y = Actor.g2eY(e.getY());
 		//System.out.println(x +", "+ y);
@@ -149,10 +147,6 @@ public class GSim extends JFrame implements MouseListener {
 		}
 	}
 
-	public void saySomething(String eventDescription, MouseEvent e) {
-		System.out.println("Mouse event detected: " + e);
-	}
-
 	/**
 	 * Simple main Creates GSim object and runs the thread
 	 * 
@@ -160,8 +154,9 @@ public class GSim extends JFrame implements MouseListener {
 	 *            input from command line
 	 */
 	public static void main(String[] arg) {
-		GSim sim = new GSim();
+		/*GSim sim = new GSim();
 		System.out.println("Simulation started");
-		sim.run();
+		sim.run();*/
+		System.out.println(Fixed.toString(Fixed.floatToFixed((float)2.8)));
 	}
 }

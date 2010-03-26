@@ -4,12 +4,14 @@ package GSim;
  * This is a class for a landmark
  * 
  * @author Fredrik Wahlberg
- * @version 0.1
+ * @version $Rev$
  */
 
 public class landMark extends Actor {
 
-	public landMark(Actor mouse, double x, double y) {
-		super(mouse, x, y, 0.0, LANDMARK);
+	public landMark(sensorHandler sensors, double x, double y) {
+		super(sensors, x, y, 0.0, LANDMARK);
 	}
+
+
 }
