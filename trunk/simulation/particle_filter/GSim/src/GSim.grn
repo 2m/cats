@@ -11,37 +11,37 @@
       <name="=GSim/src<GSim{Actor.java[Actor"/>
       <height="-1"/>
       <width="-1"/>
-      <x="376"/>
-      <y="216"/>
+      <x="8"/>
+      <y="416"/>
    </type>
    <type>
       <name="=GSim/src<GSim{Cat.java[Cat"/>
       <height="-1"/>
       <width="-1"/>
-      <x="25"/>
-      <y="493"/>
+      <x="469"/>
+      <y="578"/>
    </type>
    <type>
       <name="=GSim/src<GSim{trackingParticleFilter.java[trackingParticleFilter"/>
       <height="-1"/>
       <width="-1"/>
-      <x="638"/>
+      <x="438"/>
       <y="8"/>
    </type>
    <type>
       <name="=GSim/src<GSim{trackingFilter.java[trackingFilter"/>
       <height="-1"/>
       <width="-1"/>
-      <x="728"/>
-      <y="201"/>
+      <x="425"/>
+      <y="197"/>
    </type>
-   <type>
-      <name="=GSim/src<GSim{sortedBuffer.java[sortedBuffer"/>
-      <height="-1"/>
-      <width="-1"/>
-      <x="757"/>
-      <y="398"/>
-   </type>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
+      <sourceType="=GSim/src<GSim{Cat.java[Cat"/>
+      <targetType="=GSim/src<GSim{Actor.java[Actor"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
    <relationship>
       <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
       <sourceType="=GSim/src<GSim{trackingParticleFilter.java[trackingParticleFilter"/>
@@ -49,16 +49,16 @@
       <bendpoints>
       </bendpoints>
    </relationship>
-   <relationship>
-      <class="edu.buffalo.cse.green.relationship.association.AssociationPart"/>
-      <sourceType="=GSim/src<GSim{trackingFilter.java[trackingFilter"/>
-      <targetType="=GSim/src<GSim{sortedBuffer.java[sortedBuffer"/>
-      <bendpoints>
-      </bendpoints>
-   </relationship>
+   <type>
+      <name="=GSim/src<GSim{landMark.java[landMark"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="492"/>
+      <y="443"/>
+   </type>
    <relationship>
       <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
-      <sourceType="=GSim/src<GSim{Cat.java[Cat"/>
+      <sourceType="=GSim/src<GSim{landMark.java[landMark"/>
       <targetType="=GSim/src<GSim{Actor.java[Actor"/>
       <bendpoints>
       </bendpoints>
