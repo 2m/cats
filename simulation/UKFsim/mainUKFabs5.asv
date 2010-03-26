@@ -1,0 +1,180 @@
+clc
+clear
+close all
+global landm;
+global actLandm;
+global R;
+global Rfull;
+global xV;
+global zV;
+global n;
+global nz;
+global nx;
+global dt;
+global R;
+global r;
+global ra;
+global landmFull;
+global vc;
+global k;
+global N;
+
+stream = RandStream.create('mt19937ar','seed',1643);
+%s=RandStream('mt19937ar'); %
+RandStream.setDefaultStream(stream);
+
+%%
+bound=[0 2 0 2];
+landmFull=[.1,0.1 ;
+          0.1,1.9 ;...
+          1.9,0.1 ;...
+          1.9,1.9 ];
+landm=landmFull;
+n=size(landm,1);
+nz=n+3;
+nx=6;
+stddegrees = 1;
+fov=43*pi/180;
+lambda = [stddegrees*(pi/180),.5e-2,.5e-2,0,0] ;	% Standard deviation in radians
+N=500;                           %Number of time steps
+dt=.1;
+sc=[.15;.5];
+vc=initvel;
+
+q=.005;    %std of expected process noise
+%qa=0.02;    %std of actual process noise
+r=lambda;    %std of expected measurement noise
+ra=lambda;       %std of actual measurement noise
+k1=dt;          %how much the noise in the wheel tachometers is amplified
+k2=dt;     %how much the noise in the camera motor tachometers is amplified
+Q=q^2*[ dt^4/4  0       dt^3/2  0       0    0;...   % covariance of process
+        0       dt^4/4  0       dt^3/2  0    0;...
+        dt^3/2  0       dt^2    0       0    0;...
+        0       dt^3/2  0       dt^2    0    0;...
+        0       0       0       0       k1   0;...
+        0       0       0       0       0    k2];     
+R = r(1)^2*eye(nz);            % covariance of measurement
+for i=1:nz-n
+    R(n+i,n+i) = r(i+1)^2;
+end
+Rfull=R;
+f = @update;                                % nonlinear state equations
+h = @measure2WspeedMeasurements;            % measurement equation
+P = 1e-3*eye(nx);                           % initial state covraiance
+s = [sc; vc(:,1);...
+    atan2(vc(2,1),vc(1,1)); pi/4];          % true initial state
+initpos=ls_est2(h(s)+ mNoise);             % initial position with noise
+
+x = [initpos; 0; 0; pi; pi];                     % estimated initial state
+x=initboundcorr(x,bound);
+
+%%
+%Allocate memory
+xV = zeros(nx,N);         %estmate
+sV = zeros(nx,N);         %actual states
+zV = zeros(nz,N);
+raysX=cell(n,N);
+raysY=cell(n,N);
+faraway=10;
+posErrNorm=zeros(N,1);
+velErrNorm=zeros(N,1);
+%xstatic=zeros(2,N);
+
+actLandm=[];
+per=N/7;
+large=1e9;
+arrowl=0.17;
+
+%%
+for k=1:N
+    camA=camAng(k,5);
+    cats=[sc; vc(:,k);atan2(vc(2,k),vc(1,k));camA];    %linear movement
+    posErrNorm(k)=norm(s(1:2)-x(1:2));
+    velErrNorm(k)=norm(s(3:4)-x(3:4)*dt);
+    sc=sc+vc(:,k);
+    xV(:,k) = x;                       % store state estimate
+    z=h(s) + mNoise;                   % measurements
+    fovCheck;
+
+    
+    z=noCheat(z);
+    sV(:,k)= s;                          % save actual state
+    zV(1:nz,k) = z;                      % save measurment
+    [x, P] = ukf(f,x,P,h,z,Q,R);
+    x=outOfBoundsCorr(x,bound);
+    s = cats; %+ qa*randn(nx,1);            % update process
+    
+    %%Least squares estimates, for comparison
+    %xstatic(:,k)=ls_est(z);
+    %xstatic(1,1:k),xstatic(2,1:k),'g.',...
+    
+    %real time plotting
+    for j=actLandm
+        raysX{j,k}(1,:)=[x(1), cos(z(j,1))+x(1) - faraway*cos(z(j,1))];
+        raysY{j,k}(1,:)=[x(2), sin(z(j,1))+x(2) - faraway*sin(z(j,1))];
+    end
+    
+    dirx=[xV(1,k), xV(1,k)+arrowl*cos(xV(5,k))];
+    diry=[xV(2,k), xV(2,k)+arrowl*sin(xV(5,k))];
+    fov1x=[xV(1,k), xV(1,k)-arrowl*cos(xV(6,k)+fov/2)];
+    fov2x=[xV(1,k), xV(1,k)-arrowl*cos(xV(6,k)-fov/2)];
+    fov1y=[xV(2,k), xV(2,k)-arrowl*sin(xV(6,k)+fov/2)];
+    fov2y=[xV(2,k), xV(2,k)-arrowl*sin(xV(6,k)-fov/2)];
+    
+    plot(xV(1,1:k),xV(2,1:k),'b',...
+        dirx,diry,'g',...   %direction arrow base
+        fov1x,fov1y,'m',...
+        fov2x,fov2y,'m',...
+        xV(1,k),xV(2,k),'b.',...
+        sV(1,1:k),sV(2,1:k),'r',...
+        sV(1,k),sV(2,k),'r.',...
+        landm(:,1),landm(:,2),'*k');
+    hold on
+    for j=actLandm
+        plot([raysX{j,k}],[raysY{j,k}],'k');
+    end
+    axis(bound)
+    hold off
+    pause(.02)
+end
+
+%%
+% %Movie recording
+%mov = avifile('circular_movementUKF7.avi');
+%frame = 1;
+%fig=figure;
+% tic
+%   for k=1:N
+% %     plot([sV(1,k-1) sV(1,k)],[sV(2,k-1) sV(2,k)],'r',...
+% %         [xV(1,k-1) xV(1,k)],[xV(2,k-1) xV(2,k)],'b',landm(:,1),landm(:,2),'*k');
+%     %hold on
+%     plot(sV(1,1:k),sV(2,1:k),'r',...
+%         xV(1,1:k),xV(2,1:k),'b',...
+%         landm(:,1),landm(:,2),'*k',...
+%         [raysX{1,k}],[raysY{1,k}],'y',...
+%         [raysX{2,k}],[raysY{2,k}],'m',...
+%         [raysX{3,k}],[raysY{3,k}],'c');
+%         axis(bound)
+%     
+%     pause(.001)
+% %     frame = frame + 1
+% %     f2 = getframe(fig);
+% %     mov = addframe(mov, f2);
+%   end
+
+%Plot error norms
+    figure
+    subplot(2,1,1)
+    plot(1:N,posErrNorm(1:N))
+    title('Position error');
+    ylabel('Position error norm');
+    xlabel('Time [samples]');
+    subplot(2,1,2)
+    plot(1:N,velErrNorm(1:N))
+    title('Velocity error');
+    ylabel('Velocity error norm');
+    xlabel('Time [samples]');
+% toc
+% fprintf('seconds/frame %i\n', toc/frame);
+% mov = close(mov);
+
