@@ -7,7 +7,7 @@ public class motorControl {
 	public double angle;
 	public buffer updateBuffer;
 	public realTimeClock clock;
-	public final double MAX_SPEED = 0.05;
+	public final double MAX_SPEED = 0.01;
 
 	// TODO: max acceleration of motor?
 
@@ -31,15 +31,17 @@ public class motorControl {
 		}
 		setX(getX() + Math.cos(angle) * distance);
 		setY(getY() + Math.sin(angle) * distance);
+		// TODO: Add noise
 		updateBuffer.push(new movementData(clock.getTime(), distance, 0.0));
 	}
 
 	public void turn(double turnangle) {
 		setAngle(getAngle() + turnangle);
+		// TODO: Add noise
 		updateBuffer.push(new movementData(clock.getTime(), 0.0, turnangle));
 	}
 
-	public void setPos(double x, double y) {
+	private void setPos(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -79,7 +81,7 @@ public class motorControl {
 		return x;
 	}
 
-	public void setX(double x) {
+	private void setX(double x) {
 		this.x = x;
 	}
 
@@ -87,7 +89,7 @@ public class motorControl {
 		return y;
 	}
 
-	public void setY(double y) {
+	private void setY(double y) {
 		this.y = y;
 	}
 
@@ -95,7 +97,7 @@ public class motorControl {
 		return angle;
 	}
 
-	public void setAngle(double angle) {
+	private void setAngle(double angle) {
 		this.angle = angle;
 	}
 }

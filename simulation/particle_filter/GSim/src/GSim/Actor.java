@@ -5,6 +5,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+/**
+ * Base class for all actors on the arena (cats, mice and landmarks)
+ * 
+ * @author Fredrik Wahlberg
+ * @version $Rev$
+ * 
+ */
 public class Actor {
 	public static final int CAT = 1;
 	public static final int MOUSE = 2;
@@ -16,15 +23,16 @@ public class Actor {
 	private int type;
 	private buffer motorBuffer = new bufferFIFO();
 	private realTimeClock clock = new realTimeClock();
-	private sensorHandler sensor;
-	private motorControl motor;
+	private sensorHandler sensors = null;
+	private motorControl motor = null;
 
-	public Actor(Actor mouse, double tx, double ty, double tangle, int ttype) {
+	public Actor(sensorHandler sensors, double tx, double ty, double tangle,
+			int ttype) {
 		motor = new motorControl(tx, ty, tangle, motorBuffer, clock);
-		sensor = new sensorHandler(motor);
 		type = ttype;
 		gotox = tx;
 		gotoy = ty;
+		this.sensors = sensors;
 	}
 
 	public double getX() {
@@ -45,6 +53,7 @@ public class Actor {
 	 */
 	public void update() {
 		motor.goTo(gotox, gotoy);
+		// sensors.update();
 	}
 
 	/**
@@ -69,6 +78,18 @@ public class Actor {
 	 */
 	public boolean marked() {
 		return marked;
+	}
+
+	public boolean isMouse() {
+		return type == MOUSE;
+	}
+
+	public boolean isCat() {
+		return type == CAT;
+	}
+
+	public boolean isLandmark() {
+		return type == LANDMARK;
 	}
 
 	public static double g2eX(int x) {
@@ -105,16 +126,17 @@ public class Actor {
 
 		// Rotate and translate the actor
 		g2.rotate(iangle, ix, iy);
-		if (type == CAT) {
-			if (marked) {
-				g2.setColor(Color.green);
-			} else {
+
+		if (marked) {
+			g2.setColor(Color.green);
+		} else {
+			if (type == CAT) {
 				g2.setColor(Color.red);
+			} else if (type == MOUSE) {
+				g2.setColor(Color.blue);
+			} else if (type == LANDMARK) {
+				g2.setColor(Color.gray);
 			}
-		} else if (type == MOUSE) {
-			g2.setColor(Color.blue);
-		} else if (type == LANDMARK) {
-			g2.setColor(Color.gray);
 		}
 
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
