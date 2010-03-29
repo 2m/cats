@@ -1,21 +1,21 @@
-Notes from the meeting on 2010-03-29
+#summary Notes from the meeting on 2010-03-29
 
 =Work in progress=
 
-Fredrik
-Cheewin
-Christian
-Edward
-Nils
-Martin
+  * Fredrik
+  * Cheewin
+  * Christian
+  * Edward
+  * Nils
+  * Martin
 
 =Issues=
 
 =To do until next meeting=
 
-Fredrik
-Cheewin
-Christian
-Edward
-Nils
-Martin
+  * Fredrik
+  * Cheewin
+  * Christian
+  * Edward
+  * Nils
+  * Martin
