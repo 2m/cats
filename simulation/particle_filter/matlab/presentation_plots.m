@@ -40,3 +40,15 @@ xlabel('Deviation (cos of angle)')
 legend('Exact function', 'Approximation', 'Location', 'NorthWest')
 hold off
 %print('fig3.png', '-dpng')
+
+figure
+plot(d1, y, 'b-')
+hold on
+plot(d2, w, 'r-')
+plot(-d2, w, 'r-')
+title('Gaussian pdf (not normalised)')
+ylabel('Probability')
+xlabel('Deviation [degrees]')
+legend('Exact function', 'Approximation', 'Location', 'NorthWest')
+hold off
+%print('fig4.png', '-dpng')
