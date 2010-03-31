@@ -24,6 +24,9 @@ function w = penalty(z)
 				w = z*c(4, 1) + c(4, 2);
 			end
 		end
+		if (w<0)
+			w = 0;
+		end
 	else
 		w = 0;
 	end
