@@ -40,6 +40,7 @@ Some problems that needs attention but are not a part of any specific component.
   * Figure out priorities and execution times.
   * Design structure of classes and interfaces between them.
   * Testing of both individual components and the whole system.
+  * Avoid collisions between robots
 
 = System components =
 
