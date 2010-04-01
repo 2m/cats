@@ -24,12 +24,14 @@ This is a description of the system we will use. The different components here s
     * Basic visualisation (positions of cats)
     * Basic camera (no correction for lens, track ball)
     * Sync data through network with 2 cats
+    * Integration and testing of completed Java code
   # System implementation phase 2
     * Filters implemented in Java
     * ~~Colour positioning system (with filter)~~ (suspended)
     * Visualisation (positions of cats and mouse)
     * Basic camera (with correction for lens)
     * Sync data through network with 3 cats + PC
+    * Integration and testing of completed Java code
   # System implementation phase 3
     * Visualisation (uncertainties and commands to cats)
 
