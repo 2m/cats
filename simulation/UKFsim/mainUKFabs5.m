@@ -19,7 +19,7 @@ global vc;
 global k;
 global N;
 
-stream = RandStream.create('mt19937ar','seed',1643);
+stream = RandStream.create('mt19937ar','seed',643);
 %s=RandStream('mt19937ar'); %
 RandStream.setDefaultStream(stream);
 
@@ -37,7 +37,7 @@ stddegrees = 1;
 fov=43*pi/180;
 lambda = [stddegrees*(pi/180),.5e-2,.5e-2,0,0] ;	% Standard deviation in radians
 N=500;                           %Number of time steps
-dt=.1;
+dt=1;
 sc=[.15;.5];
 vc=initvel;
 
@@ -100,7 +100,7 @@ for k=1:N
     sV(:,k)= s;                          % save actual state
     zV(1:nz,k) = z;                      % save measurment
     [x, P] = ukf(f,x,P,h,z,Q,R);
-    x=outOfBoundsCorr(x,bound);
+    x=outOfBoundsCorr(x,xV,bound);
     s = cats; %+ qa*randn(nx,1);            % update process
     
     %%Least squares estimates, for comparison
@@ -109,16 +109,16 @@ for k=1:N
     
     %real time plotting
     for j=actLandm
-        raysX{j,k}(1,:)=[x(1), cos(z(j,1))+x(1) - faraway*cos(z(j,1))];
-        raysY{j,k}(1,:)=[x(2), sin(z(j,1))+x(2) - faraway*sin(z(j,1))];
+        raysX{j,k}(1,:)=[x(1), cos(z(j,1))+x(1) + faraway*cos(z(j,1))];
+        raysY{j,k}(1,:)=[x(2), sin(z(j,1))+x(2) + faraway*sin(z(j,1))];
     end
     
     dirx=[xV(1,k), xV(1,k)+arrowl*cos(xV(5,k))];
     diry=[xV(2,k), xV(2,k)+arrowl*sin(xV(5,k))];
-    fov1x=[xV(1,k), xV(1,k)-arrowl*cos(xV(6,k)+fov/2)];
-    fov2x=[xV(1,k), xV(1,k)-arrowl*cos(xV(6,k)-fov/2)];
-    fov1y=[xV(2,k), xV(2,k)-arrowl*sin(xV(6,k)+fov/2)];
-    fov2y=[xV(2,k), xV(2,k)-arrowl*sin(xV(6,k)-fov/2)];
+    fov1x=[xV(1,k), xV(1,k)+arrowl*cos(xV(6,k)+fov/2)];
+    fov2x=[xV(1,k), xV(1,k)+arrowl*cos(xV(6,k)-fov/2)];
+    fov1y=[xV(2,k), xV(2,k)+arrowl*sin(xV(6,k)+fov/2)];
+    fov2y=[xV(2,k), xV(2,k)+arrowl*sin(xV(6,k)-fov/2)];
     
     plot(xV(1,1:k),xV(2,1:k),'b',...
         dirx,diry,'g',...   %direction arrow base

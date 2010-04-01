@@ -31,7 +31,7 @@ catPosNoise = 1e-20;%std of the noise of the cat positions
                    %Cats (3 of them) were located in the corners of the
                    %arena
 N=450;                           %Number of time steps
-dt=0.1;
+dt=1;
 sm=[.2;.5];
 vm=zeros(2,N);
 turnInd = [90,120,230,320,370,N];
@@ -54,7 +54,7 @@ vm(2,turnInd(4)+turnWait:turnInd(5))=speed;
 
 vm(:,turnInd(5)+turnWait:turnInd(6))=-speed;
 
-q=.005;    %std of expected process noise
+q=.0005;    %std of expected process noise
 %qa=0.02;    %std of actual process noise
 r=lambda;%7*(.3*catPosNoise+lambda);    %std of expected measurement noise
 ra=lambda;       %std of actual measurement noise
