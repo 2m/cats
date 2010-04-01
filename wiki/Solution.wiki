@@ -12,7 +12,8 @@ This is a description of the system we will use. The different components here s
   # Simulation and prototyping
     * ~~Particle filter (matlab)~~
     * ~~Non-linear Kalman filter for tracking (matlab)~~
-    * Non-linear Kalman filter for absolute positioning (matlab)
+    * ~~Non-linear Kalman filter for absolute positioning (matlab)~~
+    * Simulation of both absolute positioning and tracking (matlab)
     * ~~Prototype for colour positioning system~~ (suspended)
     * ~~Linear Kalman for positioning colour system~~ (suspended)
     * ~~Basic networking (with benchmarks)~~
