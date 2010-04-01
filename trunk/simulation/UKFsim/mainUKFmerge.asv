@@ -41,7 +41,7 @@ landm=[  .1,.1 ;
             1.9,0.1 ;...
             1.9,1.9 ];
 n=size(landm,1);
-sc=[.15 .15;...
+sc=[.15 1.8;...
     .2  1.6]; %[0.15; 0.2];
 nm=size(sc,2); %number of cats
 nz=n+3;
@@ -49,7 +49,7 @@ nx=6;
 nxm=4;
 fov=43*pi/180;
 stddegrees = 1;
-lambda = [stddegrees*(pi/180),1e-2,1e-2,1e-6,1e-6];%[stddegrees*(pi/180),.5e-2,.5e-2,0,0] ;	% Standard deviation in radians
+lambda = [stddegrees*(pi/180),6e-3,6e-3,1e-6,1e-6];%[stddegrees*(pi/180),.5e-2,.5e-2,0,0] ;	% Standard deviation in radians
 N=500;                           %Number of time steps
 dt=1;
 sm=[.2; .5];
@@ -154,10 +154,11 @@ for k=1:N
     end
     mouse=[sm; vm(:,k)];                 %linear movement
     
-    %     posErrNorm(k)=norm(s(1:2)-x(1:2));
-    %     velErrNorm(k)=norm(s(3:4)-x(3:4)*dt);
-    %     posErrNormm(k)=norm(s2(1:2)-xm(1:2));
-    %     velErrNormm(k)=norm(s2(3:4)-xm(3:4)*dt);
+%     posErrNorm(k)=norm(s(1:2,:)-x(1:2,:));
+%     velErrNorm(k)=norm(s(3:4,:)-x(3:4,:)*dt);
+    posErrNormm(k)=norm(s2(1:2)-xm(1:2));
+    velErrNormm(k)=norm(s2(3:4)-xm(3:4)*dt);
+    
     for i=1:nm
         sc(:,i)=sc(:,i)+vc{1,i}(:,k);
     end
@@ -193,7 +194,7 @@ for k=1:N
     %Camera control
     inactCats=1:nm; %all by default
     inactCats(actCats)=[]; %remove active cats
-    maxCamAngSpeed=0.05;
+    maxCamAngSpeed=0.1;
     %If the mouse is out of view, search for it
     for i=inactCats
         camA(i)=searchm(maxCamAngSpeed,camA(i));
@@ -240,12 +241,21 @@ for k=1:N
             sV{1,i}(1,k),sV{1,i}(2,k),'r.');
         hold on
     end
-    
-    plot(landm(:,1),landm(:,2),'*k',...
-        xVm(1,startplotidx:k),xVm(2,startplotidx:k),'m',...
-        xVm(1,k),xVm(2,k),'m.',...
-        sVm(1,startplotidx:k),sVm(2,startplotidx:k),'r',...
-        sVm(1,k),sVm(2,k),'r.');
+    colInc=0.5/tail;
+    j=0;
+    for j=1:
+        j=j+1;
+        set(gcf,'DefaultAxesColorOrder',[0 0        0;
+                                         1-j*colInc 1-j*colInc 1;
+                                         1-j*colInc 1-j*colInc 1;
+                                         1 1-j*colInc 1-j*colInc;
+                                         1 1-j*colInc 1-j*colInc]);
+        plot(landm(:,1),landm(:,2),'*',...
+            xVm(1,i:k),xVm(2,i:k),'-',...
+            xVm(1,k),xVm(2,k),'.',...
+            sVm(1,i:k),sVm(2,i:k),'-',...
+            sVm(1,k),sVm(2,k),'.');
+    end
     for i=1:nm
         for j=actLandm{1,i}
             plot([raysX{j,i}],[raysY{j,i}],'k:');
@@ -295,18 +305,18 @@ end
 % title('Velocity error');
 % ylabel('Velocity error norm');
 % xlabel('Time [samples]');
-%
-% figure
-% subplot(2,1,1)
-% plot(1:N,posErrNormm(1:N))
-% title('Position error');
-% ylabel('Position error norm');
-% xlabel('Time [samples]');
-% subplot(2,1,2)
-% plot(1:N,velErrNormm(1:N))
-% title('Velocity error');
-% ylabel('Velocity error norm');
-% xlabel('Time [samples]');
+
+figure
+subplot(2,1,1)
+plot(1:N,posErrNormm(1:N))
+title('Position error');
+ylabel('Position error norm');
+xlabel('Time [samples]');
+subplot(2,1,2)
+plot(1:N,velErrNormm(1:N))
+title('Velocity error');
+ylabel('Velocity error norm');
+xlabel('Time [samples]');
 
 % toc
 % fprintf('seconds/frame %i\n', toc/frame);

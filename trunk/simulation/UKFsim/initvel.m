@@ -23,3 +23,5 @@ for i=1:nm
     vc{1,i}=vcSingle;
 end
 
+vc{1,2}=-vcSingle;
+
