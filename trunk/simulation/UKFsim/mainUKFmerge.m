@@ -1,37 +1,34 @@
 clc
 clear
 close all
+warning off all;
 
-global cats;
-global actCats;
-global rm;
-global nm;
-global nxm;
-global Rm;
-global Rfullm;
-global zVm;
-global xVm;
-global xm;
+global cats; %true position of the cats
+global actCats; %contains the index of the cats that sees the mouse
+global rm; %std of expected bearing measurement noise 
+global nm; %number of cats
+global nxm; %number of variables in the mouse's state vector
+global Rm; % covariance of measurement of the mouse
+global zVm; %contains the current and all past bearings measurements to the mouse 
+global xVm; %contains the current and all past state estimates of the mouse 
+global xm; %current state estimate of the mouse
 
-global s;
-global landm;
-global actLandm;
-global R;
-global Rfull;
-global xV;
-global zV;
-global n;
-global nz;
-global nx;
-global dt;
-global R;
-global r;
-global ra;
-global landmFull;
-global vc;
-global k;
-global N;
-global x;
+global s; %true state of the cats
+global landm; %ture pos of the landmaks
+global actLandm; %the indices of the landmarks that are seen
+global R; % covariance of measurement of the cats
+global xV; %contains the current and all past state estimates of the cats 
+global zV; %contains the current and all past bearings measurements to the cats
+global n;  %number of landmarks
+global nz; %number of elements in the measurement vector of the cats
+global nx; %number of variables in the cats' state vector
+global dt; %sampling period, must be 1 for now
+global r;  %std of expected measurement noise 
+global ra; %std of actual measurement noise 
+global vc; %the velocities of the cats
+global k;  %current time step
+global N;  %total number of time steps
+global x;  %state vector of the cats
 
 stream = RandStream.create('mt19937ar','seed',604);
 %s=RandStream('mt19937ar'); %
@@ -39,28 +36,24 @@ RandStream.setDefaultStream(stream);
 
 %%
 bound=[0 2 0 2];
-landmFull=[ 1  ,1.9 ;
+landm=[  .1,.1 ;
             0.1,1.9 ;...
             1.9,0.1 ;...
             1.9,1.9 ];
-landm=landmFull;
-n=size(landmFull,1);
-sc=[.15 1;...
-    .2  .5]; %[0.15; 0.2];
+n=size(landm,1);
+sc=[.15 .15;...
+    .2  1.6]; %[0.15; 0.2];
 nm=size(sc,2); %number of cats
 nz=n+3;
 nx=6;
 nxm=4;
-stddegrees = 1;
 fov=43*pi/180;
-lambda = [1e-6,1e-6,1e-6,1e-6,1e-6];%[stddegrees*(pi/180),.5e-2,.5e-2,0,0] ;	% Standard deviation in radians
+stddegrees = 1;
+lambda = [stddegrees*(pi/180),1e-2,1e-2,1e-6,1e-6];%[stddegrees*(pi/180),.5e-2,.5e-2,0,0] ;	% Standard deviation in radians
 N=500;                           %Number of time steps
-dt=.1;
+dt=1;
 sm=[.2; .5];
-vc=cell(1,nm);
-for i=1:nm
-    vc{1,i}=zeros(2,N);
-end
+vc=initvel;
 vm=initvelm;
 
 q=.005;     %std of expected process noise
@@ -72,15 +65,15 @@ ram=lambda(1);
 k1=dt;          %how much the noise in the wheel tachometers is amplified
 k2=dt;     %how much the noise in the camera motor tachometers is amplified
 Q=q^2*[ dt^4/4  0       dt^3/2  0       0    0;...   % covariance of process
-        0       dt^4/4  0       dt^3/2  0    0;...
-        dt^3/2  0       dt^2    0       0    0;...
-        0       dt^3/2  0       dt^2    0    0;...
-        0       0       0       0       k1   0;...
-        0       0       0       0       0    k2];
+    0       dt^4/4  0       dt^3/2  0    0;...
+    dt^3/2  0       dt^2    0       0    0;...
+    0       dt^3/2  0       dt^2    0    0;...
+    0       0       0       0       k1   0;...
+    0       0       0       0       0    k2];
 Qm=qm^2*[ dt^4/4  0        dt^3/2  0     ;...
-          0       dt^4/4  0        dt^3/2;...
-          dt^3/2  0       dt^2     0     ;...
-          0       dt^3/2  0        dt^2] ;
+    0       dt^4/4  0        dt^3/2;...
+    dt^3/2  0       dt^2     0     ;...
+    0       dt^3/2  0        dt^2] ;
 
 R=cell(1,nm);
 for i=1:nm
@@ -90,8 +83,6 @@ for i=1:nm
     end
 end
 Rm = rm^2*eye(nm);
-Rfull=R;
-Rfullm=Rm;
 
 f = @update2;                               % nonlinear state equations
 h = @measure2WspeedMeasurements;            % measurement equation
@@ -106,17 +97,18 @@ Pm = 1e-3*eye(nxm);                         % initial state covraiance
 
 s=zeros(nx,nm);
 initpos=zeros(2,nm);
+camA=zeros(1,nm); %estimated initial camera angle
 for i=1:nm
     s(:,i) = [sc(:,i); vc{1,i}(:,1);...
-        atan2(vc{1,i}(2,1),vc{1,i}(1,1)); pi/4];          % true initial state
+        atan2( vc{1,i}(2,1),vc{1,i}(1,1) ); pi/4];          % true initial state
     initpos(:,i)=sc(:,i);%ls_est2(h(s)+ mNoise);             % initial position with noise
-    x(:,i) = [initpos(:,i); 0; 0; pi; pi];                % estimated initial state
+    x(:,i) = [initpos(:,i); 0; 0; 0; camA(i)];                % estimated initial state
     x(:,i)=initboundcorr(x(:,i),bound);
 end
 
 s2 = [sm; vm(:,1)];                         % true initial state
 initposm=ls_estm(hm(s2) + ram*randn(nm,1)); % initial position with noise
-xm = [initposm; 0; 0];                % estimated initial state
+xm = [initposm; 0; 0];                      % estimated initial state
 xm=initboundcorr(xm,bound);
 
 %%
@@ -151,19 +143,21 @@ end
 actCats=[];
 large=1e9;
 arrowl=0.17;
+tail=20;
+
+cats=zeros(nx,nm);
 
 %%
 for k=1:N
-    camA=camAng(k,5);
     for i=1:nm
-        cats(:,i)=[sc(:,i); vc{1,i}(:,k);atan2(vc{1,i}(2,k),vc{1,i}(1,k));camA];    %linear movement
+        cats(:,i)=[sc(:,i); vc{1,i}(:,k);atan2(vc{1,i}(2,k),vc{1,i}(1,k));camA(i)];    %linear movement
     end
     mouse=[sm; vm(:,k)];                 %linear movement
     
-%     posErrNorm(k)=norm(s(1:2)-x(1:2));
-%     velErrNorm(k)=norm(s(3:4)-x(3:4)*dt);
-%     posErrNormm(k)=norm(s2(1:2)-xm(1:2));
-%     velErrNormm(k)=norm(s2(3:4)-xm(3:4)*dt);
+    %     posErrNorm(k)=norm(s(1:2)-x(1:2));
+    %     velErrNorm(k)=norm(s(3:4)-x(3:4)*dt);
+    %     posErrNormm(k)=norm(s2(1:2)-xm(1:2));
+    %     velErrNormm(k)=norm(s2(3:4)-xm(3:4)*dt);
     for i=1:nm
         sc(:,i)=sc(:,i)+vc{1,i}(:,k);
     end
@@ -178,8 +172,10 @@ for k=1:N
     zm=hmT(mouse) + ram*randn(nm,1);        % measurements
     [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camA);
     
+    %Use previous measurement if target is out of view
     z=noCheat(z);
     zm=noCheatm(zm);
+    
     for i=1:nm
         sV{1,i}(:,k)= s(:,i);                % save actual state
         zV{1,i}(1:nz,k) = z(:,i);                      % save measurment
@@ -193,6 +189,21 @@ for k=1:N
     [xm, Pm] = ukf(fm,xm,Pm,hm,zm,Qm,Rm);
     xm=outOfBoundsCorrm(xm,xVm,bound);
     s2 = mouse;                          % update process
+    
+    %Camera control
+    inactCats=1:nm; %all by default
+    inactCats(actCats)=[]; %remove active cats
+    maxCamAngSpeed=0.05;
+    %If the mouse is out of view, search for it
+    for i=inactCats
+        camA(i)=searchm(maxCamAngSpeed,camA(i));
+    end
+    %If the mouse is in view, track it using small adjustment
+    for i=actCats
+%         disp('adjusting cam ');
+%         disp(i);
+        camA(i)=trackm(zm(i,1),maxCamAngSpeed,camA(i));
+    end
     
     %Real time plotting
     for i=1:nm
@@ -214,21 +225,27 @@ for k=1:N
         fov1y(i,:)=[x(2,i), x(2,i)+arrowl*sin(x(6,i)+fov/2)];
         fov2y(i,:)=[x(2,i), x(2,i)+arrowl*sin(x(6,i)-fov/2)];
     end
+    if k<=tail
+        startplotidx=1;
+    else
+        startplotidx=k-tail;
+    end
     for i=1:nm
-        plot(xV{1,i}(1,1:k),xV{1,i}(2,1:k),'b',...
+        plot(xV{1,i}(1,startplotidx:k),xV{1,i}(2,startplotidx:k),'b',...
             dirx(i,:),diry(i,:),'g',...   %direction arrow base
             fov1x(i,:),fov1y(i,:),'m',...
             fov2x(i,:),fov2y(i,:),'m',...
             xV{1,i}(1,k),xV{1,i}(2,k),'b.',...
-            sV{1,i}(1,1:k),sV{1,i}(2,1:k),'r',...
+            sV{1,i}(1,startplotidx:k),sV{1,i}(2,startplotidx:k),'r',...
             sV{1,i}(1,k),sV{1,i}(2,k),'r.');
-            hold on
+        hold on
     end
-    plot(landm(:,1),landm(:,2),'*k',...
-        xVm(1,1:k),xVm(2,1:k),'b',...
-        xVm(1,k),xVm(2,k),'b.',...
-        sVm(1,1:k),sVm(2,1:k),'r',...
-        sVm(1,k),sVm(2,k),'r.');
+    set(gcf,'DefaultAxesColorOrder',[0 0 0;.5 .5 .5;.5 .5 .5;1 0 0;1 0 0]);
+    plot(landm(:,1),landm(:,2),'*',...
+        xVm(1,startplotidx:k),xVm(2,startplotidx:k),'-',...
+        xVm(1,k),xVm(2,k),'.',...
+        sVm(1,startplotidx:k),sVm(2,startplotidx:k),'-',...
+        sVm(1,k),sVm(2,k),'.');
     for i=1:nm
         for j=actLandm{1,i}
             plot([raysX{j,i}],[raysY{j,i}],'k:');
@@ -239,7 +256,7 @@ for k=1:N
     end
     axis(bound)
     hold off
-    pause(.002)
+    pause(.05)
 end
 
 %%
@@ -278,7 +295,7 @@ end
 % title('Velocity error');
 % ylabel('Velocity error norm');
 % xlabel('Time [samples]');
-% 
+%
 % figure
 % subplot(2,1,1)
 % plot(1:N,posErrNormm(1:N))
