@@ -3,9 +3,10 @@
 
 = Meetings =
 
-2010-04-13 15:00 Design meeting in P1457
+*2010-04-13 15:00 Design meeting in P1457*
 
-*2010-04-07 10:00 Design meeting in P1457*
+2010-04-07 10:00 Design meeting in P1457
+([http://code.google.com/p/cats/wiki/Meeting_Notes_20100407 Notes])
 
 2010-03-29 13:00 Design meeting in P1457 ([http://code.google.com/p/cats/wiki/Meeting_Notes_20100329 Notes])
 
