@@ -1,8 +1,15 @@
-function camA=trackm(zm,speed,camA)
+function [camA,dir]=trackm(zm,speed,camA,camAabs)
 %camA is the angle of the camera (ralative to the robot) of a cat
 %speed is the angular velocity pf the motor camera
-if camA<zm
-   camA=mod(camA+speed,2*pi);
+if abs(zm-camAabs)>speed
+    step=speed;
 else
-   camA=mod(camA-speed,2*pi);
+    step=zm-camAabs;
+end
+if camAabs<zm
+   camA=camA+step;
+   dir=1;
+else
+   camA=camA-step;
+   dir=-1;
 end

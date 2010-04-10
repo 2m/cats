@@ -19,9 +19,6 @@ vcSingle(1,turnInd(2)+turnWait:turnInd(3))=+speed;
 vcSingle(1,turnInd(3)+turnWait:turnInd(4))=-speed;
 vcSingle(1,turnInd(4)+turnWait:turnInd(5))=+speed;
 
-for i=1:nm
-    vc{1,i}=vcSingle;
-end
-
+vc{1,1}=vcSingle;
 vc{1,2}=-vcSingle;
 

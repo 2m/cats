@@ -1,4 +1,4 @@
-function [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camA)
+function [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camAabs)
     %global Rfull;
     global n;
     global r;
@@ -12,7 +12,7 @@ function [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camA)
         R{1,i}(1:n,1:n)=large*eye(n);
         actLandm{1,i}=[];
         for j=1:n
-            if abs(z(j,i)-camA(i))<fov/2
+            if abs(z(j,i)-camAabs(i))<fov/2
                 R{1,i}(j,j)=r(1)^2;
                 actLandm{1,i}(end+1)=j;
             end
@@ -23,7 +23,7 @@ function [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camA)
     Rm(1:nm,1:nm)=large*eye(nm);
     actCats=[];
     for i=1:nm
-        if abs(zm(i,1)-camA(i))<fov/2
+        if abs(zm(i,1)-camAabs(i))<fov/2
             Rm(i,i)=rm^2;
             actCats(end+1)=i;
         end

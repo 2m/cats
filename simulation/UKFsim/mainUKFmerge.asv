@@ -36,23 +36,24 @@ RandStream.setDefaultStream(stream);
 
 %%
 bound=[0 2 0 2];
-landm=[  .1,.1 ;
-            0.1,1.9 ;...
-            1.9,0.1 ;...
-            1.9,1.9 ];
+landm=[ 0.1,.1 ;
+        0.1,1.9 ;...
+        1.9,0.1 ;...
+        1.9,1.9 ];
 n=size(landm,1);
-sc=[.15 1.8;...
-    .2  1.6]; %[0.15; 0.2];
+sc=[.15 1.8 ;...
+    .2  1.6 ]; %[0.15; 0.2];
 nm=size(sc,2); %number of cats
-nz=n+3;
+nz=n+4;
 nx=6;
 nxm=4;
 fov=43*pi/180;
 stddegrees = 1;
-lambda = [stddegrees*(pi/180),6e-3,6e-3,1e-6,1e-6];%[stddegrees*(pi/180),.5e-2,.5e-2,0,0] ;	% Standard deviation in radians
+lambda = [stddegrees*(pi/180),1e-13,6e-13,1e-2,1e-13];% Standard deviation of measurement noise
+         %bearing angle       vx   vy  cam.ang
 N=500;                           %Number of time steps
 dt=1;
-sm=[.2; .5];
+sm=[.1; 1];
 vc=initvel;
 vm=initvelm;
 
@@ -91,8 +92,8 @@ for i=1:nm
     P{1,i} = 1e-3*eye(nx);                  % initial state covraiance
 end
 fm = @update;                               % nonlinear state equations
-hmT = @measuremT;                            % true measurement equation
-hm = @measurem;                            % true measurement equation
+hmT = @measuremT;                           % true measurement equation
+hm = @measurem;                             % measurement equation
 Pm = 1e-3*eye(nxm);                         % initial state covraiance
 
 s=zeros(nx,nm);
@@ -101,7 +102,7 @@ camA=zeros(1,nm); %estimated initial camera angle
 for i=1:nm
     s(:,i) = [sc(:,i); vc{1,i}(:,1);...
         atan2( vc{1,i}(2,1),vc{1,i}(1,1) ); pi/4];          % true initial state
-    initpos(:,i)=sc(:,i);%ls_est2(h(s)+ mNoise);             % initial position with noise
+    initpos(:,i)=sc(:,i);%ls_est2(h(s)+ mNoise(i));             % initial position with noise
     x(:,i) = [initpos(:,i); 0; 0; 0; camA(i)];                % estimated initial state
     x(:,i)=initboundcorr(x(:,i),bound);
 end
@@ -143,12 +144,13 @@ end
 actCats=[];
 large=1e9;
 arrowl=0.17;
-tail=20;
+tail=5;
 
 cats=zeros(nx,nm);
+dir=ones(1,nm);
 
-%%
 for k=1:N
+    %%
     for i=1:nm
         cats(:,i)=[sc(:,i); vc{1,i}(:,k);atan2(vc{1,i}(2,k),vc{1,i}(1,k));camA(i)];    %linear movement
     end
@@ -166,16 +168,17 @@ for k=1:N
     
     for i=1:nm
         xV{1,i}(:,k) = x(:,i);               % store state estimate
-        z(:,i)=h(s(:,i)) + mNoise;           % measurements
+        z(:,i)=h(s(:,i)) + mNoise(i);  % measurements
+        %calculate absolute angle measurements
     end
     
     xVm(:,k) = xm;                       % store state estimate
     zm=hmT(mouse) + ram*randn(nm,1);        % measurements
     [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camA);
-    
     %Use previous measurement if target is out of view
     z=noCheat(z);
     zm=noCheatm(zm);
+    xstatic=ls_estm(zm);
     
     for i=1:nm
         sV{1,i}(:,k)= s(:,i);                % save actual state
@@ -197,15 +200,15 @@ for k=1:N
     maxCamAngSpeed=0.1;
     %If the mouse is out of view, search for it
     for i=inactCats
-        camA(i)=searchm(maxCamAngSpeed,camA(i));
+        camA(i)=searchm(maxCamAngSpeed,camA(i),dir(i));
     end
     %If the mouse is in view, track it using small adjustment
     for i=actCats
 %         disp('adjusting cam ');
 %         disp(i);
-        camA(i)=trackm(zm(i,1),maxCamAngSpeed,camA(i));
+        [camA(i) dir(i)]=trackm(zm(i,1),maxCamAngSpeed,camA(i));
     end
-    
+%%    
     %Real time plotting
     for i=1:nm
         for j=actLandm{1,i}
@@ -217,7 +220,7 @@ for k=1:N
             raysYm{j,i}(1,:)=[x(2,j), sin(zm(j,1))+x(2,j) + faraway*sin(zm(j,1))];
         end
     end
-    
+    %calc abs camera angle here
     for i=1:nm
         dirx(i,:)=[x(1,i), x(1,i)+arrowl*cos(x(5,i))];
         diry(i,:)=[x(2,i), x(2,i)+arrowl*sin(x(5,i))];
@@ -232,7 +235,8 @@ for k=1:N
         startplotidx=k-tail;
     end
     for i=1:nm
-        plot(xV{1,i}(1,startplotidx:k),xV{1,i}(2,startplotidx:k),'b',...
+        plot(xstatic(1),xstatic(1),'g.',...
+            xV{1,i}(1,startplotidx:k),xV{1,i}(2,startplotidx:k),'b',...
             dirx(i,:),diry(i,:),'g',...   %direction arrow base
             fov1x(i,:),fov1y(i,:),'m',...
             fov2x(i,:),fov2y(i,:),'m',...
@@ -243,18 +247,19 @@ for k=1:N
     end
     colInc=0.5/tail;
     j=0;
-    for j=1:
-        j=j+1;
-        set(gcf,'DefaultAxesColorOrder',[0 0        0;
-                                         1-j*colInc 1-j*colInc 1;
-                                         1-j*colInc 1-j*colInc 1;
-                                         1 1-j*colInc 1-j*colInc;
-                                         1 1-j*colInc 1-j*colInc]);
+    for j=1:k-startplotidx
+        plotColor=[0 0        0;
+                   1-j*colInc 1-j*colInc 1;
+                   .5 .5 1;
+                   1 1-j*colInc 1-j*colInc;
+                   1 .5 .5];
+        set(gcf,'DefaultAxesColorOrder',plotColor);
         plot(landm(:,1),landm(:,2),'*',...
-            xVm(1,i:k),xVm(2,i:k),'-',...
+            xVm(1,startplotidx+j-1:startplotidx+j),xVm(2,startplotidx+j-1:startplotidx+j),'-',...
             xVm(1,k),xVm(2,k),'.',...
-            sVm(1,i:k),sVm(2,i:k),'-',...
+            sVm(1,startplotidx+j-1:startplotidx+j),sVm(2,startplotidx+j-1:startplotidx+j),'-',...
             sVm(1,k),sVm(2,k),'.');
+        set(gcf,'DefaultAxesColorOrder',plotColor);
     end
     for i=1:nm
         for j=actLandm{1,i}
@@ -268,30 +273,6 @@ for k=1:N
     hold off
     pause(.05)
 end
-
-%%
-% %Movie recording
-%mov = avifile('circular_movementUKF7.avi');
-%frame = 1;
-%fig=figure;
-% tic
-%   for k=1:N
-% %     plot([sV(1,k-1) sV(1,k)],[sV(2,k-1) sV(2,k)],'r',...
-% %         [xV(1,k-1) xV(1,k)],[xV(2,k-1) xV(2,k)],'b',landm(:,1),landm(:,2),'*k');
-%     %hold on
-%     plot(sV(1,1:k),sV(2,1:k),'r',...
-%         xV(1,1:k),xV(2,1:k),'b',...
-%         landm(:,1),landm(:,2),'*k',...
-%         [raysX{1,k}],[raysY{1,k}],'y',...
-%         [raysX{2,k}],[raysY{2,k}],'m',...
-%         [raysX{3,k}],[raysY{3,k}],'c');
-%         axis(bound)
-%
-%     pause(.001)
-% %     frame = frame + 1
-% %     f2 = getframe(fig);
-% %     mov = addframe(mov, f2);
-%   end
 
 %Plot error norms
 % figure
@@ -317,8 +298,4 @@ plot(1:N,velErrNormm(1:N))
 title('Velocity error');
 ylabel('Velocity error norm');
 xlabel('Time [samples]');
-
-% toc
-% fprintf('seconds/frame %i\n', toc/frame);
-% mov = close(mov);
 
