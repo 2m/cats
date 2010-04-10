@@ -30,7 +30,7 @@ global k;  %current time step
 global N;  %total number of time steps
 global x;  %state vector of the cats
 
-stream = RandStream.create('mt19937ar','seed',604);
+stream = RandStream.create('mt19937ar','seed',60904);
 %s=RandStream('mt19937ar'); %
 RandStream.setDefaultStream(stream);
 
@@ -41,21 +41,26 @@ landm=[ 0.1,.1 ;
         1.9,0.1 ;...
         1.9,1.9 ];
 n=size(landm,1);
-sc=[.15 1.8 ;...
-    .2  1.6 ]; %[0.15; 0.2];
-nm=size(sc,2); %number of cats
+phi=[0;pi/2];   %angle of the circular movement of the mouse
+radius=[.8;.8];
+nm=2;
+sc=zeros(2,nm);
+for i=1:nm
+    sc(:,i)=[1+radius(i)*cos(phi(i));1+radius(i)*sin(phi(i))];
+end
+%nm=size(sc,2); %number of cats
 nz=n+4;
 nx=6;
 nxm=4;
 fov=43*pi/180;
 stddegrees = 1;
-lambda = [stddegrees*(pi/180),1e-13,6e-13,1e-4,1e-13];% Standard deviation of measurement noise
-         %bearing angle       vx   vy  cam.ang
+lambda = [stddegrees*(pi/180),5e-2,5e-2,1e-20,1e-20];% Standard deviation of measurement noise
+        %[bearing angle      ,vx   ,vy   ,cam.ang]
 N=500;                           %Number of time steps
 dt=1;
-sm=[.1; 1];
-vc=initvel;
-vm=initvelm;
+sm=[1.4; 1];
+vm=initvelCirclem;
+vc=initvelCircle;
 
 q=.005;     %std of expected process noise
 qm=.005;    %std of expected process noise
@@ -66,15 +71,15 @@ ram=lambda(1);
 k1=dt;          %how much the noise in the wheel tachometers is amplified
 k2=dt;     %how much the noise in the camera motor tachometers is amplified
 Q=q^2*[ dt^4/4  0       dt^3/2  0       0    0;...   % covariance of process
-    0       dt^4/4  0       dt^3/2  0    0;...
-    dt^3/2  0       dt^2    0       0    0;...
-    0       dt^3/2  0       dt^2    0    0;...
-    0       0       0       0       k1   0;...
-    0       0       0       0       0    k2];
+        0       dt^4/4  0       dt^3/2  0    0;...
+        dt^3/2  0       dt^2    0       0    0;...
+        0       dt^3/2  0       dt^2    0    0;...
+        0       0       0       0       k1   0;...
+        0       0       0       0       0    k2];
 Qm=qm^2*[ dt^4/4  0        dt^3/2  0     ;...
-    0       dt^4/4  0        dt^3/2;...
-    dt^3/2  0       dt^2     0     ;...
-    0       dt^3/2  0        dt^2] ;
+          0       dt^4/4  0        dt^3/2;...
+          dt^3/2  0       dt^2     0     ;...
+          0       dt^3/2  0        dt^2] ;
 
 R=cell(1,nm);
 for i=1:nm
@@ -99,11 +104,12 @@ Pm = 1e-3*eye(nxm);                         % initial state covraiance
 s=zeros(nx,nm);
 initpos=zeros(2,nm);
 camA=zeros(1,nm); %estimated initial camera angle
+camAabs=zeros(1,nm); %estimated initial camera angle
 for i=1:nm
     s(:,i) = [sc(:,i); vc{1,i}(:,1);...
         atan2( vc{1,i}(2,1),vc{1,i}(1,1) ); pi/4];          % true initial state
     initpos(:,i)=sc(:,i);%ls_est2(h(s)+ mNoise(i));             % initial position with noise
-    x(:,i) = [initpos(:,i); 0; 0; 0; camA(i)];                % estimated initial state
+    x(:,i) = [initpos(:,i); 0; 0; 0; camAabs(i)];                % estimated initial state
     x(:,i)=initboundcorr(x(:,i),bound);
 end
 
@@ -152,13 +158,18 @@ dir=ones(1,nm);
 for k=1:N
     %%
     camAabs=mod(camA+x(5,:),2*pi);
-    for i=1:nm
-        cats(:,i)=[sc(:,i); vc{1,i}(:,k);atan2(vc{1,i}(2,k),vc{1,i}(1,k));camAabs(i)];    %linear movement
-    end
-    mouse=[sm; vm(:,k)];                 %linear movement
     
-%     posErrNorm(k)=norm(s(1:2,:)-x(1:2,:));
-%     velErrNorm(k)=norm(s(3:4,:)-x(3:4,:)*dt);
+    for i=1:nm
+        catAng=atan2(vc{1,i}(2,k),vc{1,i}(1,k));
+        if catAng<0
+            catAng=2*pi+catAng;
+        end
+        cats(:,i)=[sc(:,i); vc{1,i}(:,k);catAng;camAabs(i)];    %update true state
+    end
+    mouse=[sm; vm(:,k)];                 %update position
+    
+%    posErrNorm(k)=norm(s(1:2,:)-x(1:2,:));
+%    velErrNorm(k)=norm(s(3:4,:)-x(3:4,:)*dt);
     posErrNormm(k)=norm(s2(1:2)-xm(1:2));
     velErrNormm(k)=norm(s2(3:4)-xm(3:4)*dt);
     
@@ -169,8 +180,9 @@ for k=1:N
     
     for i=1:nm
         xV{1,i}(:,k) = x(:,i);               % store state estimate
-        z(:,i)=h(s(:,i)) + mNoise(i);  % measurements
-        %calculate absolute angle measurements
+        z(:,i)=h(s(:,i)) + mNoise(i);        % measurements
+%         z(1:3,i)=z(1:3,i)+x(5,i)
+%         z(1:3,i)=mod(z(i,1),2*pi);
     end
     
     xVm(:,k) = xm;                       % store state estimate
@@ -207,7 +219,7 @@ for k=1:N
     for i=actCats
 %         disp('adjusting cam ');
 %         disp(i);
-        [camA(i) dir(i)]=trackm(zm(i,1),maxCamAngSpeed,camA(i));
+        [camA(i) dir(i)]=trackm(zm(i,1),maxCamAngSpeed,camA(i),camAabs(i));
     end
 %%    
     %Real time plotting
@@ -230,38 +242,56 @@ for k=1:N
         fov1y(i,:)=[x(2,i), x(2,i)+arrowl*sin(x(6,i)+fov/2)];
         fov2y(i,:)=[x(2,i), x(2,i)+arrowl*sin(x(6,i)-fov/2)];
     end
+    
     if k<=tail
         startplotidx=1;
     else
         startplotidx=k-tail;
     end
-    for i=1:nm
-        plot(xstatic(1),xstatic(1),'g.',...
-            xV{1,i}(1,startplotidx:k),xV{1,i}(2,startplotidx:k),'b',...
-            dirx(i,:),diry(i,:),'g',...   %direction arrow base
-            fov1x(i,:),fov1y(i,:),'m',...
-            fov2x(i,:),fov2y(i,:),'m',...
-            xV{1,i}(1,k),xV{1,i}(2,k),'b.',...
-            sV{1,i}(1,startplotidx:k),sV{1,i}(2,startplotidx:k),'r',...
-            sV{1,i}(1,k),sV{1,i}(2,k),'r.');
-        hold on
-    end
-    colInc=0.5/tail;
+    colInc1=1/tail;
+    colInc2=0.5/tail;
     j=0;
     for j=1:k-startplotidx
-        plotColor=[0 0        0;
-                   1-j*colInc 1-j*colInc 1;
-                   .5 .5 1;
-                   1 1-j*colInc 1-j*colInc;
-                   1 .5 .5];
-        set(gcf,'DefaultAxesColorOrder',plotColor);
-        plot(landm(:,1),landm(:,2),'*',...
-            xVm(1,startplotidx+j-1:startplotidx+j),xVm(2,startplotidx+j-1:startplotidx+j),'-',...
+        plotColor1=[0           1           0          ;
+                1-j*colInc1 1-j*colInc1 1          ;
+                0           1           0          ;
+                1           0           1          ;
+                1           0           1          ;
+                0           0           1          ;
+                1           1-j*colInc1 1-j*colInc1;
+                1           0           0         ];
+        idxVec=startplotidx+j-1:startplotidx+j;
+        for i=1:nm
+            lineHandle1=plot(xstatic(1),xstatic(1),'g.',...
+                xV{1,i}(1,idxVec),xV{1,i}(2,idxVec),'b',...
+                dirx(i,:),diry(i,:),'g',...   %direction arrow base
+                fov1x(i,:),fov1y(i,:),'m',...
+                fov2x(i,:),fov2y(i,:),'m',...
+                xV{1,i}(1,k),xV{1,i}(2,k),'b.',...
+                sV{1,i}(1,idxVec),sV{1,i}(2,idxVec),'r',...
+                sV{1,i}(1,k),sV{1,i}(2,k),'r.');
+            hold on
+            for u=1:size(plotColor1,1)
+                set(lineHandle1(u),'Color',plotColor1(u,:))
+            end
+        end
+        
+        plotColor2=[0           0           0         ;
+                 1-j*colInc2 1-j*colInc2 1         ;
+                 .5          .5          1         ;
+                 1           1-j*colInc2 1-j*colInc2;
+                 1           .5          .5       ];
+        idxVec=startplotidx+j-1:startplotidx+j;
+        lineHandle2=plot(landm(:,1),landm(:,2),'*',...
+            xVm(1,idxVec),xVm(2,idxVec),'-',...
             xVm(1,k),xVm(2,k),'.',...
-            sVm(1,startplotidx+j-1:startplotidx+j),sVm(2,startplotidx+j-1:startplotidx+j),'-',...
+            sVm(1,idxVec),sVm(2,idxVec),'-',...
             sVm(1,k),sVm(2,k),'.');
-        set(gcf,'DefaultAxesColorOrder',plotColor);
+        for u=1:size(plotColor2,1)
+            set(lineHandle2(u),'Color',plotColor2(u,:))
+        end
     end
+    
     for i=1:nm
         for j=actLandm{1,i}
             plot([raysX{j,i}],[raysY{j,i}],'k:');
@@ -272,8 +302,32 @@ for k=1:N
     end
     axis(bound)
     hold off
-    pause(.05)
+    pause(.001)
 end
+
+%%
+% %Movie recording
+%mov = avifile('circular_movementUKF7.avi');
+%frame = 1;
+%fig=figure;
+% tic
+%   for k=1:N
+% %     plot([sV(1,k-1) sV(1,k)],[sV(2,k-1) sV(2,k)],'r',...
+% %         [xV(1,k-1) xV(1,k)],[xV(2,k-1) xV(2,k)],'b',landm(:,1),landm(:,2),'*k');
+%     %hold on
+%     plot(sV(1,1:k),sV(2,1:k),'r',...
+%         xV(1,1:k),xV(2,1:k),'b',...
+%         landm(:,1),landm(:,2),'*k',...
+%         [raysX{1,k}],[raysY{1,k}],'y',...
+%         [raysX{2,k}],[raysY{2,k}],'m',...
+%         [raysX{3,k}],[raysY{3,k}],'c');
+%         axis(bound)
+%
+%     pause(.001)
+% %     frame = frame + 1
+% %     f2 = getframe(fig);
+% %     mov = addframe(mov, f2);
+%   end
 
 %Plot error norms
 % figure
@@ -299,4 +353,8 @@ plot(1:N,velErrNormm(1:N))
 title('Velocity error');
 ylabel('Velocity error norm');
 xlabel('Time [samples]');
+
+% toc
+% fprintf('seconds/frame %i\n', toc/frame);
+% mov = close(mov);
 

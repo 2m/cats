@@ -18,13 +18,9 @@ for i=1:n
     
     %Alternative: (somtimes less divergent, sometimes more)
      z(i,1)=atan2(landm(i,2)-x(2,1),landm(i,1)-x(1,1));
-     if z(i,1)<0
-         z(i,1)=2*pi+z(i,1);
-     end
+     z(i,1)=mod(z(i,1),2*pi);
 end
 z(n+1,1)=x(3,1);
 z(n+2,1)=x(4,1);
-z(n+3,1)=x(6,1);
-
-%spoiled, rather than helped:
-%z(n+1,1)=sqrt(x(3,1)^2+x(4,1)^2);%norm(x(3:4)); 
+z(n+3,1)=x(5,1);
+z(n+4,1)=x(6,1);

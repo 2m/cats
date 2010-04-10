@@ -1,0 +1,16 @@
+function mN=mNoise(catidx)
+global n;
+global ra;
+global cats;
+mN=ra(1)*randn(n,1);
+
+vnoise=
+vxnoise=ra(1+1)*randn;
+mN(n+1,1)=vxnoise/norm(vxnoise)... %normalize
+    *norm(cats(3,catidx)); %make same length as cats(3,catidx)
+
+vynoise=ra(1+2)*randn;
+mN(n+2,1)=vynoise/norm(vynoise)... %normalize
+    *norm(cats(4,catidx)); %make same length as cats(3,catidx)
+
+mN(n+3,1)=ra(1+3)*randn;
