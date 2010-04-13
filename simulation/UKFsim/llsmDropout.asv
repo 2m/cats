@@ -1,8 +1,7 @@
-function [A,b] = llsm(th)
+function [A,b] = llsmDropout(th)
 global x;
-global nm;
 global actCats;
-A=zeros(nm,2);
+A=zeros(length(actCats),2);
 b=zeros(nm,1);
 for k=1:nm
     A(k,:)=[sin(th(k,1)), -cos(th(k,1))];

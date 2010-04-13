@@ -49,7 +49,7 @@ nx=6;
 nxm=4;
 fov=43*pi/180;
 stddegrees = 1;
-lambda = [stddegrees*(pi/180),1e-13,6e-13,1e-2,1e-13];% Standard deviation of measurement noise
+lambda = [stddegrees*(pi/180),1e-13,6e-13,1e-4,1e-13];% Standard deviation of measurement noise
          %bearing angle       vx   vy  cam.ang
 N=500;                           %Number of time steps
 dt=1;
@@ -148,11 +148,13 @@ tail=5;
 
 cats=zeros(nx,nm);
 dir=ones(1,nm);
+    maxCamAngSpeed=0.1;
 
 for k=1:N
     %%
+    camAabs=mod(camA+x(5,:),2*pi);
     for i=1:nm
-        cats(:,i)=[sc(:,i); vc{1,i}(:,k);atan2(vc{1,i}(2,k),vc{1,i}(1,k));camA(i)];    %linear movement
+        cats(:,i)=[sc(:,i); vc{1,i}(:,k);atan2(vc{1,i}(2,k),vc{1,i}(1,k));camAabs(i)];    %linear movement
     end
     mouse=[sm; vm(:,k)];                 %linear movement
     
@@ -174,7 +176,7 @@ for k=1:N
     
     xVm(:,k) = xm;                       % store state estimate
     zm=hmT(mouse) + ram*randn(nm,1);        % measurements
-    [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camA);
+    [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camAabs);
     %Use previous measurement if target is out of view
     z=noCheat(z);
     zm=noCheatm(zm);
@@ -197,7 +199,6 @@ for k=1:N
     %Camera control
     inactCats=1:nm; %all by default
     inactCats(actCats)=[]; %remove active cats
-    maxCamAngSpeed=0.1;
     %If the mouse is out of view, search for it
     for i=inactCats
         camA(i)=searchm(maxCamAngSpeed,camA(i),dir(i));
@@ -220,7 +221,7 @@ for k=1:N
             raysYm{j,i}(1,:)=[x(2,j), sin(zm(j,1))+x(2,j) + faraway*sin(zm(j,1))];
         end
     end
-    %calc abs camera angle here
+    
     for i=1:nm
         dirx(i,:)=[x(1,i), x(1,i)+arrowl*cos(x(5,i))];
         diry(i,:)=[x(2,i), x(2,i)+arrowl*sin(x(5,i))];

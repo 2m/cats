@@ -2,7 +2,7 @@ function vc=initvelCircle
 %initializes the velocities of the cats
 global N
 global nm;
-phi=[0;pi/2];   %angle of the circular movement of the mouse
+global phi;   %angle of the circular movement of the cat
 speed=0.03;
 vc=cell(1,nm);
 for i=1:nm
