@@ -74,6 +74,10 @@ public final class Fixed {
 	public static int floatToFixed(double x) {
 		return (int) (x * ONE);
 	}
+	
+	public static float fixedToFloat(int x){
+		return (float) ((float)x)/ONE;
+	}
 
 	public static String toString(int n) {
 		StringBuffer sb = new StringBuffer(16);

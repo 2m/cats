@@ -1,15 +1,15 @@
 package GSim;
 
-public class AbsolutePositioningFilter {
+public abstract class AbsolutePositioningFilter {
 	protected final Buffer sensorData;
 	protected final Buffer movementData;
-	protected final double T;
+	protected final float T;
 	protected final Arena arena;
 	protected final RealTimeClock rttime;
 	protected final LandmarkList landmarks;
 
 	public AbsolutePositioningFilter(float T, Buffer sensorData, Buffer movementData, Arena arena, RealTimeClock rttime, LandmarkList landmarks) {
-		this.T = T;
+		this.T = T;	// Period
 		this.sensorData = sensorData;
 		this.movementData = movementData;
 		this.arena = arena;
@@ -22,6 +22,10 @@ public class AbsolutePositioningFilter {
 	}
 
 	public float getY() {
+		return (float) 0.0;
+	}
+	
+	public float getAngle() {
 		return (float) 0.0;
 	}
 }
