@@ -10,9 +10,13 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 	private int angle[];
 	private int[] weights;
 	
+	private boolean zerosum;
 	private final int N;
 	private final int Nuc;
 	private final int Nlc;
+	private int mean_x;
+	private int mean_y;
+	private int mean_angle;
 	
 	public AbsolutePositioningParticleFilter(int N, float T, Buffer sensorData, Buffer movementData, Arena arena, RealTimeClock rttime, LandmarkList landmarks) {
 		super(T, sensorData, movementData, arena, rttime, landmarks);
@@ -65,26 +69,40 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 		p(:, 5) = p(:, 5) .* w;	% Update weights
 	end
 */}
+	
 	public void normaliseParticles() {
 		
 		int sum_w=0;
 		for(int i=0;i<N;i++) {
 			sum_w += weights[i];
 		}
-		int sum_inv = Fixed.div(Fixed.ONE, sum_w)
-		for(int i=0;i<N;i++) {
-			// TODO: Check for div by zero
-			weights[i] = Fixed.mul(weights[i], sum_inv);
+		int sum_inv = Fixed.div(Fixed.ONE, sum_w);
+		if (sum_inv==0) {
+			zerosum = true;
+		}else{
+			zerosum=false;
+			for(int i=0;i<N;i++) {
+				weights[i] = Fixed.mul(weights[i], sum_inv);
+			}
 		}
 	}
 	
 	public float getX() {
-		return (float) 0.0;
+		return Fixed.fixedToFloat(mean_x);
 	}
 
 	public float getY() {
-		return (float) 0.0;
+		return Fixed.fixedToFloat(mean_y);
 	}
+	
+	public float getXv() {
+		return Fixed.fixedToFloat(mean_xv);
+	}
+
+	public float getYv() {
+		return Fixed.fixedToFloat(mean_yv);
+	}
+	
 	public void run(){
 		/*
 		 * Init
