@@ -13,9 +13,7 @@ public class ParticleFilter {
 			Fixed.floatToFixed(-2.0474) };
 	private final static int[] CUT = { Fixed.floatToFixed(1.0000),
 			Fixed.floatToFixed(0.9986), Fixed.floatToFixed(0.9962),
-			Fixed.floatToFixed(0.9920), Fixed.floatToFixed(0.9744) };
-
-	// TODO: Fix lower cut-off for penalty function
+			Fixed.floatToFixed(0.9920), Fixed.floatToFixed(0.9796) };
 
 	public ParticleFilter() {
 	}
@@ -27,7 +25,7 @@ public class ParticleFilter {
 	 *            cosine of angle error as 12.20 fixed point integer
 	 * @return weight as 12.20 fixed point integer
 	 */
-	public int penalty(int z) {
+	public static int penalty(int z) {
 		int w;
 		if (z >= CUT[5]) {
 			if (CUT[3] < z) {
