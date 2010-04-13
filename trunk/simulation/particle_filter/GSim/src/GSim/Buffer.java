@@ -1,7 +1,7 @@
 package GSim;
 
 // Parent class for buffers
-public class buffer {
+public class Buffer {
 
 	public synchronized Object pop() {
 		return null;

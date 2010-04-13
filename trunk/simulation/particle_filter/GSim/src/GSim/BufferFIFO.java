@@ -7,12 +7,13 @@ package GSim;
  * @version $Rev$
  * 
  */
-public class bufferFIFO extends buffer {
+public class BufferFIFO extends Buffer {
 	private node first;
 	private node last;
 	private Object lockOnLast;
+	private int nonodes = 0;
 
-	public bufferFIFO() {
+	public BufferFIFO() {
 		first = null;
 		last = null;
 		lockOnLast = new Object();
@@ -35,8 +36,9 @@ public class bufferFIFO extends buffer {
 				first = newNode;
 				last = newNode;
 			}
+			nonodes++;
 		}
-
+		//System.out.println(nonodes + " number of objects buffered in FIFO");
 	}
 
 	/**
@@ -52,6 +54,7 @@ public class bufferFIFO extends buffer {
 			ret = first.value;
 			first = next;
 		}
+		nonodes--;
 		return ret;
 	}
 

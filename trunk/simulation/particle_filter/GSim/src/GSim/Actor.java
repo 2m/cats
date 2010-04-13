@@ -21,14 +21,14 @@ public class Actor {
 	private double gotoy;
 	private boolean marked = false;
 	private int type;
-	private buffer motorBuffer = new bufferFIFO();
-	private realTimeClock clock = new realTimeClock();
-	private sensorHandler sensors = null;
-	private motorControl motor = null;
+	private Buffer motorBuffer = new BufferFIFO();
+	private RealTimeClock clock = new RealTimeClock();
+	private SensorHandler sensors = null;
+	private MotorControl motor = null;
 
-	public Actor(sensorHandler sensors, double tx, double ty, double tangle,
+	public Actor(SensorHandler sensors, double tx, double ty, double tangle,
 			int ttype) {
-		motor = new motorControl(tx, ty, tangle, motorBuffer, clock);
+		motor = new MotorControl(tx, ty, tangle, motorBuffer, clock);
 		type = ttype;
 		gotox = tx;
 		gotoy = ty;

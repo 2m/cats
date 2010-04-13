@@ -18,47 +18,12 @@
       <name="=GSim/src<GSim{Cat.java[Cat"/>
       <height="-1"/>
       <width="-1"/>
-      <x="469"/>
-      <y="578"/>
-   </type>
-   <type>
-      <name="=GSim/src<GSim{trackingParticleFilter.java[trackingParticleFilter"/>
-      <height="-1"/>
-      <width="-1"/>
-      <x="438"/>
-      <y="8"/>
-   </type>
-   <type>
-      <name="=GSim/src<GSim{trackingFilter.java[trackingFilter"/>
-      <height="-1"/>
-      <width="-1"/>
-      <x="425"/>
-      <y="197"/>
+      <x="505"/>
+      <y="584"/>
    </type>
    <relationship>
       <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
       <sourceType="=GSim/src<GSim{Cat.java[Cat"/>
-      <targetType="=GSim/src<GSim{Actor.java[Actor"/>
-      <bendpoints>
-      </bendpoints>
-   </relationship>
-   <relationship>
-      <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
-      <sourceType="=GSim/src<GSim{trackingParticleFilter.java[trackingParticleFilter"/>
-      <targetType="=GSim/src<GSim{trackingFilter.java[trackingFilter"/>
-      <bendpoints>
-      </bendpoints>
-   </relationship>
-   <type>
-      <name="=GSim/src<GSim{landMark.java[landMark"/>
-      <height="-1"/>
-      <width="-1"/>
-      <x="492"/>
-      <y="443"/>
-   </type>
-   <relationship>
-      <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
-      <sourceType="=GSim/src<GSim{landMark.java[landMark"/>
       <targetType="=GSim/src<GSim{Actor.java[Actor"/>
       <bendpoints>
       </bendpoints>

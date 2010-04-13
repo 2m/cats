@@ -7,7 +7,7 @@ package GSim;
  * @version $Rev$
  * 
  */
-public class sensorHandler {
+public class SensorHandler {
 	private double angle = 0.0; // Camera heading
 	private double field_of_view = 43 * (Math.PI / 180); // F.O.V in radians
 	private boolean limit_view = false;
@@ -15,7 +15,7 @@ public class sensorHandler {
 
 	// TODO: Connect sensor to buffers (let actors subscribe?)
 	
-	public sensorHandler(Actor[] targets) {
+	public SensorHandler(Actor[] targets) {
 		this.targets = targets;
 	}
 

@@ -1,16 +1,21 @@
 package GSim;
 
-public class trackingParticleFilter extends trackingFilter {
-
+public class TrackingParticleFilter extends TrackingFilter {
+	// TODO: Translate matlab to java
+	// TODO: Write javadoc
 	private int particles[][];
+	private int N;
+	private int[] weights;
 	
-	public trackingParticleFilter(int N, double T, buffer sensorData, buffer movementData) {
-		super(N, T, sensorData, movementData);
+	public TrackingParticleFilter(int N, double T, Buffer sensorData, Buffer movementData) {
+		super(T, sensorData, movementData);
+		this.N = N;
 	}
 
 	public void initParticles() {
 		// State variables x, y, x', y'
 		particles = new int[N][4];
+		weights = new int[N];
 		/*
 		 * p = [rand(N, 1)*arenasize(1), rand(N, 1)*arenasize(2), rand(N, 2)*0.04-0.02, ...
 	ones(N, 1)*(1/N), zeros(N, 1)];	% Init particles (x, y, vx, vy, w, age)
