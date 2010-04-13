@@ -160,6 +160,10 @@ public final class Fixed {
 		}
 		return (int) (sum >> 16 - (FIXED_POINT / 2));
 	}
+	
+	public static int norm(int a, int b) {
+		return sqrt(mul(a, a) + mul(b, b));
+	}
 
 	public static int abs(int n) {
 		return (n < 0) ? -n : n;
