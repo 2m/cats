@@ -1,5 +1,6 @@
 package GSim;
 
+import java.util.Random;
 
 public class MotorControl {
 	public double x;
@@ -8,8 +9,7 @@ public class MotorControl {
 	public Buffer updateBuffer;
 	public RealTimeClock clock;
 	public final double MAX_SPEED = 0.01;
-
-	// TODO: max acceleration of motor?
+	private Random rng = new Random();
 
 	public MotorControl() {
 		this.x = 10;
@@ -17,7 +17,8 @@ public class MotorControl {
 		this.angle = 0;
 	}
 
-	public MotorControl(double x, double y, double angle, Buffer motorUpdate, RealTimeClock clock) {
+	public MotorControl(double x, double y, double angle, Buffer motorUpdate,
+			RealTimeClock clock) {
 		this.x = x;
 		this.y = y;
 		this.angle = angle;
@@ -29,15 +30,18 @@ public class MotorControl {
 		if (distance > MAX_SPEED) {
 			distance = MAX_SPEED;
 		}
-		setX(getX() + Math.cos(angle) * distance);
-		setY(getY() + Math.sin(angle) * distance);
-		// TODO: Add noise
+		// TODO: Set more realistic noise
+		setX(getX() + Math.cos(angle) * distance
+				* (1 + rng.nextDouble() / 50 + 0.01)); // +-1% noise
+		setY(getY() + Math.sin(angle) * distance
+				* (1 + rng.nextDouble() / 50 + 0.01));
 		updateBuffer.push(new MovementData(clock.getTime(), distance, 0.0));
 	}
 
 	public void turn(double turnangle) {
-		setAngle(getAngle() + turnangle);
-		// TODO: Add noise
+		// TODO: Set more realistic noise
+		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() / 50 + 0.01)); // +-1%
+																				// noise
 		updateBuffer.push(new MovementData(clock.getTime(), 0.0, turnangle));
 	}
 
