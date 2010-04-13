@@ -1,11 +1,11 @@
 package GSim;
 
-public class movementData {
+public class MovementData {
 	public int timestamp; // Global time stamp
 	public double dr; // Distance travelled
 	public double dangle; // Radians turned
 
-	public movementData(int timestamp, double dr, double dangle) {
+	public MovementData(int timestamp, double dr, double dangle) {
 		this.timestamp = timestamp;
 		this.dr = dr;
 		this.dangle = dangle;

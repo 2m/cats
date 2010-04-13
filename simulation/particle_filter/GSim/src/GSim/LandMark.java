@@ -7,9 +7,9 @@ package GSim;
  * @version $Rev$
  */
 
-public class landMark extends Actor {
+public class LandMark extends Actor {
 
-	public landMark(sensorHandler sensors, double x, double y) {
+	public LandMark(SensorHandler sensors, double x, double y) {
 		super(sensors, x, y, 0.0, LANDMARK);
 	}
 

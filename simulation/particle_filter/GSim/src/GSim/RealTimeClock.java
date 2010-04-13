@@ -4,10 +4,10 @@ package GSim;
  * @author Fredrik Wahlberg
  * @version $Rev$
  */
-public class realTimeClock {
+public class RealTimeClock {
 	private long startTime;
 
-	public realTimeClock() {
+	public RealTimeClock() {
 		startTime = System.currentTimeMillis();
 	}
 

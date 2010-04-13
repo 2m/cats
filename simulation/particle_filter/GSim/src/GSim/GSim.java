@@ -30,7 +30,7 @@ public class GSim extends JFrame implements MouseListener {
 
 	// Array with all the actors
 	private Actor[] actors = new Actor[2 + 1 + 4];
-	private sensorHandler sensors;
+	private SensorHandler sensors;
 	private boolean marked = false;
 
 	// Positions of landmarks
@@ -40,8 +40,9 @@ public class GSim extends JFrame implements MouseListener {
 	public GSim() {
 		addMouseListener(this);
 		//sensors = new sensorHandler(actors);
+		// TODO: Add sensor data to actor objects
 		for (int i = 0; i < landmarkX.length; i++) {
-			actors[i] = new landMark(null, landmarkX[i], landmarkY[i]);
+			actors[i] = new LandMark(null, landmarkX[i], landmarkY[i]);
 		}
 		actors[4] = new Mouse(null, 1.5, 1.5, 0.0);
 		actors[5] = new Cat(sensors, 0.1, 0.1, Math.PI/6);
@@ -154,9 +155,9 @@ public class GSim extends JFrame implements MouseListener {
 	 *            input from command line
 	 */
 	public static void main(String[] arg) {
-		/*GSim sim = new GSim();
+		GSim sim = new GSim();
 		System.out.println("Simulation started");
-		sim.run();*/
-		System.out.println(Fixed.toString(Fixed.floatToFixed((float)2.8)));
+		sim.run();
+		//System.out.println();
 	}
 }
