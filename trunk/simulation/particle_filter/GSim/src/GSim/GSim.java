@@ -159,6 +159,5 @@ public class GSim extends JFrame implements MouseListener {
 		System.out.println("Simulation started");
 		sim.run();
 		//System.out.println();
-
 	}
 }
