@@ -3,32 +3,32 @@
 = Messages for the Extended Kalman Filter =
 
 Probably only one big message needed:
-(id [int], t [int], angle_m [f], x_m [f], y_m [f], v_xm [f], v_ym [f], x_c [f], y_c [f], v_xc [f], vy_m [f], angle_c [f], angle_cam [f], seen_landmarks [int[4]], sees_mouse [boolean] )
+{id (int), t (int), angle_m (f), x_m (f), y_m (f), v_xm (f), v_ym (f), x_c (f), y_c (f), v_xc (f), vy_m (f), angle_c (f), angle_cam (f), seen_landmarks (int(4)), sees_mouse (boolean) }
 
 Notes:
-id = id of the cat
-t = time stamp of when angle_m was measured
-angle_m = angle measurement of the mouse (relative to the map)
-x_m = x position of the mouse
-y_m = y position of the mouse
-v_xm = x component of velocity of the mouse
-v_ym = y component of velocity of the mouse
-x_c = x position of the cat
-y_c = y position of the cat
-v_xc = x component of velocity of the cat
-v_yc = y component of velocity of the cat
-angle_c = orientation of the cat (relative to the map)
-angle_cam = orientation of the camera relative to the cat
-seen_landmarks = landmarks currently within the view of the cat
-sees_mouse = if the cat currently sees the mouse
+* id = id of the cat
+* t = time stamp of when angle_m was measured
+* angle_m = angle measurement of the mouse (relative to the map)
+* x_m = x position of the mouse
+* y_m = y position of the mouse
+* v_xm = x component of velocity of the mouse
+* v_ym = y component of velocity of the mouse
+* x_c = x position of the cat
+* y_c = y position of the cat
+* v_xc = x component of velocity of the cat
+* v_yc = y component of velocity of the cat
+* angle_c = orientation of the cat (relative to the map)
+* angle_cam = orientation of the camera relative to the cat
+* seen_landmarks = landmarks currently within the view of the cat
+* sees_mouse = if the cat currently sees the mouse
 
 
 = Messages for the Particle Filter =
 
 Send measurement:
-(id [int], t [int], angle_m [f], x_c [f], y_c [f])
+{id (int), t (int), angle_m (f), x_c (f), y_c (f)}
 Notes:
 Will be sent by each cat during each iteration
 
 Send result:
-(id [int], t [int], x_m [f], y_m [f], v_xm [f], v_ym [f], covar [f[6]] weight [f])
+{id (int), t (int), x_m (f), y_m (f), v_xm (f), v_ym (f), covar (f(6)) weight (f)}
