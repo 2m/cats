@@ -1,6 +1,6 @@
 #Messages that need to be sent over the network.
 
-= Messages for the Unscented Filter =
+= Messages for the Unscented Kalman Filter =
 
 Probably only one big message needed:
 
