@@ -148,12 +148,12 @@ tail=5;
 
 cats=zeros(nx,nm);
 dir=ones(1,nm);
+maxCamAngSpeed=0.02;
 
 for k=1:N
     %%
-    camAabs=mod(camA+x(5,:),2*pi);
     for i=1:nm
-        cats(:,i)=[sc(:,i); vc{1,i}(:,k);atan2(vc{1,i}(2,k),vc{1,i}(1,k));camAabs(i)];    %linear movement
+        cats(:,i)=[sc(:,i); vc{1,i}(:,k);atan2(vc{1,i}(2,k),vc{1,i}(1,k));camA(i)];    %linear movement
     end
     mouse=[sm; vm(:,k)];                 %linear movement
     
@@ -175,7 +175,7 @@ for k=1:N
     
     xVm(:,k) = xm;                       % store state estimate
     zm=hmT(mouse) + ram*randn(nm,1);        % measurements
-    [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camAabs);
+    [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camA);
     %Use previous measurement if target is out of view
     z=noCheat(z);
     zm=noCheatm(zm);
@@ -198,7 +198,6 @@ for k=1:N
     %Camera control
     inactCats=1:nm; %all by default
     inactCats(actCats)=[]; %remove active cats
-    maxCamAngSpeed=0.1;
     %If the mouse is out of view, search for it
     for i=inactCats
         camA(i)=searchm(maxCamAngSpeed,camA(i),dir(i));
@@ -207,7 +206,7 @@ for k=1:N
     for i=actCats
 %         disp('adjusting cam ');
 %         disp(i);
-        [camA(i) dir(i)]=trackm(zm(i,1),maxCamAngSpeed,camA(i));
+        [camA(i) dir(i)]=trackmOrig(zm(i,1),maxCamAngSpeed,camA(i));
     end
 %%    
     %Real time plotting
@@ -236,7 +235,7 @@ for k=1:N
         startplotidx=k-tail;
     end
     for i=1:nm
-        plot(xstatic(1),xstatic(1),'g.',...
+        plot(xstatic(1),xstatic(2),'g.',...
             xV{1,i}(1,startplotidx:k),xV{1,i}(2,startplotidx:k),'b',...
             dirx(i,:),diry(i,:),'g',...   %direction arrow base
             fov1x(i,:),fov1y(i,:),'m',...

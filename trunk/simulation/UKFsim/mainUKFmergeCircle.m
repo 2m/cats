@@ -29,21 +29,26 @@ global vc; %the velocities of the cats
 global k;  %current time step
 global N;  %total number of time steps
 global x;  %state vector of the cats
+global phi; %Angle of circular motion of the cats
 
-stream = RandStream.create('mt19937ar','seed',60904);
+stream = RandStream.create('mt19937ar','seed',6094);
 %s=RandStream('mt19937ar'); %
 RandStream.setDefaultStream(stream);
 
 %%
 bound=[0 2 0 2];
-landm=[ 0.1,.1 ;
-        0.1,1.9 ;...
-        1.9,0.1 ;...
-        1.9,1.9 ];
+landm=[ .6  ,1.4
+        1.4 ,1.4
+        1   ,.6];
+% 0.1 .1 
+%         0.1,1.9
+%         1.9,0.1
+%         1.9,1.9
+
 n=size(landm,1);
-phi=[0;pi/2];   %angle of the circular movement of the mouse
-radius=[.8;.8];
-nm=2;
+phi=[0;pi/2; 5*pi/4];   %angle of the circular movement of the mouse
+radius=[.8;.8;.8];
+nm=3;
 sc=zeros(2,nm);
 for i=1:nm
     sc(:,i)=[1+radius(i)*cos(phi(i));1+radius(i)*sin(phi(i))];
@@ -53,8 +58,8 @@ nz=n+4;
 nx=6;
 nxm=4;
 fov=43*pi/180;
-stddegrees = 1;
-lambda = [stddegrees*(pi/180),5e-2,5e-2,1e-20,1e-20];% Standard deviation of measurement noise
+stddegrees = 2;
+lambda = [stddegrees*(pi/180),2e-2,2e-2,1e-20,1e-20];% Standard deviation of measurement noise
         %[bearing angle      ,vx   ,vy   ,cam.ang]
 N=500;                           %Number of time steps
 dt=1;
@@ -103,8 +108,8 @@ Pm = 1e-3*eye(nxm);                         % initial state covraiance
 
 s=zeros(nx,nm);
 initpos=zeros(2,nm);
-camA=zeros(1,nm); %estimated initial camera angle
-camAabs=zeros(1,nm); %estimated initial camera angle
+camA=zeros(1,nm); %estimated initial relative camera angle
+camAabs=zeros(1,nm); %estimated initial absolute camera angle
 for i=1:nm
     s(:,i) = [sc(:,i); vc{1,i}(:,1);...
         atan2( vc{1,i}(2,1),vc{1,i}(1,1) ); pi/4];          % true initial state
@@ -154,10 +159,14 @@ tail=5;
 
 cats=zeros(nx,nm);
 dir=ones(1,nm);
+maxCamAngSpeed=0.03;
+
+noiseShift=zeros(nz,1);
+noiseShift(n+1:n+2)=.003;
 
 for k=1:N
     %%
-    camAabs=mod(camA+x(5,:),2*pi);
+    camAabs=mod(camA+s(5,:),2*pi);
     
     for i=1:nm
         catAng=atan2(vc{1,i}(2,k),vc{1,i}(1,k));
@@ -178,9 +187,10 @@ for k=1:N
     end
     sm=sm+vm(:,k);
     
+    
     for i=1:nm
         xV{1,i}(:,k) = x(:,i);               % store state estimate
-        z(:,i)=h(s(:,i)) + mNoise(i);        % measurements
+        z(:,i)=h(s(:,i)) + mNoise(i)+noiseShift;        % measurements
 %         z(1:3,i)=z(1:3,i)+x(5,i)
 %         z(1:3,i)=mod(z(i,1),2*pi);
     end
@@ -191,7 +201,7 @@ for k=1:N
     %Use previous measurement if target is out of view
     z=noCheat(z);
     zm=noCheatm(zm);
-    xstatic=ls_estm(zm);
+    xstatic=ls_estmDropout(zm);
     
     for i=1:nm
         sV{1,i}(:,k)= s(:,i);                % save actual state
@@ -210,7 +220,6 @@ for k=1:N
     %Camera control
     inactCats=1:nm; %all by default
     inactCats(actCats)=[]; %remove active cats
-    maxCamAngSpeed=0.1;
     %If the mouse is out of view, search for it
     for i=inactCats
         camA(i)=searchm(maxCamAngSpeed,camA(i),dir(i));
@@ -225,22 +234,34 @@ for k=1:N
     %Real time plotting
     for i=1:nm
         for j=actLandm{1,i}
-            raysX{j,i}(1,:)=[x(1,i), cos(z(j,i))+x(1,i) + faraway*cos(z(j,i))];
-            raysY{j,i}(1,:)=[x(2,i), sin(z(j,i))+x(2,i) + faraway*sin(z(j,i))];
+            raysX{j,i}(1,:)=[xV{1,i}(1,k), cos(zV{1,i}(j,k))+xV{1,i}(1,k) + faraway*cos(zV{1,i}(j,k))];
+            raysY{j,i}(1,:)=[xV{1,i}(2,k), sin(zV{1,i}(j,k))+xV{1,i}(2,k) + faraway*sin(zV{1,i}(j,k))];
         end
         for j=actCats
-            raysXm{j,i}(1,:)=[x(1,j), cos(zm(j,1))+x(1,j) + faraway*cos(zm(j,1))];
-            raysYm{j,i}(1,:)=[x(2,j), sin(zm(j,1))+x(2,j) + faraway*sin(zm(j,1))];
+            raysXm{j,i}(1,:)=[xV{1,j}(1,k), cos(zVm(j,k))+xV{1,j}(1,k) + faraway*cos(zVm(j,k))];
+            raysYm{j,i}(1,:)=[xV{1,j}(2,k), sin(zVm(j,k))+xV{1,j}(2,k) + faraway*sin(zVm(j,k))];
+        end
+    end
+   
+    for i=1:nm
+        for j=actLandm{1,i}
+            landmLineHandle=plot([raysX{j,i}],[raysY{j,i}],':');
+            set(landmLineHandle,'Color',[.8 .8 .8])
+            hold on
+        end
+        for j=actCats
+            plot([raysXm{j,i}],[raysYm{j,i}],'k');
+            hold on
         end
     end
     
     for i=1:nm
-        dirx(i,:)=[x(1,i), x(1,i)+arrowl*cos(x(5,i))];
-        diry(i,:)=[x(2,i), x(2,i)+arrowl*sin(x(5,i))];
-        fov1x(i,:)=[x(1,i), x(1,i)+arrowl*cos(x(6,i)+fov/2)];
-        fov2x(i,:)=[x(1,i), x(1,i)+arrowl*cos(x(6,i)-fov/2)];
-        fov1y(i,:)=[x(2,i), x(2,i)+arrowl*sin(x(6,i)+fov/2)];
-        fov2y(i,:)=[x(2,i), x(2,i)+arrowl*sin(x(6,i)-fov/2)];
+        dirx(i,:)=[xV{1,i}(1,k) , xV{1,i}(1,k)+arrowl*cos(xV{1,i}(5,k))];
+        diry(i,:)=[xV{1,i}(2,k) , xV{1,i}(2,k)+arrowl*sin(xV{1,i}(5,k))];
+        fov1x(i,:)=[xV{1,i}(1,k), xV{1,i}(1,k)+arrowl*cos(xV{1,i}(6,k)+fov/2)];
+        fov2x(i,:)=[xV{1,i}(1,k), xV{1,i}(1,k)+arrowl*cos(xV{1,i}(6,k)-fov/2)];
+        fov1y(i,:)=[xV{1,i}(2,k), xV{1,i}(2,k)+arrowl*sin(xV{1,i}(6,k)+fov/2)];
+        fov2y(i,:)=[xV{1,i}(2,k), xV{1,i}(2,k)+arrowl*sin(xV{1,i}(6,k)-fov/2)];
     end
     
     if k<=tail
@@ -252,7 +273,7 @@ for k=1:N
     colInc2=0.5/tail;
     j=0;
     for j=1:k-startplotidx
-        plotColor1=[0           1           0          ;
+        plotColor1=[0       .8          0          ;
                 1-j*colInc1 1-j*colInc1 1          ;
                 0           1           0          ;
                 1           0           1          ;
@@ -262,7 +283,7 @@ for k=1:N
                 1           0           0         ];
         idxVec=startplotidx+j-1:startplotidx+j;
         for i=1:nm
-            lineHandle1=plot(xstatic(1),xstatic(1),'g.',...
+            lineHandle1=plot(xstatic(1),xstatic(2),'g.',...
                 xV{1,i}(1,idxVec),xV{1,i}(2,idxVec),'b',...
                 dirx(i,:),diry(i,:),'g',...   %direction arrow base
                 fov1x(i,:),fov1y(i,:),'m',...
@@ -270,13 +291,13 @@ for k=1:N
                 xV{1,i}(1,k),xV{1,i}(2,k),'b.',...
                 sV{1,i}(1,idxVec),sV{1,i}(2,idxVec),'r',...
                 sV{1,i}(1,k),sV{1,i}(2,k),'r.');
-            hold on
+                hold on
             for u=1:size(plotColor1,1)
                 set(lineHandle1(u),'Color',plotColor1(u,:))
             end
         end
         
-        plotColor2=[0           0           0         ;
+        plotColor2=[0        0           0         ;
                  1-j*colInc2 1-j*colInc2 1         ;
                  .5          .5          1         ;
                  1           1-j*colInc2 1-j*colInc2;
@@ -291,18 +312,10 @@ for k=1:N
             set(lineHandle2(u),'Color',plotColor2(u,:))
         end
     end
-    
-    for i=1:nm
-        for j=actLandm{1,i}
-            plot([raysX{j,i}],[raysY{j,i}],'k:');
-        end
-        for j=actCats
-            plot([raysXm{j,i}],[raysYm{j,i}],'k');
-        end
-    end
+
     axis(bound)
     hold off
-    pause(.001)
+    pause(.02)
 end
 
 %%
