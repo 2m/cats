@@ -14,6 +14,7 @@ public final class Fixed {
 	public static final int ONE = 1 << FIXED_POINT;
 	public static final int HALF = ONE >> 1;
 
+	// TODO: Descide on circle size
 	private static final int TRIG_SHIFT = 30;
 	public static final int QUARTER_CIRCLE = 64;
 	private static final int CIRCLE_MASK = QUARTER_CIRCLE * 4 - 1;
