@@ -1,90 +1,131 @@
 <uml>
    <greenVersion="30500"/>
    <type>
+      <name="=GSim/src<GSim{MotorControl.java[MotorControl"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="957"/>
+      <y="1485"/>
+   </type>
+   <type>
       <name="=GSim/src<GSim{GSim.java[GSim"/>
       <height="-1"/>
       <width="-1"/>
-      <x="471"/>
-      <y="805"/>
+      <x="2030"/>
+      <y="663"/>
+   </type>
+   <type>
+      <name="=GSim/src<GSim{AbsolutePositioningFilter.java[AbsolutePositioningFilter"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="991"/>
+      <y="104"/>
+   </type>
+   <type>
+      <name="=GSim/src<GSim{AbsolutePositioningParticleFilter.java[AbsolutePositioningParticleFilter"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="25"/>
+      <y="14"/>
    </type>
    <type>
       <name="=GSim/src<GSim{Actor.java[Actor"/>
       <height="-1"/>
       <width="-1"/>
-      <x="846"/>
-      <y="101"/>
+      <x="1976"/>
+      <y="1818"/>
+   </type>
+   <type>
+      <name="=GSim/src<GSim{Buffer.java[Buffer"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="1213"/>
+      <y="1267"/>
+   </type>
+   <type>
+      <name="=GSim/src<GSim{BufferFIFO.java[BufferFIFO"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="864"/>
+      <y="1255"/>
+   </type>
+   <type>
+      <name="=GSim/src<GSim{BufferFIFO.java[node"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="794"/>
+      <y="960"/>
    </type>
    <type>
       <name="=GSim/src<GSim{Cat.java[Cat"/>
       <height="-1"/>
       <width="-1"/>
-<<<<<<< .mine
-      <x="298"/>
-      <y="145"/>
-=======
-      <x="505"/>
-      <y="584"/>
->>>>>>> .r259
-   </type>
-<<<<<<< .mine
-   <type>
-      <name="=GSim/src<GSim{trackingParticleFilter.java[trackingParticleFilter"/>
-      <height="-1"/>
-      <width="-1"/>
-      <x="20"/>
-      <y="1053"/>
+      <x="2185"/>
+      <y="1619"/>
    </type>
    <type>
-      <name="=GSim/src<GSim{trackingFilter.java[trackingFilter"/>
+      <name="=GSim/src<GSim{Fixed.java[Fixed"/>
       <height="-1"/>
       <width="-1"/>
-      <x="1"/>
-      <y="813"/>
+      <x="64"/>
+      <y="497"/>
    </type>
-=======
->>>>>>> .r259
    <type>
-      <name="=GSim/src<GSim{landMark.java[landMark"/>
+      <name="=GSim/src<GSim{LandMark.java[LandMark"/>
       <height="-1"/>
       <width="-1"/>
-      <x="299"/>
-      <y="252"/>
+      <x="2244"/>
+      <y="1415"/>
    </type>
    <type>
       <name="=GSim/src<GSim{Mouse.java[Mouse"/>
       <height="-1"/>
       <width="-1"/>
-      <x="307"/>
-      <y="42"/>
+      <x="2177"/>
+      <y="1274"/>
    </type>
    <type>
-      <name="=GSim/src<GSim{realTimeClock.java[realTimeClock"/>
+      <name="=GSim/src<GSim{MovementData.java[MovementData"/>
       <height="-1"/>
       <width="-1"/>
-      <x="0"/>
-      <y="641"/>
+      <x="339"/>
+      <y="1407"/>
    </type>
    <type>
-      <name="=GSim/src<GSim{bufferFIFO.java[bufferFIFO"/>
+      <name="=GSim/src<GSim{ParticleFilter.java[ParticleFilter"/>
       <height="-1"/>
       <width="-1"/>
-      <x="1015"/>
-      <y="669"/>
+      <x="1370"/>
+      <y="2436"/>
    </type>
    <type>
-      <name="=GSim/src<GSim{bufferFIFO.java[node"/>
+      <name="=GSim/src<GSim{RealTimeClock.java[RealTimeClock"/>
       <height="-1"/>
       <width="-1"/>
-      <x="888"/>
-      <y="968"/>
+      <x="497"/>
+      <y="2335"/>
    </type>
    <type>
-      <name="=GSim/src<GSim{motorControl.java[motorControl"/>
+      <name="=GSim/src<GSim{SensorHandler.java[SensorHandler"/>
       <height="-1"/>
       <width="-1"/>
-      <x="303"/>
-      <y="402"/>
+      <x="2211"/>
+      <y="1774"/>
    </type>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.association.AssociationPart"/>
+      <sourceType="=GSim/src<GSim{SensorHandler.java[SensorHandler"/>
+      <targetType="=GSim/src<GSim{Actor.java[Actor"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.dependency.DependencyIPart"/>
+      <sourceType="=GSim/src<GSim{MotorControl.java[MotorControl"/>
+      <targetType="=GSim/src<GSim{MovementData.java[MovementData"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
    <relationship>
       <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
       <sourceType="=GSim/src<GSim{Cat.java[Cat"/>
@@ -92,25 +133,10 @@
       <bendpoints>
       </bendpoints>
    </relationship>
-<<<<<<< .mine
-   <relationship>
-      <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
-      <sourceType="=GSim/src<GSim{trackingParticleFilter.java[trackingParticleFilter"/>
-      <targetType="=GSim/src<GSim{trackingFilter.java[trackingFilter"/>
-      <bendpoints>
-      </bendpoints>
-   </relationship>
-   <relationship>
-      <class="edu.buffalo.cse.green.relationship.composition.CompositionPart"/>
-      <sourceType="=GSim/src<GSim{Actor.java[Actor"/>
-      <targetType="=GSim/src<GSim{motorControl.java[motorControl"/>
-      <bendpoints>
-      </bendpoints>
-   </relationship>
    <relationship>
       <class="edu.buffalo.cse.green.relationship.association.AssociationPart"/>
-      <sourceType="=GSim/src<GSim{bufferFIFO.java[node"/>
-      <targetType="=GSim/src<GSim{bufferFIFO.java[node"/>
+      <sourceType="=GSim/src<GSim{BufferFIFO.java[node"/>
+      <targetType="=GSim/src<GSim{BufferFIFO.java[node"/>
       <bendpoints>
          <bendpoint>
             <x="40"/>
@@ -127,25 +153,72 @@
       </bendpoints>
    </relationship>
    <relationship>
+      <class="edu.buffalo.cse.green.relationship.composition.CompositionPart"/>
+      <sourceType="=GSim/src<GSim{Actor.java[Actor"/>
+      <targetType="=GSim/src<GSim{MotorControl.java[MotorControl"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
+   <relationship>
       <class="edu.buffalo.cse.green.relationship.association.AssociationPart"/>
-      <sourceType="=GSim/src<GSim{motorControl.java[motorControl"/>
-      <targetType="=GSim/src<GSim{realTimeClock.java[realTimeClock"/>
+      <sourceType="=GSim/src<GSim{AbsolutePositioningFilter.java[AbsolutePositioningFilter"/>
+      <targetType="=GSim/src<GSim{Buffer.java[Buffer"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.association.AssociationPart"/>
+      <sourceType="=GSim/src<GSim{Actor.java[Actor"/>
+      <targetType="=GSim/src<GSim{SensorHandler.java[SensorHandler"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.dependency.DependencyLPart"/>
+      <sourceType="=GSim/src<GSim{BufferFIFO.java[BufferFIFO"/>
+      <targetType="=GSim/src<GSim{BufferFIFO.java[node"/>
       <bendpoints>
       </bendpoints>
    </relationship>
    <relationship>
       <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
-      <sourceType="=GSim/src<GSim{landMark.java[landMark"/>
+      <sourceType="=GSim/src<GSim{LandMark.java[LandMark"/>
       <targetType="=GSim/src<GSim{Actor.java[Actor"/>
       <bendpoints>
       </bendpoints>
    </relationship>
-=======
->>>>>>> .r259
    <relationship>
-      <class="edu.buffalo.cse.green.relationship.dependency.DependencyLPart"/>
-      <sourceType="=GSim/src<GSim{bufferFIFO.java[bufferFIFO"/>
-      <targetType="=GSim/src<GSim{bufferFIFO.java[node"/>
+      <class="edu.buffalo.cse.green.relationship.association.AssociationPart"/>
+      <sourceType="=GSim/src<GSim{MotorControl.java[MotorControl"/>
+      <targetType="=GSim/src<GSim{Buffer.java[Buffer"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.association.AssociationPart"/>
+      <sourceType="=GSim/src<GSim{MotorControl.java[MotorControl"/>
+      <targetType="=GSim/src<GSim{RealTimeClock.java[RealTimeClock"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.association.AssociationPart"/>
+      <sourceType="=GSim/src<GSim{AbsolutePositioningFilter.java[AbsolutePositioningFilter"/>
+      <targetType="=GSim/src<GSim{RealTimeClock.java[RealTimeClock"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
+      <sourceType="=GSim/src<GSim{AbsolutePositioningParticleFilter.java[AbsolutePositioningParticleFilter"/>
+      <targetType="=GSim/src<GSim{AbsolutePositioningFilter.java[AbsolutePositioningFilter"/>
+      <bendpoints>
+      </bendpoints>
+   </relationship>
+   <relationship>
+      <class="edu.buffalo.cse.green.relationship.generalization.GeneralizationPart"/>
+      <sourceType="=GSim/src<GSim{BufferFIFO.java[BufferFIFO"/>
+      <targetType="=GSim/src<GSim{Buffer.java[Buffer"/>
       <bendpoints>
       </bendpoints>
    </relationship>
