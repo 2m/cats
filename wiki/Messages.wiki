@@ -4,7 +4,7 @@
 
 Probably only one big message needed:
 
-{id (int), t (int), angle_m (f), x_m (f), y_m (f), v_xm (f), v_ym (f), x_c (f), y_c (f), v_xc (f), vy_m (f), angle_c (f), rel_angle_cam (f), seen_landmarks (int(4)), sees_mouse (boolean) }
+{id (int), t (int), angle_m (f), x_m (f), y_m (f), v_xm (f), v_ym (f), x_c (f), y_c (f), v_xc (f), vy_m (f), angle_c (f), angle_cam (f), seen_landmarks (int(4)), sees_mouse (boolean) }
 
 Notes:
 
@@ -20,7 +20,7 @@ Notes:
   * v_xc = x component of velocity of the cat
   * v_yc = y component of velocity of the cat
   * angle_c = orientation of the cat (relative to the map)
-  * rel_angle_cam = orientation of the camera relative to the cat
+  * angle_cam = orientation of the camera relative to the map
   * seen_landmarks = landmarks currently within the view of the cat
   * sees_mouse = if the cat currently sees the mouse
 
