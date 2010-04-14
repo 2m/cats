@@ -26,6 +26,7 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 	
 	private int[] randn_lut;
 	private int randn_index;
+	private int RANDN_MASK = 255; 
 	
 	public AbsolutePositioningParticleFilter(int N, float T, Buffer sensorData, Buffer movementData, Arena arena, RealTimeClock rttime, LandmarkList landmarks) {
 		super(T, sensorData, movementData, arena, rttime, landmarks);
@@ -37,35 +38,43 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 	/**
 	 * Create and init all particles
 	 */
-	public void initParticles() {
+	private void initParticles() {
 		// State variables x, y, angle
 		x = new int[N];
 		y = new int[N];
 		angle = new int[N];
 		weights = new int[N];
-		// TODO: Add init data (from arena data or other input?)
-		// TODO: write reinit method
+		initParticleData();
+		// Generate random numbers
+		randn_lut = new int[RANDN_MASK + 1];
+
 	}
+	
+	private void initParticleData() {
+		// TODO: Add init data (from arena data or other input?)
+		for(int i=0;i<=RANDN_MASK;i++){
+			randn_lut[i] = Fixed.randn();
+		}	}
 	
 /**
  * Move particles in the direction each particle is facing.
  * @param distance The distance driven
  */
-	public void integrateParticles(int distance) {
+	private void integrateParticles(int distance) {
 		for(int i=0;i<N;i++) {
 			x[i] = x[i] + Fixed.mul(Fixed.cos(angle[i]), distance);
 			y[i] = y[i] + Fixed.mul(Fixed.sin(angle[i]), distance);
 		}
 	}
 
-	public void turnParticles(int theta){
+	private void turnParticles(int theta){
 		for(int i=0;i<N;i++) {
 			angle[i] = angle[i] + theta;
-			// TODO: Mask high values
+			// TODO: Mask high values, depends on circle size
 		}
 	}
 	
-	public void compareParticles(int sensorangle) {
+	private void compareParticles(int sensorangle) {
 		// Compare particles to sensors inputs
 		for(int i=0;i<N;i++) {
 			int theta = -angle[i] - sensorangle;
@@ -111,12 +120,15 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 
 	private int nextRandn() {
 		randn_index++;
-		// TODO: Check overflow
-		// TODO: Create random_lut
-		// randn_lut &= ??
+		randn_index &= RANDN_MASK;
 		return randn_lut[randn_index];
 	}
+	
 	private void reSample() {
+		if (zerosum){
+			// If sum of weights are 0 then a full reinit is needed
+			initParticleData();
+		}else{
 		// TODO: Sort
 		// TODO: Use mean and variance to generate new particles
 		for(int i=Nlc;i<N;i++) {
@@ -129,7 +141,7 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 		for(int i=0;i<N;i++) {
 			weights[i] = norm;
 		}
-	}
+	}}
 	
 	/**
 	 *  Calculate mean
