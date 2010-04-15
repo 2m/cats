@@ -37,13 +37,16 @@ RandStream.setDefaultStream(stream);
 
 %%
 bound=[0 2 0 2];
-landm=[ .6  ,1.4
-        1.4 ,1.4
-        1   ,.6];
-% 0.1 .1 
+%Different landmark scenarios:
+landm=[1 , 1];
+%landm=[]; %no landmarks
+%landm=[ .6  ,1.4
+%         1.4 ,1.4
+%         1   ,.6];
+%landm=[  0.1 .1 
 %         0.1,1.9
 %         1.9,0.1
-%         1.9,1.9
+%         1.9,1.9];
 
 n=size(landm,1);
 phi=[0;pi/2; 5*pi/4];   %angle of the circular movement of the mouse
@@ -59,7 +62,7 @@ nx=6;
 nxm=4;
 fov=43*pi/180;
 stddegrees = 2;
-lambda = [stddegrees*(pi/180),2e-2,2e-2,1e-20,1e-20];% Standard deviation of measurement noise
+lambda = [stddegrees*(pi/180),1e-2,1e-2,1e-20,1e-20];% Standard deviation of measurement noise
         %[bearing angle      ,vx   ,vy   ,cam.ang]
 N=500;                           %Number of time steps
 dt=1;
@@ -162,7 +165,7 @@ dir=ones(1,nm);
 maxCamAngSpeed=0.03;
 
 noiseShift=zeros(nz,1);
-noiseShift(n+1:n+2)=.003;
+noiseShift(n+1:n+2)=.001;
 
 for k=1:N
     %%
@@ -297,17 +300,30 @@ for k=1:N
             end
         end
         
-        plotColor2=[0        0           0         ;
+
+        idxVec=startplotidx+j-1:startplotidx+j;
+        if (length(landm) ~= 0) %landmarks exist
+            plotColor2=[0        0           0         ;
                  1-j*colInc2 1-j*colInc2 1         ;
                  .5          .5          1         ;
                  1           1-j*colInc2 1-j*colInc2;
                  1           .5          .5       ];
-        idxVec=startplotidx+j-1:startplotidx+j;
-        lineHandle2=plot(landm(:,1),landm(:,2),'*',...
+            lineHandle2=plot(landm(:,1),landm(:,2),'*',...
             xVm(1,idxVec),xVm(2,idxVec),'-',...
             xVm(1,k),xVm(2,k),'.',...
             sVm(1,idxVec),sVm(2,idxVec),'-',...
             sVm(1,k),sVm(2,k),'.');
+        else %no landmarks to plot
+            plotColor2=[1-j*colInc2 1-j*colInc2 1         ;
+                 .5          .5          1         ;
+                 1           1-j*colInc2 1-j*colInc2;
+                 1           .5          .5       ];
+            lineHandle2=plot(xVm(1,idxVec),xVm(2,idxVec),'-',...
+            xVm(1,k),xVm(2,k),'.',...
+            sVm(1,idxVec),sVm(2,idxVec),'-',...
+            sVm(1,k),sVm(2,k),'.');
+        end
+        
         for u=1:size(plotColor2,1)
             set(lineHandle2(u),'Color',plotColor2(u,:))
         end
