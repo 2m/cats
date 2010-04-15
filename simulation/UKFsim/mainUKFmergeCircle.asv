@@ -29,7 +29,7 @@ global vc; %the velocities of the cats
 global k;  %current time step
 global N;  %total number of time steps
 global x;  %state vector of the cats
-global phi; 
+global phi; %Angle of circular motion of the cats
 
 stream = RandStream.create('mt19937ar','seed',6094);
 %s=RandStream('mt19937ar'); %
@@ -37,18 +37,20 @@ RandStream.setDefaultStream(stream);
 
 %%
 bound=[0 2 0 2];
-landm=[ .6  ,1.4
-        1.4 ,1.4
-        1   ,.6];
-% 0.1 .1 
+landm=[];
+%landm=[ .6  ,1.4
+%         1.4 ,1.4
+%         1   ,.6];
+
+%         0.1 .1 
 %         0.1,1.9
 %         1.9,0.1
 %         1.9,1.9
 
 n=size(landm,1);
-phi=[0;pi/2];   %angle of the circular movement of the mouse
-radius=[.8;.8];
-nm=2;
+phi=[0;pi/2; 5*pi/4];   %angle of the circular movement of the mouse
+radius=[.8;.8;.8];
+nm=3;
 sc=zeros(2,nm);
 for i=1:nm
     sc(:,i)=[1+radius(i)*cos(phi(i));1+radius(i)*sin(phi(i))];
@@ -59,7 +61,7 @@ nx=6;
 nxm=4;
 fov=43*pi/180;
 stddegrees = 2;
-lambda = [stddegrees*(pi/180),2e-2,2e-2,1e-20,1e-20];% Standard deviation of measurement noise
+lambda = [stddegrees*(pi/180),1e-2,1e-2,1e-20,1e-20];% Standard deviation of measurement noise
         %[bearing angle      ,vx   ,vy   ,cam.ang]
 N=500;                           %Number of time steps
 dt=1;
@@ -159,10 +161,10 @@ tail=5;
 
 cats=zeros(nx,nm);
 dir=ones(1,nm);
-maxCamAngSpeed=0.1;
+maxCamAngSpeed=0.03;
 
 noiseShift=zeros(nz,1);
-noiseShift(n+1:n+2)=.001;
+noiseShift(n+1:n+2)=.003;
 
 for k=1:N
     %%
@@ -201,7 +203,7 @@ for k=1:N
     %Use previous measurement if target is out of view
     z=noCheat(z);
     zm=noCheatm(zm);
-    xstatic=ls_estm(zm);
+    xstatic=ls_estmDropout(zm);
     
     for i=1:nm
         sV{1,i}(:,k)= s(:,i);                % save actual state
@@ -245,7 +247,7 @@ for k=1:N
    
     for i=1:nm
         for j=actLandm{1,i}
-            landmLineHandle=plot([raysX{j,i}],[raysY{j,i}],'-');
+            landmLineHandle=plot([raysX{j,i}],[raysY{j,i}],':');
             set(landmLineHandle,'Color',[.8 .8 .8])
             hold on
         end
@@ -303,11 +305,23 @@ for k=1:N
                  1           1-j*colInc2 1-j*colInc2;
                  1           .5          .5       ];
         idxVec=startplotidx+j-1:startplotidx+j;
-        lineHandle2=plot(landm(:,1),landm(:,2),'*',...
+        if (size(landm)==[0 0])
+            plotColor2=[1-j*colInc2 1-j*colInc2 1         ;
+                 .5          .5          1         ;
+                 1           1-j*colInc2 1-j*colInc2;
+                 1           .5          .5       ];
+            lineHandle2=plot(xVm(1,idxVec),xVm(2,idxVec),'-',...
+            xVm(1,k),xVm(2,k),'.',...
+            sVm(1,idxVec),sVm(2,idxVec),'-',...
+            sVm(1,k),sVm(2,k),'.');
+        else
+            lineHandle2=plot(landm(:,1),landm(:,2),'*',...
             xVm(1,idxVec),xVm(2,idxVec),'-',...
             xVm(1,k),xVm(2,k),'.',...
             sVm(1,idxVec),sVm(2,idxVec),'-',...
             sVm(1,k),sVm(2,k),'.');
+        end
+        
         for u=1:size(plotColor2,1)
             set(lineHandle2(u),'Color',plotColor2(u,:))
         end
@@ -315,7 +329,7 @@ for k=1:N
 
     axis(bound)
     hold off
-    pause(.002)
+    pause(.02)
 end
 
 %%

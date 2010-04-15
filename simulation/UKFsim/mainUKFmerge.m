@@ -184,7 +184,7 @@ for k=1:N
     for i=1:nm
         sV{1,i}(:,k)= s(:,i);                % save actual state
         zV{1,i}(1:nz,k) = z(:,i);                      % save measurment
-        [x(:,i), P{1,i}] = ukf(f,x(:,i),P{1,i},h,z(:,i),Q,R{1,i});
+        [x(:,i), P{1,i}] = ukf(f,x(:,i),P{1,i},h,z(:,i),Q,R{1,i}); %filter for absolute positioning of cats
         x(:,i)=outOfBoundsCorr(x(:,i),xV{1,i},bound);
         s(:,i) = cats(:,i);                            % update process
     end
