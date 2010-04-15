@@ -1,11 +1,52 @@
 package GSim;
 
+import lejos.util.Matrix;
+
 public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 {
+	//Instance variables
+	private int L;  //number of states
+	private int m;  //number of measurements
+	private float alpha=3.5f;  //1e-3 default, tunable
+	private float ki=0;  //default, tunable
+	private float beta=(float)Math.pow(alpha, 2) -0.9f; //TODO Check if correctly converted from matlab //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
+	private float lambda=(float)Math.pow(alpha, 2)*(L+ki)-L;  //scaling factor
+	private float c=L+lambda;  //scaling factor
+	private Matrix Wm;  //weights for means
+	private Matrix Wc;  //weights for covariance
+	  
 	
-	public float[] Ukf(float fstate, float x, float P, float hmeas, float z,
-			float Q, float R, float Kzero) 
+	
+		/*int test_uygsudf = 3;
+	private Matrix test = new Matrix(1,1,(double)2.0);
+	double[] test2 =  {1,2,3};
+	Matrix test3 = new Matrix(test2,test2.length);
+	*/		
+	
+/* TODO 
+	X=sigmas(x,P,c);                            %sigma points around x
+	[x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L,Q);          %unscented transformation of process
+	% X1=sigmas(x1,P1,c);                         %sigma points around x1
+	% X2=X1-x1(:,ones(1,size(X1,2)));             %deviation of X1
+	[z1,Z1,P2,Z2]=ut(hmeas,X1,Wm,Wc,m,R);       %unscented transformation of measurments
+	P12=X2*diag(Wc)*Z2';                        %transformed cross-covariance
+	K=P12/P2;           %old: P12*inv(P2);
+	*/
+
+	public UnscentedKalmanFilter(){
+		Wm = new Matrix(1, (2*L+1), 0.5/c);
+		Wm.set(1,1,lambda/c);  //TODO Check if correctly converted from matlab 
+		Wc=Wm.copy();
+		Wc.set(1,1, Wc.get(1,1) + 1 - Math.pow(alpha, 2) + beta);  //TODO Check if correctly converted from matlab             
+		c=(float)Math.sqrt(c);
+
+		
+	}
+	
+	public Matrix Ukf(float fstate, Matrix x, Matrix P, float hmeas, Matrix z, Matrix Q, float R, float Kzero) 
 	{
+		L=x.getColumnDimension();  //TODO check that its the right dimension (column/row)
+		m=z.getColumnDimension(); 
 		
 /*
 
@@ -21,7 +62,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		h=@(x)x(1);                               % measurement equation
 		s=[0;0;1];                                % initial state
 		x=s+q*randn(3,1); %initial state          % initial state with noise
-		P = eye(n);                               % initial state covraiance
+		P = eye(n);                               % initial state covariance
 		N=20;                                     % total dynamic steps
 		xV = zeros(n,N);          %estmate        % allocate memory
 		sV = zeros(n,N);          %actual
@@ -42,25 +83,9 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		%
 		% By Yi Cao at Cranfield University, 04/01/2008
 		%
-		L=numel(x);                                 %numer of states
-		m=numel(z);                                 %numer of measurements
-		alpha=3.5;%1e-3;                           %default, tunable
-		ki=0;                                       %default, tunable
-		beta=alpha^2-.9;%lower bound% -2;%10 5 10000 -2* -1 0 1 def:2; %default, tunable
-		lambda=alpha^2*(L+ki)-L;                    %scaling factor
-		c=L+lambda;                                 %scaling factor
-		Wm=[lambda/c 0.5/c+zeros(1,2*L)];           %weights for means
-		Wc=Wm;
-		Wc(1)=Wc(1)+(1-alpha^2+beta);               %weights for covariance
-		c=sqrt(c);
-		X=sigmas(x,P,c);                            %sigma points around x
-		[x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L,Q);          %unscented transformation of process
-		% X1=sigmas(x1,P1,c);                         %sigma points around x1
-		% X2=X1-x1(:,ones(1,size(X1,2)));             %deviation of X1
-		[z1,Z1,P2,Z2]=ut(hmeas,X1,Wm,Wc,m,R);       %unscented transformation of measurments
-		P12=X2*diag(Wc)*Z2';                        %transformed cross-covariance
-		K=P12/P2;           %old: P12*inv(P2);
-
+		*/
+		
+		/*
 		Ktemp=K;
 		if nargin>7
 		    for i=1:length(Kzero)
