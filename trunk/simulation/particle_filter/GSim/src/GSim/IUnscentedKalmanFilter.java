@@ -1,5 +1,7 @@
 package GSim;
 
+import lejos.util.Matrix;
+
 /**
  * The interface for the Unscented Kalman Filter
  * @author Edvard
@@ -15,17 +17,16 @@ public interface IUnscentedKalmanFilter
 	 *            z_k   = h(x_k) + v_k
 	 * where w ~ N(0,Q) meaning w is gaussian noise with covariance Q
 	 *       v ~ N(0,R) meaning v is gaussian noise with covariance R    
-	 * @param f: function handle for f(x)
+	 * @param f: function handle for f(x), nonlinear state equations
 	 * @param x: "a priori" state estimate
 	 * @param P: "a priori" estimated state covariance
-	 * @param h: fanction handle for h(x)
+	 * @param h: fanction handle for h(x), measurement equation
 	 * @param z: current measurement
 	 * @param Q: process noise covariance
 	 * @param R: measurement noise covariance
 	 * @param ???
 	 * @return x: "a posteriori" state estimate and P: "a posteriori" state covariance
 	 */
-	float[] Ukf(float fstate, float x, float P, float hmeas,
-			float z, float Q,float R, float Kzero);
+	public Matrix Ukf(float fstate, Matrix x, Matrix P, float hmeas, Matrix z, Matrix Q, float R, float Kzero);
 
 }
