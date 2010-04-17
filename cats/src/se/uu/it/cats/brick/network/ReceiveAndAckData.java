@@ -1,6 +1,7 @@
 package se.uu.it.cats.brick.network;
 
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.network.packet.Packet;
 
 import lejos.nxt.comm.BTConnection;
 
@@ -127,10 +128,5 @@ public class ReceiveAndAckData extends LowLevelHandler
 		Logger.println("Checksum:"+String.valueOf(checksum));
 		
 		ConnectionListener.setListen(true);	
-	}
-	
-	public void sendByte()
-	{
-		// stub
 	}
 }

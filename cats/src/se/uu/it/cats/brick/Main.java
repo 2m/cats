@@ -8,6 +8,8 @@ import lejos.util.Timer;
 import lejos.util.TimerListener;
 import se.uu.it.cats.brick.network.ConnectionListener;
 import se.uu.it.cats.brick.network.ConnectionManager;
+import se.uu.it.cats.brick.network.packet.Packet;
+import se.uu.it.cats.brick.network.packet.Timestamp;
 import se.uu.it.cats.brick.storage.StorageManager;
 
 /**
@@ -19,6 +21,7 @@ public class Main
 	public static void main(String[] args) throws InterruptedException
 	{
 		Logger.init();
+		Clock.init();
 		
 		//ColorSensorTest cst = new ColorSensorTest();
 		//cst.run();
@@ -50,8 +53,10 @@ public class Main
 						}
 					});
 					t.start();*/
-					byte data = (byte)(StorageManager.getInstance().getData() + 1);
-					StorageManager.getInstance().setData(data);
+					//byte data = (byte)(StorageManager.getInstance().getData() + 1);
+					//StorageManager.getInstance().setData(data);
+					
+					ConnectionManager.getInstance().sendPacketToAll(new Timestamp(Clock.timestamp()));
 				}
 				else
 					ConnectionManager.getInstance().openConnection(0);
@@ -73,8 +78,9 @@ public class Main
 						}
 					});
 					t.start();*/
-					byte data = (byte)(StorageManager.getInstance().getData() + 1);					
-					StorageManager.getInstance().setData(data);
+					//byte data = (byte)(StorageManager.getInstance().getData() + 1);					
+					//StorageManager.getInstance().setData(data);
+					ConnectionManager.getInstance().sendPacketToAll(new Timestamp(Clock.timestamp()));
 				}
 				else
 					ConnectionManager.getInstance().openConnection(1);
@@ -112,8 +118,9 @@ public class Main
 				if (ConnectionManager.getInstance().isAlive(3))
 				{
 					//ConnectionManager.getInstance().sendByteTo(4, (byte)0x66);
-					byte data = (byte)(StorageManager.getInstance().getData() + 1);					
-					StorageManager.getInstance().setData(data);
+					//byte data = (byte)(StorageManager.getInstance().getData() + 1);					
+					//StorageManager.getInstance().setData(data);
+					ConnectionManager.getInstance().sendPacketToAll(new Timestamp(Clock.timestamp()));
 				}
 
 			}
@@ -122,7 +129,7 @@ public class Main
 		int test = 0;
 		while (test == 0)
 		{
-			LCD.drawInt((byte)StorageManager.getInstance().getData(), 2, 2);
+			//LCD.drawInt((byte)StorageManager.getInstance().getData(), 2, 2);
 			Thread.sleep(100);
 		}
 		

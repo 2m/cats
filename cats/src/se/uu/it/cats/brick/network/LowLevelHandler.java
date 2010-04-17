@@ -2,9 +2,12 @@ package se.uu.it.cats.brick.network;
 
 import javax.bluetooth.RemoteDevice;
 
+import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.network.packet.Packet;
+
 import lejos.nxt.comm.BTConnection;
 
-public class LowLevelHandler extends ConnectionHandler
+public abstract class LowLevelHandler extends ConnectionHandler
 {
 	private byte[] _outputBuffer;
 	private int _outBufSize = 0;
@@ -57,41 +60,85 @@ public class LowLevelHandler extends ConnectionHandler
 		return 0;
 	}
 	
-	protected int read()
+	protected int read() throws Exception
     {
 		if (_inReturnedUntil >= _inBufSize) _inBufSize = 0;
 		if (_inBufSize <= 0)
 		{
 			_inBufSize = _btc.read(_inputBuffer, _inputBuffer.length, false);
-			if (_inBufSize < -1) return _inBufSize;
-			if (_inBufSize <= 0) return -1;
+			
+			if (_inBufSize < 0) throw new ReadError("Lowlevel.read() error: "+_inBufSize);
+			else if (_inBufSize == 0) throw new EmptyBuffer();
+			
 			_inReturnedUntil = 0;
 		}
 		return _inputBuffer[_inReturnedUntil++] & 0xFF;
 	}
 	
-	protected int read(byte[] bArray)
+	protected int read(byte[] bArray, int sourceIndex)
 	{
-		int i;
-		for (i = 0; i < bArray.length; i++)
+		int i, bytesRead = 0;
+		for (i = sourceIndex; i < bArray.length - sourceIndex; i++)
 		{
-			byte b = (byte)read();
-			if (b <= 0) return i;
+			byte b;
+			try
+			{
+				b = (byte)read();
+			}
+			catch (ReadError ex)
+			{
+				Logger.println(ex.getMessage());
+				return bytesRead;
+			}
+			catch (Exception ex)
+			{				
+				return bytesRead;
+			}
 			bArray[i] = b;
+			bytesRead++;
 		}
-		return i;
+		return bytesRead;
 	}
 	
-	@Override
-	public void run()
+	protected int read(byte[] bArray)
 	{
-		// TODO Auto-generated method stub
+		return read(bArray, 0);
 	}
-
-	@Override
+	
 	public void sendByte(byte b)
 	{
-		// TODO Auto-generated method stub
+		//Logger.println("S 66 to "+getPeerName());
+		write(new byte[] {b});
+		
+		if (flush() < 0)
+			ConnectionManager.getInstance().closeConnection(this);
 	}
-
+	
+	public void sendPacket(Packet p)
+	{
+		p.setSource(getLocalId());
+		
+		Logger.print("Sending packet:");
+		byte[] output = p.writeImpl();
+		for (int i = 0; i < output.length; i++)
+			Logger.print(output[i]+", ");
+		Logger.println("of length"+output.length);
+		
+		write(p.writeImpl());
+		
+		if (flush() < 0)
+			ConnectionManager.getInstance().closeConnection(this);
+	}
+	
+	private class EmptyBuffer extends Exception
+	{
+	}
+	
+	private class ReadError extends Exception
+	{
+		public ReadError(String str)
+		{
+			super(str);
+		}
+	}
 }

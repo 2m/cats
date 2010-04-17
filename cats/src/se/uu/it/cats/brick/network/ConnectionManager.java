@@ -3,6 +3,7 @@ package se.uu.it.cats.brick.network;
 import javax.bluetooth.RemoteDevice;
 
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.network.packet.Packet;
 
 import lejos.nxt.comm.BTConnection;
 
@@ -15,6 +16,7 @@ public class ConnectionManager
 	public static final int MAX_OUTBOUND_CONN = 3;
 	
 	private static ConnectionManager _instanceHolder = new ConnectionManager();
+	
 	private ConnectionHandler[] _outboundConnectionHolder = null;
 	private ConnectionHandler _inboundConnectionHolder = null;
 	
@@ -23,7 +25,7 @@ public class ConnectionManager
 		return _instanceHolder;
 	}
 	
-	public ConnectionManager()
+	private ConnectionManager()
 	{
 		_outboundConnectionHolder = new ConnectionHandler[MAX_OUTBOUND_CONN];
 	}
@@ -146,6 +148,26 @@ public class ConnectionManager
 		}
 	}
 	
+	public void sendPacketTo(int i, Packet p)
+	{
+		getConnection(i).sendPacket(p);
+	}
+	
+	public void sendPacketToAll(Packet p)
+	{
+		sendPacketToAllExcept(p, null);
+	}
+	
+	public void sendPacketToAllExcept(Packet p, String name)
+	{
+		Logger.println("Sending packet to all exc "+name);
+		for (int i = 0; i < MAX_OUTBOUND_CONN + 1; i++)
+		{
+			if (isAlive(i) && !getConnection(i).getPeerName().equals(name))
+				sendPacketTo(i, p);
+		}
+	}
+	
 	public RemoteDevice getDeviceByAddress(String address)
 	{
 		if (CAT1.getDeviceAddr().equals(address))
@@ -156,5 +178,29 @@ public class ConnectionManager
 			return CAT3;
 		
 		return null;
+	}
+	
+	public int getIdByAddress(String address)
+	{
+		if (CAT1.getDeviceAddr().equals(address))
+			return 0;
+		else if (CAT2.getDeviceAddr().equals(address))
+			return 1;
+		else if (CAT3.getDeviceAddr().equals(address))
+			return 2;
+		
+		return -1;
+	}
+	
+	public int getIdByName(String name)
+	{
+		if (CAT1.getFriendlyName(false).equals(name))
+			return 0;
+		else if (CAT2.getFriendlyName(false).equals(name))
+			return 1;
+		else if (CAT3.getFriendlyName(false).equals(name))
+			return 2;
+		
+		return -1;
 	}
 }
