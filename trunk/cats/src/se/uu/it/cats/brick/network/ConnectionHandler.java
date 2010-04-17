@@ -1,11 +1,9 @@
 package se.uu.it.cats.brick.network;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-
 import javax.bluetooth.RemoteDevice;
 
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.network.packet.Packet;
 
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
@@ -15,6 +13,7 @@ public abstract class ConnectionHandler implements Runnable
 {
 	protected BTConnection _btc = null;	
 	protected RemoteDevice _peerDevice = null;
+	protected String _localName = Bluetooth.getFriendlyName();
 	
 	protected boolean _alive = false;
 	
@@ -71,9 +70,20 @@ public abstract class ConnectionHandler implements Runnable
 	{
 		return _peerDevice.getFriendlyName(false);
 	}
+	
+	protected int getPeerId()
+	{
+		return ConnectionManager.getInstance().getIdByAddress(_btc.getAddress());
+	}
+	
+	protected int getLocalId()
+	{
+		return ConnectionManager.getInstance().getIdByName(_localName);
+	}
 
 	@Override
 	public abstract void run();
 	
 	public abstract void sendByte(byte b);
+	public abstract void sendPacket(Packet p);
 }

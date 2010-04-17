@@ -5,9 +5,12 @@ import java.io.DataOutputStream;
 
 import javax.bluetooth.RemoteDevice;
 
+import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.network.packet.Packet;
+
 import lejos.nxt.comm.BTConnection;
 
-public class StreamHandler extends ConnectionHandler
+public abstract class StreamHandler extends ConnectionHandler
 {
 	protected DataInputStream _dis = null;
 	protected DataOutputStream _dos = null;
@@ -72,19 +75,14 @@ public class StreamHandler extends ConnectionHandler
 			return -1;
 		}
 	}
-
-	@Override
-	public void run()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
+	
 	public void sendByte(byte b)
 	{
-		// TODO Auto-generated method stub
-
+		
 	}
-
+	
+	public void sendPacket(Packet p)
+	{
+		
+	}
 }

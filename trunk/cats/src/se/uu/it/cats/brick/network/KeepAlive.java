@@ -5,6 +5,8 @@ import javax.bluetooth.RemoteDevice;
 import lejos.nxt.comm.BTConnection;
 
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.network.packet.Packet;
+import se.uu.it.cats.brick.network.packet.PacketManager;
 import se.uu.it.cats.brick.storage.StorageManager;
 
 public class KeepAlive extends LowLevelHandler
@@ -26,22 +28,44 @@ public class KeepAlive extends LowLevelHandler
 	{
 		setAlive(connect());
 		
+		int index = 0;
+		
 		sw.reset();
 		while (isAlive())
 		{
 			byte[] bArr = new byte[255];
-			int received = read(bArr);
+			
+			int received = read(bArr, index);
 			
 			if (received > 0)
-				//PacketManager.getInstance().addToBuffer(bArr, received);
-				StorageManager.getInstance().dataInput(bArr[0], getPeerName());
+			{	
+				index = index + received;
+				
+				Logger.print("Rcvd:"+received+" input buffer:");			
+				for (int i = 0; i < index; i++)
+					Logger.print(bArr[i]+", ");
+				Logger.println("of length"+index);
+				
+				int bytesRead = PacketManager.getInstance().checkForCompletePackets(bArr, index);
+				
+				// if some bytes were used to construct a packet, remove these bytes from the buffer
+				if (bytesRead > 0)
+				{
+					System.arraycopy(bArr, bytesRead, bArr, 0, index - bytesRead);
+					index -= bytesRead;
+				}
+				
+				if (index > 255)
+					Logger.println("Received data buffer is full.");
+			}
 			
-			//Logger.println("Received bytes:"+received);
 			counter += received;
 			
 			if (sw.elapsed() > 3000)
 			{
-				Logger.println("BW from "+getPeerName()+":"+(counter/((float)3)+"B/s"));
+				float currentBw = (float)counter / 3;
+				if (currentBw > 0.0)
+					Logger.println("BW from "+getPeerName()+":"+currentBw+"B/s");
 				sw.reset();
 				counter = 0;
 			}
@@ -51,13 +75,4 @@ public class KeepAlive extends LowLevelHandler
 		
 		ConnectionManager.getInstance().closeConnection(this);
 	}
-	
-	public void sendByte(byte b)
-	{
-		//Logger.println("S 66 to "+getPeerName());
-		write(new byte[] {b});
-		
-		if (flush() < 0)
-			ConnectionManager.getInstance().closeConnection(this);
-	}	
 }

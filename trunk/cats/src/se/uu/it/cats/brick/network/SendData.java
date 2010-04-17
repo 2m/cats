@@ -5,6 +5,7 @@ import java.util.Random;
 import javax.bluetooth.RemoteDevice;
 
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.network.packet.Packet;
 
 public class SendData extends LowLevelHandler
 {
@@ -131,10 +132,4 @@ public class SendData extends LowLevelHandler
 		Logger.println("BW: "+((NUM_SENDS * (PACKET_LENGTH + ACK_LENGTH * 8)) / ((float)elapsed / 1000))+"B/s");
 		Logger.println("Checksum:"+String.valueOf(checksum));
 	}
-	
-	public void sendByte()
-	{
-		// stub
-	}
-	
 }

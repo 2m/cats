@@ -13,6 +13,11 @@ public class StorageManager
 		return _instanceHolder;
 	}
 	
+	private StorageManager()
+	{
+		
+	}
+	
 	public void dataInput(byte b, String source)
 	{
 		sb.updateData(b);
