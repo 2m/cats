@@ -151,44 +151,65 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		A = (A.inverse()).times(c);
 		
 		int n = x.getRowDimension();
+		System.out.println(MatrixToString(x));
 		
-		/*Some index error here
+		
 		Matrix Y = new Matrix(n, n, 1);
+		System.out.println(MatrixToString(Y));
+		
+		//alt1: 
+		for (int j=0; j<n; j++)  //columns
+		{
+			Y.setMatrix(0, n-1, j, j, x);
+		}
+		System.out.println(MatrixToString(Y));
+		//alt2:
+		/*
 		for (int i=0; i<n; n++)  //rows
 		{
 			for (int j=0; j<n; j++)  //columns
 			{
 				Y.set(i, j, x.get(i, 0));
 			}
-		}
+		}*/
 		
 		Matrix X = new Matrix(n,(1+n+n));
-		for (int i=0; i<n; n++)
+		
+		X.setMatrix(0, n-1, 0, 0, x);
+		System.out.println(MatrixToString(X));
+		/*for (int i=0; i<n; n++)
 		{
 			X.set(i, 0, x.get(i, 0));
-		}
+		}*/
+
 		
 		Matrix Y_plus_A = Y.plus(A);
+		
+		X.setMatrix(0, n-1, 1, n, Y_plus_A);
+		System.out.println(MatrixToString(X));
+		/*
 		for (int i=0; i<n; n++)  //rows
 		{
 			for (int j=0; j<n; j++)  //columns
 			{
 				X.set(i, j+1, Y_plus_A.get(i,j));
 			}
-		}
+		}*/
 		
 		Matrix Y_minus_A = Y.minus(A);
+		
+		X.setMatrix(0, n-1, n+1, n+n, Y_minus_A);
+		System.out.println(MatrixToString(X));
+		/*
 		for (int i=0; i<n; n++)  //rows
 		{
 			for (int j=0; j<n; j++)  //columns
 			{
 				X.set(i, j+1+n, Y_minus_A.get(i,j));
 			}
-		}
+		}*/
 		
 		return X;
-		*/
-		return null;
 	}
 
 	public String toString()
@@ -197,11 +218,24 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		String s = " alpha = " + alpha + "\n ki = " + ki + "\n beta = " + beta +
 		"\n lambda = " + lambda + "\n  c = " + c;// + "\n Wm = " + Wm.getArray() + "\n Wc = " + Wc.getArray();
 		
-		/*double[][] print_mat = new double[3][3];
-		print_mat = MATRIX.getArray();
-		System.out.println(print_mat[0][0] + ", " + print_mat[0][1] etc);*/
+
 		return s;	
 	}	
+	
+	public String MatrixToString(Matrix m)
+	{
+		double[][] print_m = m.getArray();
+		String s = "";
+		for (int i=0; i<m.getRowDimension(); i++)
+		{
+			for (int j=0; j<m.getColumnDimension(); j++)
+			{
+				s += print_m[i][j] + " ";
+			}
+			s += "\n";
+		}
+		return s;
+	}
 	
 	public static void main(String args[])
 	{
