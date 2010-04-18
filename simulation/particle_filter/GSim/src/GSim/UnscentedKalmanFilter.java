@@ -5,48 +5,96 @@ import lejos.util.Matrix;
 public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 {
 	//Instance variables
-	private int L;  //number of states
-	private int m;  //number of measurements
-	private float alpha=3.5f;  //1e-3 default, tunable
-	private float ki=0;  //default, tunable
-	private float beta=(float)Math.pow(alpha, 2) -0.9f; //TODO Check if correctly converted from matlab //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
-	private float lambda=(float)Math.pow(alpha, 2)*(L+ki)-L;  //scaling factor
-	private float c=L+lambda;  //scaling factor
-	private Matrix Wm;  //weights for means
-	private Matrix Wc;  //weights for covariance
-	  
+	/** Number of states. */
+	private int L;  
 	
+	/** Number of measurements*/
+	private int m;  //
 	
-		/*int test_uygsudf = 3;
-	private Matrix test = new Matrix(1,1,(double)2.0);
-	double[] test2 =  {1,2,3};
-	Matrix test3 = new Matrix(test2,test2.length);
-	*/		
+	/** Tunable. */
+	private float alpha;  
 	
-/* TODO 
-	X=sigmas(x,P,c);                            %sigma points around x
-	[x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L,Q);          %unscented transformation of process
-	% X1=sigmas(x1,P1,c);                         %sigma points around x1
-	% X2=X1-x1(:,ones(1,size(X1,2)));             %deviation of X1
-	[z1,Z1,P2,Z2]=ut(hmeas,X1,Wm,Wc,m,R);       %unscented transformation of measurments
-	P12=X2*diag(Wc)*Z2';                        %transformed cross-covariance
-	K=P12/P2;           %old: P12*inv(P2);
-	*/
+	/** Tunable. */
+	private float ki;
+	
+	/** Tunable. */
+	private float beta;
+	
+	/** Scaling factor. */
+	private float lambda;
+	
+	/** Scaling factor. */
+	private float c; 
+	
+	/** Weights for means. */
+	private Matrix Wm; 
+	
+	/** Weights for covariance. */
+	private Matrix Wc; 
 
-	public UnscentedKalmanFilter(){
+	/**Constructor
+	 * @param L  number of states
+	 * @param m  number of measurements
+	 */
+	public UnscentedKalmanFilter(int L, int m)
+	{
+		this.L = L;
+		this.m = m;
+		alpha=3.5f;  //1e-3 default
+		ki=0;  //default
+		beta=(float)Math.pow(alpha, 2) -0.9f;  //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
+		lambda=(float)Math.pow(alpha, 2)*(L+ki)-L;  
+		c=L+lambda; 
 		Wm = new Matrix(1, (2*L+1), 0.5/c);
-		Wm.set(1,1,lambda/c);  //TODO Check if correctly converted from matlab 
+		Wm.set(0,0,lambda/c);  //TODO Check if correctly converted from matlab 
 		Wc=Wm.copy();
-		Wc.set(1,1, Wc.get(1,1) + 1 - Math.pow(alpha, 2) + beta);  //TODO Check if correctly converted from matlab             
+		Wc.set(0,0, Wc.get(0,0) + 1 - Math.pow(alpha, 2) + beta);  //TODO Check if correctly converted from matlab             
 		c=(float)Math.sqrt(c);
 
+
+		
+		/*int test_uygsudf = 3;
+		private Matrix test = new Matrix(1,1,(double)2.0);
+		double[] test2 =  {1,2,3};
+		Matrix test3 = new Matrix(test2,test2.length);
+		
+		Matrix P = new Matrix(L,L); //initial state covraiance
+		for (int i =0; i<=L; i++){
+			P.set(i, i, 1);
+		}
+		*/		
 		
 	}
 	
-	public Matrix Ukf(float fstate, Matrix x, Matrix P, float hmeas, Matrix z, Matrix Q, float R, float Kzero) 
+	/*
+	public static void main(String args[])
 	{
-		L=x.getColumnDimension();  //TODO check that its the right dimension (column/row)
-		m=z.getColumnDimension(); 
+		//For testing
+		UnscentedKalmanFilter filter = new UnscentedKalmanFilter(3,1);
+		System.out.println(filter);
+		
+	}*/
+
+    /* (non-Javadoc)
+     * @see IUnscentedKalmanFilter#ukf()
+     */
+	public Matrix ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, float R, float Kzero) 
+	{
+		//L=x.getColumnDimension();  //Currently not needed //TODO check that its the right dimension (column/row)
+		//m=z.getColumnDimension(); 
+		
+		
+		
+
+		Matrix X = new Matrix(1,1); //TODO matrix size 
+		X=sigmas(x,P,c);  //sigma points around x
+		/*[x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L,Q);          %unscented transformation of process
+		% X1=sigmas(x1,P1,c);                         %sigma points around x1
+		% X2=X1-x1(:,ones(1,size(X1,2)));             %deviation of X1
+		[z1,Z1,P2,Z2]=ut(hmeas,X1,Wm,Wc,m,R);       %unscented transformation of measurments
+		P12=X2*diag(Wc)*Z2';                        %transformed cross-covariance
+		K=P12/P2;           %old: P12*inv(P2);
+		*/
 		
 /*
 
@@ -97,22 +145,25 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		    x=x1+K*(z-z1);                              %state update
 		    P=P1-K*P12';                                %covariance update
 		end
-
-		function [y,Y,P,Y1]=ut(f,X,Wm,Wc,n,R)
-		%Unscented Transformation
-		%Input:
-		%        f: nonlinear map
-		%        X: sigma points
-		%       Wm: weights for mean
-		%       Wc: weights for covraiance
-		%        n: numer of outputs of f
-		%        R: additive covariance
-		%Output:
-		%        y: transformed mean
-		%        Y: transformed sampling points
-		%        P: transformed covariance
-		%       Y1: transformed deviations
-
+		*/
+		
+		return null;
+	}
+	
+	
+	/**TODO implement
+	 * Unscented Transformation
+	 * @param f  nonlinear map
+	 * @param X  sigma points
+	 * @param m  weights for mean
+	 * @param Wc  weights for covariance
+	 * @param n  number of outputs of f
+	 * @param R  additive covariance
+	 * @return y: transformed mean, Y: transformed sampling points, P: transformed covariance, Y1: transformed deviations 
+	 */
+	private Object ut(IFunction f, Object X, Object Wm, Object Wc, Object n, Object R)
+	{
+		/*
 		L=size(X,2);
 		y=zeros(n,1);
 		Y=zeros(n,L);
@@ -121,26 +172,36 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		    y=y+Wm(k)*Y(:,k);       
 		end
 		Y1=Y-y(:,ones(1,L));
-		P=Y1*diag(Wc)*Y1'+R;          
-
-		function X=sigmas(x,P,c)
-		%Sigma points around reference point
-		%Inputs:
-		%       x: reference point
-		%       P: covariance
-		%       c: coefficient
-		%Output:
-		%       X: Sigma points
-
-		A = c*chol(P)';
-		Y = x(:,ones(1,numel(x)));
-		X = [x Y+A Y-A]; 
-		
-		
+		P=Y1*diag(Wc)*Y1'+R;   
 		*/
-		
 		
 		return null;
 	}
+	
+	/**TODO implement
+	 * Sigma points around reference point
+	 * @param x  reference point  
+	 * @param P  covariance  
+	 * @param c  coefficient
+	 * @return Sigma points
+	 */
+	private Matrix sigmas(Object x, Object P, Object c)
+	{/*
+		A = c*chol(P)';
+		Y = x(:,ones(1,numel(x)));
+		X = [x Y+A Y-A]; 
+		*/
+		return null;
+	}
+
+	public String toString()
+	{
+		//TODO print L and m, but only if the have values
+		String s = " alpha = " + alpha + "\n ki = " + ki + "\n beta = " + beta +
+		"\n lambda = " + lambda + "\n  c = " + c;// + "\n Wm = " + Wm.getArray() + "\n Wc = " + Wc.getArray();
+		return s;	
+	}
 
 }
+
+
