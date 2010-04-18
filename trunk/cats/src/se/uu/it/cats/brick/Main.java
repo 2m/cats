@@ -1,13 +1,17 @@
 package se.uu.it.cats.brick;
 
+import java.util.Random;
+
 import lejos.nxt.Button;
 import lejos.nxt.ButtonListener;
 import lejos.nxt.LCD;
+import lejos.nxt.Sound;
 import lejos.nxt.comm.RConsole;
 import lejos.util.Timer;
 import lejos.util.TimerListener;
 import se.uu.it.cats.brick.network.ConnectionListener;
 import se.uu.it.cats.brick.network.ConnectionManager;
+import se.uu.it.cats.brick.network.packet.PFMeasurement;
 import se.uu.it.cats.brick.network.packet.Packet;
 import se.uu.it.cats.brick.network.packet.Timestamp;
 import se.uu.it.cats.brick.storage.StorageManager;
@@ -55,8 +59,11 @@ public class Main
 					t.start();*/
 					//byte data = (byte)(StorageManager.getInstance().getData() + 1);
 					//StorageManager.getInstance().setData(data);
-					
-					ConnectionManager.getInstance().sendPacketToAll(new Timestamp(Clock.timestamp()));
+					Random r = new Random(Clock.timestamp());
+					PFMeasurement p = new PFMeasurement(r.nextInt(), r.nextInt(), (float)r.nextDouble(), (float)r.nextDouble(), (float)r.nextDouble());
+					Logger.println("Sending:"+p);
+					ConnectionManager.getInstance().sendPacketToAll(p);
+					//Clock.syncWith(0);
 				}
 				else
 					ConnectionManager.getInstance().openConnection(0);
@@ -80,7 +87,7 @@ public class Main
 					t.start();*/
 					//byte data = (byte)(StorageManager.getInstance().getData() + 1);					
 					//StorageManager.getInstance().setData(data);
-					ConnectionManager.getInstance().sendPacketToAll(new Timestamp(Clock.timestamp()));
+					Clock.syncWith(1);
 				}
 				else
 					ConnectionManager.getInstance().openConnection(1);
@@ -102,8 +109,13 @@ public class Main
 						}
 					});
 					t.start();*/
-					byte data = (byte)(StorageManager.getInstance().getData() + 1);					
-					StorageManager.getInstance().setData(data);
+					//byte data = (byte)(StorageManager.getInstance().getData() + 1);					
+					//StorageManager.getInstance().setData(data);
+					//Clock.syncWith(2);
+					Random r = new Random(Clock.timestamp());
+					PFMeasurement p = new PFMeasurement(r.nextInt(), r.nextInt(), (float)r.nextDouble(), (float)r.nextDouble(), (float)r.nextDouble());
+					Logger.println("Sending:"+p);
+					ConnectionManager.getInstance().sendPacketToAll(p);
 				}
 				else
 					ConnectionManager.getInstance().openConnection(2);
@@ -120,7 +132,8 @@ public class Main
 					//ConnectionManager.getInstance().sendByteTo(4, (byte)0x66);
 					//byte data = (byte)(StorageManager.getInstance().getData() + 1);					
 					//StorageManager.getInstance().setData(data);
-					ConnectionManager.getInstance().sendPacketToAll(new Timestamp(Clock.timestamp()));
+					//ConnectionManager.getInstance().sendPacketToAll(new Timestamp(Clock.timestamp()));
+					Clock.syncWith(-1);
 				}
 
 			}
@@ -130,7 +143,9 @@ public class Main
 		while (test == 0)
 		{
 			//LCD.drawInt((byte)StorageManager.getInstance().getData(), 2, 2);
-			Thread.sleep(100);
+			int milisUntilNextSec = 1000 - (Clock.timestamp() % 1000);
+			Thread.sleep(milisUntilNextSec + 1000);
+			//Sound.beep();
 		}
 		
 		if (RConsole.isOpen())

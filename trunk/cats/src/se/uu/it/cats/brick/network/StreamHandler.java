@@ -81,6 +81,11 @@ public abstract class StreamHandler extends ConnectionHandler
 		
 	}
 	
+	public void sendBytes(byte[] bArr)
+	{
+		
+	}
+	
 	public void sendPacket(Packet p)
 	{
 		

@@ -1,5 +1,6 @@
 package se.uu.it.cats.brick.network.packet;
 
+import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.Logger;
 
 public class PacketManager
@@ -30,20 +31,31 @@ public class PacketManager
 		{
 			case 0x00:
 			{
-				// check if there is enough data in the buffer
-				// for this kind of packet
-				Logger.println("arrayEndIndex:"+arrayEndIndex+" Timestamp.LENGTH:"+Timestamp.LENGTH);
-				
 				if (arrayEndIndex >= Timestamp.LENGTH)
 				{
-					Packet p = new Timestamp();
+					Timestamp p = new Timestamp();
 					p.readImpl(bArr);
 					
 					Logger.println("New packet read "+p);
 					
-					addToBuffer(p);
+					Clock.incommingPacket(p);
+					//addToBuffer(p);
 					
 					return Timestamp.LENGTH;
+				}
+			}
+			case 0x01:
+			{
+				if (arrayEndIndex >= PFMeasurement.LENGTH)
+				{
+					PFMeasurement p = new PFMeasurement();
+					p.readImpl(bArr);
+					
+					Logger.println("New packet read "+p);
+					
+					//addToBuffer(p);
+					
+					return PFMeasurement.LENGTH;
 				}
 			}
 		}

@@ -1,7 +1,6 @@
 package se.uu.it.cats.brick;
 
 import lejos.nxt.Button;
-import lejos.nxt.LightSensor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.addon.ColorSensor;
 import lejos.util.Stopwatch;
