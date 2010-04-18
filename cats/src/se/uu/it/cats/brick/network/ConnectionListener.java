@@ -1,8 +1,8 @@
 package se.uu.it.cats.brick.network;
 
-import se.uu.it.cats.brick.Logger;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
+import se.uu.it.cats.brick.Logger;
 
 public class ConnectionListener implements Runnable
 {

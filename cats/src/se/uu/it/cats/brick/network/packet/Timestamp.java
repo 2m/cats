@@ -7,11 +7,13 @@ public class Timestamp extends Packet
 	public byte _type = 0x00;
 	
 	private int _timestamp;
+	private int _roundTripTime;
 	
 	public static int LENGTH =
-		1		// type - 1byte
-		+ 1		// src  - 1byte
-		+ 4;	// timestamp - 1int - 4bytes
+		1		// _type - 1byte
+		+ 1		// _src  - 1byte
+		+ 4		// _timestamp - 1int - 4bytes
+		+ 4;	// _roundTripTime - 1int - 4bytes
 	
 	public Timestamp()
 	{		
@@ -23,16 +25,37 @@ public class Timestamp extends Packet
 		Logger.println("timestamp:"+_timestamp);
 	}
 	
+	public void setTimestamp(int timestamp)
+	{
+		_timestamp = timestamp;
+	}
+	
+	public int getTimestamp()
+	{
+		return _timestamp;
+	}
+	
+	public void setRoundTripTime(int roundTripTime)
+	{
+		_roundTripTime = roundTripTime;
+	}
+	
+	public int getRoundTripTime()
+	{
+		return _roundTripTime;
+	}	
+	
 	public void readImpl(byte[] bArr)
 	{
+		// _type is already defined,
+		// no need to read it again from network 
+	
 		// read byte
-		_src = bArr[1];
+		_src = readByte(bArr, 1);
 		
 		// read int
-		_timestamp = (bArr[2] & 0xFF);
-		_timestamp = (_timestamp << 8) | (bArr[3] & 0xFF);
-		_timestamp = (_timestamp << 8) | (bArr[4] & 0xFF);
-		_timestamp = (_timestamp << 8) | (bArr[5] & 0xFF);		
+		_timestamp = readInt(bArr, 2);
+		_roundTripTime = readInt(bArr, 6);
 	}
 	
 	public byte[] writeImpl()
@@ -40,22 +63,20 @@ public class Timestamp extends Packet
 		byte[] output = new byte[LENGTH];
 		
 		// write byte
-		output[0] = _type;
+		writeByte(_type, output, 0);
 		
 		// write byte
-		output[1] = _src;
+		writeByte(_src, output, 1);
 		
-		// write int
-		output[2] = (byte)(_timestamp >>> 24);
-		output[3] = (byte)(_timestamp >>> 16);
-		output[4] = (byte)(_timestamp >>> 8);
-		output[5] = (byte)(_timestamp);
+		// write integer
+		writeInt(_timestamp, output, 2);
+		writeInt(_roundTripTime, output, 6);
 		
 		return output;
 	}
 	
 	public String toString()
 	{
-		return "Timestamp[_type:"+_type+", _src:"+_src+" _timestamp:"+_timestamp+"]";
+		return "Timestamp[_type:"+_type+", _src:"+_src+", _timestamp:"+_timestamp+", _roundTripTime:"+_roundTripTime+"]";
 	}
 }

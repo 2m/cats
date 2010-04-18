@@ -1,9 +1,8 @@
 package se.uu.it.cats.brick.network;
 
+import lejos.nxt.comm.BTConnection;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.packet.Packet;
-
-import lejos.nxt.comm.BTConnection;
 
 public class ReceiveAndAckData extends LowLevelHandler
 {

@@ -3,7 +3,6 @@ package se.uu.it.cats.brick.network;
 import javax.bluetooth.RemoteDevice;
 
 import lejos.nxt.comm.BTConnection;
-
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.packet.Packet;
 import se.uu.it.cats.brick.network.packet.PacketManager;
@@ -38,7 +37,12 @@ public class KeepAlive extends LowLevelHandler
 			int received = read(bArr, index);
 			
 			if (received > 0)
-			{	
+			{
+				// forward received data to other devices
+				byte[] receivedBytes = new byte[received];
+				System.arraycopy(bArr, index, receivedBytes, 0, received);
+				ConnectionManager.getInstance().sendBytesToAllExcept(receivedBytes, getRemoteName());
+				
 				index = index + received;
 				
 				Logger.print("Rcvd:"+received+" input buffer:");			
@@ -65,7 +69,7 @@ public class KeepAlive extends LowLevelHandler
 			{
 				float currentBw = (float)counter / 3;
 				if (currentBw > 0.0)
-					Logger.println("BW from "+getPeerName()+":"+currentBw+"B/s");
+					Logger.println("BW from "+getRemoteName()+":"+currentBw+"B/s");
 				sw.reset();
 				counter = 0;
 			}

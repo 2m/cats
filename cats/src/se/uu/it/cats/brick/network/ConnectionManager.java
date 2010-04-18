@@ -2,10 +2,9 @@ package se.uu.it.cats.brick.network;
 
 import javax.bluetooth.RemoteDevice;
 
+import lejos.nxt.comm.BTConnection;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.packet.Packet;
-
-import lejos.nxt.comm.BTConnection;
 
 public class ConnectionManager
 {
@@ -14,6 +13,7 @@ public class ConnectionManager
 	public static final RemoteDevice CAT3 = new RemoteDevice("cat3", "00165302CDC3", new byte[] {0, 0, 8, 4});
 	
 	public static final int MAX_OUTBOUND_CONN = 3;
+	public static final int INBOUND_CONN_ID = MAX_OUTBOUND_CONN;
 	
 	private static ConnectionManager _instanceHolder = new ConnectionManager();
 	
@@ -74,7 +74,11 @@ public class ConnectionManager
 	
 	public ConnectionHandler getConnection(int i)
 	{
-		if (i < MAX_OUTBOUND_CONN)
+		if (i < 0)
+		{
+			return null;
+		}
+		else if (i < MAX_OUTBOUND_CONN)
 		{
 			return _outboundConnectionHolder[i];
 		}
@@ -86,7 +90,7 @@ public class ConnectionManager
 	
 	public void closeConnection(int i)
 	{
-		Logger.println("Closing connection to:"+getConnection(i).getPeerName());
+		Logger.println("Closing connection to:"+getConnection(i).getRemoteName());
 		getConnection(i).close();
 		
 		if (i < MAX_OUTBOUND_CONN)
@@ -110,7 +114,7 @@ public class ConnectionManager
 			}
 		
 		if (_inboundConnectionHolder == conn)
-			closeConnection(MAX_OUTBOUND_CONN);
+			closeConnection(INBOUND_CONN_ID);
 	}
 	
 	public boolean canListen()
@@ -130,7 +134,21 @@ public class ConnectionManager
 	
 	public void sendByteTo(int i, byte b)
 	{
-		getConnection(i).sendByte(b);
+		if (isAlive(i))
+		{
+			getConnection(i).sendByte(b);
+			return;
+		}
+		else if (isAlive(INBOUND_CONN_ID))
+		{
+			if (getConnection(INBOUND_CONN_ID).getRemoteId() == i || i == -1)
+			{
+				getConnection(INBOUND_CONN_ID).sendByte(b);
+				return;
+			}
+		}
+		
+		Logger.println("Can't send byte, no open connection to: "+i);
 	}
 	
 	public void sendByteToAll(byte b)
@@ -143,14 +161,43 @@ public class ConnectionManager
 		Logger.println("Sending byte "+String.valueOf(b)+" to all exc "+name);
 		for (int i = 0; i < MAX_OUTBOUND_CONN + 1; i++)
 		{
-			if (isAlive(i) && !getConnection(i).getPeerName().equals(name))
-				sendByteTo(i, b);
+			if (isAlive(i) && !getConnection(i).getRemoteName().equals(name))
+				getConnection(i).sendByte(b);
+		}
+	}
+	
+	public void sendBytesToAll(byte[] bArr)
+	{
+		sendBytesToAllExcept(bArr, null);
+	}
+	
+	public void sendBytesToAllExcept(byte[] bArr, String name)
+	{
+		Logger.println("Sending bytes to all exc "+name);
+		for (int i = 0; i < MAX_OUTBOUND_CONN + 1; i++)
+		{
+			if (isAlive(i) && !getConnection(i).getRemoteName().equals(name))
+				getConnection(i).sendBytes(bArr);
 		}
 	}
 	
 	public void sendPacketTo(int i, Packet p)
 	{
-		getConnection(i).sendPacket(p);
+		if (isAlive(i))
+		{
+			getConnection(i).sendPacket(p);
+			return;
+		}
+		else if (isAlive(INBOUND_CONN_ID))
+		{
+			if (getConnection(INBOUND_CONN_ID).getRemoteId() == i || i == -1)
+			{
+				getConnection(INBOUND_CONN_ID).sendPacket(p);
+				return;
+			}
+		}
+		
+		Logger.println("Can't send packet, no open connection to: "+i);
 	}
 	
 	public void sendPacketToAll(Packet p)
@@ -163,8 +210,8 @@ public class ConnectionManager
 		Logger.println("Sending packet to all exc "+name);
 		for (int i = 0; i < MAX_OUTBOUND_CONN + 1; i++)
 		{
-			if (isAlive(i) && !getConnection(i).getPeerName().equals(name))
-				sendPacketTo(i, p);
+			if (isAlive(i) && !getConnection(i).getRemoteName().equals(name))
+				getConnection(i).sendPacket(p);
 		}
 	}
 	

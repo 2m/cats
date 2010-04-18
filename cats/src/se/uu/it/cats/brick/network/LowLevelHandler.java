@@ -67,8 +67,9 @@ public abstract class LowLevelHandler extends ConnectionHandler
 		{
 			_inBufSize = _btc.read(_inputBuffer, _inputBuffer.length, false);
 			
-			if (_inBufSize < 0) throw new ReadError("Lowlevel.read() error: "+_inBufSize);
+			if (_inBufSize == -1) throw new ConnectionClosed();
 			else if (_inBufSize == 0) throw new EmptyBuffer();
+			else if (_inBufSize < 0) throw new Exception("Lowlevel.read() error: "+_inBufSize);			
 			
 			_inReturnedUntil = 0;
 		}
@@ -85,13 +86,18 @@ public abstract class LowLevelHandler extends ConnectionHandler
 			{
 				b = (byte)read();
 			}
-			catch (ReadError ex)
+			catch (EmptyBuffer ex)
 			{
-				Logger.println(ex.getMessage());
+				return bytesRead;
+			}
+			catch (ConnectionClosed ex)
+			{
+				ConnectionManager.getInstance().closeConnection(this);
 				return bytesRead;
 			}
 			catch (Exception ex)
-			{				
+			{
+				Logger.println(ex.getMessage());
 				return bytesRead;
 			}
 			bArray[i] = b;
@@ -114,15 +120,23 @@ public abstract class LowLevelHandler extends ConnectionHandler
 			ConnectionManager.getInstance().closeConnection(this);
 	}
 	
+	public void sendBytes(byte[] bArr)
+	{
+		write(bArr);
+		
+		if (flush() < 0)
+			ConnectionManager.getInstance().closeConnection(this);
+	}
+	
 	public void sendPacket(Packet p)
 	{
 		p.setSource(getLocalId());
 		
-		Logger.print("Sending packet:");
+		/*Logger.print("Sending packet:");
 		byte[] output = p.writeImpl();
 		for (int i = 0; i < output.length; i++)
 			Logger.print(output[i]+", ");
-		Logger.println("of length"+output.length);
+		Logger.println("of length"+output.length);*/
 		
 		write(p.writeImpl());
 		
@@ -134,11 +148,8 @@ public abstract class LowLevelHandler extends ConnectionHandler
 	{
 	}
 	
-	private class ReadError extends Exception
+	private class ConnectionClosed extends Exception
 	{
-		public ReadError(String str)
-		{
-			super(str);
-		}
+		
 	}
 }
