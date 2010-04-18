@@ -45,6 +45,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		beta=(float)Math.pow(alpha, 2) -0.9f;  //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
 		lambda=(float)Math.pow(alpha, 2)*(L+ki)-L;  
 		c=L+lambda; 
+
 		Wm = new Matrix(1, (2*L+1), 0.5/c);
 		Wm.set(0,0,lambda/c);  //TODO Check if correctly converted from matlab 
 		Wc=Wm.copy();
@@ -52,7 +53,6 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		c=(float)Math.sqrt(c);
 
 
-		
 		/*int test_uygsudf = 3;
 		private Matrix test = new Matrix(1,1,(double)2.0);
 		double[] test2 =  {1,2,3};
@@ -62,23 +62,14 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		for (int i =0; i<=L; i++){
 			P.set(i, i, 1);
 		}
-		*/		
-		
+		*/				
 	}
 	
-	/*
-	public static void main(String args[])
-	{
-		//For testing
-		UnscentedKalmanFilter filter = new UnscentedKalmanFilter(3,1);
-		System.out.println(filter);
-		
-	}*/
 
     /* (non-Javadoc)
      * @see IUnscentedKalmanFilter#ukf()
      */
-	public Matrix ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, float R, float Kzero) 
+	public Matrix[] ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, float R)
 	{
 		//L=x.getColumnDimension();  //Currently not needed //TODO check that its the right dimension (column/row)
 		//m=z.getColumnDimension(); 
@@ -145,6 +136,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		    x=x1+K*(z-z1);                              %state update
 		    P=P1-K*P12';                                %covariance update
 		end
+		
 		*/
 		
 		return null;
@@ -200,8 +192,32 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		String s = " alpha = " + alpha + "\n ki = " + ki + "\n beta = " + beta +
 		"\n lambda = " + lambda + "\n  c = " + c;// + "\n Wm = " + Wm.getArray() + "\n Wc = " + Wc.getArray();
 		return s;	
+	}	
+	
+	public static void main(String args[])
+	{/*
+		//For testing
+		UnscentedKalmanFilter filter = new UnscentedKalmanFilter(3,1);
+		System.out.println(filter);
+		
+		int n=3;      //number of state
+		float q=0.1f;    //std of process
+		float r=0.1f;    //std of measurement
+		Matrix Q = new Matrix(n,n,0);  //covariance of process
+		for (int i =0; i<=n; i++){
+			Q.set(i, i, 1);
+		Q.times(Math.pow(q, 2));	
+		float R=(float)Math.pow(r, 2);        //covariance of measurement
+		IFunction f = new Fstate(); //@(x)[x(2);x(3);0.05*x(1)*(x(2)+x(3))];  % nonlinear state equations
+		IFunction h = new Hmeas(); //	h=@(x)x(1);                               % measurement equation
+		/*s=[0;0;1];                                % initial state
+		x=s+q*randn(3,1); %initial state          % initial state with noise
+		P = eye(n);                               % initial state covraiance
+		z = h(s) + r*randn;                       % measurments		
+		*/
 	}
 
 }
+
 
 

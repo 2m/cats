@@ -8,6 +8,7 @@ import lejos.util.Matrix;
  */
 public interface IUnscentedKalmanFilter 
 {
+
 	/**
 	 * UKF, Unscented Kalman Filter, for nonlinear dynamic systems. 
 	 * [x, P] = ukf(f,x,P,h,z,Q,R) returns state estimate x and state covariance P 
@@ -23,9 +24,25 @@ public interface IUnscentedKalmanFilter
 	 * @param z  current measurement
 	 * @param Q  process noise covariance
 	 * @param R  measurement noise covariance
-	 * @param ???
 	 * @return  "a posteriori" state estimate and P: "a posteriori" state covariance
 	 */
-	public Matrix ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, float R, float Kzero);
+	public Matrix[] ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, float R);
+	
+
+	/*
+	/**
+	 * Not implemnted
+	 * @param f
+	 * @param x
+	 * @param P
+	 * @param h
+	 * @param z
+	 * @param Q
+	 * @param R
+	 * @param Kzero
+	 * @return
+	public Matrix[] ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, float R, float Kzero);
+	 */
+		
 
 }
