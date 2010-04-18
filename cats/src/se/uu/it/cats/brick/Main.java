@@ -9,6 +9,7 @@ import lejos.nxt.Sound;
 import lejos.nxt.comm.RConsole;
 import lejos.util.Timer;
 import lejos.util.TimerListener;
+import se.uu.it.cats.brick.filter.SimpleFilter;
 import se.uu.it.cats.brick.network.ConnectionListener;
 import se.uu.it.cats.brick.network.ConnectionManager;
 import se.uu.it.cats.brick.network.packet.PFMeasurement;
@@ -41,6 +42,10 @@ public class Main
 		
 		Thread listenerThread = new Thread(new ConnectionListener());
 		listenerThread.start();
+		
+		//Run SimpleFilter:
+		Thread filterThread = new Thread(new SimpleFilter());
+		filterThread.start();
 		
 		Button.LEFT.addButtonListener(new ButtonListener() {
 			public void buttonPressed(Button b) {}

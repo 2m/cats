@@ -58,6 +58,20 @@ public class PacketManager
 					return PFMeasurement.LENGTH;
 				}
 			}
+			case 0x02:
+			{
+				if (arrayEndIndex >= SimpleMeasurement.LENGTH)
+				{
+					SimpleMeasurement p = new SimpleMeasurement();
+					p.readImpl(bArr);
+					
+					Logger.println("New packet read "+p);
+					
+					//addToBuffer(p);
+					
+					return SimpleMeasurement.LENGTH;
+				}
+			}
 		}
 		
 		return 0;
