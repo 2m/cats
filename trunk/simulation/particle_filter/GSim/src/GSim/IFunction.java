@@ -3,14 +3,14 @@ package GSim;
 import lejos.util.Matrix;
 
 /**
- * A interface for matrix functions (sent to the Unscented Kalman Filter)
+ * A interface for vector functions (sent to the Unscented Kalman Filter)
  * @author Edvard
  */
 public interface IFunction {
 	
-	/** 
-	 * @param x input matrix
-	 * @return output matrix 
+	/** Evaluates the function for the given vector 
+	 * @param x input vector, in our cases a (n)x(1) Matrix
+	 * @return output vector, in our cases a (n)x(1) Matrix 
 	*/
 	public Matrix eval(Matrix x);
 
