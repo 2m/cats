@@ -7,5 +7,6 @@
 			<accessrule kind="accessible" pattern="*"/>
 		</accessrules>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/cats"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
