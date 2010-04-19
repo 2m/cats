@@ -4,6 +4,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import se.uu.it.cats.brick.network.packet.Packet;
+import se.uu.it.cats.pc.Logger;
+import se.uu.it.cats.pc.network.packet.PacketManager;
+
 import lejos.pc.comm.NXTConnector;
 
 public class ConnectionHandler implements Runnable
@@ -13,10 +17,17 @@ public class ConnectionHandler implements Runnable
 	
 	boolean _alive = false;
 	
+	String _remoteName;
+	
+	public ConnectionHandler(String remoteName)
+	{
+		_remoteName = remoteName;
+	}
+	
 	public boolean connect()
 	{
 		NXTConnector conn = new NXTConnector();
-		boolean connected = conn.connectTo("btspp://");
+		boolean connected = conn.connectTo("btspp://"+_remoteName);
 		
 		if (!connected)
 		{
@@ -44,17 +55,67 @@ public class ConnectionHandler implements Runnable
 	{
 		setAlive(connect());
 		
+		byte[] bArr = new byte[255];
+		int index = 0;
+		
+		int packetCounter = 0;
+		long startTime = System.currentTimeMillis();
+		
 		while (isAlive())
 		{
 			try
-			{			
-				System.out.println("Received " + _dis.readByte());
+			{
+				// read only 6 bytes or less if the buffer is full
+				// this function blocks as long as there is some input available
+				// we want to execute immediately as at least one packet is available
+				int received = _dis.read(bArr, index, Math.min(6, 255 - index));
+				
+				index = index + received;
+				
+				/*Logger.print("Rcvd:"+received+" input buffer:");
+				for (int i = 0; i < index; i++)
+					Logger.print(bArr[i]+", ");
+				Logger.println("of length"+index);*/
+				
+				Packet p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
+				
+				while (p != null)
+				{
+					int bytesRead = p.getLength();
+					
+					System.arraycopy(bArr, bytesRead, bArr, 0, index - bytesRead);
+					index -= bytesRead;
+					packetCounter++;
+					
+					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
+				}
+				
+				if (index > 255)
+					Logger.println("Received data buffer is full.");
 			}
 			catch (IOException ioe)
 			{
-				System.out.println("IO Exception reading bytes:");
-				System.out.println(ioe.getMessage());
+				Logger.println("IO Exception reading bytes:");
+				Logger.println(ioe.getMessage());
 				break;
+			}
+			catch (Exception ex)
+			{
+				// connection broken, return from this function gracefully (somehow)
+				Logger.println("Exception reading bytes:");
+				Logger.println(ex.getMessage());
+			}
+			
+			if (System.currentTimeMillis() - startTime > 3000)
+			{
+				float currentBw = (float)packetCounter / 3;
+				if (currentBw > 0.0)
+				{
+					//Logger.println("BW from "+getRemoteName()+":"+currentBw+"Pck/s");
+				}
+				
+				packetCounter = 0;
+				startTime = System.currentTimeMillis();
 			}
 		}
 		
@@ -111,6 +172,11 @@ public class ConnectionHandler implements Runnable
 		}
 		
 		ConnectionManager.getInstance().closeConnection(this);*/
+	}
+	
+	protected String getRemoteName()
+	{
+		return _remoteName;
 	}
 
 }
