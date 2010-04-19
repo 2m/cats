@@ -138,7 +138,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		return null;
 	}
 	
-	/**TODO test this
+	/**
 	 * Sigma points around reference point
 	 * @param x  reference point  
 	 * @param P  covariance  
@@ -148,66 +148,32 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	private Matrix sigmas(Matrix x, Matrix P, float c)
 	{
 		Matrix A = new Matrix( Cholesky.cholesky( P.getArray() ) );
-		A = (A.inverse()).times(c);
+		A = (A.times(c)).transpose();
+		//System.out.println(MatrixToString(A));
 		
 		int n = x.getRowDimension();
-		System.out.println(MatrixToString(x));
+		//System.out.println(MatrixToString(x));
 		
-		
+		//Create Y
 		Matrix Y = new Matrix(n, n, 1);
-		System.out.println(MatrixToString(Y));
-		
-		//alt1: 
 		for (int j=0; j<n; j++)  //columns
 		{
 			Y.setMatrix(0, n-1, j, j, x);
 		}
-		System.out.println(MatrixToString(Y));
-		//alt2:
-		/*
-		for (int i=0; i<n; n++)  //rows
-		{
-			for (int j=0; j<n; j++)  //columns
-			{
-				Y.set(i, j, x.get(i, 0));
-			}
-		}*/
-		
+		//System.out.println(MatrixToString(Y));
+
+		//Create X
 		Matrix X = new Matrix(n,(1+n+n));
 		
 		X.setMatrix(0, n-1, 0, 0, x);
-		System.out.println(MatrixToString(X));
-		/*for (int i=0; i<n; n++)
-		{
-			X.set(i, 0, x.get(i, 0));
-		}*/
 
-		
-		Matrix Y_plus_A = Y.plus(A);
-		
+		Matrix Y_plus_A = Y.plus(A);		
 		X.setMatrix(0, n-1, 1, n, Y_plus_A);
-		System.out.println(MatrixToString(X));
-		/*
-		for (int i=0; i<n; n++)  //rows
-		{
-			for (int j=0; j<n; j++)  //columns
-			{
-				X.set(i, j+1, Y_plus_A.get(i,j));
-			}
-		}*/
 		
 		Matrix Y_minus_A = Y.minus(A);
-		
 		X.setMatrix(0, n-1, n+1, n+n, Y_minus_A);
-		System.out.println(MatrixToString(X));
-		/*
-		for (int i=0; i<n; n++)  //rows
-		{
-			for (int j=0; j<n; j++)  //columns
-			{
-				X.set(i, j+1+n, Y_minus_A.get(i,j));
-			}
-		}*/
+		
+		//System.out.println(MatrixToString(X));
 		
 		return X;
 	}
@@ -258,7 +224,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		temp_s[2][0] = 1;
 		Matrix s = new Matrix(temp_s);
 		Matrix x = new Matrix(3,3);  //initial state 
-		x=s.plus( Matrix.random(3,1).times(q) );  //initial state with noise
+		x=s.copy();//s.plus( Matrix.random(3,1).times(q) );  //initial state with noise
 		Matrix P = Matrix.identity(n, n);  //initial state covraiance
 		
 		Matrix z = h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
