@@ -3,6 +3,7 @@ package se.uu.it.cats.brick.network;
 import javax.bluetooth.RemoteDevice;
 
 
+import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.packet.Packet;
 
@@ -19,7 +20,7 @@ public abstract class ConnectionHandler implements Runnable
 {
 	protected BTConnection _btc = null;	
 	protected RemoteDevice _remoteDevice = null;
-	protected String _localName = Bluetooth.getFriendlyName();
+	protected String _localName = Identity.getName();
 	
 	protected boolean _alive = false;
 	
@@ -83,7 +84,10 @@ public abstract class ConnectionHandler implements Runnable
 	
 	protected String getRemoteName()
 	{
-		return _remoteDevice.getFriendlyName(false);
+		if (_remoteDevice != null)
+			return _remoteDevice.getFriendlyName(false);
+		else
+			return "getRemoteName(): _remoteDevice is null";
 	}
 	
 	protected int getLocalId()

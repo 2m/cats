@@ -2,6 +2,7 @@ package se.uu.it.cats.brick.filter;
 
 import java.awt.Rectangle;
 
+import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.ConnectionManager;
 import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
@@ -47,8 +48,13 @@ public class SimpleFilter implements Runnable {
 		int maxAngAbs = 180;
 		int upperMaxAng = maxAngAbs;
 		int lowerMaxAng = maxAngAbs*-1;
-		//int offset = -7; //for camera on the Karl-Gösta cat.
-		int offset = -19; //for camera on cat2
+		
+		int offset = 0;
+		if (Identity.getName().equals("cat1"))
+				offset = -7; //for camera on the Karl-Gosta cat.
+		else if (Identity.getName().equals("cat2"))
+				offset = -19; //for camera on cat2
+		
 		float radPerPix = -1*(float) ((float) 43*Math.PI/180.0 / 176);
 	
 		while(!Button.ESCAPE.isPressed()) {
@@ -95,12 +101,20 @@ public class SimpleFilter implements Runnable {
 				angToTargetRelCat = motorAngRad + angToTarget;
 				
 				// send measurements to everyone
+				/*try
+				{
+					Thread.sleep(100);
+				}
+				catch (Exception e)
+				{
+					
+				}*/
 				ConnectionManager.getInstance().sendPacketToAll(
 						new SimpleMeasurement(angToTargetRelCat)
 				);
 				
-				Logger.println("Found at:" + (int) (angToTargetRelCat*180/Math.PI));
-				Logger.println("            CamMotor:" + motorAng);
+				//Logger.println("Found at:" + (int) (angToTargetRelCat*180/Math.PI));
+				//Logger.println("            CamMotor:" + motorAng);
 				
 				if (Math.abs(err) < 10)
 					Motor.A.stop();
@@ -134,7 +148,7 @@ public class SimpleFilter implements Runnable {
 				LCD.drawInt(err, 3, 8, 5);*/
 			}
 			else {
-				RConsole.println("No found!");
+				//Logger.println("No found!");
 				Sound.beep(); //Beep if no target is found
 				Motor.A.setSpeed(maxSpeed); //Search for mouse with maximum speed
 				

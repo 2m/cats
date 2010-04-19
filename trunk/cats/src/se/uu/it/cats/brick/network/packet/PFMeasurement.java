@@ -50,7 +50,7 @@ public class PFMeasurement extends Packet
 	
 	public byte[] writeImpl()
 	{
-		byte[] output = new byte[LENGTH];
+		byte[] output = new byte[getLength()];
 		
 		// write byte
 		writeByte(_type, output, 0);
@@ -66,6 +66,11 @@ public class PFMeasurement extends Packet
 		writeFloat(_y_c, output, 18);
 		
 		return output;
+	}
+	
+	public int getLength()
+	{
+		return LENGTH;
 	}
 	
 	public String toString()

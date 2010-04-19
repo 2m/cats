@@ -5,6 +5,8 @@ public abstract class Packet
 	public byte _type;
 	public byte _src;
 	
+	public static int LENGTH;
+	
 	public Packet()
 	{		
 	}
@@ -21,6 +23,7 @@ public abstract class Packet
 	
 	public abstract void readImpl(byte[] bArr);	
 	public abstract byte[] writeImpl();
+	public abstract int getLength();
 	
 	public byte readByte(byte[] bArr, int startIndex)
 	{

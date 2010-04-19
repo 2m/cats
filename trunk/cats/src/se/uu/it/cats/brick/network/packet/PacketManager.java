@@ -21,60 +21,73 @@ public class PacketManager
 		return _instanceHolder;
 	}
 	
-	public int checkForCompletePackets(byte[] bArr, int arrayEndIndex)
+	public Packet checkForCompletePackets(byte[] bArr, int arrayEndIndex)
 	{
+		Packet p = null;
+		
+		if (arrayEndIndex == 0)
+			// empty array, return
+			return null;
+		
 		// first byte should be packet type
 		byte packetType = bArr[0];
 		Logger.println("Checking for packets of type:"+packetType);
 		
+		// determine which packet do we have by type,
+		// an create object from bytes
 		switch (packetType)
 		{
 			case 0x00:
 			{
 				if (arrayEndIndex >= Timestamp.LENGTH)
 				{
-					Timestamp p = new Timestamp();
+					p = new Timestamp();
 					p.readImpl(bArr);
 					
-					Logger.println("New packet read "+p);
-					
-					Clock.incommingPacket(p);
+					Clock.incommingPacket((Timestamp)p);
 					//addToBuffer(p);
-					
-					return Timestamp.LENGTH;
 				}
+				break;
 			}
 			case 0x01:
 			{
 				if (arrayEndIndex >= PFMeasurement.LENGTH)
 				{
-					PFMeasurement p = new PFMeasurement();
+					p = new PFMeasurement();
 					p.readImpl(bArr);
 					
-					Logger.println("New packet read "+p);
-					
 					//addToBuffer(p);
-					
-					return PFMeasurement.LENGTH;
 				}
+				break;
 			}
 			case 0x02:
 			{
 				if (arrayEndIndex >= SimpleMeasurement.LENGTH)
 				{
-					SimpleMeasurement p = new SimpleMeasurement();
+					p = new SimpleMeasurement();
 					p.readImpl(bArr);
 					
-					Logger.println("New packet read "+p);
+					//addToBuffer(p);
+				}
+				break;
+			}
+			case -1:
+			{
+				if (arrayEndIndex >= CloseConnection.LENGTH)
+				{
+					p = new CloseConnection();
+					p.readImpl(bArr);
 					
 					//addToBuffer(p);
-					
-					return SimpleMeasurement.LENGTH;
 				}
+				break;
 			}
 		}
 		
-		return 0;
+		if (p != null)
+			Logger.println("New packet read "+p);
+		
+		return p;
 	}
 	
 	public boolean addToBuffer(Packet p)
