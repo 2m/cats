@@ -4,6 +4,7 @@ import javax.bluetooth.RemoteDevice;
 
 import lejos.nxt.comm.BTConnection;
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.network.packet.CloseConnection;
 import se.uu.it.cats.brick.network.packet.Packet;
 import se.uu.it.cats.brick.network.packet.PacketManager;
 import se.uu.it.cats.brick.storage.StorageManager;
@@ -27,13 +28,12 @@ public class KeepAlive extends LowLevelHandler
 	{
 		setAlive(connect());
 		
+		byte[] bArr = new byte[255];
 		int index = 0;
 		
 		sw.reset();
 		while (isAlive())
 		{
-			byte[] bArr = new byte[255];
-			
 			int received = read(bArr, index);
 			
 			if (received > 0)
@@ -45,18 +45,30 @@ public class KeepAlive extends LowLevelHandler
 				
 				index = index + received;
 				
-				Logger.print("Rcvd:"+received+" input buffer:");			
+				Logger.print("Rcvd:"+received+" input buffer:");
 				for (int i = 0; i < index; i++)
 					Logger.print(bArr[i]+", ");
 				Logger.println("of length"+index);
 				
-				int bytesRead = PacketManager.getInstance().checkForCompletePackets(bArr, index);
+				Packet p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
+				
+				// do not continue if just received closed connection packet
+				if (p instanceof CloseConnection)
+				{
+					setAlive(false);
+					p = null;
+				}
 				
 				// if some bytes were used to construct a packet, remove these bytes from the buffer
-				if (bytesRead > 0)
+				// try to construct as many packets as possible				
+				while (p != null)
 				{
+					int bytesRead = p.getLength();
+					
 					System.arraycopy(bArr, bytesRead, bArr, 0, index - bytesRead);
 					index -= bytesRead;
+					
+					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				}
 				
 				if (index > 255)
@@ -69,7 +81,9 @@ public class KeepAlive extends LowLevelHandler
 			{
 				float currentBw = (float)counter / 3;
 				if (currentBw > 0.0)
+				{
 					Logger.println("BW from "+getRemoteName()+":"+currentBw+"B/s");
+				}
 				sw.reset();
 				counter = 0;
 			}

@@ -18,6 +18,11 @@ public class SimpleMeasurement extends Packet {
 	{
 		_angle = angle;
 	}
+	
+	public float getAngle()
+	{
+		return _angle;
+	}
 
 	public void readImpl(byte[] bArr)
 	{
@@ -33,7 +38,7 @@ public class SimpleMeasurement extends Packet {
 
 	public byte[] writeImpl()
 	{
-		byte[] output = new byte[LENGTH];
+		byte[] output = new byte[getLength()];
 		
 		// write byte
 		writeByte(_type, output, 0);
@@ -46,5 +51,14 @@ public class SimpleMeasurement extends Packet {
 		
 		return output;
 	}
-
+	
+	public int getLength()
+	{
+		return LENGTH;
+	}
+	
+	public String toString()
+	{
+		return "SimpleMeasurement[_type:"+_type+", _src:"+_src+", _angle:"+_angle+"]";
+	}
 }
