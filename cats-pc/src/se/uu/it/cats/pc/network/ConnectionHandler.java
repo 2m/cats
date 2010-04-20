@@ -31,7 +31,7 @@ public class ConnectionHandler implements Runnable
 		
 		if (!connected)
 		{
-			System.err.println("Failed to connect to any NXT");
+			System.err.println("Failed to connect to "+_remoteName);
 			return false;
 		}
 		
@@ -58,7 +58,7 @@ public class ConnectionHandler implements Runnable
 		byte[] bArr = new byte[255];
 		int index = 0;
 		
-		int packetCounter = 0;
+		int[] packetCounter = new int[3];
 		long startTime = System.currentTimeMillis();
 		
 		while (isAlive())
@@ -85,7 +85,7 @@ public class ConnectionHandler implements Runnable
 					
 					System.arraycopy(bArr, bytesRead, bArr, 0, index - bytesRead);
 					index -= bytesRead;
-					packetCounter++;
+					packetCounter[p.getSource()]++;
 					
 					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				}
@@ -108,70 +108,33 @@ public class ConnectionHandler implements Runnable
 			
 			if (System.currentTimeMillis() - startTime > 3000)
 			{
-				float currentBw = (float)packetCounter / 3;
-				if (currentBw > 0.0)
+				int packetSum = 0;
+				for (int i = 0; i < packetCounter.length; i++)
 				{
-					//Logger.println("BW from "+getRemoteName()+":"+currentBw+"Pck/s");
+					packetSum += packetCounter[i];
 				}
 				
-				packetCounter = 0;
+				float currentBw = (float)packetSum / 3;
+				if (currentBw > 0.0)
+				{
+					//Logger.print("BW from "+getRemoteName()+":"+currentBw+"Pck/s");
+					
+					for (int i = 0; i < packetCounter.length; i++)
+					{
+						//Logger.print(" "+(float)packetCounter[i] / 3);
+					}
+				}
+				
+				//Logger.println("");
+				
+				for (int i = 0; i < packetCounter.length; i++)
+				{
+					packetCounter[i] = 0;
+				}
+				
 				startTime = System.currentTimeMillis();
 			}
 		}
-		
-		/*
-		
-		int index = 0;
-		
-		sw.reset();
-		while (isAlive())
-		{
-			byte[] bArr = new byte[255];
-			
-			int received = read(bArr, index);
-			
-			if (received > 0)
-			{
-				// forward received data to other devices
-				byte[] receivedBytes = new byte[received];
-				System.arraycopy(bArr, index, receivedBytes, 0, received);
-				ConnectionManager.getInstance().sendBytesToAllExcept(receivedBytes, getRemoteName());
-				
-				index = index + received;
-				
-				Logger.print("Rcvd:"+received+" input buffer:");			
-				for (int i = 0; i < index; i++)
-					Logger.print(bArr[i]+", ");
-				Logger.println("of length"+index);
-				
-				int bytesRead = PacketManager.getInstance().checkForCompletePackets(bArr, index);
-				
-				// if some bytes were used to construct a packet, remove these bytes from the buffer
-				if (bytesRead > 0)
-				{
-					System.arraycopy(bArr, bytesRead, bArr, 0, index - bytesRead);
-					index -= bytesRead;
-				}
-				
-				if (index > 255)
-					Logger.println("Received data buffer is full.");
-			}
-			
-			counter += received;
-			
-			if (sw.elapsed() > 3000)
-			{
-				float currentBw = (float)counter / 3;
-				if (currentBw > 0.0)
-					Logger.println("BW from "+getRemoteName()+":"+currentBw+"B/s");
-				sw.reset();
-				counter = 0;
-			}
-			
-			try { Thread.sleep(100); } catch (Exception ex) {}
-		}
-		
-		ConnectionManager.getInstance().closeConnection(this);*/
 	}
 	
 	protected String getRemoteName()
