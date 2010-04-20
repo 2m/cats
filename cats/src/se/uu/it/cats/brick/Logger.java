@@ -2,6 +2,9 @@ package se.uu.it.cats.brick;
 
 import lejos.nxt.comm.RConsole;
 
+/*
+ * Logging really hurts performace. 
+ */
 public class Logger
 {
 	public static void init()
@@ -22,39 +25,18 @@ public class Logger
 		}
 	}
 	
-	public synchronized static void print(int i)
+	public static void println(String msg)
 	{
-		if (RConsole.isOpen())
-		{
-			RConsole.print(String.valueOf(i));
-		}
-		else
-		{
-			System.out.print(String.valueOf(i));
-		}
+		print(msg+"\n");
 	}
 	
-	public synchronized static void println(String msg)
+	public static void print(int i)
 	{
-		if (RConsole.isOpen())
-		{
-			RConsole.println(msg);
-		}
-		else
-		{
-			System.out.println(msg);
-		}
+		print(String.valueOf(i));
 	}
 	
-	public synchronized static void println(int i)
+	public static void println(int i)
 	{
-		if (RConsole.isOpen())
-		{
-			RConsole.println(String.valueOf(i));
-		}
-		else
-		{
-			System.out.println(String.valueOf(i));
-		}
+		print(String.valueOf(i)+"\n");
 	}
 }

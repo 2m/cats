@@ -103,7 +103,7 @@ public class SimpleFilter implements Runnable {
 				// send measurements to everyone
 				/*try
 				{
-					Thread.sleep(100);
+					Thread.sleep(1000);
 				}
 				catch (Exception e)
 				{
@@ -113,11 +113,13 @@ public class SimpleFilter implements Runnable {
 						new SimpleMeasurement(angToTargetRelCat)
 				);
 				
-				//Logger.println("Found at:" + (int) (angToTargetRelCat*180/Math.PI));
-				//Logger.println("            CamMotor:" + motorAng);
+				Logger.println("Found at:" + (int) (angToTargetRelCat*180/Math.PI));
+				Logger.println("            CamMotor:" + motorAng);
 				
 				if (Math.abs(err) < 10)
+				{
 					Motor.A.stop();
+				}
 				else
 				{
 					int newSpeed = (int)Math.exp(Math.abs(err) * 0.08);
@@ -125,11 +127,11 @@ public class SimpleFilter implements Runnable {
 						Motor.A.setSpeed(newSpeed);
 					
 					if (err > 0) {
-						Motor.A.backward();
+						//Motor.A.backward();
 						dir=-1;
 					}
 					else {
-						Motor.A.forward();
+						//Motor.A.forward();
 						dir=1;
 					}
 					//Stop if motor is at maximum turning angle
