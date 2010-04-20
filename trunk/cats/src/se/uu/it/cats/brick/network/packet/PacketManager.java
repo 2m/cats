@@ -2,6 +2,7 @@ package se.uu.it.cats.brick.network.packet;
 
 import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.network.KeepAlive;
 
 public class PacketManager
 {
@@ -31,7 +32,7 @@ public class PacketManager
 		
 		// first byte should be packet type
 		byte packetType = bArr[0];
-		Logger.println("Checking for packets of type:"+packetType);
+		//Logger.println("Checking for packets of type:"+packetType);
 		
 		// determine which packet do we have by type,
 		// an create object from bytes
@@ -85,7 +86,9 @@ public class PacketManager
 		}
 		
 		if (p != null)
-			Logger.println("New packet read "+p);
+		{
+			//Logger.println("New packet read "+p);
+		}
 		
 		return p;
 	}

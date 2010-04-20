@@ -45,10 +45,10 @@ public class KeepAlive extends LowLevelHandler
 				
 				index = index + received;
 				
-				Logger.print("Rcvd:"+received+" input buffer:");
+				/*Logger.print("Rcvd:"+received+" input buffer:");
 				for (int i = 0; i < index; i++)
 					Logger.print(bArr[i]+", ");
-				Logger.println("of length"+index);
+				Logger.println("of length"+index);*/
 				
 				Packet p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				
@@ -72,7 +72,9 @@ public class KeepAlive extends LowLevelHandler
 				}
 				
 				if (index > 255)
-					Logger.println("Received data buffer is full.");
+				{
+					//Logger.println("Received data buffer is full.");
+				}
 			}
 			
 			counter += received;
@@ -82,7 +84,7 @@ public class KeepAlive extends LowLevelHandler
 				float currentBw = (float)counter / 3;
 				if (currentBw > 0.0)
 				{
-					Logger.println("BW from "+getRemoteName()+":"+currentBw+"B/s");
+					//Logger.println("BW from "+getRemoteName()+":"+currentBw+"B/s");
 				}
 				sw.reset();
 				counter = 0;
