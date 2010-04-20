@@ -14,10 +14,21 @@ public class Fstate implements IFunction{
 		
 		//Basic state function to test the ukf implementation
 		//x is a (n)x(1) Matrix
+
+
+		
 		Matrix output = new Matrix(x.getRowDimension(),x.getColumnDimension());
-		output.set(0, 0, x.get(0,1) );
-		output.set(1, 0, x.get(0,2) );
-		output.set(2, 0, 0.05 * x.get(0,0) * x.get(0,1) + x.get(0,2) );
+		
+		//System.out.println("Debug: In Fstate.eval(), x:");
+		//UnscentedKalmanFilter.printM(x);
+		
+		output.set(0, 0, x.get(1,0) );
+		output.set(1, 0, x.get(2,0) );
+		output.set(2, 0, 0.05 * x.get(0,0) * x.get(1,0) + x.get(2,0) );
+		
+		//System.out.println("Debug: In Fstate.eval(), output:");
+		//UnscentedKalmanFilter.printM(output);
+
 		return output; 
 	}
 }
