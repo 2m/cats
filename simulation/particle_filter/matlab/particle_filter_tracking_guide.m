@@ -3,7 +3,7 @@ close all
 clear all
 
 %% Set basic options
-N = 300
+N = 120
 stddegrees = 2;
 T = 0.5;
 cat(1) = 0.1 + i * 0.1;
@@ -18,9 +18,9 @@ mouse_f = mouse_init(1.5, 1.5, pi/2, 1, max(time), T);
 %% Set settings for methods and plotting
 do_plotting = 1;		% Flag for doing continous plotting
 make_mov = 0;			% Record movie
-make_images = 1;		% Write plots to images
+make_images = 0;		% Write plots to images
 survival_of_fittest = 1;	% Resampling method (alt. complete resampling)
-dt = 0.01;				% Prediction interval
+dt = 1;				% Prediction interval
 
 % Init movie
 if (make_mov)
@@ -101,18 +101,39 @@ for t = time
 	else
 		% Weighted mean
 		m = [sum(p(:, 1).*p(:, 5)) sum(p(:, 2).*p(:, 5))];
+		m = m.*(m<=3) + 3*(m>3);
+		m = m.*(m>=0) + 3*(m<0);
 		m_v = [sum(p(:, 3).*p(:, 5)) sum(p(:, 4).*p(:, 5))];
+		m_v = m_v.*(m<=.2) + .2*(m_v>.2);
+		m_v = m_v.*(m>=-.2) - .2*(m_v<-.2);
 		C1 = weightedCovariance(p(:, 1), p(:, 2), p(:, 5));
 		C2 = weightedCovariance(p(:, 3), p(:, 4), p(:, 5));
+		
+		%SYS=SS(A,[B G],C,[D H])
+		%SYS=SS(A, [B G], C, [D H])
+		%[KEST,L,P,M,Z] = KALMAN(SYS,QN,RN,NN,'delayed');
 		C3 = C1 + [dt^2 dt; dt dt^2].*C2;
 		m_p = m + dt*m_v;
 	end
 
 	% Resample
 	if (survival_of_fittest)
-		A = [p(Nuc:N, 1:5), zeros(N-Nuc+1, 1)];
-		B = [rand(N-Nuc+1, 2)*0.02-0.01, rand(N-Nuc+1, 2)*0.1-0.05, ones(N-Nuc+1, 1), zeros(N-Nuc+1, 1)];
-		p(1:Nlc+1,:) = A + B;
+		%A = [p(Nuc:N, 1:5), zeros(N-Nuc+1, 1)];
+		%B = [rand(N-Nuc+1, 2)*0.02-0.01, rand(N-Nuc+1, 2)*0.1-0.05, ones(N-Nuc+1, 1), zeros(N-Nuc+1, 1)];
+		%p(1:Nlc+1,:) = A + B;
+		C1 = C1 + (C1<[.001 0 ;0 .001]).*[.001 0;0 .001];
+		C2 = C2 + (C2<[.001 0 ;0 .001]).*[.001 0;0 .001];
+		[EigV1, EigD1] = myeig(C1);
+		[EigV2, EigD2] = myeig(C2);
+		EigV1(:, 1) = EigV1(:, 1) * sqrt(EigD1(1, 1));
+		EigV1(:, 2) = EigV1(:, 2) * sqrt(EigD1(2, 2));
+		EigV2(:, 1) = EigV2(:, 1) * sqrt(EigD2(1, 1));
+		EigV2(:, 2) = EigV2(:, 2) * sqrt(EigD2(2, 2));
+		for g=1:Nlc
+			e1 = (EigV1*randn(2, 1))' + m;
+			e2 = (EigV2*randn(2, 1))' + m_v;
+			p(g, :) = [e1(1), e1(2), e2(1), e2(2), 1/N, 1];
+		end
 	else
 		p = [m(1) + randn(N, 1)*p_std(1), ...
 			m(2) + randn(N, 1)*p_std(2), ...
@@ -149,7 +170,7 @@ for t = time
 		title(['Estimated pdf at time ' num2str(t, '%1.1f')])
 		xlabel('X [m]')
 		ylabel('Y [m]')
-		[V, D] = eig(C2);
+		[V, D] = eig(C1);
 		if (D(1,1)>D(2,2))
 			l1 = D(1,1);
 			l2 = D(2,2);
@@ -165,6 +186,28 @@ for t = time
 		arrow([m(1) m(2) atan2(v2(1),v2(2))], l2*30, 'r', 1);
 		hold off
 		subplot(2, 2, 3)
+		plotCovar2D(m_v(1), m_v(2), C2, [-1 1 -1 1])
+		axis([-1 1 -1 1])
+		hold on
+		title(['Estimated pdf of speed at time ' num2str(t, '%1.1f')])
+		xlabel('X [m]')
+		ylabel('Y [m]')
+		[V, D] = eig(C2);
+		if (D(1,1)>D(2,2))
+			l1 = D(1,1);
+			l2 = D(2,2);
+			v1 = V(:, 1);
+			v2 = V(:, 2);
+		else
+			l1 = D(2,2);
+			l2 = D(1,1);
+			v1 = V(:, 2);
+			v2 = V(:, 1);
+		end
+		arrow([m_v(1) m_v(2) atan2(v1(1),v1(2))], l1*30, 'b', 1);
+		arrow([m_v(1) m_v(2) atan2(v2(1),v2(2))], l2*30, 'r', 1);
+		hold off
+		subplot(2, 2, 4)
 		plotCovar2D(m_p(1), m_p(2), C3, arena)
 		hold on
 		title(['Predicted PDF in ' num2str(dt) ' seconds']);
@@ -200,6 +243,7 @@ for t = time
 		end
 	end
 end
+
 frametime = toc/(frame - 1);
 fprintf('seconds/frame %i\n', frametime);
 fprintf('seconds/frame/T %i\n', frametime/T);
