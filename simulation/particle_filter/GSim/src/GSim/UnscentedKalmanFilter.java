@@ -47,6 +47,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		alpha=3.5f;  //1e-3 default
 		ki=0;  //default
 		beta=(float)Math.pow(alpha, 2) -0.9f;  //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
+	
 		lambda=(float)Math.pow(alpha, 2)*(L+ki)-L;  
 		c=L+lambda; 
 		Wm = new Matrix(1, (2*L+1), 0.5/c);
@@ -54,19 +55,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		Wc=Wm.copy();
 		Wc.set(0,0, Wc.get(0,0) + 1 - Math.pow(alpha, 2) + beta);          
 		c=(float)Math.sqrt(c);
-		//The code above (in the constructor) has been compared with the original matlab and should be ok
-
-
-		/*int test_uygsudf = 3;
-		private Matrix test = new Matrix(1,1,(double)2.0);
-		double[] test2 =  {1,2,3};
-		Matrix test3 = new Matrix(test2,test2.length);
-		
-		Matrix P = new Matrix(L,L); //initial state covraiance
-		for (int i =0; i<=L; i++){
-			P.set(i, i, 1);
-		}
-		*/				
+		//The code above (in the constructor) has been compared with the original matlab and should be ok			
 	}
 	
 
@@ -78,20 +67,16 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		//L=x.getColumnDimension();  //Currently not needed //TODO check that its the right dimension (column/row)
 		//m=z.getColumnDimension(); 
 		
-		
-		
-
 		Matrix X = sigmas(x,P,c);  //sigma points around x, NB: c has been set in the constructor
-		/*[x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L,Q);          %unscented transformation of process
+		ut(f,X,Wm,Wc,L,Q);  //unscented transformation of process
+		
+		/*
+		[x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L,Q);          %unscented transformation of process
 		% X1=sigmas(x1,P1,c);                         %sigma points around x1
 		% X2=X1-x1(:,ones(1,size(X1,2)));             %deviation of X1
 		[z1,Z1,P2,Z2]=ut(hmeas,X1,Wm,Wc,m,R);       %unscented transformation of measurments
 		P12=X2*diag(Wc)*Z2';                        %transformed cross-covariance
 		K=P12/P2;           %old: P12*inv(P2);
-		*/
-		
-/*
-
 
 		Ktemp=K;
 		if nargin>7
@@ -104,7 +89,6 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		    x=x1+K*(z-z1);                              %state update
 		    P=P1-K*P12';                                %covariance update
 		end
-		
 		*/
 		
 		return null;
@@ -121,8 +105,34 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	 * @param R  additive covariance
 	 * @return y: transformed mean, Y: transformed sampling points, P: transformed covariance, Y1: transformed deviations 
 	 */
-	private Object ut(IFunction f, Object X, Object Wm, Object Wc, Object n, Object R)
+	private Object ut(IFunction f, Matrix X, Matrix Wm, Matrix Wc, int n, Matrix R)
 	{
+		int L = X.getColumnDimension();
+		Matrix y = new Matrix(n,1,0);
+		Matrix Y = new Matrix(n,L,0);
+		
+		System.out.println("Debug: ut, X:");
+		printM(X);
+		System.out.println("Debug: ut, y:");
+		printM(y);
+		System.out.println("Debug: ut, Y:");
+		printM(Y);
+		
+
+		for (int i=0; i<L; i++)
+		{
+			
+			//for all columns in X, compute fstate for the given row vector and put the result in Y
+			Matrix row_in_X = X.getMatrix(0, X.getRowDimension()-1, i, i);
+			//System.out.println("Debug: ut, row_in_X:");
+			//printM(row_in_X);
+			Y.setMatrix(0, Y.getRowDimension()-1, i, i, f.eval(row_in_X) );
+			System.out.println("Debug: ut, Y:");
+			printM(Y);
+			//Y.setMatrix(0, L-1, arg2, arg3, arg4)
+		}
+		
+		
 		/*
 		L=size(X,2);
 		y=zeros(n,1);
@@ -149,10 +159,12 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	{
 		Matrix A = new Matrix( Cholesky.cholesky( P.getArray() ) );
 		A = (A.times(c)).transpose();
-		//System.out.println(MatrixToString(A));
+		System.out.println("Debug: sigmas, A:");
+		printM(A);
 		
 		int n = x.getRowDimension();
-		//System.out.println(MatrixToString(x));
+		System.out.println("Debug: sigmas, x:");
+		printM(x);
 		
 		//Create Y
 		Matrix Y = new Matrix(n, n, 1);
@@ -160,7 +172,8 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		{
 			Y.setMatrix(0, n-1, j, j, x);
 		}
-		//System.out.println(MatrixToString(Y));
+		System.out.println("Debug: sigmas, Y:");
+		printM(Y);
 
 		//Create X
 		Matrix X = new Matrix(n,(1+n+n));
@@ -173,41 +186,18 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		Matrix Y_minus_A = Y.minus(A);
 		X.setMatrix(0, n-1, n+1, n+n, Y_minus_A);
 		
-		//System.out.println(MatrixToString(X));
+		System.out.println("Debug: sigmas, X:");
+		printM(X);
 		
 		return X;
 	}
 
-	public String toString()
-	{
-		//TODO print L and m, but only if the have values
-		String s = " alpha = " + alpha + "\n ki = " + ki + "\n beta = " + beta +
-		"\n lambda = " + lambda + "\n  c = " + c;// + "\n Wm = " + Wm.getArray() + "\n Wc = " + Wc.getArray();
-		
-
-		return s;	
-	}	
-	
-	public String MatrixToString(Matrix m)
-	{
-		double[][] print_m = m.getArray();
-		String s = "";
-		for (int i=0; i<m.getRowDimension(); i++)
-		{
-			for (int j=0; j<m.getColumnDimension(); j++)
-			{
-				s += print_m[i][j] + " ";
-			}
-			s += "\n";
-		}
-		return s;
-	}
-	
 	public static void main(String args[])
 	{
 		//Example, for testing
+		System.out.println("Test started");
 		UnscentedKalmanFilter ukf_test = new UnscentedKalmanFilter(3,1);
-		System.out.println(ukf_test);
+		System.out.println("Debug: printing ukf object:\n" +ukf_test);
 		
 		int n=3;      //number of state
 		float q=0.1f;    //std of process
@@ -229,6 +219,50 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		
 		Matrix z = h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
 		Matrix[] result = ukf_test.ukf(f, x, P, h, z, Q, R);
+	}
+	
+	
+	/**
+	 * Prints a filter object
+	 */
+	public String toString()
+	{
+
+		String s ="";
+		s = " L = " + L + "\n m = " + m + "\n";
+		s += " alpha = " + alpha + "\n ki = " + ki + "\n beta = " + beta +
+		"\n lambda = " + lambda + "\n c = " + c + "\n Wm = " + MatrixToString(Wm) + " Wc = " + MatrixToString(Wc);
+
+		return s;	
+	}	
+	
+	/**
+	 * Converts a matrix to a string ready to be printed
+	 * The values are rounded to floats (from doubles).
+	 * @param m  input matrix
+	 * @return a string representation of the matrix
+	 */
+	public static String MatrixToString(Matrix m)
+	{
+		double[][] print_m = m.getArray();
+		String s = "";
+		for (int i=0; i<m.getRowDimension(); i++)
+		{
+			for (int j=0; j<m.getColumnDimension(); j++)
+			{
+				s += (float)print_m[i][j] + "  ";
+			}
+			s += "\n";
+		}
+		return s;
+	}
+	
+	/**
+	 * Prints a matrix.
+	 * @param m input matrix
+	 */
+	public static void printM(Matrix m){
+		System.out.println(MatrixToString(m));
 	}
 
 }
