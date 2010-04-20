@@ -4,7 +4,7 @@ clear all
 
 %% Set basic options
 N = 40
-stddegrees = 2;
+stddegrees = 1;
 T = 0.5;
 landmarks = [0.05+i*0.05 2.95+i*0.05 0.05+i*2.95 2.95+i*2.95 ...
 		0.05+i*1.5 2.95+i*1.5 1.5+i*2.95 1.5+i*0.05];
@@ -15,8 +15,8 @@ time = -6:T:60;		% Time span of simulation
 cat_f = mouse_init(1.5, 1.5, pi/2, 1, max(time), T);
 
 %% Set settings for methods and plotting
-do_plotting = 0;		% Flag for doing continous plotting
-make_mov = 0;			% Record movie
+do_plotting = 1;		% Flag for doing continous plotting
+make_mov = 1;			% Record movie
 make_images = 1;		% Write plots to images
 survival_of_fittest = 1;	% Resampling method (alt. complete resampling)
 

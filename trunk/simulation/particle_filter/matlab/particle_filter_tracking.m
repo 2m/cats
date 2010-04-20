@@ -3,8 +3,8 @@ close all
 clear all
 
 %% Set basic options
-N = 120
-stddegrees = 2;
+N = 80
+stddegrees = 1;
 T = 0.5;
 cat(1) = 0.1 + i * 0.1;
 cat(2) = 2.9 + i * 0.1;
@@ -15,8 +15,8 @@ time = 0:T:60;	% Time span of simulation
 mouse_f = mouse_init(1.5, 1.5, pi/2, 1, max(time), T);
 
 %% Set settings for methods and plotting
-do_plotting = 0;		% Flag for doing continous plotting
-make_mov = 0;			% Record movie
+do_plotting = 1;		% Flag for doing continous plotting
+make_mov = 1;			% Record movie
 make_images = 1;		% Write plots to images
 survival_of_fittest = 1;	% Resampling method (alt. complete resampling)
 
