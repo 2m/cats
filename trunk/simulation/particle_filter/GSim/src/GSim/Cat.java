@@ -8,7 +8,7 @@ package GSim;
  *
  */
 public class Cat extends Actor {
-	public Cat(SensorHandler sensors, double x, double y, double angle) {
-		super(sensors, x, y, angle, CAT);
+	public Cat(SensorHandler sensors, LandmarkList list, double x, double y, double angle) {
+		super(sensors, list, x, y, angle, CAT);
 	}
 }

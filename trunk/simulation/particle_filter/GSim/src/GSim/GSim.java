@@ -30,23 +30,37 @@ public class GSim extends JFrame implements MouseListener {
 
 	// Array with all the actors
 	private Actor[] actors = new Actor[2 + 1 + 4];
-	private SensorHandler sensors;
 	private boolean marked = false;
 
 	// Positions of landmarks
 	public final double[] landmarkX = { 0.05, 0.05, 2.95, 2.95 };
 	public final double[] landmarkY = { 0.05, 2.95, 0.05, 2.95 };
+	public final boolean[] landmarkC = {true, true, true, false};
 
 	public GSim() {
 		addMouseListener(this);
 		//sensors = new sensorHandler(actors);
 		// TODO: Add sensor data to actor objects
+		// TODO: Create landmark list object
+		// TODO: Fix list of landmarks for particle filter
+		pl = new int[4][3];
+		for (int i = 0; i < landmarkX.length; i++) {
+			pl[i][1] = Fixed.float2Fixed(landmarkX[i]);
+			pl[i][2] = Fixed.float2Fixed(landmarkY[i]);
+			if (landmarkC[i]) {
+				pl[i][3] = LandmarkList.GREEN;
+			} else {
+				pl[i][3] = LandmarkList.RED;
+			}
+		}
+		LandmarkList llist = new LandmarkList(pl);
 		for (int i = 0; i < landmarkX.length; i++) {
 			actors[i] = new LandMark(null, landmarkX[i], landmarkY[i]);
 		}
-		actors[4] = new Mouse(null, 1.5, 1.5, 0.0);
-		actors[5] = new Cat(sensors, 0.1, 0.1, Math.PI/6);
-		actors[6] = new Cat(sensors, 1.0, 1.0, 0);
+		SensorHandler sensors = new SensorHandler();
+		actors[4] = new Mouse(null, null, 1.5, 1.5, 0.0);
+		actors[5] = new Cat(sensors, llist, 0.1, 0.1, Math.PI/6);
+		actors[6] = new Cat(sensors, llist, 1.0, 1.0, 0);
 	}
 
 	/**
