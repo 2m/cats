@@ -18,6 +18,8 @@ ParticleFilter
 
 Sensor_Alternatives
 
+VisualMarkers
+
 = Report =
 
 ProjectReport
