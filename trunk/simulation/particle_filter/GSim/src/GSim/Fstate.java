@@ -24,7 +24,7 @@ public class Fstate implements IFunction{
 		
 		output.set(0, 0, x.get(1,0) );
 		output.set(1, 0, x.get(2,0) );
-		output.set(2, 0, 0.05 * x.get(0,0) * x.get(1,0) + x.get(2,0) );
+		output.set(2, 0, 0.05 * x.get(0,0) * (x.get(1,0) + x.get(2,0)) );
 		
 		//System.out.println("Debug: In Fstate.eval(), output:");
 		//UnscentedKalmanFilter.printM(output);

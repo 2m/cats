@@ -113,24 +113,40 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		
 		System.out.println("Debug: ut, X:");
 		printM(X);
+		//System.out.println("Debug: ut, y:");
+		//printM(y);
+		//System.out.println("Debug: ut, Y:");
+		//printM(Y);
+		
+
+		for (int k=0; k<L; k++)
+		{
+			
+			//for all columns in X, compute fstate for the given row vector and put the result in Y
+			Matrix row_in_X = X.getMatrix(0, X.getRowDimension()-1, k, k);
+			//System.out.println("Debug: ut, row_in_X:");
+			//printM(row_in_X);
+			Y.setMatrix(0, Y.getRowDimension()-1, k, k, f.eval(row_in_X) );
+			//System.out.println("Debug: ut, Y:");
+			//printM(Y);
+			Matrix row_in_Y = Y.getMatrix(0, Y.getRowDimension()-1, k, k);
+			//System.out.println("Debug: ut, row_in_Y:");
+			//printM(row_in_Y);
+			y.setMatrix( 0, y.getRowDimension()-1, 0, 0, ( row_in_Y.times(Wm.get(0, k)) ).plus(y)  );
+			//System.out.println("Debug: ut, y:");
+			//printM(y);
+		}
 		System.out.println("Debug: ut, y:");
 		printM(y);
 		System.out.println("Debug: ut, Y:");
 		printM(Y);
 		
-
-		for (int i=0; i<L; i++)
-		{
-			
-			//for all columns in X, compute fstate for the given row vector and put the result in Y
-			Matrix row_in_X = X.getMatrix(0, X.getRowDimension()-1, i, i);
-			//System.out.println("Debug: ut, row_in_X:");
-			//printM(row_in_X);
-			Y.setMatrix(0, Y.getRowDimension()-1, i, i, f.eval(row_in_X) );
-			System.out.println("Debug: ut, Y:");
-			printM(Y);
-			//Y.setMatrix(0, L-1, arg2, arg3, arg4)
-		}
+		Matrix Y1 = Y.minus(  y.times( new Matrix(1,Y.getColumnDimension(),1) )  );
+		System.out.println("Debug: ut, Y1:");
+		printM(Y1);	
+		
+		Matrix Wc_diag = Matrix.identity(Wc.getColumnDimension(), Wc.getColumnDimension());
+		//TODO creat diagonal and calculate P
 		
 		
 		/*
