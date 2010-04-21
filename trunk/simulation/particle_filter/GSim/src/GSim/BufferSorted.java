@@ -31,16 +31,16 @@ public class BufferSorted extends Buffer {
 
 		synchronized (lockOnLast) {
 			if (last != null) {
+				// TODO: Sorted insert
 				last.next = newNode;
 				last = newNode;
 			} else {
-				// TODO: Sorted insert
 				first = newNode;
 				last = newNode;
 			}
 			nonodes++;
 		}
-		//System.out.println(nonodes + " number of objects buffered in FIFO");
+		// System.out.println(nonodes + " number of objects buffered in FIFO");
 	}
 
 	/**
@@ -69,15 +69,5 @@ public class BufferSorted extends Buffer {
 		}
 		ret += " }";
 		return ret;
-	}
-}
-
-final class node {
-	public Object value;
-	public node next;
-
-	public node(Object value, node next) {
-		this.value = value;
-		this.next = next;
 	}
 }

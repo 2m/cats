@@ -17,23 +17,24 @@ public class Actor {
 	public static final int MOUSE = 2;
 	public static final int LANDMARK = 3;
 
-	private double gotox;
-	private double gotoy;
+	protected double gotox;
+	protected double gotoy;
 	private boolean marked = false;
 	private int type;
-	private Buffer motorBuffer = new BufferFIFO();
-	private RealTimeClock clock = new RealTimeClock();
-	private SensorHandler sensors = null;
-	private MotorControl motor = null;
+	protected Buffer motorBuffer = new BufferFIFO();
+	protected RealTimeClock clock = new RealTimeClock();
+	protected MotorControl motor = null;
+	protected SensorHandler sensors;
+	public LandmarkList landmarks;
+	protected int iter;
 
-	public Actor(SensorHandler sensors, double tx, double ty, double tangle,
-			int ttype) {
+	public Actor(Actor mouse, LandmarkList landmarks, double tx, double ty, double tangle, int ttype) {
 		motor = new MotorControl(tx, ty, tangle, motorBuffer, clock);
+		this.landmarks = landmarks;
 		type = ttype;
 		gotox = tx;
 		gotoy = ty;
-		this.sensors = sensors;
-		sensors.reg(this);
+
 	}
 
 	public double getX() {
@@ -54,9 +55,7 @@ public class Actor {
 	 */
 	public void update() {
 		motor.goTo(gotox, gotoy);
-		// TODO: update sensors
-		// sensors.update();
-		// TODO: Call filter every 5 iteration
+		iter++;
 	}
 
 	/**
@@ -149,9 +148,12 @@ public class Actor {
 			g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
 					* linelength), (int) (iy + Math.sin(iangle) * linelength));
 		}
+		
+		drawMore(g);
 
 		// Reset the tranformation matrix
 		g2.setTransform(oldTransform);
 	}
-
+	
+	public void drawMore(Graphics g) {}
 }

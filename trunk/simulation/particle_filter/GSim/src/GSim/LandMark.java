@@ -9,8 +9,8 @@ package GSim;
 
 public class LandMark extends Actor {
 
-	public LandMark(SensorHandler sensors, double x, double y) {
-		super(sensors, x, y, 0.0, LANDMARK);
+	public LandMark(Actor mouse, LandmarkList landmarks, double x, double y) {
+		super(mouse, landmarks, x, y, 0.0, LANDMARK);
 	}
 
 

@@ -31,36 +31,19 @@ public class GSim extends JFrame implements MouseListener {
 	// Array with all the actors
 	private Actor[] actors = new Actor[2 + 1 + 4];
 	private boolean marked = false;
-
-	// Positions of landmarks
-	public final double[] landmarkX = { 0.05, 0.05, 2.95, 2.95 };
-	public final double[] landmarkY = { 0.05, 2.95, 0.05, 2.95 };
-	public final boolean[] landmarkC = {true, true, true, false};
-
+	private LandmarkList llist = new LandmarkList();
+	
 	public GSim() {
 		addMouseListener(this);
-		//sensors = new sensorHandler(actors);
 		// TODO: Add sensor data to actor objects
-		// TODO: Create landmark list object
-		// TODO: Fix list of landmarks for particle filter
-		pl = new int[4][3];
-		for (int i = 0; i < landmarkX.length; i++) {
-			pl[i][1] = Fixed.float2Fixed(landmarkX[i]);
-			pl[i][2] = Fixed.float2Fixed(landmarkY[i]);
-			if (landmarkC[i]) {
-				pl[i][3] = LandmarkList.GREEN;
-			} else {
-				pl[i][3] = LandmarkList.RED;
-			}
+
+		for (int i = 0; i < llist.landmarkX.length; i++) {
+			// Created for plotting
+			actors[i] = new LandMark(null, null, llist.landmarkX[i], llist.landmarkY[i]);
 		}
-		LandmarkList llist = new LandmarkList(pl);
-		for (int i = 0; i < landmarkX.length; i++) {
-			actors[i] = new LandMark(null, landmarkX[i], landmarkY[i]);
-		}
-		SensorHandler sensors = new SensorHandler();
 		actors[4] = new Mouse(null, null, 1.5, 1.5, 0.0);
-		actors[5] = new Cat(sensors, llist, 0.1, 0.1, Math.PI/6);
-		actors[6] = new Cat(sensors, llist, 1.0, 1.0, 0);
+		actors[5] = new Cat(actors[4], llist, 0.1, 0.1, Math.PI/6);
+		actors[6] = new Cat(actors[4], llist, 1.0, 1.0, 0);
 	}
 
 	/**
@@ -139,7 +122,7 @@ public class GSim extends JFrame implements MouseListener {
 		double y = Actor.g2eY(e.getY());
 		//System.out.println(x +", "+ y);
 		if (marked){
-			for (int i = landmarkX.length; i < actors.length; i++){
+			for (int i = llist.landmarkX.length; i < actors.length; i++){
 				if (actors[i].marked()) {
 					actors[i].goTo(x, y);
 					actors[i].unmark();					
@@ -149,7 +132,7 @@ public class GSim extends JFrame implements MouseListener {
 		} else {
 			double dist, mindist = ARENA_WIDTH*ARENA_WIDTH + ARENA_HEIGHT*ARENA_HEIGHT;
 			int j = 0;
-			for (int i = landmarkX.length; i < actors.length; i++){
+			for (int i = llist.landmarkX.length; i < actors.length; i++){
 				dist = Math.pow(actors[i].getX() - x, 2) + Math.pow(actors[i].getY() - y, 2);
 				if (dist<mindist)
 				{

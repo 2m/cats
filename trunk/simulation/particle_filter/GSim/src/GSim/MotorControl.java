@@ -30,7 +30,7 @@ public class MotorControl {
 		if (distance > MAX_SPEED) {
 			distance = MAX_SPEED;
 		}
-		// TODO: Set more realistic noise
+		// TODO: Set more realistic noise (needs measurements)
 		setX(getX() + Math.cos(angle) * distance
 				* (1 + rng.nextDouble() / 50 + 0.01)); // +-1% noise
 		setY(getY() + Math.sin(angle) * distance
