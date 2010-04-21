@@ -38,7 +38,7 @@ public class BufferFIFO extends Buffer {
 			}
 			nonodes++;
 		}
-		//System.out.println(nonodes + " number of objects buffered in FIFO");
+		// System.out.println(nonodes + " number of objects buffered in FIFO");
 	}
 
 	/**
@@ -67,15 +67,5 @@ public class BufferFIFO extends Buffer {
 		}
 		ret += " }";
 		return ret;
-	}
-}
-
-final class node {
-	public Object value;
-	public node next;
-
-	public node(Object value, node next) {
-		this.value = value;
-		this.next = next;
 	}
 }
