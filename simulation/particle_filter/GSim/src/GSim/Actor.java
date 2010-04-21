@@ -33,6 +33,7 @@ public class Actor {
 		gotox = tx;
 		gotoy = ty;
 		this.sensors = sensors;
+		sensors.reg(this);
 	}
 
 	public double getX() {
@@ -53,7 +54,9 @@ public class Actor {
 	 */
 	public void update() {
 		motor.goTo(gotox, gotoy);
+		// TODO: update sensors
 		// sensors.update();
+		// TODO: Call filter every 5 iteration
 	}
 
 	/**

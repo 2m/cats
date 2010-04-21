@@ -14,10 +14,13 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 	private int y[];
 	private int angle[];
 	private int[] weights;
-	
+
+	/* Linked list for particles */
+	private Particle first;
+	private Particle last;
+
 	private final int N;
-	private final int Nuc;
-	private final int Nlc;
+	private final int Ncut;
 	private int mean_x;
 	private int mean_y;
 	private int mean_angle;
@@ -31,8 +34,8 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 	public AbsolutePositioningParticleFilter(int N, float T, Buffer sensorData, Buffer movementData, Arena arena, RealTimeClock rttime, LandmarkList landmarks) {
 		super(T, sensorData, movementData, arena, rttime, landmarks);
 		this.N = N;
-		Nuc = (int) (N*(3/4));		// Set up cut-offs for survival of the fittest
-		Nlc = (int) (N*(1/4));
+		/* Set up cut-off for survival of the fittest */
+		Ncut = (int) (N*(1/4));
 	}
 
 	/**
@@ -40,21 +43,102 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 	 */
 	private void initParticles() {
 		// State variables x, y, angle
-		x = new int[N];
-		y = new int[N];
-		angle = new int[N];
-		weights = new int[N];
+		for(int i=0;i<N;i++) {
+			addParticle(0, 0, 0, 0);
+		}
 		initParticleData();
 		// Generate random numbers
 		randn_lut = new int[RANDN_MASK + 1];
 
 	}
+
+	/** Add a particle to the daa structure */
+	private addParticle(int x, int y, int angle, int w) {
+		if (first==null) {
+			first = new Particle(x, y, angle, w, null, null);
+		} else {
+			Particle ptr = first;
+			first = new Particle(x, y, angle, w, ptr, null);
+			ptr.previus = first;
+		}
+	}
+
+	/** Swap two particles in the data structure */
+	private swapParticle(Particle a, Particle b) {
+		Particle ptr_a1 = a.previous;
+		Particle ptr_a2 = a.next;
+		Particle ptr_b1 = b.previous;
+		Particle ptr_b2 = b.next;
+		a.previous = ptr_b1;
+		a.next = ptr_b2;
+		b.previous = ptr_a1;
+		b.next = ptr_a2;
+		if (prt_a1==null) {
+			// a is first element
+			first = b;
+		} else {
+			ptr_a1.next = b;
+		}
+		if (prt_a2==null) {
+			// a is last element
+			last = b;
+		} else {
+			ptr_a2.previous = b;
+		}
+		if (prt_b1==null) {
+			// b is first element
+			first = a;
+		} else {
+			ptr_b1.next = a;
+		}
+		if (prt_b2==null) {
+			// b is last element
+			last = a;
+		} else {
+			ptr_b2.previous = a;
+		}
+	}
+
+	/** Move particle node a to the place between b and c. */
+	private moveParticle(Particle a, Particle b, Particle c) {
+	}
+
+	private quickSort(Particle Ptr1, Particle Ptr2, int N1, int N2) {
+		if (N1<Ncut) && (Ncut<N2) {
+		int pivot = Ptr2;
+		Particle ptr2 = Ptr2.previous;
+		Particle ptr1 = Ptr1;
+		n2 = N2 - 1;
+		n1 = N1;
+		int pivotw = pivot.w;
+		while(ptr1!=ptr2) {
+			if (ptr1.w<pivotw) {
+				ptr1 = ptr1.next;
+				n1++;
+			}else if (ptr2.w>pivotw) {
+				ptr2 = ptr2.previous;
+				n2--;
+			} else if (ptr1.w>pivotw) && (ptr2.w<pivotw) {
+				swapParticle(ptr1, ptr2);
+			}
+			
+		}
+		moveParticle(pivot, ptr1, ptr2);
+		quickSort(Ptr1, ptr1, N1, n1);
+		quickSort(ptr2, Ptr2, n2, N2);
+	}}
 	
 	private void initParticleData() {
 		// TODO: Add init data (from arena data or other input?)
+		Particle ptr = first;
+		while (ptr!=null) {
+			//ptr.x = 0;
+			ptr = ptr.next;
+		}
 		for(int i=0;i<=RANDN_MASK;i++){
 			randn_lut[i] = Fixed.randn();
-		}	}
+		}
+	}
 	
 /**
  * Move particles in the direction each particle is facing.
@@ -129,7 +213,7 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 			// If sum of weights are 0 then a full reinit is needed
 			initParticleData();
 		}else{
-		// TODO: Sort
+		quickSort(first, last, 1, N);
 		// TODO: Use mean and variance to generate new particles
 		for(int i=Nlc;i<N;i++) {
 			/*x[i] = mean_x + Fixed.mul(nextRandn(), std_x);
@@ -142,7 +226,7 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 			weights[i] = norm;
 		}
 	}}
-	
+
 	/**
 	 *  Calculate mean
 	 */	
@@ -168,6 +252,7 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 			for(int i=0;i<N;i++) {
 				tmean_x += Fixed.mul(x[i], weights[i]);
 				tmean_y += Fixed.mul(y[i], weights[i]);
+				// TODO: Look at ways to account for circular vlues in angle
 				tmean_a += Fixed.mul(angle[i], weights[i]);
 			}
 			norm = Fixed.div(Fixed.ONE, sum_w);
@@ -175,6 +260,8 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 		mean_x = Fixed.intToFixed(Fixed.mul(tmean_x, norm));
 		mean_y = Fixed.intToFixed(Fixed.mul(tmean_y, norm));
 		mean_angle = Fixed.intToFixed(Fixed.mul(tmean_a, norm));
+		// TODO: Calculate covariance
+		// TODO: Check means and covariances
 	}
 	
 	public int getTime() {
@@ -236,10 +323,10 @@ public class AbsolutePositioningParticleFilter extends AbsolutePositioningFilter
 		// Read time
 		currentTime = rttime.getTime();
 		// Update and evaluation loop
-		// - Read buffers for integration (angles, distance) 
-		// - Compare with landmarks
-		// - Resample if needed
-		// Resample (if not already done)
+		// TODO: Read buffers for integration (angles, distance) 
+		// TODO: Compare with landmarks
+		// TODO: Resample if needed
+		// TODO: Guarantee a resample
 		// Check timers
 		// Wait
 	}
@@ -295,3 +382,21 @@ loop
 
 
 */
+
+class Particle {
+	public int x;
+	public int y;
+	public int angle;
+	public int w;
+	public Particle next;
+	public Particle previous;
+
+	public Particle(int x, int y, int angle, int w, Particle next, Particle previous) {
+		this.x = x;
+		this.y = y;
+		this.angle = angle;
+		this.w = w;
+		this.next = next;
+		this.previous = previous;
+	}
+}

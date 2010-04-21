@@ -2,11 +2,13 @@ package GSim;
 
 public class LandmarkList {
 
-	public void init(int type) {
+	public int[] list;
+	public final int GREEN = 1;
+	public final int RED = 2;
 
-	}
+	public LandmarkList() {}
 
-	public void next() {
-
+	public LandmarkList(int[] list) {
+		this.list = list;
 	}
 }
