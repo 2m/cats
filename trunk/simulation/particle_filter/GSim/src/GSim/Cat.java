@@ -11,14 +11,24 @@ import java.awt.Graphics;
  */
 public class Cat extends Actor {
 	protected Buffer positioningBuffer, trackerBuffer;
+	protected AbsolutePositioningFilter positioningFilter;
 
-	public Cat(Actor mouse, LandmarkList landmarks, double x, double y,
-			double angle) {
-		super(mouse, landmarks, x, y, angle, CAT);
-		sensors = new SensorHandler(landmarks, mouse);
+	public Cat(Actor mouse, double x, double y,
+			double angle, RealTimeClock clock) {
+		super(mouse, x, y, angle, CAT, clock);
+		sensors = new SensorHandler(mouse, clock);
 		sensors.register(this);
 		positioningBuffer = sensors.regPositioner();
 		trackerBuffer = sensors.regTracker();
+		/*
+		 * public AbsolutePositioningParticleFilter(int N, float T, Buffer
+		 * sensorData, Buffer movementData, Arena arena, RealTimeClock rttime,
+		 * LandmarkList landmarklist)
+		 */
+		int N = 50;
+		float T = (float) 0.5;
+		positioningFilter = new AbsolutePositioningParticleFilter(N, T,
+				positioningBuffer, motorBuffer, clock);
 	}
 
 	/**
@@ -27,9 +37,9 @@ public class Cat extends Actor {
 	public void update() {
 		motor.goTo(gotox, gotoy);
 		if ((iter % 5) == 0) {
-			// sensors.update();
+			sensors.update();
 			// TODO: Call filters every 5 iteration
-			// positioningFilter.update();
+			positioningFilter.update();
 			// trackingFilter.update();
 		}
 		iter++;

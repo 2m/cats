@@ -34,19 +34,20 @@ public class BufferSorted extends Buffer {
 				first = newNode;
 				last = newNode;
 			} else {
-				// TODO: Test sorted insert
-				if (!first.value.earlierThan(newNode.value)){
+				if (!first.value.earlierThan(newNode.value)) {
 					newNode.next = first;
-					first = newNode;	
+					first = newNode;
 				} else {
 					BufferNode lastptr = first;
 					BufferNode ptr = first.next;
-					while ((ptr.value.earlierThan(newNode.value))&&(ptr.next!=null)) {
-						// Will exit on node that should be pushed back or on last node
+					while ((ptr.value.earlierThan(newNode.value))
+							&& (ptr.next != null)) {
+						// Will exit on node that should be pushed back or on
+						// last node
 						lastptr = ptr;
 						ptr = ptr.next;
 					}
-					if (ptr.next==null) {
+					if (ptr.next == null) {
 						// New node inserted last
 						last.next = newNode;
 						last = newNode;
@@ -58,8 +59,8 @@ public class BufferSorted extends Buffer {
 			}
 			nonodes++;
 		}
-		// System.out.println(nonodes +
-		// " number of objects buffered in SortedBuffer");
+		//System.out.println(nonodes
+		//		+ " number of objects buffered in SortedBuffer");
 	}
 
 	/**

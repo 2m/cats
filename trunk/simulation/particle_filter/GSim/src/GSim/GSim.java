@@ -6,9 +6,12 @@ package GSim;
  * Date 2010-02-16
  */
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -29,21 +32,17 @@ public class GSim extends JFrame implements MouseListener {
 	public static final double ARENA_HEIGHT = 3;
 
 	// Array with all the actors
-	private Actor[] actors = new Actor[2 + 1 + 4];
+	private Actor[] actors = new Actor[1 + 1];
 	private boolean marked = false;
-	private LandmarkList llist = new LandmarkList();
-	
+	public LandmarkList llist = new LandmarkList();
+	public RealTimeClock clock = new RealTimeClock();
+
+	// TODO: Implement shared sighting data (network)
 	public GSim() {
 		addMouseListener(this);
-		// TODO: Add sensor data to actor objects
-
-		for (int i = 0; i < llist.landmarkX.length; i++) {
-			// Created for plotting
-			actors[i] = new LandMark(null, null, llist.landmarkX[i], llist.landmarkY[i]);
-		}
-		actors[4] = new Mouse(null, null, 1.5, 1.5, 0.0);
-		actors[5] = new Cat(actors[4], llist, 0.1, 0.1, Math.PI/6);
-		actors[6] = new Cat(actors[4], llist, 1.0, 1.0, 0);
+		actors[0] = new Mouse(null, 1.5, 1.5, 0.0, clock);
+		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, clock);
+		//actors[2] = new Cat(actors[0], 1.0, 1.0, 0, clock);
 	}
 
 	/**
@@ -65,6 +64,31 @@ public class GSim extends JFrame implements MouseListener {
 	private void paintActors(Graphics g) {
 		for (int i = 0; i < actors.length; i++) {
 			actors[i].draw(g);
+		}
+		// Draw landmarks
+		for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
+			final int size = 5; // Diameter
+			int ix = Actor.e2gX((double) LandmarkList.landmarkX[i]);
+			int iy = Actor.e2gY((double) LandmarkList.landmarkY[i]);
+			Graphics2D g2 = (Graphics2D) g;
+
+			// Save the current tranform
+			AffineTransform oldTransform = g2.getTransform();
+
+			// Rotate and translate the actor
+			g2.rotate(0.0, ix, iy);
+
+			if (LandmarkList.landmarkC[i]) {
+				g2.setColor(Color.green);
+			} else {
+				g2.setColor(Color.red);
+			}
+			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
+					(int) size, (int) size);
+
+
+			// Reset the tranformation matrix
+			g2.setTransform(oldTransform);
 		}
 	}
 
@@ -96,6 +120,7 @@ public class GSim extends JFrame implements MouseListener {
 			for (int i = 0; i < actors.length; i++) {
 				actors[i].update();
 			}
+
 			repaint(); // Redraw all objects
 			sleep(100); // Wait before new update
 		}
@@ -120,22 +145,23 @@ public class GSim extends JFrame implements MouseListener {
 	public void mouseClicked(MouseEvent e) {
 		double x = Actor.g2eX(e.getX());
 		double y = Actor.g2eY(e.getY());
-		//System.out.println(x +", "+ y);
-		if (marked){
-			for (int i = llist.landmarkX.length; i < actors.length; i++){
+		// System.out.println(x +", "+ y);
+		if (marked) {
+			for (int i = 0; i < actors.length; i++) {
 				if (actors[i].marked()) {
 					actors[i].goTo(x, y);
-					actors[i].unmark();					
+					actors[i].unmark();
 				}
 			}
-			marked = false;			
+			marked = false;
 		} else {
-			double dist, mindist = ARENA_WIDTH*ARENA_WIDTH + ARENA_HEIGHT*ARENA_HEIGHT;
+			double dist, mindist = ARENA_WIDTH * ARENA_WIDTH + ARENA_HEIGHT
+					* ARENA_HEIGHT;
 			int j = 0;
-			for (int i = llist.landmarkX.length; i < actors.length; i++){
-				dist = Math.pow(actors[i].getX() - x, 2) + Math.pow(actors[i].getY() - y, 2);
-				if (dist<mindist)
-				{
+			for (int i = 0; i < actors.length; i++) {
+				dist = Math.pow(actors[i].getX() - x, 2)
+						+ Math.pow(actors[i].getY() - y, 2);
+				if (dist < mindist) {
 					mindist = dist;
 					j = i;
 				}
@@ -155,6 +181,6 @@ public class GSim extends JFrame implements MouseListener {
 		GSim sim = new GSim();
 		System.out.println("Simulation started");
 		sim.run();
-		//System.out.println();
+		// System.out.println();
 	}
 }

@@ -29,18 +29,17 @@ public class AbsolutePositioningParticleFilter extends
 	private int RANDN_MASK = 255;
 
 	public AbsolutePositioningParticleFilter(int N, float T, Buffer sensorData,
-			Buffer movementData, Arena arena, RealTimeClock rttime,
-			LandmarkList landmarklist) {
-		super(T, sensorData, movementData, arena, rttime, landmarklist);
+			Buffer movementData, RealTimeClock rttime) {
+		super(T, sensorData, movementData, rttime);
 		this.N = N;
 		// Set up cut-off for survival of the fittest
 		Ncut = (int) (N * (1 / 4));
 		// Make a local landmark list
 		landmarks = new int[4][3];
-		for (int i = 0; i < landmarklist.landmarkX.length; i++) {
-			landmarks[i][0] = Fixed.floatToFixed(landmarklist.landmarkX[i]);
-			landmarks[i][1] = Fixed.floatToFixed(landmarklist.landmarkY[i]);
-			if (landmarklist.landmarkC[i]) {
+		for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
+			landmarks[i][0] = Fixed.floatToFixed(LandmarkList.landmarkX[i]);
+			landmarks[i][1] = Fixed.floatToFixed(LandmarkList.landmarkY[i]);
+			if (LandmarkList.landmarkC[i]) {
 				landmarks[i][2] = LandmarkList.GREEN;
 			} else {
 				landmarks[i][2] = LandmarkList.RED;
