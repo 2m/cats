@@ -22,19 +22,17 @@ public class Actor {
 	private boolean marked = false;
 	private int type;
 	protected Buffer motorBuffer = new BufferFIFO();
-	protected RealTimeClock clock = new RealTimeClock();
+
 	protected MotorControl motor = null;
 	protected SensorHandler sensors;
-	public LandmarkList landmarks;
 	protected int iter;
 
-	public Actor(Actor mouse, LandmarkList landmarks, double tx, double ty, double tangle, int ttype) {
+	public Actor(Actor mouse, double tx, double ty, double tangle, int ttype, RealTimeClock clock) {
 		motor = new MotorControl(tx, ty, tangle, motorBuffer, clock);
-		this.landmarks = landmarks;
 		type = ttype;
 		gotox = tx;
 		gotoy = ty;
-
+		
 	}
 
 	public double getX() {
