@@ -4,12 +4,15 @@ public class LandmarkList {
 
 	public static final int GREEN = 1;
 	public static final int RED = 2;
-	
+
 	// Positions of landmarks
-	public double[] landmarkX = { 0.05, 0.05, 2.95, 2.95 };
-	public double[] landmarkY = { 0.05, 2.95, 0.05, 2.95 };
-	public boolean[] landmarkC = {true, true, true, false};
-	
-	public LandmarkList() {}
+	public static final float[] landmarkX = { (float) 0.05, (float) 0.05,
+			(float) 2.95, (float) 2.95 };
+	public static final float[] landmarkY = { (float) 0.05, (float) 2.95,
+			(float) 0.05, (float) 2.95 };
+	public static final boolean[] landmarkC = { true, true, true, false };
+
+	public LandmarkList() {
+	}
 
 }
