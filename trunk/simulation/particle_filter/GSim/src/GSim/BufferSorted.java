@@ -30,8 +30,10 @@ public class BufferSorted extends Buffer {
 		node newNode = new node(value, null);
 
 		synchronized (lockOnLast) {
-			if (last != null) {
+			node ptr = first;
+			if (first != null) {
 				// TODO: Sorted insert
+				if ((((comparable)ptr)).compareTo((Comparable)newNode.value)) {}
 				last.next = newNode;
 				last = newNode;
 			} else {
