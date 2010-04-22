@@ -1,23 +1,28 @@
 package GSim;
 
-/** Parent class for buffers */
+/**
+ * Parent class for buffers
+ * 
+ * @author Fredrik Wahlberg
+ * @version $Rev$
+ */
 public class Buffer {
 
-	public synchronized Object pop() {
+	public synchronized BufferData pop() {
 		return null;
 	}
 
-	public void push(Object value) {
+	public void push(BufferData value) {
 	}
 
 }
 
 /** Buffer node */
-final class node {
-	public Object value;
-	public node next;
+final class BufferNode {
+	public BufferData value;
+	public BufferNode next;
 
-	public node(Object value, node next) {
+	public BufferNode(BufferData value, BufferNode next) {
 		this.value = value;
 		this.next = next;
 	}
