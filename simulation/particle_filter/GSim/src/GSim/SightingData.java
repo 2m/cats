@@ -1,4 +1,5 @@
 package GSim;
+
 /**
  * Data of a sighting of the mouse or landmark
  * 
@@ -24,6 +25,7 @@ public class SightingData extends BufferData {
 	}
 
 	public String toString() {
-		return "[" + timestamp + ", " + x + ", " + y + ", " + angle + "]";
+		return "[" + timestamp + ", " + x + ", " + y + ", " + angle + ", "
+				+ type + "]";
 	}
 }
