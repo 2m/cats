@@ -16,7 +16,7 @@ import lejos.nxt.comm.RConsole;
 
 public class SimpleFilter implements Runnable {
 	
-	final static int INTERVAL = 1; // milliseconds
+	final static int dt = 1; // milliseconds
 	
 	public void run() {
 		
@@ -38,9 +38,17 @@ public class SimpleFilter implements Runnable {
 		int xAvg;
 		int err;
 		float angToTarget;
+		//PID-controller: tunable parameters 
+		float Kp = 1;
+		float Ki = 0;
+		float Kd = 0;
+		int previous_error = 0;
+		int integral = 0;
+		float derivative;
 		
+		int newSpeed;
 		//int iterCounter = 0;
-		int maxSpeed = 200;
+		int maxSpeed = 900;
 		int dir = 1; //Specifies which direction to turn, if the mouse is lost. Default is clockwise.
 		int motorAng; //Motor angle relative to starting position
 		float motorAngRad;
@@ -51,7 +59,7 @@ public class SimpleFilter implements Runnable {
 		
 		int offset = 0;
 		if (Identity.getName().equals("cat1"))
-				offset = -7; //for camera on the Karl-Gosta cat.
+				offset = -7; //for camera on cat1.
 		else if (Identity.getName().equals("cat2"))
 				offset = -19; //for camera on cat2
 		
@@ -72,9 +80,6 @@ public class SimpleFilter implements Runnable {
 			
 			xSum = 0;
 			ySum = 0;
-			//int xAvg;
-			//int err;
-			//float angToTarget;
 			
 			if (numObjects >= 1) {// && numObjects <= 8) {
 				for (int i=0;i<numObjects;i++) {
@@ -94,9 +99,7 @@ public class SimpleFilter implements Runnable {
 				}
 				
 				xAvg = xSum / numObjects;
-				//int yAvg = ySum / numObjects; //never used
-				
-				err = xAvg - 176 / 2 + offset;
+				err = xAvg - 176/2 + offset; //0-88-19=-107 worst case
 				angToTarget = err*radPerPix;
 				angToTargetRelCat = motorAngRad + angToTarget;
 				
@@ -116,23 +119,28 @@ public class SimpleFilter implements Runnable {
 				Logger.println("Found at:" + (int) (angToTargetRelCat*180/Math.PI));
 				Logger.println("            CamMotor:" + motorAng);
 				
-				if (Math.abs(err) < 10)
+				if (Math.abs(err) < 0) //P: 10
 				{
 					Motor.A.stop();
 				}
 				else
 				{
-					int newSpeed = (int)Math.exp(Math.abs(err) * 0.08);
+					//PID-controller:
+					integral=integral+err*dt;
+					derivative = (err - previous_error)/dt;
+					newSpeed = (int) (Kp*err + Ki*integral + Kd*derivative);
+					
+					//newSpeed = (int)Math.exp(Math.abs(err) * 0.08);
 					if (newSpeed < maxSpeed)
 						Motor.A.setSpeed(newSpeed);
 					
-					if (err > 0) {
-						//Motor.A.backward();
-						dir=-1;
+					if (newSpeed < 0) {
+						Motor.A.forward();
+						dir=1;
 					}
 					else {
-						//Motor.A.forward();
-						dir=1;
+						Motor.A.backward();
+						dir=-1;
 					}
 					//Stop if motor is at maximum turning angle
 					if (motorAng>upperMaxAng) {
@@ -171,7 +179,7 @@ public class SimpleFilter implements Runnable {
 			}
 
 			//LCD.refresh();
-			//Thread.sleep(INTERVAL);
+			//Thread.sleep(dt); //gives error now...
 			
 			//iterCounter = (iterCounter + 1) % 100;
 		}
