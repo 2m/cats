@@ -1,16 +1,13 @@
 package GSim;
 
+/** Static data with data on arena properties */
 public class Arena {
-	public float min_x;
-	public float max_x;
-	public float min_y;
-	public float max_y;
-	
-	public Arena(float min_x, float max_x, float min_y, float max_y) {
-		this.min_x = min_x;
-		this.min_y = min_y;
-		this.max_x = max_x;
-		this.max_y = max_y;
+	public static final float min_x = 0;
+	public static final float max_x = (float) 3;
+	public static final float min_y = 0;
+	public static final float max_y = (float) 3;
+
+	public Arena() {
 	}
 
 }
