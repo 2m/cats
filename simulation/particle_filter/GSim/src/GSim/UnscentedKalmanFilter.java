@@ -68,7 +68,39 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		//m=z.getColumnDimension(); 
 		
 		Matrix X = sigmas(x,P,c);  //sigma points around x, NB: c has been set in the constructor
-		ut(f,X,Wm,Wc,L,Q);  //unscented transformation of process
+		Matrix[] ut_f_matrices= ut(f,X,Wm,Wc,L,Q);  //unscented transformation of process
+		Matrix x1 = ut_f_matrices[0];
+		Matrix X1 = ut_f_matrices[1];
+		Matrix P1 = ut_f_matrices[2];
+		Matrix X2 = ut_f_matrices[3];
+		System.out.println("Debug: ukf, x1:");
+		printM(x1);
+		System.out.println("Debug: ukf, X1:");
+		printM(X1);
+		System.out.println("Debug: ukf, P1:");
+		printM(P1);
+		System.out.println("Debug: ukf, X2:");
+		printM(X2);
+		
+		//TODO Uncomment the two following lines ?
+		//X1=sigmas(x1,P1,c);  //sigma points around x1
+		//X2=X1.minus(  x1.times( ones(1,X1.getColumnDimension()) )  );  //deviation of X1
+		Matrix[] ut_h_matrices =ut(h,X1,Wm,Wc,m, new Matrix(1,1,(double)R) );  //unscented transformation of measurments
+		Matrix z1 = ut_h_matrices[0];
+		Matrix Z1 = ut_h_matrices[1];
+		Matrix P2 = ut_h_matrices[2];
+		Matrix Z2 = ut_h_matrices[3];
+		System.out.println("Debug: ukf, z1:");
+		printM(z1);
+		System.out.println("Debug: ukf, Z1:");
+		printM(Z1);
+		System.out.println("Debug: ukf, P2:");
+		printM(P2);
+		System.out.println("Debug: ukf, Z2:");
+		printM(Z2);
+		//TODO fix Matrix P12 = ( X2.times(diag(Wc)) ).times(Z2.transpose());  //transformed cross-covariance
+		//Matrix K = P12.arrayLeftDivide(P2);  //old: P12*inv(P2);
+	
 		
 		/*
 		[x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L,Q);          %unscented transformation of process
@@ -95,7 +127,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	}
 	
 	
-	/**TODO implement
+	/**
 	 * Unscented Transformation
 	 * @param f  nonlinear map
 	 * @param X  sigma points
@@ -105,20 +137,19 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	 * @param R  additive covariance
 	 * @return y: transformed mean, Y: transformed sampling points, P: transformed covariance, Y1: transformed deviations 
 	 */
-	private Object ut(IFunction f, Matrix X, Matrix Wm, Matrix Wc, int n, Matrix R)
+	private Matrix[] ut(IFunction f, Matrix X, Matrix Wm, Matrix Wc, int n, Matrix R)
 	{
 		int L = X.getColumnDimension();
-		Matrix y = new Matrix(n,1,0);
-		Matrix Y = new Matrix(n,L,0);
+		Matrix y = zeros(n,1);
+		Matrix Y = zeros(n,L);
 		
-		System.out.println("Debug: ut, X:");
-		printM(X);
+		//System.out.println("Debug: ut, X:");
+		//printM(X);
 		//System.out.println("Debug: ut, y:");
 		//printM(y);
 		//System.out.println("Debug: ut, Y:");
 		//printM(Y);
 		
-
 		for (int k=0; k<L; k++)
 		{
 			
@@ -136,18 +167,23 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 			//System.out.println("Debug: ut, y:");
 			//printM(y);
 		}
-		System.out.println("Debug: ut, y:");
-		printM(y);
-		System.out.println("Debug: ut, Y:");
-		printM(Y);
+		//System.out.println("Debug: ut, y:");
+		//printM(y);
+		//System.out.println("Debug: ut, Y:");
+		//printM(Y);
 		
-		Matrix Y1 = Y.minus(  y.times( new Matrix(1,Y.getColumnDimension(),1) )  );
-		System.out.println("Debug: ut, Y1:");
-		printM(Y1);	
+		Matrix Y1 = Y.minus(  y.times( ones(1,Y.getColumnDimension()) )  );
+		//System.out.println("Debug: ut, Y1:");
+		//printM(Y1);	
 		
-		Matrix Wc_diag = Matrix.identity(Wc.getColumnDimension(), Wc.getColumnDimension());
-		//TODO creat diagonal and calculate P
+		Matrix P = Y1.times(diag(Wc));
+		P = P.times(Y1.transpose());
+		P.plusEquals(R);
+		//System.out.println("Debug: ut, P:");
+		//printM(P);	
 		
+		//create output matrix array
+		Matrix[] output = {y,Y,Y1,P};
 		
 		/*
 		L=size(X,2);
@@ -161,7 +197,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		P=Y1*diag(Wc)*Y1'+R;   
 		*/
 		
-		return null;
+		return output;
 	}
 	
 	/**
@@ -207,6 +243,50 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		
 		return X;
 	}
+	
+	
+	//Matlab look a like functions:
+	
+	/**
+	 * 	Create a diagonal matrix out of a (1)x(n) matrix
+	 * @param m (1)x(n) matrix
+	 * @return (n)x(n) diagonal matrix
+	 */
+	public static Matrix diag(Matrix m)
+	{
+		Matrix m_diag = Matrix.identity(m.getColumnDimension(), m.getColumnDimension());
+		//for all rows&coulmns
+		for (int idx=0; idx<m.getColumnDimension(); idx++)  
+		{
+			m_diag.set(idx, idx, m.get(0, idx));
+		}
+		return m_diag;	
+	}
+	
+	/**
+	 * Creates a with matrix with ones
+	 * @param rows number of rows
+	 * @param columns number of columns
+	 * @return matrix with ones
+	 */
+	public static Matrix ones(int rows, int columns)
+	{
+		return new Matrix(rows,columns,1);
+	}
+	
+	/**
+	 * Creates a with matrix with zeroes
+	 * @param rows number of rows
+	 * @param columns number of columns
+	 * @return matrix with ones
+	 */
+	public static Matrix zeros(int rows, int columns)
+	{
+		return new Matrix(rows,columns,0);
+	}
+	
+
+	
 
 	public static void main(String args[])
 	{
