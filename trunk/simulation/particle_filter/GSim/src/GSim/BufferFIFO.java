@@ -8,8 +8,8 @@ package GSim;
  * 
  */
 public class BufferFIFO extends Buffer {
-	private node first;
-	private node last;
+	private BufferNode first;
+	private BufferNode last;
 	private Object lockOnLast;
 	private int nonodes = 0;
 
@@ -20,13 +20,13 @@ public class BufferFIFO extends Buffer {
 	}
 
 	/**
-	 * Add an object to the buffer
+	 * Add a BufferData object to the buffer.
 	 * 
-	 * @param Object
-	 *            Any Object
+	 * @param BufferData
+	 *            Any BufferData
 	 */
-	public void push(Object value) {
-		node newNode = new node(value, null);
+	public void push(BufferData value) {
+		BufferNode newNode = new BufferNode(value, null);
 
 		synchronized (lockOnLast) {
 			if (last != null) {
@@ -42,24 +42,23 @@ public class BufferFIFO extends Buffer {
 	}
 
 	/**
-	 * Pop an Object from the buffer
+	 * Pop a BufferData object from the buffer
 	 * 
-	 * @return Object oldest Object or null
+	 * @return BufferData oldest BufferData or null
 	 */
-	public synchronized Object pop() {
-		node next = first.next;
-		Object ret = null;
-
+	public synchronized BufferData pop() {
+		BufferData ret = null;
 		if (first != null) {
+			BufferNode next = first.next;
 			ret = first.value;
 			first = next;
+			nonodes--;
 		}
-		nonodes--;
 		return ret;
 	}
 
 	public String toString() {
-		node ptr = first;
+		BufferNode ptr = first;
 		String ret = "{";
 		while (ptr != null) {
 			ret += " " + ptr.value;
