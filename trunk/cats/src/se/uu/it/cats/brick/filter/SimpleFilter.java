@@ -116,8 +116,8 @@ public class SimpleFilter implements Runnable {
 						new SimpleMeasurement(angToTargetRelCat)
 				);
 				
-				Logger.println("Found at:" + (int) (angToTargetRelCat*180/Math.PI));
-				Logger.println("            CamMotor:" + motorAng);
+				//Logger.println("Found at:" + (int) (angToTargetRelCat*180/Math.PI));
+				//Logger.println("            CamMotor:" + motorAng);
 				
 				if (Math.abs(err) < 0) //P: 10
 				{
@@ -159,7 +159,7 @@ public class SimpleFilter implements Runnable {
 			}
 			else {
 				//Logger.println("No found!");
-				Sound.beep(); //Beep if no target is found
+				//Sound.beep(); //Beep if no target is found
 				Motor.A.setSpeed(maxSpeed); //Search for mouse with maximum speed
 				
 				//Reverse motor direction if at maximum turning angle
