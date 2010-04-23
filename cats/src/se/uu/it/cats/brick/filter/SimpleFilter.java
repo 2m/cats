@@ -37,21 +37,24 @@ public class SimpleFilter implements Runnable {
 		int xAvg;
 		int err;
 		float angToTarget;
-		//PID-controller: tunable parameters 
-		float Kp = 1;
-		float Ki = 0;
-		float Kd = 0;
+		//PID-controller: tunable parameters
+		//Tuned using manual tuning method:
+		float Kp = 2; //start osc. at 4
+		float Ki = 0.1f;
+		float Kd = 1f;
 		int previous_error = 0;
 		int integral = 0;
 		float derivative;
 		
-		int newSpeed;
 		//int iterCounter = 0;
-		int maxSpeed = 900;
+		int maxSpeed = 650;
+		int newSpeed;
 		int dir = 1; //Specifies which direction to turn, if the mouse is lost. Default is clockwise.
 		int motorAng; //Motor angle relative to starting position
 		float motorAngRad;
 		float angToTargetRelCat;
+		float motorCal = 1.182f; //linear calibration
+		float gearRatio = 0.5f*motorCal; //1:2 gear down
 		int maxAngAbs = 180;
 		int upperMaxAng = maxAngAbs;
 		int lowerMaxAng = maxAngAbs*-1;
@@ -66,7 +69,7 @@ public class SimpleFilter implements Runnable {
 	
 		while(!Button.ESCAPE.isPressed()) {
 			
-			motorAng = Motor.A.getTachoCount();
+			motorAng = (int) (Motor.A.getTachoCount()*gearRatio);
 			motorAngRad = (float) (motorAng * Math.PI/180.0);
 			numObjects = camera.getNumberOfObjects();
 			
@@ -101,6 +104,7 @@ public class SimpleFilter implements Runnable {
 				err = xAvg - 176/2 + offset; //0-88-19=-107 worst case
 				angToTarget = err*radPerPix;
 				angToTargetRelCat = motorAngRad + angToTarget;
+				System.out.println("CamMotor:" + motorAng);
 				
 				// send measurements to everyone
 				/*try
@@ -118,7 +122,7 @@ public class SimpleFilter implements Runnable {
 				//Logger.println("Found at:" + (int) (angToTargetRelCat*180/Math.PI));
 				//Logger.println("            CamMotor:" + motorAng);
 				
-				if (Math.abs(err) < 0) //P: 10
+				if (Math.abs(err) < 15) //P: 10
 				{
 					Motor.A.stop();
 				}
@@ -130,19 +134,23 @@ public class SimpleFilter implements Runnable {
 					newSpeed = (int) (Kp*err + Ki*integral + Kd*derivative);
 					
 					//newSpeed = (int)Math.exp(Math.abs(err) * 0.08);
-					if (newSpeed > maxSpeed)
+					if (Math.abs(newSpeed) > maxSpeed)
 						Motor.A.setSpeed(maxSpeed);
 					else
-						Motor.A.setSpeed(newSpeed);
+						Motor.A.setSpeed(Math.abs(newSpeed));
 					
 					if (newSpeed < 0) {
 						Motor.A.forward();
-						dir=1;
+						//dir=1;
 					}
 					else {
 						Motor.A.backward();
-						dir=-1;
+						//dir=-1;
 					}
+					if (err < 0)
+						dir=1;
+					else
+						dir=-1;
 					//Stop if motor is at maximum turning angle
 					if (motorAng>upperMaxAng) {
 						Motor.A.stop();
@@ -160,7 +168,7 @@ public class SimpleFilter implements Runnable {
 			}
 			else {
 				//Logger.println("No found!");
-				//Sound.beep(); //Beep if no target is found
+				Sound.beep(); //Beep if no target is found
 				Motor.A.setSpeed(maxSpeed); //Search for mouse with maximum speed
 				
 				//Reverse motor direction if at maximum turning angle
