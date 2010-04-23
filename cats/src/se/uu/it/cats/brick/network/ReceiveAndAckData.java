@@ -12,8 +12,7 @@ public class ReceiveAndAckData extends LowLevelHandler
 	
 	public ReceiveAndAckData(BTConnection btc)
 	{
-		super(btc);		
-		ConnectionListener.setListen(false);
+		super(btc);
 	}
 	
 	public void run()
@@ -125,7 +124,5 @@ public class ReceiveAndAckData extends LowLevelHandler
 		Logger.print("Sent: "+(NUM_SENDS * (PACKET_LENGTH + ACK_LENGTH) * 8)+"B ");
 		Logger.println("BW: "+((NUM_SENDS * (PACKET_LENGTH + ACK_LENGTH) * 8) / ((float)elapsed / 1000))+"B/s");
 		Logger.println("Checksum:"+String.valueOf(checksum));
-		
-		ConnectionListener.setListen(true);	
 	}
 }

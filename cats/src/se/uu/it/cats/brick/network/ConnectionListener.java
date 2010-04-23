@@ -42,7 +42,7 @@ public class ConnectionListener implements Runnable
 			{
 				try
 				{
-					Thread.sleep(100);					
+					Thread.sleep(100);
 				}
 				catch (InterruptedException ex)
 				{
