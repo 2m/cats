@@ -73,34 +73,49 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		Matrix X1 = ut_f_matrices[1];
 		Matrix P1 = ut_f_matrices[2];
 		Matrix X2 = ut_f_matrices[3];
-		System.out.println("Debug: ukf, x1:");
+		/*System.out.println("Debug: ukf, x1:");
 		printM(x1);
 		System.out.println("Debug: ukf, X1:");
 		printM(X1);
 		System.out.println("Debug: ukf, P1:");
 		printM(P1);
 		System.out.println("Debug: ukf, X2:");
-		printM(X2);
+		printM(X2);*/
 		
-		//TODO Uncomment the two following lines ?
-		//X1=sigmas(x1,P1,c);  //sigma points around x1
-		//X2=X1.minus(  x1.times( ones(1,X1.getColumnDimension()) )  );  //deviation of X1
+		//Not used, X1=sigmas(x1,P1,c);  //sigma points around x1
+		//Not used, X2=X1.minus(  x1.times( ones(1,X1.getColumnDimension()) )  );  //deviation of X1
 		Matrix[] ut_h_matrices =ut(h,X1,Wm,Wc,m, new Matrix(1,1,(double)R) );  //unscented transformation of measurments
 		Matrix z1 = ut_h_matrices[0];
 		Matrix Z1 = ut_h_matrices[1];
 		Matrix P2 = ut_h_matrices[2];
 		Matrix Z2 = ut_h_matrices[3];
-		System.out.println("Debug: ukf, z1:");
+		/*System.out.println("Debug: ukf, z1:");
 		printM(z1);
 		System.out.println("Debug: ukf, Z1:");
 		printM(Z1);
 		System.out.println("Debug: ukf, P2:");
 		printM(P2);
 		System.out.println("Debug: ukf, Z2:");
-		printM(Z2);
-		//TODO fix Matrix P12 = ( X2.times(diag(Wc)) ).times(Z2.transpose());  //transformed cross-covariance
-		//Matrix K = P12.arrayLeftDivide(P2);  //old: P12*inv(P2);
+		printM(Z2);*/
+		Matrix P12 = ( X2.times(diag(Wc)) ).times(Z2.transpose());  //transformed cross-covariance
+		//System.out.println("Debug: ukf, P12:");
+		//printM(P12);
+		//Matrix K = P12.arrayRightDivide(P2);
+		//Matrix K = P12.solve(P2); //TODO correct?? //.arrayLeftDivide(P2);  //old: P12*inv(P2);
+		//Matrix K = P2.solve(P12);
+		//Matrix K = P12.arrayLeftDivide(P2);
+		Matrix K = P12.times(P2.inverse());
+		//System.out.println("Debug: ukf, K:");
+		//printM(K);
 	
+	    Matrix x_updated = x1.plus( K.times(z.minus(z1)) );  //state update
+	    Matrix P_updated =P1.minus( K.times(P12.transpose()) );  //covariance update
+	    Matrix[] output = {x_updated, P_updated};
+		//System.out.println("Debug: ukf, x_updated:");
+		//printM(x_updated);
+		//System.out.println("Debug: ukf, P_updated:");
+		//printM(P_updated);		    
+		return output;
 		
 		/*
 		[x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L,Q);          %unscented transformation of process
@@ -123,7 +138,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		end
 		*/
 		
-		return null;
+
 	}
 	
 	
@@ -183,7 +198,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		//printM(P);	
 		
 		//create output matrix array
-		Matrix[] output = {y,Y,Y1,P};
+		Matrix[] output = {y,Y,P,Y1};
 		
 		/*
 		L=size(X,2);
@@ -211,12 +226,12 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	{
 		Matrix A = new Matrix( Cholesky.cholesky( P.getArray() ) );
 		A = (A.times(c)).transpose();
-		System.out.println("Debug: sigmas, A:");
-		printM(A);
+		//System.out.println("Debug: sigmas, A:");
+		//printM(A);
 		
 		int n = x.getRowDimension();
-		System.out.println("Debug: sigmas, x:");
-		printM(x);
+		//System.out.println("Debug: sigmas, x:");
+		//printM(x);
 		
 		//Create Y
 		Matrix Y = new Matrix(n, n, 1);
@@ -224,8 +239,8 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		{
 			Y.setMatrix(0, n-1, j, j, x);
 		}
-		System.out.println("Debug: sigmas, Y:");
-		printM(Y);
+		//System.out.println("Debug: sigmas, Y:");
+		//printM(Y);
 
 		//Create X
 		Matrix X = new Matrix(n,(1+n+n));
@@ -238,8 +253,8 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		Matrix Y_minus_A = Y.minus(A);
 		X.setMatrix(0, n-1, n+1, n+n, Y_minus_A);
 		
-		System.out.println("Debug: sigmas, X:");
-		printM(X);
+		//System.out.println("Debug: sigmas, X:");
+		//printM(X);
 		
 		return X;
 	}
@@ -284,40 +299,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	{
 		return new Matrix(rows,columns,0);
 	}
-	
-
-	
-
-	public static void main(String args[])
-	{
-		//Example, for testing
-		System.out.println("Test started");
-		UnscentedKalmanFilter ukf_test = new UnscentedKalmanFilter(3,1);
-		System.out.println("Debug: printing ukf object:\n" +ukf_test);
 		
-		int n=3;      //number of state
-		float q=0.1f;    //std of process
-		float r=0.1f;    //std of measurement
-		Matrix Q = Matrix.identity(n, n);  //covariance of process
-		Q = Q.times(Math.pow(q, 2));	
-		float R=(float)Math.pow(r, 2);  //covariance of measurement
-		IFunction f = new Fstate(); //@(x)[x(2);x(3);0.05*x(1)*(x(2)+x(3))];  % nonlinear state equations
-		IFunction h = new Hmeas();  //h=@(x)x(1);                               % measurement equation
-		
-		double[][] temp_s = new double[3][1];  //initial state
-		temp_s[0][0] = 0;
-		temp_s[1][0] = 0;
-		temp_s[2][0] = 1;
-		Matrix s = new Matrix(temp_s);
-		Matrix x = new Matrix(3,3);  //initial state 
-		x=s.copy();//s.plus( Matrix.random(3,1).times(q) );  //initial state with noise
-		Matrix P = Matrix.identity(n, n);  //initial state covraiance
-		
-		Matrix z = h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
-		Matrix[] result = ukf_test.ukf(f, x, P, h, z, Q, R);
-	}
-	
-	
 	/**
 	 * Prints a filter object
 	 */
@@ -346,7 +328,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		{
 			for (int j=0; j<m.getColumnDimension(); j++)
 			{
-				s += (float)print_m[i][j] + "  ";
+				s += print_m[i][j] + "  ";
 			}
 			s += "\n";
 		}
@@ -360,8 +342,10 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	public static void printM(Matrix m){
 		System.out.println(MatrixToString(m));
 	}
+	
+	public static void main(String args[])
+	{
+		
+	}
 
 }
-
-
-
