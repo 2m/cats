@@ -12,7 +12,6 @@ import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.addon.NXTCam;
-import lejos.nxt.comm.RConsole;
 
 public class SimpleFilter implements Runnable {
 	
@@ -181,7 +180,7 @@ public class SimpleFilter implements Runnable {
 			}
 
 			//LCD.refresh();
-			//Thread.sleep(dt); //gives error now...
+			try{Thread.sleep(dt);}catch(Exception ex){}
 			
 			//iterCounter = (iterCounter + 1) % 100;
 		}
