@@ -37,7 +37,7 @@ public class SensorHandler {
 		int t = realtime.getTime();		
 		int type = 0;
 		// TODO: Add noise
-		SightingData d = new SightingData(t, cx, cy, angle1, type);
+		SightingData d = new SightingData(t, cx, cy, (float) (angle1-cat.getAngle()), type);
 		//System.out.println("Push: " + d);
 		// TODO: Push to tracking buffer
 		//trackingBuffer.push(d);
@@ -54,7 +54,7 @@ public class SensorHandler {
 			//System.out.println("(cx, cy, angle)=(" + cx + ", " + cy + ", " + angle2*(180/Math.PI) + ")");
 			float angle_diff = (float) Math.acos((x1*x2+y1*y2)/(norm1*norm2));
 			if ((initialPhase) || (angle_diff < (field_of_view / 2))) {
-				d = new SightingData(t, cx, cy, angle2, type);
+				d = new SightingData(t, cx, cy, (float) (angle2 - cat.getAngle()), type);
 				// TODO: Add noise
 				// TODO: Angle_diff might be wrong
 				//System.out.println("i:" + i + " Push: " + d + " Anglediff: " + angle_diff*(180/Math.PI));
