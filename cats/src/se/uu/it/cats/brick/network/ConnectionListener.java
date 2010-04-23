@@ -24,6 +24,7 @@ public class ConnectionListener implements Runnable
 		{
 			if (canListen())
 			{
+				// block until connection received
 				BTConnection btc = Bluetooth.waitForConnection();
 			
 				if (btc != null)

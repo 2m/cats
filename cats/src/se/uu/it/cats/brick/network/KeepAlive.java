@@ -11,8 +11,6 @@ import se.uu.it.cats.brick.storage.StorageManager;
 
 public class KeepAlive extends LowLevelHandler
 {
-	private int counter;
-	
 	public KeepAlive(RemoteDevice device)
 	{
 		super(device);
@@ -30,6 +28,9 @@ public class KeepAlive extends LowLevelHandler
 		
 		byte[] bArr = new byte[255];
 		int index = 0;
+		
+		int byteCounter = 0;
+		int packetCounter = 0;
 		
 		sw.reset();
 		while (isAlive())
@@ -68,6 +69,8 @@ public class KeepAlive extends LowLevelHandler
 					System.arraycopy(bArr, bytesRead, bArr, 0, index - bytesRead);
 					index -= bytesRead;
 					
+					packetCounter++;
+					
 					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				}
 				
@@ -77,20 +80,24 @@ public class KeepAlive extends LowLevelHandler
 				}
 			}
 			
-			counter += received;
+			byteCounter += received;
 			
 			if (sw.elapsed() > 3000)
 			{
-				float currentBw = (float)counter / 3;
-				if (currentBw > 0.0)
+				float byteBw = (float)byteCounter / 3;
+				float packetBw = (float)packetCounter / 3;
+				if (byteBw > 0.0)
 				{
-					//Logger.println("BW from "+getRemoteName()+":"+currentBw+"B/s");
+					//Logger.println("Byte bw from "+getRemoteName()+":"+byteBw+"B/s");
+					Logger.println("Packet bw from "+getRemoteName()+":"+packetBw+"Pck/s");
 				}
 				sw.reset();
-				counter = 0;
+				byteCounter = 0;
+				packetCounter = 0;
 			}
 			
-			try { Thread.sleep(100); } catch (Exception ex) {}
+			Thread.yield();
+			//try { Thread.sleep(100); } catch (Exception ex) {}
 		}
 		
 		ConnectionManager.getInstance().closeConnection(this);

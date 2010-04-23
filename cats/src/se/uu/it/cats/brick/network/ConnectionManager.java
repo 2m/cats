@@ -160,7 +160,7 @@ public class ConnectionManager
 	
 	public void sendBytesToAllExcept(byte[] bArr, String name)
 	{
-		Logger.println("Sending bytes to all exc "+name);
+		//Logger.println("Sending bytes to all exc "+name);
 		for (int i = 0; i < MAX_OUTBOUND_CONN + 1; i++)
 		{
 			if (isAlive(i) && !getConnection(i).getRemoteName().equals(name))
