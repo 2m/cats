@@ -27,12 +27,13 @@ public class Actor {
 	protected SensorHandler sensors;
 	protected int iter;
 
-	public Actor(Actor mouse, double tx, double ty, double tangle, int ttype, RealTimeClock clock) {
+	public Actor(Actor mouse, double tx, double ty, double tangle, int ttype,
+			RealTimeClock clock) {
 		motor = new MotorControl(tx, ty, tangle, motorBuffer, clock);
 		type = ttype;
 		gotox = tx;
 		gotoy = ty;
-		
+
 	}
 
 	public double getX() {
@@ -41,6 +42,10 @@ public class Actor {
 
 	public double getY() {
 		return motor.getY();
+	}
+
+	public double getAngle() {
+		return motor.getAngle();
 	}
 
 	public void goTo(double x, double y) {
@@ -146,12 +151,13 @@ public class Actor {
 			g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
 					* linelength), (int) (iy + Math.sin(iangle) * linelength));
 		}
-		
+
 		drawMore(g);
 
 		// Reset the tranformation matrix
 		g2.setTransform(oldTransform);
 	}
-	
-	public void drawMore(Graphics g) {}
+
+	public void drawMore(Graphics g) {
+	}
 }
