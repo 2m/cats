@@ -9,10 +9,10 @@ package GSim;
  */
 public class SightingData extends BufferData {
 	/** Position in global reference system (used for mouse sightings) */
-	public double x;
-	public double y;
+	public float x;
+	public float y;
 	/** Angle to target in radians in global reference system */
-	public double angle;
+	public float angle;
 	/** Type (used on landmarks) */
 	public int type;
 

@@ -1,7 +1,7 @@
 package GSim;
 
 import java.util.Random;
-
+// TODO: Add javadoc
 public class MotorControl {
 	public double x;
 	public double y;
@@ -35,14 +35,16 @@ public class MotorControl {
 				* (1 + rng.nextDouble() / 50 + 0.01)); // +-1% noise
 		setY(getY() + Math.sin(angle) * distance
 				* (1 + rng.nextDouble() / 50 + 0.01));
-		updateBuffer.push(new MovementData(clock.getTime(), distance, 0.0));
+		updateBuffer.push(new MovementData(clock.getTime(), (float) distance,
+				(float) 0.0));
 	}
 
 	public void turn(double turnangle) {
 		// TODO: Set more realistic noise
 		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() / 50 + 0.01)); // +-1%
-																				// noise
-		updateBuffer.push(new MovementData(clock.getTime(), 0.0, turnangle));
+		// noise
+		updateBuffer.push(new MovementData(clock.getTime(), (float) 0.0,
+				(float) turnangle));
 	}
 
 	/**

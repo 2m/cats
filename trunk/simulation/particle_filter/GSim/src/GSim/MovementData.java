@@ -1,10 +1,10 @@
 package GSim;
 
 public class MovementData extends BufferData {
-	public double dr; // Distance travelled
-	public double dangle; // Radians turned
+	public float dr; // Distance travelled
+	public float dangle; // Radians turned
 
-	public MovementData(int timestamp, double dr, double dangle) {
+	public MovementData(int timestamp, float dr, float dangle) {
 		super(timestamp);
 		this.dr = dr;
 		this.dangle = dangle;

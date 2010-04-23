@@ -8,21 +8,27 @@ import java.util.Random;
  * @version $Rev$
  */
 public final class Fixed {
-	// TODO: Write Javadoc 
+	// TODO: Write Javadoc
 	public static final int FIXED_POINT = 20;
 
 	public static final int ONE = 1 << FIXED_POINT;
 	public static final int HALF = ONE >> 1;
 
-	// TODO: Descide on circle size
+	// Circle size: 2048
 	private static final int TRIG_SHIFT = 30;
-	public static final int QUARTER_CIRCLE = 64;
+	public static final int QUARTER_CIRCLE = 512; // => sizeof(SIN_TABLE)= 2048b
 	private static final int CIRCLE_MASK = QUARTER_CIRCLE * 4 - 1;
-	private static final int SIN_PRECALC = 26350943;
-	/* Equivalent to: sin((2 * PI) / (QUARTER_CIRCLE * 4)) */
-	private static final int COS_PRECALC = 2146836866;
-	/* Equivalent to: cos((2 * PI) / (QUARTER_CIRCLE * 4)) * 2 */
+	@SuppressWarnings("unused")
+	private static final int DOUBLE_CIRCLE_MASK = QUARTER_CIRCLE * 8 - 1;
+	// private static final int SIN_PRECALC = 26350943;
+	private static final int SIN_PRECALC = 3294096;
+	/* Equivalent to: sin((2 * PI) / (QUARTER_CIRCLE * 4)) * 2^TRIG_SHIFT */
+	private static final int COS_PRECALC = 2147473542;
+	/* Equivalent to: cos((2 * PI) / (QUARTER_CIRCLE * 4)) * 2 * 2^TRIG_SHIFT */
 	private static final int[] SIN_TABLE = new int[QUARTER_CIRCLE + 1];
+
+	// Initialise random number generator
+	private static Random rng = new Random();
 
 	/*
 	 * Generates the tables and fills in any remaining static ints.
@@ -59,8 +65,6 @@ public final class Fixed {
 		// }
 	}
 
-	private static Random rng = null;
-
 	private Fixed() {
 	}
 
@@ -75,9 +79,9 @@ public final class Fixed {
 	public static int floatToFixed(double x) {
 		return (int) (x * ONE);
 	}
-	
-	public static float fixedToFloat(int x){
-		return (float) ((float)x)/ONE;
+
+	public static float fixedToFloat(int x) {
+		return (float) ((float) x) / ONE;
 	}
 
 	public static String toString(int n) {
@@ -161,7 +165,7 @@ public final class Fixed {
 		}
 		return (int) (sum >> 16 - (FIXED_POINT / 2));
 	}
-	
+
 	public static int norm(int a, int b) {
 		return sqrt(mul(a, a) + mul(b, b));
 	}
@@ -198,21 +202,20 @@ public final class Fixed {
 		return n + (ONE - 1) >> FIXED_POINT;
 	}
 
+	/**
+	 * Gives a random fixed point integer between 0 and Fixed.ONE
+	 * 
+	 * @return Fixed random number
+	 */
 	public static int rand() {
-		if (rng == null) {
-			rng = new Random();
-		}
 		return rng.nextInt() >> (32 - FIXED_POINT);
 	}
 
 	public static int rand(int n) {
-		return (rand() * n) >> FIXED_POINT;
+		return (rand() * n);
 	}
 
 	public static int randn() {
-		if (rng == null) {
-			rng = new Random();
-		}
-		return (int) Math.pow(rng.nextGaussian(), FIXED_POINT);
+		return floatToFixed(rng.nextGaussian());
 	}
 }
