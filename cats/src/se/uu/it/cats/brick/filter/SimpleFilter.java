@@ -131,7 +131,9 @@ public class SimpleFilter implements Runnable {
 					newSpeed = (int) (Kp*err + Ki*integral + Kd*derivative);
 					
 					//newSpeed = (int)Math.exp(Math.abs(err) * 0.08);
-					if (newSpeed < maxSpeed)
+					if (newSpeed > maxSpeed)
+						Motor.A.setSpeed(maxSpeed);
+					else
 						Motor.A.setSpeed(newSpeed);
 					
 					if (newSpeed < 0) {
