@@ -53,7 +53,7 @@ public class UnscentedKalmanFilterTest {
 	}
 
 	
-	public static void main(String args[])
+	public static void main(String args[]) throws Exception
 	{
 		//Instance of UnscentedKalmanFilterTest, need to access the example state/measurement functions
 		UnscentedKalmanFilterTest test = new UnscentedKalmanFilterTest();
@@ -81,40 +81,67 @@ public class UnscentedKalmanFilterTest {
 		x=s.copy();//s.plus( Matrix.random(3,1).times(q) );  //initial state with noise
 		Matrix P = Matrix.identity(n, n);  //initial state covraiance
 		
-		Matrix z = new Matrix(1,1,0.053766713954610);  //h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
+		//First iteration with UKF
+		Matrix z = h.eval(s);  //h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
 		Matrix[] result = ukf_test.ukf(f, x, P, h, z, Q, R);
-		Matrix x_updated = result[0];
-		Matrix P_updated = result[1];
-		
-		System.out.println("Debug: ukf, x_updated:");
-		UnscentedKalmanFilter.printM(x_updated);
-		System.out.println("Debug: ukf, P_updated:");
-		UnscentedKalmanFilter.printM(P_updated);	
+		x = result[0];
+		P = result[1];
+		s = f.eval(s);  //update process 
+
+		System.out.println("Debug: ukf, x:");
+		UnscentedKalmanFilter.printM(x);
+		System.out.println("Debug: ukf, P:");
+		UnscentedKalmanFilter.printM(P);	
 		
 		//Verify correctness
-		double[][] x_updated_arr = x_updated.getArray();
-		double[][] x_correct_arr = {{0.05323437018549797}, {0.9999999793208376}, {0.0}};
+		double[][] x_updated_arr = x.getArray();
+		double[][] x_correct_arr = {{0.0}, {1.0}, {0.0}};
 		System.out.println("Debug: ukfTest, x_correct_arr:" );
 		UnscentedKalmanFilter.printM( new Matrix(x_correct_arr) );
-		/*for (int i = 0; i<3; i++)
+		
+		for (int i = 0; i<3; i++)
 		{
 			for (int j = 0; j<1; j++)
 			{
-				assert( x_updated_arr[i][j] == x_correct_arr[i][j] );
+				if( Math.abs(x_updated_arr[i][j] - x_correct_arr[i][j]) > 0.01)
+				{
+					//Assert doesn't seem to work :( */						
+					Exception Exception = null ;
+					throw Exception ;
+				}
 			}
-		} Assert doesn't seem to work :( */
+		} 
 		assert(false);
-		double[][] P_updated_arr = P_updated.getArray();
-		double[][] P_correct_arr = {{0.019900991085445074,  0.0,  0.0},{0.0,  1.0099999447371284,  0.0},{0.0,  0.0,  0.012500000159120988}}; 
+		double[][] P_updated_arr = P.getArray();
+		double[][] P_correct_arr = {{0.019900990099010,  0.0,  0.0},{0.0,  1.010000000000000,  0.0},{0.0,  0.0,  0.012500000000000}}; 
 		System.out.println("Debug: ukfTest, P_correct_arr:" );
 		UnscentedKalmanFilter.printM( new Matrix(P_correct_arr) );
-		/*for (int i = 0; i<3; i++)
+		for (int i = 0; i<3; i++)
 		{
 			for (int j = 0; j<3; j++)
 			{
-				assert( Math.abs(x_updated_arr[i][j] - x_correct_arr[i][j]) < 0.01);
+				if( Math.abs(P_updated_arr[i][j] - P_correct_arr[i][j]) > 0.01){
+					//Assert doesn't seem to work :( */					
+					Exception Exception = null ;
+					throw Exception ;
+				}
 			}
-		} Assert doesn't seem to work :( */
+		} 
+		/*
+		//Further iterations with UKF
+		for (int i=1; i<20; i++)
+		{
+			z = h.eval(s);  //measurments		
+			result = ukf_test.ukf(f, x, P, h, z, Q, R);
+			x = result[0];
+			P = result[1];
+			s = f.eval(s);  //update process 
+		}
+		
+		System.out.println("Debug: ukf test, x after multiple iterations:");
+		UnscentedKalmanFilter.printM(x);
+		System.out.println("Debug: ukf test, P after multiple iterations:");
+		UnscentedKalmanFilter.printM(P);	*/
 		
 
 	}
