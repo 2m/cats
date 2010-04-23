@@ -14,6 +14,7 @@ import se.uu.it.cats.brick.network.ConnectionListener;
 import se.uu.it.cats.brick.network.ConnectionManager;
 import se.uu.it.cats.brick.network.packet.PFMeasurement;
 import se.uu.it.cats.brick.network.packet.Packet;
+import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
 import se.uu.it.cats.brick.network.packet.Timestamp;
 import se.uu.it.cats.brick.storage.StorageManager;
 
@@ -44,8 +45,8 @@ public class Main
 		listenerThread.start();
 		
 		//Run SimpleFilter:
-		Thread filterThread = new Thread(new SimpleFilter());
-		filterThread.start();
+		//Thread filterThread = new Thread(new SimpleFilter());
+		//filterThread.start();
 		
 		Button.LEFT.addButtonListener(new ButtonListener() {
 			public void buttonPressed(Button b) {}
@@ -64,10 +65,20 @@ public class Main
 					t.start();*/
 					//byte data = (byte)(StorageManager.getInstance().getData() + 1);
 					//StorageManager.getInstance().setData(data);
-					Random r = new Random(Clock.timestamp());
-					PFMeasurement p = new PFMeasurement(r.nextInt(), r.nextInt(), (float)r.nextDouble(), (float)r.nextDouble(), (float)r.nextDouble());
-					Logger.println("Sending:"+p);
-					ConnectionManager.getInstance().sendPacketToAll(p);
+					//Random r = new Random(Clock.timestamp());
+					//PFMeasurement p = new PFMeasurement(r.nextInt(), r.nextInt(), (float)r.nextDouble(), (float)r.nextDouble(), (float)r.nextDouble());
+					//Logger.println("Sending:"+p);
+					//ConnectionManager.getInstance().sendPacketToAll(p);
+					for (int i = 0; i < 100; i++)
+					{
+						Random r = new Random();			
+						ConnectionManager.getInstance().sendPacketToAll(
+								new SimpleMeasurement((float)r.nextDouble())
+						);
+						
+						try {Thread.sleep(100);}catch(Exception ex){}
+					}
+					
 					//Clock.syncWith(0);
 				}
 				else
@@ -132,13 +143,22 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				if (ConnectionManager.getInstance().isAlive(3))
+				/*if (ConnectionManager.getInstance().isAlive(3))
 				{
 					//ConnectionManager.getInstance().sendByteTo(4, (byte)0x66);
 					//byte data = (byte)(StorageManager.getInstance().getData() + 1);					
 					//StorageManager.getInstance().setData(data);
 					//ConnectionManager.getInstance().sendPacketToAll(new Timestamp(Clock.timestamp()));
-					Clock.syncWith(-1);
+					Clock.syncWith(-1);					
+				}*/
+				for (int i = 0; i < 100; i++)
+				{
+					Random r = new Random();			
+					ConnectionManager.getInstance().sendPacketToAll(
+							new SimpleMeasurement((float)r.nextDouble())
+					);
+					
+					try {Thread.sleep(100);}catch(Exception ex){}
 				}
 
 			}
@@ -147,9 +167,17 @@ public class Main
 		int test = 0;
 		while (test == 0)
 		{
+			/*Random r = new Random();			
+			ConnectionManager.getInstance().sendPacketToAll(
+					new SimpleMeasurement((float)r.nextDouble())
+			);*/
+			
 			//LCD.drawInt((byte)StorageManager.getInstance().getData(), 2, 2);
-			int milisUntilNextSec = 1000 - (Clock.timestamp() % 1000);
-			Thread.sleep(milisUntilNextSec + 1000);
+			//int milisUntilNextSec = 1000 - (Clock.timestamp() % 1000);
+			//Thread.sleep(milisUntilNextSec + 1000);
+						
+			Thread.sleep(2000);
+			//Thread.yield();
 			//Sound.beep();
 		}
 		

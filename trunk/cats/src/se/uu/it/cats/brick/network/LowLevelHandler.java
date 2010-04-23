@@ -2,8 +2,10 @@ package se.uu.it.cats.brick.network;
 
 import javax.bluetooth.RemoteDevice;
 
+import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.packet.Packet;
+import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
 
 import lejos.nxt.comm.BTConnection;
 
@@ -67,6 +69,7 @@ public abstract class LowLevelHandler extends ConnectionHandler
 		{
 			_inBufSize = _btc.read(_inputBuffer, _inputBuffer.length, false);
 			
+			if (_inBufSize == -2) throw new LostData();
 			if (_inBufSize == -1) throw new ConnectionClosed();
 			else if (_inBufSize == 0) throw new EmptyBuffer();
 			else if (_inBufSize < 0) throw new Exception("Lowlevel.read() error: "+_inBufSize);			
@@ -92,12 +95,18 @@ public abstract class LowLevelHandler extends ConnectionHandler
 			}
 			catch (ConnectionClosed ex)
 			{
-				ConnectionManager.getInstance().closeConnection(this);
+				Logger.println("LowLevelHandler: ConnectionClosed exception.");
+				setAlive(false);
+				return bytesRead;
+			}
+			catch (LostData ex)
+			{
+				Logger.println("LowLevelHandler: LostData exception.");
 				return bytesRead;
 			}
 			catch (Exception ex)
 			{
-				Logger.println(ex.getMessage());
+				setAlive(false);
 				return bytesRead;
 			}
 			bArray[i] = b;
@@ -116,16 +125,29 @@ public abstract class LowLevelHandler extends ConnectionHandler
 		//Logger.println("S 66 to "+getPeerName());
 		write(new byte[] {b});
 		
-		if (flush() < 0)
-			ConnectionManager.getInstance().closeConnection(this);
+		int result = flush();		
+		if (result < 0)
+		{
+			Logger.println("Error while flushing byte: "+result);
+			setAlive(false);
+		}
 	}
 	
 	public void sendBytes(byte[] bArr)
 	{
 		write(bArr);
 		
-		if (flush() < 0)
-			ConnectionManager.getInstance().closeConnection(this);
+		/*Logger.print("Sending bytes to "+getRemoteName()+":");		
+		for (int i = 0; i < bArr.length; i++)
+			Logger.print(bArr[i]+", ");
+		Logger.println("of length"+bArr.length);*/
+		
+		int result = flush();		
+		if (result < 0)
+		{
+			Logger.println("Error while flushing bytes:"+result);
+			setAlive(false);
+		}
 	}
 	
 	public void sendPacket(Packet p)
@@ -140,8 +162,12 @@ public abstract class LowLevelHandler extends ConnectionHandler
 		
 		write(p.writeImpl());
 		
-		if (flush() < 0)
-			ConnectionManager.getInstance().closeConnection(this);
+		int result = flush();		
+		if (result < 0)
+		{
+			Logger.println("Error while flushing packet: "+result);
+			//setAlive(false);
+		}
 	}
 	
 	private class EmptyBuffer extends Exception
@@ -149,7 +175,10 @@ public abstract class LowLevelHandler extends ConnectionHandler
 	}
 	
 	private class ConnectionClosed extends Exception
-	{
-		
+	{		
+	}
+	
+	private class LostData extends Exception
+	{		
 	}
 }

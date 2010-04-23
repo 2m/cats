@@ -7,6 +7,7 @@ import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.packet.CloseConnection;
 import se.uu.it.cats.brick.network.packet.Packet;
 import se.uu.it.cats.brick.network.packet.PacketManager;
+import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
 import se.uu.it.cats.brick.storage.StorageManager;
 
 public class KeepAlive extends LowLevelHandler
@@ -19,7 +20,6 @@ public class KeepAlive extends LowLevelHandler
 	public KeepAlive(BTConnection btc)
 	{
 		super(btc);
-		ConnectionListener.setListen(false);
 	}
 	
 	public void run()
@@ -29,8 +29,10 @@ public class KeepAlive extends LowLevelHandler
 		byte[] bArr = new byte[255];
 		int index = 0;
 		
-		int byteCounter = 0;
-		int packetCounter = 0;
+		int byteCounter[] = new int[] {0, 0, 0};
+		int packetCounter[] = new int[] {0, 0, 0};
+		
+		int packetsSoFar = 0;
 		
 		sw.reset();
 		while (isAlive())
@@ -56,12 +58,13 @@ public class KeepAlive extends LowLevelHandler
 				// do not continue if just received closed connection packet
 				if (p instanceof CloseConnection)
 				{
+					Logger.println("CloseConnection packet received.");
 					setAlive(false);
 					p = null;
 				}
 				
 				// if some bytes were used to construct a packet, remove these bytes from the buffer
-				// try to construct as many packets as possible				
+				// try to construct as many packets as possible
 				while (p != null)
 				{
 					int bytesRead = p.getLength();
@@ -69,37 +72,37 @@ public class KeepAlive extends LowLevelHandler
 					System.arraycopy(bArr, bytesRead, bArr, 0, index - bytesRead);
 					index -= bytesRead;
 					
-					packetCounter++;
+					packetCounter[p.getSource()]++;
+					byteCounter[p.getSource()] += bytesRead;
 					
 					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				}
 				
 				if (index > 255)
 				{
-					//Logger.println("Received data buffer is full.");
+					Logger.println("Received data buffer is full.");
 				}
 			}
-			
-			byteCounter += received;
-			
+						
 			if (sw.elapsed() > 3000)
 			{
-				float byteBw = (float)byteCounter / 3;
-				float packetBw = (float)packetCounter / 3;
-				if (byteBw > 0.0)
-				{
-					//Logger.println("Byte bw from "+getRemoteName()+":"+byteBw+"B/s");
-					Logger.println("Packet bw from "+getRemoteName()+":"+packetBw+"Pck/s");
-				}
+				packetsSoFar += packetCounter[0] + packetCounter[1] + packetCounter[2];
+				//float byteBw = (float)(byteCounter[0] + byteCounter[1] + byteCounter[2]) / 3;
+				float packetBw = (float)(packetCounter[0] + packetCounter[1] + packetCounter[2]) / 3;
+				//Logger.println("Byte bw from "+getRemoteName()+":"+byteBw+"B/s");
+				Logger.println("Pck bw from "+getRemoteName()+":"+packetBw+"Pck/s"+" "+(float)packetCounter[0] / 3+" "+(float)packetCounter[1] / 3+" "+(float)packetCounter[2] / 3+" "+packetsSoFar);
+				
 				sw.reset();
-				byteCounter = 0;
-				packetCounter = 0;
+				
+				byteCounter[0] = 0; byteCounter[1] = 0; byteCounter[2] = 0;
+				packetCounter[0] = 0; packetCounter[1] = 0; packetCounter[2] = 0;
 			}
 			
 			Thread.yield();
 			//try { Thread.sleep(100); } catch (Exception ex) {}
 		}
 		
+		Logger.println("KeepAlive: end of run() function.");
 		ConnectionManager.getInstance().closeConnection(this);
 	}
 }

@@ -13,7 +13,8 @@ public class ConnectionManager
 		new RemoteDevice("cat2", "0016530E6938", new byte[] {0, 0, 8, 4}),
 		new RemoteDevice("cat3", "00165302CDC3", new byte[] {0, 0, 8, 4}),
 		new RemoteDevice("dongle1", "0015832A3670", new byte[] {0, 0, 8, 4}),
-		new RemoteDevice("dongle1", "000C783394E7", new byte[] {0, 0, 8, 4})		
+		new RemoteDevice("dongle2", "000C783394E7", new byte[] {0, 0, 8, 4}),
+		new RemoteDevice("MartinPC", "002556F9072D", new byte[] {0, 0, 8, 4})
 	};
 	
 	public static final int MAX_OUTBOUND_CONN = _devices.length;
@@ -51,8 +52,11 @@ public class ConnectionManager
 		initiatorThread.start();
 	}
 	
+	// incomming connection
 	public void openConnection(BTConnection btc)
 	{
+		ConnectionListener.setListen(false);
+		
 		ConnectionHandler ch = new KeepAlive(btc);
 		_inboundConnectionHolder = ch;
 		Thread t = new Thread(ch);
@@ -77,8 +81,11 @@ public class ConnectionManager
 	
 	public void closeConnection(int i)
 	{
-		Logger.println("Closing connection to:"+getConnection(i).getRemoteName());
-		getConnection(i).close();
+		if (isCreated(i))
+		{
+			Logger.println("Closing connection to:"+getConnection(i).getRemoteName());
+			getConnection(i).close();
+		}
 		
 		if (i < MAX_OUTBOUND_CONN)
 		{
@@ -116,7 +123,14 @@ public class ConnectionManager
 	
 	public boolean isAlive(int i)
 	{
-		return isCreated(i) && getConnection(i).isAlive();
+		try
+		{
+			return isCreated(i) && getConnection(i).isAlive();
+		}
+		catch (NullPointerException ex)
+		{
+			return false;
+		}
 	}
 	
 	public void sendByteTo(int i, byte b)
