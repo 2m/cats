@@ -1,5 +1,7 @@
 package GSim;
 
+import java.awt.Graphics;
+
 public abstract class AbsolutePositioningFilter {
 	/* Buffers with data no movement and landmark sightings */
 	protected final Buffer sensorData;
@@ -9,8 +11,9 @@ public abstract class AbsolutePositioningFilter {
 	/* Pointer to common clock object */
 	protected final RealTimeClock rttime;
 
-	public AbsolutePositioningFilter(float T, Buffer sensorData, Buffer movementData, RealTimeClock rttime) {
-		this.T = T;		// Period, could be adaptive
+	public AbsolutePositioningFilter(float T, Buffer sensorData,
+			Buffer movementData, RealTimeClock rttime) {
+		this.T = T; // Period, could be adaptive
 		this.sensorData = sensorData;
 		this.movementData = movementData;
 		this.rttime = rttime;
@@ -23,12 +26,20 @@ public abstract class AbsolutePositioningFilter {
 	public float getY() {
 		return (float) 0.0;
 	}
-	
+
 	public float getAngle() {
 		return (float) 0.0;
 	}
 
 	public void update() {
-		// Update stuff		
+		// Update stuff
+	}
+
+	public void draw(Graphics g) {
+		// Draw stuff
+	}
+
+	public void initData(float x, float y, float angle) {
+		// Init data
 	}
 }

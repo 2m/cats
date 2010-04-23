@@ -6,12 +6,12 @@ package GSim;
  */
 public class ParticleFilter {
 
-	private final static int[] COEFF = { Fixed.floatToFixed(292.8173),
+	public final static int[] COEFF = { Fixed.floatToFixed(292.8173),
 			Fixed.floatToFixed(-291.8267), Fixed.floatToFixed(139.2145),
 			Fixed.floatToFixed(-138.4522), Fixed.floatToFixed(42.0960),
 			Fixed.floatToFixed(-41.7202), Fixed.floatToFixed(2.0903),
 			Fixed.floatToFixed(-2.0474) };
-	private final static int[] CUT = { Fixed.floatToFixed(1.0000),
+	public final static int[] CUT = { Fixed.floatToFixed(1.0000),
 			Fixed.floatToFixed(0.9986), Fixed.floatToFixed(0.9962),
 			Fixed.floatToFixed(0.9920), Fixed.floatToFixed(0.9796) };
 

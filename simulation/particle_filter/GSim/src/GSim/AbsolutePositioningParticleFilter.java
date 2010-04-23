@@ -19,14 +19,18 @@ public class AbsolutePositioningParticleFilter extends
 	private int mean_x;
 	private int mean_y;
 	private int mean_angle;
+	private int varXX = Fixed.floatToFixed(0.01);
+	private int varYY = Fixed.floatToFixed(0.01);
+	private int varXY = Fixed.floatToFixed(0.0);
+	private int varAngle = Fixed.floatToFixed(3 * (Math.PI / 180));
 	private boolean zerosum;
 	private int lastCurrentTime, currentTime;
 	private int sum_w;
 	private final int[][] landmarks;
 
-	private int[] randn_lut;
+	private final int[] randn_lut;
 	private int randn_index;
-	private int RANDN_MASK = 255;
+	private final int RANDN_MASK = 255;
 
 	public AbsolutePositioningParticleFilter(int N, float T, Buffer sensorData,
 			Buffer movementData, RealTimeClock rttime) {
@@ -45,31 +49,36 @@ public class AbsolutePositioningParticleFilter extends
 				landmarks[i][2] = LandmarkList.RED;
 			}
 		}
+		// Create particles
+		for (int i = 0; i < N; i++) {
+			if (first == null) {
+				first = new PositioningParticle(0, 0, 0, 0, null, null);
+			} else {
+				Particle ptr = first;
+				first = new PositioningParticle(0, 0, 0, 0, ptr, null);
+				ptr.previous = first;
+			}
+		}
+		// Init random data
+		randn_lut = new int[RANDN_MASK + 1];
+		for (int i = 0; i <= RANDN_MASK; i++) {
+			randn_lut[i] = Fixed.randn();
+		}
 	}
 
 	/**
-	 * Create and init all particles
+	 * Set initial data in all particles
+	 * 
+	 * @param x
+	 * @param y
+	 * @param angle
 	 */
-	private void initParticles() {
+	public void initData(float x, float y, float angle) {
 		// State variables x, y, angle
-		for (int i = 0; i < N; i++) {
-			addParticle(0, 0, 0, 0);
-		}
-		initParticleData();
-		// Generate random numbers
-		randn_lut = new int[RANDN_MASK + 1];
-
-	}
-
-	/** Add a particle to the data structure */
-	private void addParticle(int x, int y, int angle, int w) {
-		if (first == null) {
-			first = new PositioningParticle(x, y, angle, w, null, null);
-		} else {
-			Particle ptr = first;
-			first = new PositioningParticle(x, y, angle, w, ptr, null);
-			ptr.previous = first;
-		}
+		mean_x = Fixed.floatToFixed(x);
+		mean_y = Fixed.floatToFixed(y);
+		mean_angle = Fixed.floatToFixed(angle);
+		reSample();
 	}
 
 	private void initParticleData() {
@@ -79,9 +88,6 @@ public class AbsolutePositioningParticleFilter extends
 			// ptr.x = 0;
 			ptr = ptr.next;
 		}
-		for (int i = 0; i <= RANDN_MASK; i++) {
-			randn_lut[i] = Fixed.randn();
-		}
 	}
 
 	/**
@@ -90,7 +96,7 @@ public class AbsolutePositioningParticleFilter extends
 	 * @param distance
 	 *            The distance driven
 	 */
-	private void integrateParticles(int distance) {
+	private void moveParticles(int distance) {
 		Particle ptr = first;
 		PositioningParticle ptr2;
 		while (ptr != null) {
@@ -99,43 +105,63 @@ public class AbsolutePositioningParticleFilter extends
 			ptr2.y = ptr2.y + Fixed.mul(Fixed.sin(ptr2.angle), distance);
 			ptr = ptr.next;
 		}
+		mean_x += Fixed.mul(Fixed.cos(mean_angle), distance);
+		mean_y += Fixed.mul(Fixed.sin(mean_angle), distance);
 	}
 
+	/**
+	 * Turn particles
+	 * 
+	 * @param theta
+	 *            Angle to turn
+	 */
 	private void turnParticles(int theta) {
+		// TODO: Mask high values, depends on circle size
+		// TODO: Check for high and low values
 		Particle ptr = first;
 		PositioningParticle ptr2;
 		while (ptr != null) {
 			ptr2 = (PositioningParticle) ptr;
 			ptr2.angle = ptr2.angle + theta;
-			// TODO: Mask high values, depends on circle size
-			// TODO: Check for high and low values
 			ptr = ptr.next;
 		}
+		mean_angle += theta;
 	}
 
-	private void compareParticles(int sensorangle) {
+	private void compareParticles(int sensorangle, int type) {
 		// Compare particles to sensors inputs and sum weights
 		int sum_w_tmp = 0;
 		Particle ptr = first;
 		PositioningParticle ptr2;
+		int j = 0;
 		while (ptr != null) {
 			ptr2 = (PositioningParticle) ptr;
 			int theta = -ptr2.angle - sensorangle;
+			// TODO: Check angle
 			int cos = Fixed.cos(theta);
 			int sin = Fixed.sin(theta);
 			int z = 0;
-			// TODO: Loop through landmarks
-			// TODO: Get landmark data
-			int toMark_x = 0; // landmark_x-x
-			int toMark_y = 0; // landmark_y-y
-			int norm = Fixed.norm(toMark_x, toMark_y);
-			int v1 = toMark_x * cos - toMark_x * sin;
-			// int v2 = toMark_y * cos + toMark_y * sin;
-			int a = Fixed.div(v1, norm);
-			if (a > z) {
-				// Optimise if two landmarks can not be a hit, sort landmark
-				// list to get hit faster
-				z = a;
+			// Loop through landmarks
+			for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
+				if (type == landmarks[j][2]) {
+					// TODO: Get landmark data
+					int toMark_x = landmarks[j][0] - ptr2.x; // landmark_x-x
+					int toMark_y = landmarks[j][1] - ptr2.y; // landmark_y-y
+					int norm = Fixed.norm(toMark_x, toMark_y);
+					int v1 = toMark_x * cos - toMark_x * sin;
+					// int v2 = toMark_y * cos + toMark_y * sin;
+					z = Fixed.div(v1, norm);
+					/*
+					 * int a = Fixed.div(v1, norm); if (a > z) { z = a; }
+					 */
+					// TODO: Check if sensor can detect different landmarks at
+					// one instant
+					if (z > ParticleFilter.CUT[5]) {
+						break;
+					}
+				}
+				j++;
+				j &= LandmarkList.landmarkX.length;
 			}
 			// Penalty function
 			ptr2.w = ParticleFilter.penalty(z);
@@ -193,7 +219,6 @@ public class AbsolutePositioningParticleFilter extends
 			}
 			norm = Fixed.div(Fixed.ONE, Fixed.intToFixed(N));
 		} else {
-
 			// Weighted mean
 			Particle ptr = first;
 			PositioningParticle ptr2;
@@ -209,8 +234,61 @@ public class AbsolutePositioningParticleFilter extends
 		mean_x = Fixed.intToFixed(Fixed.mul(tmean_x, norm));
 		mean_y = Fixed.intToFixed(Fixed.mul(tmean_y, norm));
 		mean_angle = Fixed.intToFixed(Fixed.mul(tmean_a, norm));
-		// TODO: Calculate covariance
-		// TODO: Check means and covariances
+		// Calculate covariance
+		{
+			int tvarXX = 0, tvarXY = 0, tvarYY = 0, tvarAngle = 0;
+			Particle ptr = first;
+			PositioningParticle ptr2;
+			while (ptr != null) {
+				ptr2 = (PositioningParticle) ptr;
+				int xw = Fixed.mul(ptr2.x, ptr2.w);
+				int yw = Fixed.mul(ptr2.y, ptr2.w);
+				tvarXX += Fixed.mul(xw, ptr2.x);
+				tvarXY += Fixed.mul(xw, ptr2.y);
+				tvarYY += Fixed.mul(yw, ptr2.y);
+				tvarAngle += Fixed.mul(ptr2.angle, ptr2.w);
+				ptr = ptr.next;
+			}
+			varXX = tvarXX;
+			varXY = tvarXY;
+			varYY = tvarYY;
+			varAngle = tvarAngle;
+		}
+		// Check means and covariances
+		if (mean_x < Fixed.floatToFixed(Arena.min_x)) {
+			mean_x = Fixed.floatToFixed(Arena.min_x);
+		}
+		if (mean_x > Fixed.floatToFixed(Arena.max_x)) {
+			mean_x = Fixed.floatToFixed(Arena.max_x);
+		}
+		if (mean_y < Fixed.floatToFixed(Arena.min_y)) {
+			mean_y = Fixed.floatToFixed(Arena.min_y);
+		}
+		if (mean_y > Fixed.floatToFixed(Arena.max_y)) {
+			mean_y = Fixed.floatToFixed(Arena.max_y);
+		}
+		// Check for max variance
+		if (varXX < Fixed.floatToFixed(0.0001)) {
+			varXX = Fixed.floatToFixed(0.0001);
+		}
+		if (varYY < Fixed.floatToFixed(0.0001)) {
+			varYY = Fixed.floatToFixed(0.0001);
+		}
+		if (varAngle < Fixed.floatToFixed(0.0001)) {
+			varAngle = Fixed.floatToFixed(0.0001);
+		}
+		if (varXX > Fixed.floatToFixed(2)) {
+			varXX = Fixed.floatToFixed(2);
+		}
+		if (varXY > Fixed.floatToFixed(2)) {
+			varXY = Fixed.floatToFixed(2);
+		}
+		if (varYY > Fixed.floatToFixed(2)) {
+			varYY = Fixed.floatToFixed(2);
+		}
+		if (varAngle > Fixed.floatToFixed(90*(Math.PI/180))) {
+			varAngle = Fixed.floatToFixed(90*(Math.PI/180));
+		}
 	}
 
 	public int getTime() {
@@ -276,20 +354,92 @@ public class AbsolutePositioningParticleFilter extends
 	}
 
 	public void update() {
+		// Get time reference
 		currentTime = rttime.getTime();
-		{ // Update and evaluation loop
+		int evaluationsSinceResample = 0;
+		int mtime = currentTime + 1;
+		int stime = currentTime + 1;
+		boolean sdataUsed = false, mdataUsed = false;
+		SightingData sdata = (SightingData) sensorData.pop();
+		MovementData mdata = (MovementData) movementData.pop();
+		while ((sdata != null) || (mdata != null)) {
+			// Pops new data, pushes it back if it is too recent
+			if (sdataUsed) {
+				sdata = (SightingData) sensorData.pop();
+				stime = currentTime + 1;
+				sdataUsed = false;
+			}
+			if (sdata != null) {
+				if (sdata.timestamp > currentTime) {
+					sensorData.push(sdata);
+				} else {
+					stime = sdata.timestamp;
+				}
+			}
+			if (mdataUsed) {
+				mdata = (MovementData) movementData.pop();
+				mtime = currentTime + 1;
+				mdataUsed = false;
+			}
+			if (mdata != null) {
+				if (mdata.timestamp > currentTime) {
+					// TODO: Motor must be sorted buffer
+					movementData.push(mdata);
+				} else {
+					mtime = mdata.timestamp;
+				}
+			}
+
 			// TODO: Read buffers for integration (angles, distance)
+			if ((mdata != null) && ((sdata == null) || (mtime <= stime))) {
+				if (Math.abs(mdata.dr) > 0.00001) {
+					moveParticles(Fixed.floatToFixed(mdata.dr));
+					lastCurrentTime = mdata.timestamp;
+				}
+				if (Math.abs(mdata.dangle) > 0.00001) {
+					// TODO: Turning angle as fixed, how does it work
+					turnParticles(Fixed.floatToFixed(mdata.dangle));
+					lastCurrentTime = mdata.timestamp;
+				}
+				mdataUsed = true; // Set flag for popping
+			}
+
 			// TODO: Compare with landmarks
-			// TODO: Resample if needed
+			if ((sdata != null) && ((mdata == null) || (stime < mtime))) {
+				compareParticles(Fixed.floatToFixed(sdata.angle), sdata.type);
+				evaluationsSinceResample++;
+				sdataUsed = true; // Set flag for popping
+			}
+			// Re-sample every third evaluation
+			if (evaluationsSinceResample >= 3) {
+				calcMean();
+				reSample();
+				evaluationsSinceResample = 0;
+			}
 		}
-		// TODO: Guarantee a resample
+		if (evaluationsSinceResample > 0) {
+			calcMean();
+			reSample();
+		}
 		lastCurrentTime = currentTime;
 	}
 
 	public void run() {
 		// TODO: Implement main loop and thread timer
 		/*
-		 * while(true){ update() wait }
+		 * while(true){ update() wait(T) }
 		 */
+	}
+
+	public String toString() {
+		Particle ptr = first;
+		PositioningParticle ptr2;
+		String ret = "[";
+		while (ptr != null) {
+			ptr2 = (PositioningParticle) ptr;
+			ret += ptr2.toString();
+			ptr = ptr.next;
+		}
+		return ret + "]";
 	}
 }
