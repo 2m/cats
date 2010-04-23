@@ -26,6 +26,7 @@ public class ConnectionHandler implements Runnable
 	
 	public boolean connect()
 	{
+		System.out.println("Trying to connect to "+_remoteName);
 		NXTConnector conn = new NXTConnector();
 		boolean connected = conn.connectTo("btspp://"+_remoteName);
 		
@@ -34,6 +35,8 @@ public class ConnectionHandler implements Runnable
 			System.err.println("Failed to connect to "+_remoteName);
 			return false;
 		}
+		
+		System.out.println("Connection successful to "+_remoteName);
 		
 		_dos = conn.getDataOut();
 		_dis = conn.getDataIn();
@@ -69,6 +72,11 @@ public class ConnectionHandler implements Runnable
 				// this function blocks as long as there is some input available
 				// we want to execute immediately as at least one packet is available
 				int received = _dis.read(bArr, index, Math.min(6, 255 - index));
+				
+				byte[] receivedBytes = new byte[received];
+				System.arraycopy(bArr, index, receivedBytes, 0, received);
+				_dos.write(receivedBytes);
+				_dos.flush();
 				
 				index = index + received;
 				
@@ -115,17 +123,13 @@ public class ConnectionHandler implements Runnable
 				}
 				
 				float currentBw = (float)packetSum / 3;
-				if (currentBw > 0.0)
+				Logger.print("BW from "+getRemoteName()+":"+currentBw+"Pck/s");					
+				for (int i = 0; i < packetCounter.length; i++)
 				{
-					//Logger.print("BW from "+getRemoteName()+":"+currentBw+"Pck/s");
-					
-					for (int i = 0; i < packetCounter.length; i++)
-					{
-						//Logger.print(" "+(float)packetCounter[i] / 3);
-					}
+					Logger.print(" "+(float)packetCounter[i] / 3);
 				}
 				
-				//Logger.println("");
+				Logger.println("");
 				
 				for (int i = 0; i < packetCounter.length; i++)
 				{
@@ -134,6 +138,8 @@ public class ConnectionHandler implements Runnable
 				
 				startTime = System.currentTimeMillis();
 			}
+			
+			try { Thread.sleep(1); } catch (Exception ex) {}
 		}
 	}
 	

@@ -11,15 +11,6 @@ public class Main
 		//ColorSensor cs = new ColorSensor();
 		//cs.run();
 		
-		Thread t = new Thread(new ConnectionHandler("cat1"));
-		t.start();
-		
-		Thread t2 = new Thread(new ConnectionHandler("cat2"));
-		t2.start();
-		
-		Thread t3 = new Thread(new ConnectionHandler("cat3"));
-		t3.start();
-		
 		Thread t4 = new Thread(new Mouse());
 		t4.start();
 	}
