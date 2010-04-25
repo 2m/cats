@@ -19,6 +19,9 @@ for k=1:N
   [x, P] = ukf(f,x,P,h,z,Q,R);            % ekf 
   xV(:,k) = x;                            % save estimate
   s = f(s);% + q*randn(3,1);                % update process 
+  k
+  x
+  P
 end
 for k=1:3                                 % plot results
   subplot(3,1,k)
