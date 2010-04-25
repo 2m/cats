@@ -1,3 +1,21 @@
+clear all
+n=3;      %number of state
+q=0.1;    %std of process
+r=0.1;    %std of measurement
+Q=q^2*eye(n); % covariance of process
+R=r^2;        % covariance of measurement
+f=@(x)[x(2);x(3);0.05*x(1)*(x(2)+x(3))];  % nonlinear state equations
+h=@(x)x(1);                               % measurement equation
+s=[0;0;1];                                % initial state
+x=s+q*randn(3,1); %initial state          % initial state with noise
+P = eye(n);                               % initial state covraiance
+z = h(s) + r*randn;                       % measurments
+
+[x, P] = ukf(f,x,P,h,z,Q,R);            % ekf
+
+
+
+
 function [x,P]=ukf(fstate,x,P,hmeas,z,Q,R,Kzero)
 % UKF   Unscented Kalman Filter for nonlinear dynamic systems
 % [x, P] = ukf(f,x,P,h,z,Q,R) returns state estimate, x and state covariance, P 
@@ -63,7 +81,7 @@ X=sigmas(x,P,c);                            %sigma points around x
 [x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L,Q);          %unscented transformation of process
 % X1=sigmas(x1,P1,c);                         %sigma points around x1
 % X2=X1-x1(:,ones(1,size(X1,2)));             %deviation of X1
-[z1,Z1,P2,Z2]=ut(hmeas,X1,Wm,Wc,m,R)       %unscented transformation of measurments
+[z1,Z1,P2,Z2]=ut(hmeas,X1,Wm,Wc,m,R);       %unscented transformation of measurments
 P12=X2*diag(Wc)*Z2';                        %transformed cross-covariance
 K=P12/P2;           %old: P12*inv(P2);
 
