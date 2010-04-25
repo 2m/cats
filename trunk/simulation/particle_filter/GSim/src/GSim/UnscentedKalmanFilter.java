@@ -8,6 +8,12 @@ import lejos.util.Matrix;
  */
 public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 {
+	//Class constants 
+	/* True position and other information like color of the landmarks
+	 * are stored in the public static list of landmarks.
+	 * The evaluation functions access this variable directly.
+	 */
+	
 	//Instance variables
 	/** Number of states. */
 	private int L;  
@@ -47,15 +53,13 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		alpha=3.5f;  //1e-3 default
 		ki=0;  //default
 		beta=Math.pow(alpha, 2) -0.9f;  //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
-	
 		lambda=Math.pow(alpha, 2)*(L+ki)-L;  
 		c=L+lambda; 
 		Wm = new Matrix(1, (2*L+1), 0.5/c);
 		Wm.set(0,0,lambda/c);  
 		Wc=Wm.copy();
 		Wc.set(0,0, Wc.get(0,0) + 1 - Math.pow(alpha, 2) + beta);          
-		c=Math.sqrt(c);
-		//The code above (in the constructor) has been compared with the original matlab and should be ok			
+		c=Math.sqrt(c);	
 	}
 	
 
@@ -118,6 +122,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		return output;
 		
 		/*
+		Original matlab code:
 		[x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L,Q);          %unscented transformation of process
 		% X1=sigmas(x1,P1,c);                         %sigma points around x1
 		% X2=X1-x1(:,ones(1,size(X1,2)));             %deviation of X1
@@ -137,9 +142,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		    P=P1-K*P12';                                %covariance update
 		end
 		*/
-		
-
-	}
+	}//end of ukf()
 	
 	
 	/**
@@ -213,7 +216,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		*/
 		
 		return output;
-	}
+	}//end of ut()
 	
 	/**
 	 * Sigma points around reference point
@@ -257,9 +260,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		//printM(X);
 		
 		return X;
-	}
-	
-		
+	}//end of sigmas()
 	
 		
 	/**
@@ -275,12 +276,5 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 
 		return s;	
 	}	
-	
-	
-	
-	public static void main(String args[])
-	{
-		
-	}
 
-}
+}//end of class
