@@ -26,7 +26,7 @@ public class Cholesky {
         int N = A.length;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < i; j++) {
-                if (A[i][j] != A[j][i]) return false;
+                if (A[i][j] - A[j][i] > EPSILON) return false;  //updated so that rounding errors doesn't make it fail
             }
         }
         return true;

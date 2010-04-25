@@ -16,19 +16,19 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	private int m;  //
 	
 	/** Tunable. */
-	private float alpha;  
+	private double alpha;  
 	
 	/** Tunable. */
-	private float ki;
+	private double ki;
 	
 	/** Tunable. */
-	private float beta;
+	private double beta;
 	
 	/** Scaling factor. */
-	private float lambda;
+	private double lambda;
 	
 	/** Scaling factor. */
-	private float c; 
+	private double c; 
 	
 	/** Weights for means. */
 	private Matrix Wm; 
@@ -46,15 +46,15 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		this.m = m;
 		alpha=3.5f;  //1e-3 default
 		ki=0;  //default
-		beta=(float)Math.pow(alpha, 2) -0.9f;  //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
+		beta=Math.pow(alpha, 2) -0.9f;  //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
 	
-		lambda=(float)Math.pow(alpha, 2)*(L+ki)-L;  
+		lambda=Math.pow(alpha, 2)*(L+ki)-L;  
 		c=L+lambda; 
 		Wm = new Matrix(1, (2*L+1), 0.5/c);
 		Wm.set(0,0,lambda/c);  
 		Wc=Wm.copy();
 		Wc.set(0,0, Wc.get(0,0) + 1 - Math.pow(alpha, 2) + beta);          
-		c=(float)Math.sqrt(c);
+		c=Math.sqrt(c);
 		//The code above (in the constructor) has been compared with the original matlab and should be ok			
 	}
 	
@@ -97,7 +97,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		printM(P2);
 		System.out.println("Debug: ukf, Z2:");
 		printM(Z2);*/
-		Matrix P12 = ( X2.times(diag(Wc)) ).times(Z2.transpose());  //transformed cross-covariance
+		Matrix P12 = ( X2.times(Matlab.diag(Wc)) ).times(Z2.transpose());  //transformed cross-covariance
 		//System.out.println("Debug: ukf, P12:");
 		//printM(P12);
 		//Matrix K = P12.arrayRightDivide(P2);
@@ -155,8 +155,8 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	private Matrix[] ut(IFunction f, Matrix X, Matrix Wm, Matrix Wc, int n, Matrix R)
 	{
 		int L = X.getColumnDimension();
-		Matrix y = zeros(n,1);
-		Matrix Y = zeros(n,L);
+		Matrix y = Matlab.zeros(n,1);
+		Matrix Y = Matlab.zeros(n,L);
 		
 		//System.out.println("Debug: ut, X:");
 		//printM(X);
@@ -187,11 +187,11 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		//System.out.println("Debug: ut, Y:");
 		//printM(Y);
 		
-		Matrix Y1 = Y.minus(  y.times( ones(1,Y.getColumnDimension()) )  );
+		Matrix Y1 = Y.minus(  y.times( Matlab.ones(1,Y.getColumnDimension()) )  );
 		//System.out.println("Debug: ut, Y1:");
 		//printM(Y1);	
 		
-		Matrix P = Y1.times(diag(Wc));
+		Matrix P = Y1.times(Matlab.diag(Wc));
 		P = P.times(Y1.transpose());
 		P.plusEquals(R);
 		//System.out.println("Debug: ut, P:");
@@ -222,7 +222,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	 * @param c  coefficient
 	 * @return Sigma points
 	 */
-	private Matrix sigmas(Matrix x, Matrix P, float c)
+	private Matrix sigmas(Matrix x, Matrix P, double c)
 	{
 		Matrix A = new Matrix( Cholesky.cholesky( P.getArray() ) );
 		A = (A.times(c)).transpose();
@@ -259,46 +259,8 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		return X;
 	}
 	
+		
 	
-	//Matlab look a like functions:
-	
-	/**
-	 * 	Create a diagonal matrix out of a (1)x(n) matrix
-	 * @param m (1)x(n) matrix
-	 * @return (n)x(n) diagonal matrix
-	 */
-	public static Matrix diag(Matrix m)
-	{
-		Matrix m_diag = Matrix.identity(m.getColumnDimension(), m.getColumnDimension());
-		//for all rows&coulmns
-		for (int idx=0; idx<m.getColumnDimension(); idx++)  
-		{
-			m_diag.set(idx, idx, m.get(0, idx));
-		}
-		return m_diag;	
-	}
-	
-	/**
-	 * Creates a with matrix with ones
-	 * @param rows number of rows
-	 * @param columns number of columns
-	 * @return matrix with ones
-	 */
-	public static Matrix ones(int rows, int columns)
-	{
-		return new Matrix(rows,columns,1);
-	}
-	
-	/**
-	 * Creates a with matrix with zeroes
-	 * @param rows number of rows
-	 * @param columns number of columns
-	 * @return matrix with ones
-	 */
-	public static Matrix zeros(int rows, int columns)
-	{
-		return new Matrix(rows,columns,0);
-	}
 		
 	/**
 	 * Prints a filter object
@@ -309,39 +271,12 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		String s ="";
 		s = " L = " + L + "\n m = " + m + "\n";
 		s += " alpha = " + alpha + "\n ki = " + ki + "\n beta = " + beta +
-		"\n lambda = " + lambda + "\n c = " + c + "\n Wm = " + MatrixToString(Wm) + " Wc = " + MatrixToString(Wc);
+		"\n lambda = " + lambda + "\n c = " + c + "\n Wm = " + Matlab.MatrixToString(Wm) + " Wc = " + Matlab.MatrixToString(Wc);
 
 		return s;	
 	}	
 	
-	/**
-	 * Converts a matrix to a string ready to be printed
-	 * The values are rounded to floats (from doubles).
-	 * @param m  input matrix
-	 * @return a string representation of the matrix
-	 */
-	public static String MatrixToString(Matrix m)
-	{
-		double[][] print_m = m.getArray();
-		String s = "";
-		for (int i=0; i<m.getRowDimension(); i++)
-		{
-			for (int j=0; j<m.getColumnDimension(); j++)
-			{
-				s += print_m[i][j] + "  ";
-			}
-			s += "\n";
-		}
-		return s;
-	}
 	
-	/**
-	 * Prints a matrix.
-	 * @param m input matrix
-	 */
-	public static void printM(Matrix m){
-		System.out.println(MatrixToString(m));
-	}
 	
 	public static void main(String args[])
 	{
