@@ -1,8 +1,8 @@
 function z = measure2WspeedMeasurements(x)
-%calculates the bearings from the landm to the mouse and adds measurement
-%noise
+%calculates the bearings from the landm to the cats
 global landm;
-global n;
+%global n;
+n = size(landm,1);
 
 for i=1:n
     %use either acos or asin

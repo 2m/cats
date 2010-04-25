@@ -1,8 +1,8 @@
 function zm = measuremT(xm)
-%calculates the bearings from the cats to the mouse and adds measurement
-%noise
-global s; %where we think the cats are
-global nm;
+%calculates the bearings from the cats to the mouse
+global s; %where the cats are
+%global nm; 
+nm=size(s,2);
 zm=zeros(nm,1);
 for i=1:nm
     %use either acos or asin
