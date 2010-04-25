@@ -3,10 +3,10 @@ package GSim;
 import lejos.util.Matrix;
 
 /**
- * The measurement function
+ * Measurement function for the mouse's position
  * @author Edvard
  */
-public class Hmeas implements IFunction{
+public class HmeasMouse implements IFunction{
 	
 	//TODO implement real measurement function
 	
