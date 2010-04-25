@@ -6,16 +6,18 @@ import lejos.util.Matrix;
  * A class for testing The Unscented Kalman Filter on some basic functions and inputs.
  * @author Edvard
  */
-public class UnscentedKalmanFilterTest {
+public class UnscentedKalmanFilterTest
+{
 	
 	//Instance variables
 	public IFunction f_example;
 	public IFunction h_example;
 	
 	/**
-	 * Default constructor for
+	 * Default constructor
 	 */
-	public UnscentedKalmanFilterTest(){
+	public UnscentedKalmanFilterTest()
+	{
 		f_example = new FstateExample();	
 		h_example = new HmeasExample();
 	}
@@ -24,8 +26,10 @@ public class UnscentedKalmanFilterTest {
 	 * An example state function used in this test
 	 * @author Edvard
 	 */
-	public class FstateExample implements IFunction{
-		public Matrix eval(Matrix x){	
+	public class FstateExample implements IFunction
+	{
+		public Matrix eval(Matrix x)
+		{	
 			//Basic state function to test the ukf implementation
 			//x is a (n)x(1) Matrix		
 			Matrix output = new Matrix(x.getRowDimension(),x.getColumnDimension());
@@ -43,8 +47,10 @@ public class UnscentedKalmanFilterTest {
 	 * An example measurement function used in this test.
 	 * @author Edvard
 	 */
-	public class HmeasExample implements IFunction{	
-		public Matrix eval(Matrix x){
+	public class HmeasExample implements IFunction
+	{	
+		public Matrix eval(Matrix x)
+		{
 			//Basic measurement function to test the ukf implementation
 			//x is a (1)x(1) Matrix
 			Matrix output = new Matrix(1,1,x.get(0,0));
@@ -60,13 +66,13 @@ public class UnscentedKalmanFilterTest {
 		
 		//Example values used for testing
 		System.out.println("Test started");
-		UnscentedKalmanFilter ukf_test = new UnscentedKalmanFilter(3,1);
-		System.out.println("Debug: printing ukf object:\n" +ukf_test);
+		UnscentedKalmanFilter ukf_obj = new UnscentedKalmanFilter(3,1);
+		System.out.println("Debug: printing ukf object:\n" +ukf_obj);
 		
 		int n=3;      //number of state
 		float q=0.1f;    //std of process
 		float r=0.1f;    //std of measurement
-		Matrix Q = Matrix.identity(n, n);  //covariance of process
+		Matrix Q = Matlab.eye(n);  //covariance of process
 		Q = Q.times(Math.pow(q, 2));	
 		float R=(float)Math.pow(r, 2);  //covariance of measurement
 		IFunction f = test.f_example; //@(x)[x(2);x(3);0.05*x(1)*(x(2)+x(3))];  % nonlinear state equations
@@ -79,26 +85,25 @@ public class UnscentedKalmanFilterTest {
 		Matrix s = new Matrix(temp_s);
 		Matrix x = new Matrix(3,3);  //initial state 
 		x=s.copy();//s.plus( Matrix.random(3,1).times(q) );  //initial state with noise
-		Matrix P = Matrix.identity(n, n);  //initial state covraiance
+		Matrix P = Matlab.eye(n);  //initial state covraiance
 		
 		//First iteration with UKF
 		Matrix z = h.eval(s);  //h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
-		Matrix[] result = ukf_test.ukf(f, x, P, h, z, Q, R);
+		Matrix[] result = ukf_obj.ukf(f, x, P, h, z, Q, R);
 		x = result[0];
 		P = result[1];
 		s = f.eval(s);  //update process 
 
-		System.out.println("Debug: ukf, x:");
-		UnscentedKalmanFilter.printM(x);
-		System.out.println("Debug: ukf, P:");
-		UnscentedKalmanFilter.printM(P);	
+		System.out.println("Debug: ukf, x after iteration 1:");
+		Matlab.printM(x);
+		System.out.println("Debug: ukf, P after iteration 1:");
+		Matlab.printM(P);	
 		
 		//Verify correctness
 		double[][] x_updated_arr = x.getArray();
 		double[][] x_correct_arr = {{0.0}, {1.0}, {0.0}};
 		System.out.println("Debug: ukfTest, x_correct_arr:" );
-		UnscentedKalmanFilter.printM( new Matrix(x_correct_arr) );
-		
+		Matlab.printM( new Matrix(x_correct_arr) );	
 		for (int i = 0; i<3; i++)
 		{
 			for (int j = 0; j<1; j++)
@@ -111,11 +116,11 @@ public class UnscentedKalmanFilterTest {
 				}
 			}
 		} 
-		assert(false);
+		assert(false);  //Should throw error but assert doesn't work...
 		double[][] P_updated_arr = P.getArray();
 		double[][] P_correct_arr = {{0.019900990099010,  0.0,  0.0},{0.0,  1.010000000000000,  0.0},{0.0,  0.0,  0.012500000000000}}; 
 		System.out.println("Debug: ukfTest, P_correct_arr:" );
-		UnscentedKalmanFilter.printM( new Matrix(P_correct_arr) );
+		Matlab.printM( new Matrix(P_correct_arr) );
 		for (int i = 0; i<3; i++)
 		{
 			for (int j = 0; j<3; j++)
@@ -127,21 +132,22 @@ public class UnscentedKalmanFilterTest {
 				}
 			}
 		} 
-		/*
+		
 		//Further iterations with UKF
-		for (int i=1; i<20; i++)
+		for (int i=2; i<21; i++)
 		{
 			z = h.eval(s);  //measurments		
-			result = ukf_test.ukf(f, x, P, h, z, Q, R);
+			result = ukf_obj.ukf(f, x, P, h, z, Q, R);
 			x = result[0];
 			P = result[1];
 			s = f.eval(s);  //update process 
+			System.out.println("Debug: ukf test, x after iteration " +i+" :");
+			Matlab.printM(x);
+			System.out.println("Debug: ukf test, P after iteration " +i+" :");
+			Matlab.printM(P);	
 		}
 		
-		System.out.println("Debug: ukf test, x after multiple iterations:");
-		UnscentedKalmanFilter.printM(x);
-		System.out.println("Debug: ukf test, P after multiple iterations:");
-		UnscentedKalmanFilter.printM(P);	*/
+
 		
 
 	}
