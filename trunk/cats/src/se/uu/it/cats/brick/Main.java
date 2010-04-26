@@ -45,8 +45,8 @@ public class Main
 		listenerThread.start();
 		
 		//Run SimpleFilter:
-		//Thread filterThread = new Thread(new SimpleFilter());
-		//filterThread.start();
+		Thread filterThread = new Thread(new SimpleFilter());
+		filterThread.start();
 		
 		Button.LEFT.addButtonListener(new ButtonListener() {
 			public void buttonPressed(Button b) {}
@@ -176,7 +176,7 @@ public class Main
 			//int milisUntilNextSec = 1000 - (Clock.timestamp() % 1000);
 			//Thread.sleep(milisUntilNextSec + 1000);
 						
-			Thread.sleep(2000);
+			Thread.sleep(100);
 			//Thread.yield();
 			//Sound.beep();
 		}
