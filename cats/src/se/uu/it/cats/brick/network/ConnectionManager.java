@@ -14,7 +14,8 @@ public class ConnectionManager
 		new RemoteDevice("cat3", "00165302CDC3", new byte[] {0, 0, 8, 4}),
 		new RemoteDevice("dongle1", "0015832A3670", new byte[] {0, 0, 8, 4}),
 		new RemoteDevice("dongle2", "000C783394E7", new byte[] {0, 0, 8, 4}),
-		new RemoteDevice("MartinPC", "002556F9072D", new byte[] {0, 0, 8, 4})
+		new RemoteDevice("MartinPC", "002556F9072D", new byte[] {0, 0, 8, 4}),
+		new RemoteDevice("ChristianPC", "002243B7BDAA", new byte[] {0, 0, 8, 4})
 	};
 	
 	public static final int MAX_OUTBOUND_CONN = _devices.length;
