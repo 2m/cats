@@ -73,10 +73,10 @@ public class ConnectionHandler implements Runnable
 				// we want to execute immediately as at least one packet is available
 				int received = _dis.read(bArr, index, Math.min(6, 255 - index));
 				
-				byte[] receivedBytes = new byte[received];
+				/*byte[] receivedBytes = new byte[received];
 				System.arraycopy(bArr, index, receivedBytes, 0, received);
 				_dos.write(receivedBytes);
-				_dos.flush();
+				_dos.flush();*/
 				
 				index = index + received;
 				
@@ -106,12 +106,6 @@ public class ConnectionHandler implements Runnable
 				Logger.println("IO Exception reading bytes:");
 				Logger.println(ioe.getMessage());
 				break;
-			}
-			catch (Exception ex)
-			{
-				// connection broken, return from this function gracefully (somehow)
-				Logger.println("Exception reading bytes:");
-				Logger.println(ex.getMessage());
 			}
 			
 			if (System.currentTimeMillis() - startTime > 3000)

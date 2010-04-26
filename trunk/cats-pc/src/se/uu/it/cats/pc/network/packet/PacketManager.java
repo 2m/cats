@@ -1,7 +1,7 @@
 package se.uu.it.cats.pc.network.packet;
 
 import se.uu.it.cats.pc.Logger;
-import se.uu.it.cats.pc.Mouse;
+import se.uu.it.cats.pc.gui.Area;
 
 import se.uu.it.cats.brick.network.packet.PFMeasurement;
 import se.uu.it.cats.brick.network.packet.Packet;
@@ -64,7 +64,11 @@ public class PacketManager
 					p = new SimpleMeasurement();
 					p.readImpl(bArr);
 					
-					Mouse._angles[p.getSource()] = ((SimpleMeasurement)p).getAngle();
+					int catId = p.getSource();
+					float newAngleRad = ((SimpleMeasurement)p).getAngle();					
+					Area.getInstance().getCats()[catId].updateAngleCam(newAngleRad);
+					
+					//Mouse._angles[p.getSource()] = ((SimpleMeasurement)p).getAngle();
 				}
 				break;
 			}
