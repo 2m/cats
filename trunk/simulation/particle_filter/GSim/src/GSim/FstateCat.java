@@ -3,12 +3,12 @@ package GSim;
 import lejos.util.Matrix;
 
 /**
- * State function for the cat's position
+ * State function for the cat's absolute position
  * @author Edvard
  */
 public class FstateCat implements IFunction{
 	
-	public Matrix eval(Matrix x){
+	public Matrix eval(Matrix xc){
 		/*Original matlab code:
 		function x_update = update2(x)
 		F=eye(4);
@@ -21,15 +21,15 @@ public class FstateCat implements IFunction{
 		*/
 		
 		//TODO test this function		
-		Matrix x_update = Matlab.zeros(x.getRowDimension(), x.getColumnDimension());
+		Matrix xc_updated = Matlab.zeros(xc.getRowDimension(), xc.getColumnDimension());
 		Matrix F = Matlab.eye(4);
 		//here dt=1 since speed is measured in m/samples, thus:
 		F.set(1-1,3-1, 1);
 		F.set(2-1,4-1, 1);
-		x_update=F.times( x.getMatrix(1-1, 4-1, 1-1, 1-1) );
-		x_update.set(5-1, 1-1, x.get(5-1, 1-1));
-		x_update.set(6-1, 1-1, x.get(6-1, 1-1));
+		xc_updated=F.times( xc.getMatrix(1-1, 4-1, 1-1, 1-1) );
+		xc_updated.set(5-1, 1-1, xc.get(5-1, 1-1));
+		xc_updated.set(6-1, 1-1, xc.get(6-1, 1-1));
 
-		return x_update; 
+		return xc_updated; 
 	}
 }

@@ -3,20 +3,16 @@ package GSim;
 import lejos.util.Matrix;
 
 /**
- * Measurement function for the cats's position
+ * Measurement function for the cats's absolute position
  * @author Edvard
  */
 public class HmeasCat implements IFunction{
-
 	
-	public Matrix eval(Matrix x){	
+	public Matrix eval(Matrix xc){	
 		/*Original matlab code:
 		function z = measure2WspeedMeasurements(x)
-		%calculates the bearings from the landm to the mouse and adds measurement
-		%noise
+		%calculates the bearings from the landm to the mouse
 		global landm;
-		global n;
-
 		for i=1:n
 		    %use either acos or asin
 		%     if (landm(i,2)-x(2,1)>=0) %needed because of ambiguity in acos (and asin)
@@ -41,19 +37,19 @@ public class HmeasCat implements IFunction{
 		
 		//TODO test measurement function
 		//NB: All -1 in the indices are used to indicate the shift form the first array index in matlab = 1 to java's = 0.
-		Matrix z = Matlab.zeros(x.getRowDimension(), x.getColumnDimension());
+		Matrix zc = Matlab.zeros(xc.getRowDimension(), xc.getColumnDimension());
 		int n = LandmarkList.landmarkX.length;
 		for (int i = 1; i<n; i++)
 		{
-			z.set(i-1,1-1, Math.atan2(LandmarkList.landmarkY[i-1] - x.get(2-1,1-1), LandmarkList.landmarkX[i-1] - x.get(1-1,1-1)));
-			z.set(i-1,1-1, z.get(i-1,1-1)%2*Math.PI);
+			zc.set(i-1,1-1, Math.atan2(LandmarkList.landmarkY[i-1] - xc.get(2-1,1-1), LandmarkList.landmarkX[i-1] - xc.get(1-1,1-1)));
+			zc.set(i-1,1-1, zc.get(i-1,1-1)%2*Math.PI);
 		}
-		z.set(n+1-1,1-1, x.get(3-1,1-1));
-		z.set(n+2-1,1-1, x.get(4-1,1-1));
-		z.set(n+3-1,1-1, x.get(5-1,1-1));
-		z.set(n+4-1,1-1, x.get(6-1,1-1));
+		zc.set(n+1-1,1-1, xc.get(3-1,1-1));
+		zc.set(n+2-1,1-1, xc.get(4-1,1-1));
+		zc.set(n+3-1,1-1, xc.get(5-1,1-1));
+		zc.set(n+4-1,1-1, xc.get(6-1,1-1));
 	
-		return z;
+		return zc;
 	}
 }
 
