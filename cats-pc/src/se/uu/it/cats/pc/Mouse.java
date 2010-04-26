@@ -48,7 +48,7 @@ public class Mouse extends javax.swing.JFrame implements Runnable
 			
 			try
 			{
-				Thread.sleep(1);
+				Thread.sleep(50);
 			}
 			catch (Exception ex)
 			{
