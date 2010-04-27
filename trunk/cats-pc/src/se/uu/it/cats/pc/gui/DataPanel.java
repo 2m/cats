@@ -14,11 +14,13 @@ import java.util.Hashtable;
 public class DataPanel extends JPanel{ // implements ActionListener
   
   private Area world;
+  private int _areaHeight;
   
-  public DataPanel(Area newArea) {
+  public DataPanel(Area newArea, int areaHeight) {
 	world = newArea;
+	_areaHeight = areaHeight;
 	// Size of window
-    setPreferredSize(new Dimension(200,world.getArenaHeight()));
+    setPreferredSize(new Dimension(200,_areaHeight));
     
     ActionListener buttonListener = new ActionListener() {                    
         public void actionPerformed(ActionEvent e)
