@@ -15,7 +15,7 @@ import lejos.nxt.addon.NXTCam;
 
 public class SimpleFilter implements Runnable {
 	
-	final static int dt = 1; // milliseconds
+	final static int dt = 10; // milliseconds
 	
 	public void run() {
 		
@@ -39,31 +39,33 @@ public class SimpleFilter implements Runnable {
 		float angToTarget;
 		//PID-controller: tunable parameters
 		//Tuned using manual tuning method:
-		float Kp = 2; //start osc. at 4
-		float Ki = 0.1f;
-		float Kd = 1f;
+		float Kp = 8.42f; //start osc. at 4
+		float Ki = 0f;
+		float Kd = 3f;
 		int previous_error = 0;
 		int integral = 0;
 		float derivative;
 		
 		//int iterCounter = 0;
-		int maxSpeed = 650;
+		int maxSpeed = 900;
 		int newSpeed;
 		int dir = 1; //Specifies which direction to turn, if the mouse is lost. Default is clockwise.
 		int motorAng; //Motor angle relative to starting position
 		float motorAngRad;
 		float angToTargetRelCat;
-		float motorCal = 1.182f; //linear calibration
-		float gearRatio = 0.5f*motorCal; //1:2 gear down
+		float motorCal = 0.978f;//1.19f; //linear calibration
+		float gearRatio = 0.2f*motorCal; //1:5 gear down (smallest gear to biggest)
 		int maxAngAbs = 180;
 		int upperMaxAng = maxAngAbs;
 		int lowerMaxAng = maxAngAbs*-1;
 		
-		int offset = 0;
+		int offset = 0; //measured in pixels
 		if (Identity.getName().equals("cat1"))
 				offset = -7; //for camera on cat1.
 		else if (Identity.getName().equals("cat2"))
 				offset = -19; //for camera on cat2
+		else if (Identity.getName().equals("cat3"))
+			offset = -8; //for camera on cat2
 		
 		float radPerPix = -1*(float) ((float) 43*Math.PI/180.0 / 176);
 	
@@ -122,7 +124,7 @@ public class SimpleFilter implements Runnable {
 				//Logger.println("Found at:" + (int) (angToTargetRelCat*180/Math.PI));
 				//Logger.println("            CamMotor:" + motorAng);
 				
-				if (Math.abs(err) < 15) //P: 10
+				if (Math.abs(err) < 0) //P: 10
 				{
 					Motor.A.stop();
 				}
