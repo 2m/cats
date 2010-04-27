@@ -36,12 +36,13 @@ public class GSim extends JFrame implements MouseListener {
 	private boolean marked = false;
 	public LandmarkList llist = new LandmarkList();
 	public RealTimeClock clock = new RealTimeClock();
-
-	// TODO: Implement shared sighting data (network)
+	public BillBoard billboard = new BillBoard(3);
+	
 	public GSim() {
 		addMouseListener(this);
-		actors[0] = new Mouse(null, 1.5, 1.5, 0.0, clock);
-		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, clock);
+		
+		actors[0] = new Mouse(null, 1.5, 1.5, 0.0, clock, billboard);
+		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, clock, billboard);
 		//actors[2] = new Cat(actors[0], 1.0, 1.0, 0, clock);
 	}
 

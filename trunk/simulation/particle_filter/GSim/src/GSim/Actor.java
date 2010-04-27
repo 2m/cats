@@ -21,19 +21,20 @@ public class Actor {
 	protected double gotoy;
 	private boolean marked = false;
 	private int type;
-	protected Buffer motorBuffer = new BufferFIFO();
+	protected Buffer motorBuffer = new BufferSorted();
 
 	protected MotorControl motor = null;
 	protected SensorHandler sensors;
 	protected int iter;
+	protected BillBoard billboard;
 
 	public Actor(Actor mouse, double tx, double ty, double tangle, int ttype,
-			RealTimeClock clock) {
+			RealTimeClock clock, BillBoard billboard) {
 		motor = new MotorControl(tx, ty, tangle, motorBuffer, clock);
 		type = ttype;
 		gotox = tx;
 		gotoy = ty;
-
+		this.billboard = billboard;
 	}
 
 	public double getX() {
@@ -152,10 +153,11 @@ public class Actor {
 					* linelength), (int) (iy + Math.sin(iangle) * linelength));
 		}
 
-		drawMore(g);
-
 		// Reset the tranformation matrix
 		g2.setTransform(oldTransform);
+
+		// Hook for filter graphics code
+		drawMore(g);
 	}
 
 	public void drawMore(Graphics g) {

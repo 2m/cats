@@ -10,8 +10,14 @@ public class PositioningParticle extends Particle {
 	}
 
 	public String toString() {
-		return "(" + Fixed.fixedToFloat(x) + " ," + Fixed.fixedToFloat(y)
-				+ ", " + Fixed.fixedToFloat(angle) + " ,"
+		// TODO: Printing of angle does not work
+		return "("
+				+ Fixed.fixedToFloat(x)
+				+ ", "
+				+ Fixed.fixedToFloat(y)
+				+ ", "
+				+ Fixed
+						.fixedToFloat(angle)*(2*Math.PI/Fixed.DEGREES) + ", "
 				+ Fixed.fixedToFloat(w) + ")";
 	}
 }

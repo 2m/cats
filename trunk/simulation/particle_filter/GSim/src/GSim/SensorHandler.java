@@ -1,5 +1,7 @@
 package GSim;
 
+import java.util.Random;
+
 /**
  * Basic place holder for the camera controls
  * 
@@ -13,6 +15,7 @@ public class SensorHandler {
 	private Actor cat, mouse;
 	private boolean initialPhase = false;
 	private RealTimeClock realtime;
+	private Random rnd = new Random();
 
 	public SensorHandler(Actor mouse, RealTimeClock realtime) {
 		this.mouse = mouse;
@@ -34,12 +37,10 @@ public class SensorHandler {
 		float angle1 = (float) Math.atan2(y1, x1);
 		int t = realtime.getTime();
 		int type = 0;
-		// TODO: Add noise
-		SightingData d = new SightingData(t, cx, cy, (float) (angle1 - cat
-				.getAngle()), type);
+		SightingData d = new SightingData(t, cx, cy, (float) ((angle1 - cat
+				.getAngle()) + rnd.nextGaussian() * 3 * (Math.PI / 180)), type);
 		// System.out.println("Push: " + d);
-		// TODO: Push to tracking buffer
-		// trackingBuffer.push(d);
+		trackingBuffer.push(d);
 		for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
 			float x2 = LandmarkList.landmarkX[i] - cx;
 			float y2 = LandmarkList.landmarkY[i] - cy;
@@ -55,9 +56,9 @@ public class SensorHandler {
 			float angle_diff = (float) Math.acos((x1 * x2 + y1 * y2)
 					/ (norm1 * norm2));
 			if ((initialPhase) || (angle_diff < (field_of_view / 2))) {
-				d = new SightingData(t, cx, cy, (float) (angle2 - cat
-						.getAngle()), type);
-				// TODO: Add noise
+				d = new SightingData(t, cx, cy,
+						(float) ((angle2 - cat.getAngle()) + rnd.nextGaussian()
+								* 3 * (Math.PI / 180)), type);
 				// TODO: Angle_diff might be wrong
 				// System.out.println("i:" + i + " Push: " + d + " Anglediff: "
 				// + angle_diff*(180/Math.PI));
