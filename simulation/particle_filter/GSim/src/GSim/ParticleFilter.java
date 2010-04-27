@@ -15,9 +15,6 @@ public class ParticleFilter {
 			Fixed.floatToFixed(0.9986), Fixed.floatToFixed(0.9962),
 			Fixed.floatToFixed(0.9920), Fixed.floatToFixed(0.9796) };
 
-	public ParticleFilter() {
-	}
-
 	/**
 	 * Penalty function for Gaussian particle filter
 	 * 
@@ -27,22 +24,22 @@ public class ParticleFilter {
 	 */
 	public static int penalty(int z) {
 		int w;
-		if (z >= CUT[5]) {
-			if (CUT[3] < z) {
-				if (CUT[2] < z) {
+		if (z >= CUT[4]) {
+			if (CUT[2] < z) {
+				if (CUT[1] < z) {
 					// cut(1) - cut(2)
-					w = Fixed.mul(z, COEFF[1]) + COEFF[2];
+					w = Fixed.mul(z, COEFF[0]) + COEFF[1];
 				} else {
 					// cut(2) - cut(3)
-					w = Fixed.mul(z, COEFF[3]) + COEFF[4];
+					w = Fixed.mul(z, COEFF[2]) + COEFF[3];
 				}
 			} else {
-				if (CUT[4] < z) {
+				if (CUT[3] < z) {
 					// cut(3) - cut(4)
-					w = Fixed.mul(z, COEFF[5]) + COEFF[6];
+					w = Fixed.mul(z, COEFF[4]) + COEFF[5];
 				} else {
 					// cut(4) - cut(5)
-					w = Fixed.mul(z, COEFF[7]) + COEFF[8];
+					w = Fixed.mul(z, COEFF[6]) + COEFF[7];
 				}
 			}
 		} else {
@@ -50,13 +47,52 @@ public class ParticleFilter {
 		}
 		return w;
 	}
+
+	/**
+	 * Creates a transform matrix for the re-sampling from a co-variance matrix.
+	 * 
+	 * @param C
+	 *            The co-variance matrix
+	 * @return V The transform matrix
+	 */
+	public static int[][] getTransformFromCovariance(int[][] C) {
+		int[][] V = new int[2][2];
+		int a = C[0][0];
+		int b = C[0][1];
+		// Check for diagonal matrix
+		if (b == 0) {
+			V = C;
+		} else {
+			int c = C[1][0];
+			int d = C[1][1];
+			int p = (a + d);
+			int q = Fixed.mul(a, d) - Fixed.mul(b, c);
+			int phalf = (p >> 1);
+			int phalfsquare = Fixed.mul(phalf, phalf);
+			int sqrt = Fixed.sqrt(phalfsquare - q);
+			int lambda1 = phalf + sqrt;
+			// int lambda2 = phalf - sqrt;
+			// D = [lambda1 0; 0 lambda2];
+			int v12 = Fixed.div(-(a - lambda1), b);
+			int norm = Fixed.sqrt(Fixed.mul(v12, v12) + Fixed.ONE);
+			int norminv = 0;
+			if (norm == 0) {
+				System.out.println("Division by zero");
+				norminv = 1 << 30;
+			} else {
+				norminv = Fixed.div(Fixed.ONE, norm);
+			}
+			v12 = Fixed.mul(v12, norminv);
+			// v1 = [1; -(a-lambda1)/b];
+			// v1 = v1./norm(v1);
+			// Eigen vectors are perpendicular => rot_p == [0 -1; 1 0]
+			// v2 = [-v1(2); v1(1)];
+			// V = [v1 v2];
+			V[0][0] = norminv;
+			V[0][1] = v12;
+			V[1][0] = -v12;
+			V[1][1] = norminv;
+		}
+		return V;
+	}
 }
-/*
- * function w = penalty(z) % Penalty function % Takes cosine of angle between
- * lines c = [ 292.8173 -291.8267 139.2145 -138.4522 42.0960 -41.7202 2.0903
- * -2.0474]; cut = [1.0000 0.9986 0.9962 0.9920 0.9744]; if (z>=cut(5)) if
- * (cut(3)<z) if (cut(2)<z) % cut(1) - cut(2) w = z*c(1, 1) + c(1, 2); else %
- * cut(2) - cut(3) w = z*c(2, 1) + c(2, 2); end else if (cut(4)<z) % cut(3) -
- * cut(4) w = z*c(3, 1) + c(3, 2); else % cut(4) - cut(5) w = z*c(4, 1) + c(4,
- * 2); end end else w = 0; end end
- */

@@ -1,7 +1,7 @@
 package GSim;
 
 import java.util.Random;
-// TODO: Add javadoc
+
 public class MotorControl {
 	public double x;
 	public double y;
@@ -30,19 +30,18 @@ public class MotorControl {
 		if (distance > MAX_SPEED) {
 			distance = MAX_SPEED;
 		}
-		// TODO: Set more realistic noise (needs measurements)
+		// +-2% noise
 		setX(getX() + Math.cos(angle) * distance
-				* (1 + rng.nextDouble() / 50 + 0.01)); // +-1% noise
+				* (1 + rng.nextDouble() * 0.04 + 0.02)); 
 		setY(getY() + Math.sin(angle) * distance
-				* (1 + rng.nextDouble() / 50 + 0.01));
+				* (1 + rng.nextDouble() * 0.04 + 0.02));
 		updateBuffer.push(new MovementData(clock.getTime(), (float) distance,
 				(float) 0.0));
 	}
 
 	public void turn(double turnangle) {
-		// TODO: Set more realistic noise
-		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() / 50 + 0.01)); // +-1%
-		// noise
+		// +-4% noise
+		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() * 0.08 + 0.04)); 
 		updateBuffer.push(new MovementData(clock.getTime(), (float) 0.0,
 				(float) turnangle));
 	}
@@ -70,7 +69,7 @@ public class MotorControl {
 	public void goTo(double x, double y) {
 		double distance = Math.sqrt(Math.pow(getX() - x, 2)
 				+ Math.pow(getY() - y, 2));
-		if (distance > 0) {
+		if (distance > 0.05) {
 			turnTo(x, y);
 			drive(distance);
 		}

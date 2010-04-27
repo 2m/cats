@@ -14,17 +14,18 @@ public class Cat extends Actor {
 	protected AbsolutePositioningFilter positioningFilter;
 
 	public Cat(Actor mouse, double x, double y, double angle,
-			RealTimeClock clock) {
-		super(mouse, x, y, angle, CAT, clock);
+			RealTimeClock clock, BillBoard billboard) {
+		super(mouse, x, y, angle, CAT, clock, billboard);
 		sensors = new SensorHandler(mouse, clock);
 		sensors.register(this);
 		positioningBuffer = sensors.regPositioner();
 		trackerBuffer = sensors.regTracker();
-		int N = 50;
+		int N = 5;
 		float T = (float) 0.5;
 		positioningFilter = new AbsolutePositioningParticleFilter(N, T,
 				positioningBuffer, motorBuffer, clock);
-		positioningFilter.initData((float)x, (float)y, (float)angle);
+		positioningFilter.initData((float) motor.getX(), (float) motor.getY(),
+				(float) motor.getAngle());
 	}
 
 	/**
@@ -34,8 +35,10 @@ public class Cat extends Actor {
 		motor.goTo(gotox, gotoy);
 		if ((iter % 5) == 0) {
 			sensors.update();
-			// positioningFilter.update();
+			//System.out.println(positioningFilter);
+			positioningFilter.update();
 			// trackingFilter.update();
+			trackerBuffer.pop();
 		}
 		iter++;
 	}

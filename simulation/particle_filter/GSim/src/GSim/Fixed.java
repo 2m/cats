@@ -8,7 +8,6 @@ import java.util.Random;
  * @version $Rev$
  */
 public final class Fixed {
-	// TODO: Write Javadoc
 	public static final int FIXED_POINT = 20;
 
 	public static final int ONE = 1 << FIXED_POINT;
@@ -17,9 +16,12 @@ public final class Fixed {
 	// Circle size: 2048
 	private static final int TRIG_SHIFT = 30;
 	public static final int QUARTER_CIRCLE = 512; // => sizeof(SIN_TABLE)= 2048b
-	private static final int CIRCLE_MASK = QUARTER_CIRCLE * 4 - 1;
-	@SuppressWarnings("unused")
-	private static final int DOUBLE_CIRCLE_MASK = QUARTER_CIRCLE * 8 - 1;
+	public static final int CIRCLE_MASK = QUARTER_CIRCLE * 4 - 1;
+	/** Pseudo degrees on a circle */
+	public static final int DEGREES = 2048;
+	public static final int RADIANS_TO_DEGREES = (int) ((QUARTER_CIRCLE * 4) * ONE/(2*Math.PI));
+	public static final int ANGLE_MASK = ONE * (QUARTER_CIRCLE * 4) - 1;
+	public static final int DOUBLE_CIRCLE_MASK = QUARTER_CIRCLE * 8 - 1;
 	// private static final int SIN_PRECALC = 26350943;
 	private static final int SIN_PRECALC = 3294096;
 	/* Equivalent to: sin((2 * PI) / (QUARTER_CIRCLE * 4)) * 2^TRIG_SHIFT */
@@ -208,7 +210,7 @@ public final class Fixed {
 	 * @return Fixed random number
 	 */
 	public static int rand() {
-		return rng.nextInt() >> (32 - FIXED_POINT);
+		return rng.nextInt() >>> (32 - FIXED_POINT);
 	}
 
 	public static int rand(int n) {
