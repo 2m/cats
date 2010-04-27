@@ -25,12 +25,14 @@ public class PrintArea extends JPanel{ // implements ActionListener
 	private int entityPosY;
 	private int linelength;
 	
+	private boolean _showgrid = true;
+	
 	final static float dash1[] = {5.0f};
 	final static BasicStroke dashed = new BasicStroke(1.0f,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER,10.0f,dash1,0.0f);
 	final static BasicStroke dashedBackground = new BasicStroke(1.0f,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER,10.0f,dash1,0.0f);
 	final static BasicStroke solid = new BasicStroke();		
 	
-	final static int wBetDashedLines = 90;
+	final static int wBetDashedLines = 60;
   
   public PrintArea(Area newArea, int areaHeight, int areaWidth) {
 	_newArea = newArea;
@@ -51,24 +53,27 @@ public class PrintArea extends JPanel{ // implements ActionListener
 	
 	super.paintComponent(g);
 
-    Graphics2D g2d = (Graphics2D)g; // Skapa den grafiska miljön i ett objekt för uppritning olika former
+    Graphics2D g2d = (Graphics2D)g; 
 
 	_cats = _newArea.getCats();
 	_lighthouse = _newArea.getLighthouse();
 	_mouse = _newArea.getMouse();
 	
     //Draw lines
-	g2d.setColor(Color.gray);
-	g2d.drawLine(_areaWidth/2, 0, _areaWidth/2, _areaHeight); //Vertical center
-	g2d.drawLine(0, _areaHeight/2, _areaWidth, _areaHeight/2); //Horizontal center
-	g2d.setStroke(dashedBackground);
-	for(int i = 0; i*wBetDashedLines < _areaWidth/2; i++) {
-		g2d.drawLine(_areaWidth/2-i*wBetDashedLines, 0, _areaWidth/2-i*wBetDashedLines, _areaHeight);
-		g2d.drawLine(_areaWidth/2+i*wBetDashedLines, 0, _areaWidth/2+i*wBetDashedLines, _areaHeight);
-	}
-	for(int i = 0; i*wBetDashedLines < _areaHeight/2; i++) {
-		g2d.drawLine(0, _areaHeight/2+i*wBetDashedLines, _areaWidth, _areaHeight/2+i*wBetDashedLines);
-		g2d.drawLine(0, _areaHeight/2-i*wBetDashedLines, _areaWidth, _areaHeight/2-i*wBetDashedLines);
+	if(_showgrid){
+		//g2d.setColor(Color.gray);
+		g2d.setColor(new Color(0f,0f,0f,0.2f));
+		g2d.drawLine(_areaWidth/2, 0, _areaWidth/2, _areaHeight); //Vertical center
+		g2d.drawLine(0, _areaHeight/2, _areaWidth, _areaHeight/2); //Horizontal center
+		g2d.setStroke(dashedBackground);
+		for(int i = 0; i*wBetDashedLines < _areaWidth/2; i++) {
+			g2d.drawLine(_areaWidth/2-i*wBetDashedLines, 0, _areaWidth/2-i*wBetDashedLines, _areaHeight);
+			g2d.drawLine(_areaWidth/2+i*wBetDashedLines, 0, _areaWidth/2+i*wBetDashedLines, _areaHeight);
+		}
+		for(int i = 0; i*wBetDashedLines < _areaHeight/2; i++) {
+			g2d.drawLine(0, _areaHeight/2+i*wBetDashedLines, _areaWidth, _areaHeight/2+i*wBetDashedLines);
+			g2d.drawLine(0, _areaHeight/2-i*wBetDashedLines, _areaWidth, _areaHeight/2-i*wBetDashedLines);
+		}
 	}
 	g2d.setStroke(solid);	
 
@@ -116,5 +121,9 @@ public class PrintArea extends JPanel{ // implements ActionListener
 			g2d.fillOval( (int) centFix_X+_lighthouse[i].getX()-15, (int) centFix_Y-_lighthouse[i].getY()-15, 30, 30);
 		}
     }
+  }
+  
+  public void showGrid(boolean showgrid){
+	  _showgrid = showgrid;
   }
 };
