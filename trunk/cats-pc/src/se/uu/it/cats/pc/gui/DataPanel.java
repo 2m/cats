@@ -32,10 +32,11 @@ public class DataPanel extends JPanel{ // implements ActionListener
     };
     
 	// Bakgrundsfärgen
-    setBackground(Color.gray);
-	setLayout(new GridLayout(10,2,7,0)); //rows, cols, hgap, vgap
+    setBackground(Color.white);
+	setLayout(new GridLayout(12,1,0,0)); //rows, cols, hgap, vgap
 	for(int i=0;i < world.getCats().length;i++) {
-		add(new JLabel(world.getCats()[i].getCatName()));
+		add(new JLabel("ID: "+world.getCats()[i].getCatName()));
+		add(new JLabel("Position: ("+world.getCats()[i].getX()+","+world.getCats()[i].getY()+")"));
 		JButton button = new JButton(world.getCats()[i].getCatName());
 		button.addActionListener(buttonListener);
 		add(button);
