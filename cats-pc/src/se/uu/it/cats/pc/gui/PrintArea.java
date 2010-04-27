@@ -86,13 +86,13 @@ public class PrintArea extends JPanel{ // implements ActionListener
 			g2d.setColor(Color.black);
 			//Draw cat-direction
 			linelength = 20;
-			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(_cats[i].getAngle_c())*linelength), (int) (entityPosY + Math.sin(_cats[i].getAngle_c())*linelength));
+			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_c()))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_c()))*linelength));
 			//Draw camera.direction
 			linelength = 90;
 			g2d.setColor(Color.blue);
 			
-			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(_cats[i].getAngle_cam()+43f/360*Math.PI)*linelength), (int) (entityPosY + Math.sin(_cats[i].getAngle_cam()+43f/360*Math.PI)*linelength));
-			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(_cats[i].getAngle_cam()-43f/360*Math.PI)*linelength), (int) (entityPosY + Math.sin(_cats[i].getAngle_cam()-43f/360*Math.PI)*linelength));
+			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength));
+			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength));
 
 			g2d.setColor(Color.black); // Black cats
 			
