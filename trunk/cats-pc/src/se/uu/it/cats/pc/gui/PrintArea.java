@@ -121,6 +121,10 @@ public class PrintArea extends JPanel{ // implements ActionListener
 			g2d.fillOval( (int) centFix_X+_lighthouse[i].getX()-15, (int) centFix_Y-_lighthouse[i].getY()-15, 30, 30);
 		}
     }
+	
+	//Print mouse
+	g2d.setColor(Color.red);
+	g2d.fillOval( (int) centFix_X+_mouse.getX()-8, (int) centFix_Y-_mouse.getY()-8, 16, 16);
   }
   
   public void showGrid(boolean showgrid){

@@ -1,23 +1,20 @@
 package se.uu.it.cats.pc.gui;
 
 class Mouse {
-	private int x; // Absolute position horizontal axis
-	private int y; // Absolute position vertical axis
+	private int _x; // Absolute position horizontal axis
+	private int _y; // Absolute position vertical axis
 	
 	public Mouse() {
 	}
-	
+	public void newPosition(int x, int y) {
+		_x = x;
+		_y = y;
+	}
 	public int getX() {
-		return x;
+		return _x;
 	}
 	
 	public int getY() {
-		return y;
+		return _y;
 	}
-	
-	public void newPosition(int newX, int newY) {
-		x=newX;
-		y=newY;
-	}
-
 }

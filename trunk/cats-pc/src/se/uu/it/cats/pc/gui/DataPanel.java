@@ -15,6 +15,7 @@ public class DataPanel extends JPanel{ // implements ActionListener
   
   private Area world;
   private int _areaHeight;
+  private JLabel idLabel;
   
   public DataPanel(Area newArea, int areaHeight) {
 	world = newArea;
@@ -35,7 +36,9 @@ public class DataPanel extends JPanel{ // implements ActionListener
     setBackground(Color.white);
 	setLayout(new GridLayout(12,1,0,0)); //rows, cols, hgap, vgap
 	for(int i=0;i < world.getCats().length;i++) {
-		add(new JLabel("ID: "+world.getCats()[i].getCatName()));
+		idLabel = new JLabel("ID: "+world.getCats()[i].getCatName());
+		idLabel.setFont(new Font("Monotype Corsiva",1,17));
+		add(idLabel);
 		add(new JLabel("Position: ("+world.getCats()[i].getX()+","+world.getCats()[i].getY()+")"));
 		JButton button = new JButton(world.getCats()[i].getCatName());
 		button.addActionListener(buttonListener);
