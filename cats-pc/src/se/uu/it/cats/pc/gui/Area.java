@@ -39,6 +39,7 @@ public class Area { // implements ActionListener
 	
     
 	_mouse = new Mouse();
+	_mouse.newPosition(50, 243);
 	
 	/* Create four lighthouses */
 	_lighthouse[0] = new Lighthouse("Beacon 1");
