@@ -19,6 +19,7 @@ import se.uu.it.cats.pc.Logger;
 
 import se.uu.it.cats.pc.gui.Area;
 import se.uu.it.cats.pc.gui.DataPanel;
+import se.uu.it.cats.pc.gui.PanelBluetooth;
 import se.uu.it.cats.pc.gui.PrintArea;
 
 public class Main
@@ -26,16 +27,18 @@ public class Main
 	private Area  newArea;
 	private DataPanel dataPanel;
 	private PrintArea printNewArea;
-	private int arenaWidth = 300;
-	private int arenaHeight = 300;
-	private int areaWidth = 500;
-	private int areaHeight = 500;
+	private PanelBluetooth panelBluetooth;
+	private int arenaWidth = 400;
+	private int arenaHeight = 400;
+	private int windowWidth = 600;
+	private int windowHeight = 300;
 	
 	public Main() {
 		
 		newArea = Area.getInstance();
-		printNewArea = new PrintArea(newArea, areaWidth, areaHeight);
-		dataPanel = new DataPanel(newArea);
+		printNewArea = new PrintArea(newArea, arenaWidth, arenaHeight);
+		dataPanel = new DataPanel(newArea, arenaHeight);
+		panelBluetooth = new PanelBluetooth(windowWidth);
 	  
 		JFrame frame = new JFrame("Arena");
 		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
@@ -62,6 +65,7 @@ public class Main
 		JPanel panelBackground = new JPanel();
 		JPanel panelData = new JPanel();
 		JPanel panelArena = new JPanel();
+		JPanel panelRawdata = new JPanel();
 		
 		//frame.getContentPane().add(newArea);
 		
@@ -78,13 +82,16 @@ public class Main
 		
 		panelArena.add(printNewArea);
 		panelData.add(dataPanel);
+		panelRawdata.add(panelBluetooth);
 		
 		panelBackground.add(BorderLayout.WEST, panelData);
 		panelBackground.add(BorderLayout.EAST, panelArena);
+		panelBackground.add(BorderLayout.SOUTH, panelRawdata);
+		
 		
 		frame.getContentPane().add(panelBackground);
 		//frame.getContentPane().add(panelArena);
-		frame.pack();
+		//frame.pack();
 		frame.show();
 
 	    /*newArea = new Area(windowWidth, windowHeight);
