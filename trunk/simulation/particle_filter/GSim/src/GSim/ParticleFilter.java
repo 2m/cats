@@ -61,7 +61,10 @@ public class ParticleFilter {
 		int b = C[0][1];
 		// Check for diagonal matrix
 		if (b == 0) {
-			V = C;
+			V[0][0] = Fixed.sqrt(V[0][0]);
+			V[0][1] = 0;
+			V[1][0] = 0;
+			V[1][1] = Fixed.sqrt(V[1][1]);
 		} else {
 			int c = C[1][0];
 			int d = C[1][1];
@@ -71,27 +74,32 @@ public class ParticleFilter {
 			int phalfsquare = Fixed.mul(phalf, phalf);
 			int sqrt = Fixed.sqrt(phalfsquare - q);
 			int lambda1 = phalf + sqrt;
-			// int lambda2 = phalf - sqrt;
+			int lambda2 = phalf - sqrt;
 			// D = [lambda1 0; 0 lambda2];
 			int v12 = Fixed.div(-(a - lambda1), b);
 			int norm = Fixed.sqrt(Fixed.mul(v12, v12) + Fixed.ONE);
 			int norminv = 0;
+			// Calculate standard deviations
+			int lambda1sqrt = Fixed.sqrt(lambda1);
+			int lambda2sqrt = Fixed.sqrt(lambda2);
 			if (norm == 0) {
+				// TODO: Div by zero
 				System.out.println("Division by zero");
 				norminv = 1 << 30;
 			} else {
 				norminv = Fixed.div(Fixed.ONE, norm);
 			}
-			v12 = Fixed.mul(v12, norminv);
+			int v12_norm = Fixed.mul(v12, norminv);
 			// v1 = [1; -(a-lambda1)/b];
 			// v1 = v1./norm(v1);
 			// Eigen vectors are perpendicular => rot_p == [0 -1; 1 0]
 			// v2 = [-v1(2); v1(1)];
 			// V = [v1 v2];
-			V[0][0] = norminv;
-			V[0][1] = v12;
-			V[1][0] = -v12;
-			V[1][1] = norminv;
+			// TODO: Scale transform matrix, check dimensions
+			V[0][0] = Fixed.mul(norminv, lambda1sqrt); // a
+			V[0][1] = Fixed.mul(v12_norm, lambda1sqrt); // b
+			V[1][0] = Fixed.mul(-v12_norm, lambda2sqrt); // c
+			V[1][1] = Fixed.mul(norminv, lambda2sqrt); // d
 		}
 		return V;
 	}

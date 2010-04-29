@@ -53,14 +53,13 @@ public class AbsolutePositioningParticleFilter extends
 		for (int i = 0; i < N; i++) {
 			if (first == null) {
 				first = new PositioningParticle(Fixed.floatToFixed(1.0), Fixed
-						.floatToFixed(1.0), 0, Fixed
-						.floatToFixed((float) (1 / N)), null, null);
+						.floatToFixed(1.0), 0, 0, null, null);
 				last = first;
 			} else {
 				Particle ptr = first;
 				first = new PositioningParticle(Fixed.floatToFixed(1.0), Fixed
 						.floatToFixed(1.0), Fixed.floatToFixed(i * 200), Fixed
-						.floatToFixed(1 / (float) N), ptr, null);
+						.floatToFixed(0), ptr, null);
 				ptr.previous = first;
 			}
 		}
@@ -206,7 +205,9 @@ public class AbsolutePositioningParticleFilter extends
 		} else {
 			// Only re-sample the worst particles
 			cut = Ncut;
-			quickSort(first, last, 1, N, Ncut);
+			System.out.print("Quicksort of particles... ");
+			quickSort(first, last, 1, N, cut);
+			System.out.println("done");
 			System.out.println(this.toString());
 		}
 
@@ -215,13 +216,14 @@ public class AbsolutePositioningParticleFilter extends
 			ptr.w = norm;
 			ptr = ptr.next;
 		}
+
 		PositioningParticle ptr2;
-		for (int i = cut; i < N; i++) {
+		while (ptr != null) {
 			ptr2 = (PositioningParticle) ptr;
 			int a = nextRandn();
 			int b = nextRandn();
 			int c = nextRandn();
-			// System.out.println(a);
+			System.out.println(Fixed.fixedToFloat(a));
 			ptr2.x = mean_x + Fixed.mul(V[0][0], a) + Fixed.mul(V[0][1], b);
 			ptr2.y = mean_y + Fixed.mul(V[1][0], a) + Fixed.mul(V[1][1], b);
 			ptr2.angle = mean_angle + Fixed.mul(varAngle, c);
@@ -311,25 +313,16 @@ public class AbsolutePositioningParticleFilter extends
 		}
 		// Check for max variance
 
-		if (varXX < Fixed.floatToFixed(0.0001)) {
-			varXX = Fixed.floatToFixed(0.0001);
-		}
-		if (varYY < Fixed.floatToFixed(0.0001)) {
-			varYY = Fixed.floatToFixed(0.0001);
-		}
-		if (varAngle < Fixed.floatToFixed(0.0001)) {
-			varAngle = Fixed.floatToFixed(0.0001);
-		}
-		if (varXX > Fixed.floatToFixed(2)) {
-			varXX = Fixed.floatToFixed(2);
-		}
-		if (varYY > Fixed.floatToFixed(2)) {
-			varYY = Fixed.floatToFixed(2);
-		}
-		if (varAngle > Fixed.floatToFixed(90 * (Fixed.DEGREES / 360))) {
-			varAngle = Fixed.floatToFixed(90 * (Fixed.DEGREES / 360));
-		}
-
+		/*
+		 * if (varXX < Fixed.floatToFixed(0.0001)) { varXX =
+		 * Fixed.floatToFixed(0.0001); } if (varYY < Fixed.floatToFixed(0.0001))
+		 * { varYY = Fixed.floatToFixed(0.0001); } if (varAngle <
+		 * Fixed.floatToFixed(0.0001)) { varAngle = Fixed.floatToFixed(0.0001);
+		 * } if (varXX > Fixed.floatToFixed(2)) { varXX = Fixed.floatToFixed(2);
+		 * } if (varYY > Fixed.floatToFixed(2)) { varYY = Fixed.floatToFixed(2);
+		 * } if (varAngle > Fixed.floatToFixed(90 * (Fixed.DEGREES / 360))) {
+		 * varAngle = Fixed.floatToFixed(90 * (Fixed.DEGREES / 360)); }
+		 */
 	}
 
 	public int getTime() {
@@ -482,7 +475,6 @@ public class AbsolutePositioningParticleFilter extends
 	}
 
 	public String toString() {
-
 		Particle ptr = first;
 		PositioningParticle ptr2;
 		String ret = "[";
@@ -497,92 +489,153 @@ public class AbsolutePositioningParticleFilter extends
 		return ret + "]";
 	}
 
-	/** Move particle node a to the place between b and c. */
-	public void moveParticle(Particle a, Particle b, Particle c) {
-		// Remove a from list
-		Particle ptr_a_previous = a.previous;
-		Particle ptr_a_next = a.next;
-		// TODO: Check for first and last pointer
-		ptr_a_previous.next = ptr_a_next;
-		ptr_a_next.previous = ptr_a_previous;
-		// Insert a into list
-		b.next = a;
-		a.previous = b;
-		c.previous = a;
-		a.next = c;
-	}
-
 	public void quickSort(Particle Ptr1, Particle Ptr2, int N1, int N2, int Ncut) {
+		// System.out.println("QuickSort: start");
+		// Sort from highest to lowest, Ptr1 to Ptr2
+		// TODO: Use cut off in sorter
+		// if ((N1 < Ncut) && (Ncut < N2)) {
 		if (Ptr1 == Ptr2) {
 			// End case
-		} else if (Ptr1.next == Ptr1) {
+		} else if (Ptr1.next == Ptr2) {
 			// End case
 			if (Ptr1.w < Ptr2.w) {
-				swapParticle(Ptr1, Ptr2);
+				swapParticle2(Ptr1, Ptr2);
 			}
 		} else {
-			// if ((N1 < Ncut) && (Ncut < N2)) {
-			// TODO: Use cut off in sorter
-			Particle pivot = Ptr2;
-			Particle ptr2 = Ptr2.previous;
+			// Extract pivot value
 			Particle ptr1 = Ptr1;
-			int n2 = N2 - 1;
+			Particle ptr2 = Ptr2;
+			Particle pivot = Ptr2.previous;
+			Ptr2.previous = pivot.previous;
+			pivot.previous.next = Ptr2;
+			pivot.next = null;
+			pivot.previous = null;
+
+			Particle tmpptr = null;
+			int n2 = N2;
 			int n1 = N1;
-			while (ptr1.next != ptr2) {
-				if ((ptr1.w > pivot.w) && (ptr2.w < pivot.w)) {
-					swapParticle(ptr1, ptr2);
+			while (ptr1 != ptr2) {
+				// System.out.println("QuickSort: loop " + Ncut);
+				if (Ncut >= 20) {
+					Ncut = 0;
 				}
-				if (ptr1.w < pivot.w) {
+				if ((ptr1.w < pivot.w) && (ptr2.w > pivot.w)) {
+					swapParticle2(ptr1, ptr2);
+					/*
+					 * swapParticle(ptr1, ptr2); tmpptr = ptr1; ptr1 = ptr2;
+					 * ptr2 = tmpptr;
+					 */
+				}
+				if (ptr1.w >= pivot.w) {
 					ptr1 = ptr1.next;
 					n1++;
 				}
-				if (ptr2.w > pivot.w) {
+				if ((ptr2.w < pivot.w) && (ptr1 != ptr2)) {
 					ptr2 = ptr2.previous;
 					n2--;
 				}
 			}
-			if ((ptr1.w > pivot.w) && (ptr2.w < pivot.w)) {
-				swapParticle(ptr1, ptr2);
+			// Where to insert the pivot?
+			if (ptr1.w >= pivot.w) {
+				// Insert pivot after ptr1
+				ptr2 = ptr1.next;
+				n2++;
+			} else {
+				// Insert pivot before ptr1
+				ptr2 = ptr1;
+				ptr1 = ptr1.previous;
+				n1--;
 			}
-			moveParticle(pivot, ptr1, ptr2);
-			quickSort(Ptr1, ptr1, N1, n1, Ncut);
-			quickSort(ptr2, Ptr2, n2, N2, Ncut);
+			// Check if pointers are on the ends of the list
+			if (ptr1 == null) {
+				// Insert first
+				pivot.next = ptr2;
+				pivot.previous = null;
+				first = pivot;
+				ptr2.previous = pivot;
+				quickSort(first.next, Ptr2, 2, N2, Ncut + 1);
+			} else if (ptr2 == null) {
+				// Insert last
+				pivot.next = null;
+				pivot.previous = ptr1;
+				ptr1.next = pivot;
+				last = pivot;
+				quickSort(Ptr1, last.previous, N1, N - 1, Ncut + 1);
+			} else {
+				// Insert inside list but might be at Prt1 or Ptr2
+				pivot.previous = ptr1;
+				pivot.next = ptr2;
+				ptr1.next = pivot;
+				ptr2.previous = pivot;
+				if (Ptr1 != pivot) {
+					quickSort(Ptr1, pivot.previous, N1, n1, Ncut + 1);
+				}
+				if (Ptr2 != pivot) {
+					quickSort(pivot.next, Ptr2, n2, N2, Ncut + 1);
+				}
+			}
+
 		}
+		// }
+	}
+
+	public void swapParticle2(Particle a, Particle b) {
+		// Hack, but this might be faster
+		int t = a.x;
+		a.x = b.x;
+		b.x = t;
+		t = a.y;
+		a.y = b.y;
+		b.y = t;
+		t = a.w;
+		a.w = b.w;
+		b.w = t;
+		t = ((PositioningParticle) a).angle;
+		((PositioningParticle) a).angle = ((PositioningParticle) b).angle;
+		((PositioningParticle) b).angle = t;
 	}
 
 	/** Swap two particles in the data structure */
 	public void swapParticle(Particle a, Particle b) {
-		Particle ptr_a1 = a.previous;
-		Particle ptr_a2 = a.next;
-		Particle ptr_b1 = b.previous;
-		Particle ptr_b2 = b.next;
-		a.previous = ptr_b1;
-		a.next = ptr_b2;
-		b.previous = ptr_a1;
-		b.next = ptr_a2;
-		if (ptr_a1 == null) {
+		Particle ptr_a_prev = a.previous;
+		Particle ptr_a_next = a.next;
+		Particle ptr_b_prev = b.previous;
+		Particle ptr_b_next = b.next;
+
+		if (a == first) {
 			// a is first element
 			first = b;
+			b.previous = null;
 		} else {
-			ptr_a1.next = b;
+			ptr_a_prev.next = b;
 		}
-		if (ptr_a2 == null) {
+		if (a == last) {
 			// a is last element
 			last = b;
+			b.next = null;
 		} else {
-			ptr_a2.previous = b;
+			ptr_a_next.previous = b;
 		}
-		if (ptr_b1 == null) {
+
+		if (b == first) {
 			// b is first element
 			first = a;
+			a.previous = null;
 		} else {
-			ptr_b1.next = a;
+			ptr_b_prev.next = a;
 		}
-		if (ptr_b2 == null) {
+		if (b == last) {
 			// b is last element
 			last = a;
+			a.next = null;
 		} else {
-			ptr_b2.previous = a;
+			ptr_b_next.previous = a;
 		}
+
+		a.previous = ptr_b_prev;
+		a.next = ptr_b_next;
+		b.previous = ptr_a_prev;
+		b.next = ptr_a_next;
 	}
+
 }
