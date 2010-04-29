@@ -45,8 +45,29 @@ public class Main
 		listenerThread.start();
 		
 		//Run SimpleFilter:
-		Thread filterThread = new Thread(new SimpleFilter());
-		filterThread.start();
+		//Thread filterThread = new Thread(new SimpleFilter());
+		//filterThread.start();
+		
+		//Run MovementPilot:
+		float[] c_state = {0, 0, (float) (Math.PI/2)};
+		MovementPilot mPilot = new MovementPilot(c_state);
+		
+		PilotPoll pilotPoll = new PilotPoll(mPilot.pilot, c_state);
+		Thread pilotPollThread = new Thread(pilotPoll);
+		pilotPollThread.start();
+		//try{Thread.sleep(1000);}catch(Exception ex){}
+		
+		//mPilot.travel(0.3f, 0);
+		//mPilot.travel(0, 3.0f); //straight going test
+		//System.out.println(pilotPoll.x);
+		//System.out.println(pilotPoll.y);
+		//System.out.println();
+		for (int i=0; i<2; i++){ //turn in square
+			mPilot.travel(0.3f, 0);
+			System.out.println("COMMAND FINISHED!");
+		}
+		//for (int i=0; i<10; i++) //motor ops. speed test
+		//	mPilot.travel(0, 0.005f);
 		
 		Button.LEFT.addButtonListener(new ButtonListener() {
 			public void buttonPressed(Button b) {}

@@ -65,7 +65,7 @@ public class SimpleFilter implements Runnable {
 		else if (Identity.getName().equals("cat2"))
 				offset = -19; //for camera on cat2
 		else if (Identity.getName().equals("cat3"))
-			offset = -8; //for camera on cat2
+			offset = -8; //for camera on cat3
 		
 		float radPerPix = -1*(float) ((float) 43*Math.PI/180.0 / 176);
 	
