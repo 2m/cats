@@ -32,6 +32,7 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 	private int linelength;
 	
 	private boolean _showgrid = true;
+	private boolean _showSlider = false;
 	
 	final static float dash1[] = {5.0f};
 	final static BasicStroke dashed = new BasicStroke(1.0f,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER,10.0f,dash1,0.0f);
@@ -39,6 +40,7 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 	final static BasicStroke solid = new BasicStroke();		
 	
 	final static int wBetDashedLines = 60;
+	private int wBetDashedLines_zk;
 	
 	// Slidern
 	private JSlider scaleSlider;
@@ -88,6 +90,8 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 
     add(scaleSlider);
 
+    // Initialt osynlig
+    scaleSlider.setVisible(false);
   }
 
   // Ritar ut allt.
@@ -101,6 +105,7 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 	_lighthouse = _newArea.getLighthouse();
 	_mouse = _newArea.getMouse();
 	
+	wBetDashedLines_zk = wBetDashedLines*zk/50; //Adjusting grid for zoom
     //Draw lines
 	if(_showgrid){
 		//g2d.setColor(Color.gray);
@@ -108,13 +113,13 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 		g2d.drawLine(_areaWidth/2, 0, _areaWidth/2, _areaHeight); //Vertical center
 		g2d.drawLine(0, _areaHeight/2, _areaWidth, _areaHeight/2); //Horizontal center
 		g2d.setStroke(dashedBackground);
-		for(int i = 0; i*wBetDashedLines < _areaWidth/2; i++) {
-			g2d.drawLine(_areaWidth/2-i*wBetDashedLines, 0, _areaWidth/2-i*wBetDashedLines, _areaHeight);
-			g2d.drawLine(_areaWidth/2+i*wBetDashedLines, 0, _areaWidth/2+i*wBetDashedLines, _areaHeight);
+		for(int i = 0; i*wBetDashedLines_zk < _areaWidth/2; i++) {
+			g2d.drawLine(_areaWidth/2-i*wBetDashedLines_zk, 0, _areaWidth/2-i*wBetDashedLines_zk, _areaHeight);
+			g2d.drawLine(_areaWidth/2+i*wBetDashedLines_zk, 0, _areaWidth/2+i*wBetDashedLines_zk, _areaHeight);
 		}
-		for(int i = 0; i*wBetDashedLines < _areaHeight/2; i++) {
-			g2d.drawLine(0, _areaHeight/2+i*wBetDashedLines, _areaWidth, _areaHeight/2+i*wBetDashedLines);
-			g2d.drawLine(0, _areaHeight/2-i*wBetDashedLines, _areaWidth, _areaHeight/2-i*wBetDashedLines);
+		for(int i = 0; i*wBetDashedLines_zk < _areaHeight/2; i++) {
+			g2d.drawLine(0, _areaHeight/2+i*wBetDashedLines_zk, _areaWidth, _areaHeight/2+i*wBetDashedLines_zk);
+			g2d.drawLine(0, _areaHeight/2-i*wBetDashedLines_zk, _areaWidth, _areaHeight/2-i*wBetDashedLines_zk);
 		}
 	}
 	g2d.setStroke(solid);	
@@ -166,11 +171,17 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 	
 	//Print mouse
 	g2d.setColor(Color.red);
-	g2d.fillOval( (int) centFix_X+_mouse.getX()-8, (int) centFix_Y-_mouse.getY()-8, 16, 16);
+	g2d.fillOval( (int) centFix_X+_mouse.getX()*zk/50-8, (int) centFix_Y-_mouse.getY()*zk/50-8, 16, 16);
   }
   
   public void showGrid(boolean showgrid){
 	  _showgrid = showgrid;
+	  
+  }
+  
+  public void showSlider(boolean showSlider){
+	  _showSlider = showSlider;
+	  scaleSlider.setVisible(_showSlider);
   }
   
   public void stateChanged(ChangeEvent ce) {
