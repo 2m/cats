@@ -19,7 +19,8 @@ public final class Fixed {
 	public static final int CIRCLE_MASK = QUARTER_CIRCLE * 4 - 1;
 	/** Pseudo degrees on a circle */
 	public static final int DEGREES = 2048;
-	public static final int RADIANS_TO_DEGREES = (int) ((QUARTER_CIRCLE * 4) * ONE/(2*Math.PI));
+	public static final int RADIANS_TO_DEGREES = (int) ((QUARTER_CIRCLE * 4)
+			* ONE / (2 * Math.PI));
 	public static final int ANGLE_MASK = ONE * (QUARTER_CIRCLE * 4) - 1;
 	public static final int DOUBLE_CIRCLE_MASK = QUARTER_CIRCLE * 8 - 1;
 	// private static final int SIN_PRECALC = 26350943;
@@ -150,6 +151,13 @@ public final class Fixed {
 		return x2 + y2 - (((x2 > y2) ? y2 : x2) >> 1);
 	}
 
+	/**
+	 * Fixed point square root
+	 * 
+	 * @param n
+	 *            Fixed point number to find square root of.
+	 * @return The square root as fixed point number
+	 */
 	public static int sqrt(int n) {
 		if (n <= 0) {
 			return 0;

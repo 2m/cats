@@ -55,7 +55,7 @@ public class AbsolutePositioningParticleFilter extends
 		for (int i = 0; i < N; i++) {
 			data.insertSorted(new PositioningParticle(Fixed.floatToFixed(1.0),
 					Fixed.floatToFixed(1.0), Fixed.floatToFixed(i * 200), Fixed
-							.floatToFixed(i)));
+							.floatToFixed(i % 10)));
 		}
 		// Initialise random look up table data
 		randn_lut = new int[RANDN_MASK + 1];
@@ -126,16 +126,21 @@ public class AbsolutePositioningParticleFilter extends
 		mean_angle &= Fixed.ANGLE_MASK;
 	}
 
-	private void compareParticles(int sensorangle, int type) {
+	private void compareParticles(float sensorangle, int type) {
 		// Compare particles to sensors inputs and sum weights
-		Link link = data.first;
 		int sum_w_tmp = 0;
-		while (link != null) {
-			PositioningParticle part = (PositioningParticle) link.data;
-			int theta = Fixed.floor(-part.angle - sensorangle);
+		LinkedList newlist = new LinkedList();
+		PositioningParticle part = (PositioningParticle) data.popFirst();
+		while (part != null) {
+			// TODO: Check strange convergence, if theta is changed the particle
+			// still converge but in other places.
+			int theta = Fixed.round(-part.angle
+					- Fixed.mul(Fixed.floatToFixed(sensorangle),
+							Fixed.RADIANS_TO_DEGREES));
 			int cos = Fixed.cos(theta);
 			int sin = Fixed.sin(theta);
 			int z = 0;
+			int a;
 			// Loop through landmarks
 			for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
 				if (type == landmarks[i][2]) {
@@ -146,16 +151,19 @@ public class AbsolutePositioningParticleFilter extends
 						// Zero distance to landmark
 						System.out
 								.println("Disvision by zero in compareParticles()");
-						z = 0;
+						a = 0;
 					} else {
 						int v1 = Fixed.mul(toMark_x, cos)
-								- Fixed.mul(toMark_x, sin);
-						z = Fixed.div(v1, norm);
+								- Fixed.mul(toMark_y, sin);
+						a = Fixed.div(v1, norm);
 					}
-					if (z > ParticleFilter.CUT[4]) {
-						// Break loop if comparison is a hit
-						break;
+					if (a > z) {
+						z = a;
 					}
+					/*
+					 * if (z > ParticleFilter.CUT[4]) { // Break loop if
+					 * comparison is a hit break; }
+					 */
 				}
 			}
 			// Penalty function
@@ -163,10 +171,18 @@ public class AbsolutePositioningParticleFilter extends
 			part.w = w;
 			// Sum weights
 			sum_w_tmp += w;
-			link = link.next;
+			// Insert particle into new list
+			newlist.insertSorted(part);
+			part = (PositioningParticle) data.popFirst();
 		}
+		// TODO: free(data)
+		data = newlist;
+		// System.out.println(toString());
 		sum_w = sum_w_tmp;
 		zerosum = (sum_w_tmp == 0);
+		if (data.length() != N) {
+			System.out.println("Particles lost! (count:" + data.length() + ")");
+		}
 	}
 
 	private int nextRandn() {
@@ -194,11 +210,12 @@ public class AbsolutePositioningParticleFilter extends
 		} else {
 			// Only re-sample the worst particles
 			cut = Ncut;
+			// TODO: Stop full re-sampling
+			cut = 0;
 		}
-		System.out.println(this.toString());
 
 		Link link = data.first;
-		for (int i = 0; i < cut; i++) {
+		for (int i = 0; (i < cut) && (link != null); i++) {
 			link.data.w = norm;
 			link = link.next;
 		}
@@ -207,10 +224,9 @@ public class AbsolutePositioningParticleFilter extends
 			PositioningParticle part = (PositioningParticle) link.data;
 			int a = nextRandn();
 			int b = nextRandn();
-			int c = nextRandn();
-			// System.out.println(Fixed.fixedToFloat(a));
 			part.x = mean_x + Fixed.mul(V[0][0], a) + Fixed.mul(V[0][1], b);
 			part.y = mean_y + Fixed.mul(V[1][0], a) + Fixed.mul(V[1][1], b);
+			int c = nextRandn();
 			part.angle = mean_angle + Fixed.mul(varAngle, c);
 			part.w = norm;
 			link = link.next;
@@ -236,13 +252,15 @@ public class AbsolutePositioningParticleFilter extends
 			}
 			norm = Nnorm;
 		} else {
-			System.out.println("(weighted)");
+			System.out.println("(weighted) sum_w: " + sum_w);
 			// Weighted mean
 			Link link = data.first;
 			while (link != null) {
+				// TODO: Does this actually calculate the weighted mean
 				PositioningParticle part = (PositioningParticle) link.data;
 				tmean_x += Fixed.mul(part.x, part.w);
 				tmean_y += Fixed.mul(part.y, part.w);
+				// TODO: Check angle mean
 				tmean_a += Fixed.mul(part.angle, part.w);
 				link = link.next;
 			}
@@ -253,7 +271,12 @@ public class AbsolutePositioningParticleFilter extends
 		mean_angle = Fixed.mul(tmean_a, norm);
 
 		// Calculate covariance
-		if (!zerosum) {
+		if (zerosum) {
+			varXX = Fixed.HALF;
+			varXY = 0;
+			varYY = Fixed.HALF;
+			varAngle = Fixed.ONE * Fixed.QUARTER_CIRCLE;
+		} else {
 			int tvarXX = 0, tvarXY = 0, tvarYY = 0, tvarAngle = 0;
 			Link link = data.first;
 			while (link != null) {
@@ -265,6 +288,7 @@ public class AbsolutePositioningParticleFilter extends
 				tvarXX += Fixed.mul(xw, x);
 				tvarXY += Fixed.mul(xw, y);
 				tvarYY += Fixed.mul(yw, y);
+				// TODO: Check circle errors in mean
 				tvarAngle += Fixed.mul(part.angle - mean_angle, part.w);
 				link = link.next;
 			}
@@ -272,12 +296,8 @@ public class AbsolutePositioningParticleFilter extends
 			varXX = Fixed.mul(tvarXX, norm);
 			varXY = Fixed.mul(tvarXY, norm);
 			varYY = Fixed.mul(tvarYY, norm);
+			// TODO: Returns zero, why?
 			varAngle = tvarAngle;
-		} else {
-			varXX = Fixed.ONE;
-			varXY = 0;
-			varYY = Fixed.ONE;
-			varAngle = Fixed.ONE;
 		}
 		// Check means and covariances
 		if (mean_x < Fixed.floatToFixed(Arena.min_x)) {
@@ -365,7 +385,7 @@ public class AbsolutePositioningParticleFilter extends
 			link = link.next;
 		}
 		// Plot mean
-		g2.setColor(Color.blue);
+		g2.setColor(Color.red);
 		int ix = Actor.e2gX(getX());
 		int iy = Actor.e2gY(getY());
 		double iangle = -getAngle() * (2 * Math.PI / Fixed.DEGREES);
@@ -434,10 +454,10 @@ public class AbsolutePositioningParticleFilter extends
 
 			// Compare with landmarks
 			if ((sdata != null) && ((mdata == null) || (stime < mtime))) {
-				compareParticles(Fixed.mul(Fixed.floatToFixed(sdata.angle),
-						Fixed.RADIANS_TO_DEGREES), sdata.type);
+				compareParticles(sdata.angle, sdata.type);
 				evaluationsSinceResample++;
-				sdataUsed = true; // Set flag for popping
+				// Set flag for popping
+				sdataUsed = true;
 			}
 			// Re-sample every n:th evaluation
 			if (evaluationsSinceResample >= 3) {

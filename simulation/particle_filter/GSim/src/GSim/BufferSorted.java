@@ -69,6 +69,7 @@ public class BufferSorted extends Buffer {
 	 * @return BufferData oldest BufferData or null
 	 */
 	public synchronized BufferData pop() {
+		// TODO: Needs to check pointer last
 		BufferData ret = null;
 		if (first != null) {
 			BufferNode next = first.next;

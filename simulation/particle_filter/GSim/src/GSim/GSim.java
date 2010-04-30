@@ -37,13 +37,13 @@ public class GSim extends JFrame implements MouseListener {
 	public LandmarkList llist = new LandmarkList();
 	public RealTimeClock clock = new RealTimeClock();
 	public BillBoard billboard = new BillBoard(3);
-	
+
 	public GSim() {
 		addMouseListener(this);
-		
+
 		actors[0] = new Mouse(null, 1.5, 1.5, 0.0, clock, billboard);
 		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, clock, billboard);
-		//actors[2] = new Cat(actors[0], 1.0, 1.0, 0, clock);
+		// actors[2] = new Cat(actors[0], 1.0, 1.0, 0, clock, billboard);
 	}
 
 	/**
@@ -86,7 +86,6 @@ public class GSim extends JFrame implements MouseListener {
 			}
 			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
 					(int) size, (int) size);
-
 
 			// Reset the tranformation matrix
 			g2.setTransform(oldTransform);
@@ -182,6 +181,5 @@ public class GSim extends JFrame implements MouseListener {
 		GSim sim = new GSim();
 		System.out.println("Simulation started");
 		sim.run();
-		// System.out.println();
 	}
 }

@@ -20,7 +20,7 @@ public class Cat extends Actor {
 		sensors.register(this);
 		positioningBuffer = sensors.regPositioner();
 		trackerBuffer = sensors.regTracker();
-		int N = 40;
+		int N = 20;
 		float T = (float) 0.5;
 		positioningFilter = new AbsolutePositioningParticleFilter(N, T,
 				positioningBuffer, motorBuffer, clock);
