@@ -13,7 +13,7 @@ public class SensorHandler {
 	private double field_of_view = 43 * (Math.PI / 180); // F.O.V in radians
 	public Buffer positioningBuffer, trackingBuffer;
 	private Actor cat, mouse;
-	private boolean initialPhase = false;
+	private boolean initialPhase = true;
 	private RealTimeClock realtime;
 	private Random rnd = new Random();
 
@@ -56,16 +56,21 @@ public class SensorHandler {
 			float angle_diff = (float) Math.acos((x1 * x2 + y1 * y2)
 					/ (norm1 * norm2));
 			if ((initialPhase) || (angle_diff < (field_of_view / 2))) {
-				d = new SightingData(t, cx, cy,
-						(float) ((angle2 - cat.getAngle()) + rnd.nextGaussian()
-								* 3 * (Math.PI / 180)), type);
+				/*
+				 * d = new SightingData(t, cx, cy, (float) ((angle2 -
+				 * cat.getAngle()) + rnd.nextGaussian() 3 * (Math.PI / 180)),
+				 * type);
+				 */
+				// TODO: Add noise
+				d = new SightingData(t, cx, cy, (float) (angle2 - cat
+						.getAngle()), type);
 				// TODO: Angle_diff might be wrong
 				// System.out.println("i:" + i + " Push: " + d + " Anglediff: "
 				// + angle_diff*(180/Math.PI));
 				positioningBuffer.push(d);
 			}
 		}
-		// System.out.println("posbuffer: " + positioningBuffer);
+		System.out.println("posbuffer: " + positioningBuffer);
 		// TODO: Check if initial convergence phase has ended
 	}
 

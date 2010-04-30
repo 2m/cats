@@ -43,7 +43,7 @@ public class LinkedList {
 		}
 	}
 
-	public Link popFirst() {
+	public Particle popFirst() {
 		if (isEmpty()) {
 			// List is empty
 			return null;
@@ -57,7 +57,22 @@ public class LinkedList {
 				// Many elements in list
 				first = first.next;
 			}
-			return ret;
+			return ret.data;
+		}
+	}
+
+	public int length() {
+		if (isEmpty()) {
+			// List is empty
+			return 0;
+		} else {
+			int len = 0;
+			Link current = first;
+			while (current != null) {
+				len++;
+				current = current.next;
+			}
+			return len;
 		}
 	}
 
@@ -67,7 +82,7 @@ public class LinkedList {
 			first = newLink;
 			last = newLink;
 		} else {
-			if (first.data.w < data.w) {
+			if (first.data.w <= data.w) {
 				insertFirst(data);
 			} else if (last.data.w > data.w) {
 				insertLast(data);
@@ -78,7 +93,7 @@ public class LinkedList {
 				while (current != null) {
 					// Check if current weight is smaller than the particle
 					// weight.
-					if (current.data.w < data.w) {
+					if (data.w >= current.data.w) {
 						break;
 					}
 					// Step forward in list

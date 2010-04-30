@@ -59,15 +59,16 @@ public class ParticleFilter {
 		int[][] V = new int[2][2];
 		int a = C[0][0];
 		int b = C[0][1];
-		// Check for diagonal matrix
 		if (b == 0) {
-			V[0][0] = Fixed.sqrt(V[0][0]);
+			// Matrix is diagonal
+			V[0][0] = Fixed.sqrt(C[0][0]);
 			V[0][1] = 0;
 			V[1][0] = 0;
-			V[1][1] = Fixed.sqrt(V[1][1]);
+			V[1][1] = Fixed.sqrt(C[1][1]);
 		} else {
 			int c = C[1][0];
 			int d = C[1][1];
+			// Calculate eigenvalues
 			int p = (a + d);
 			int q = Fixed.mul(a, d) - Fixed.mul(b, c);
 			int phalf = (p >> 1);
@@ -75,13 +76,16 @@ public class ParticleFilter {
 			int sqrt = Fixed.sqrt(phalfsquare - q);
 			int lambda1 = phalf + sqrt;
 			int lambda2 = phalf - sqrt;
-			// D = [lambda1 0; 0 lambda2];
-			int v12 = Fixed.div(-(a - lambda1), b);
-			int norm = Fixed.sqrt(Fixed.mul(v12, v12) + Fixed.ONE);
-			int norminv = 0;
 			// Calculate standard deviations
 			int lambda1sqrt = Fixed.sqrt(lambda1);
 			int lambda2sqrt = Fixed.sqrt(lambda2);
+			// D = [lambda1 0; 0 lambda2];
+			// Assume one element in the eigenvector is 1 then solve first
+			// equation.
+			int v12 = Fixed.div(-(a - lambda1), b);
+			// Get eigenvector norm
+			int norm = Fixed.sqrt(Fixed.mul(v12, v12) + Fixed.ONE);
+			int norminv = 0;
 			if (norm == 0) {
 				// TODO: Div by zero
 				System.out.println("Division by zero");
@@ -95,10 +99,11 @@ public class ParticleFilter {
 			// Eigen vectors are perpendicular => rot_p == [0 -1; 1 0]
 			// v2 = [-v1(2); v1(1)];
 			// V = [v1 v2];
-			// TODO: Scale transform matrix, check dimensions
+			// Eigenvector corresponding to lambda1
 			V[0][0] = Fixed.mul(norminv, lambda1sqrt); // a
-			V[0][1] = Fixed.mul(v12_norm, lambda1sqrt); // b
-			V[1][0] = Fixed.mul(-v12_norm, lambda2sqrt); // c
+			V[1][0] = Fixed.mul(v12_norm, lambda1sqrt); // c
+			// Eigenvector corresponding to lambda2
+			V[0][1] = Fixed.mul(-v12_norm, lambda2sqrt); // b
 			V[1][1] = Fixed.mul(norminv, lambda2sqrt); // d
 		}
 		return V;
