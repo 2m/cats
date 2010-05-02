@@ -6,6 +6,7 @@ R=r^2;        % covariance of measurement
 f=@(x)[x(2);x(3);0.05*x(1)*(x(2)+x(3))];  % nonlinear state equations
 h=@(x)x(1);                               % measurement equation
 s=[0;0;1];                                % initial state
+
 x=s;%+q*randn(3,1); %initial state          % initial state with noise
 P = eye(n);                               % initial state covraiance
 N=20;                                     % total dynamic steps

@@ -51,40 +51,41 @@ landm=[1 , 1];
 n=size(landm,1);
 phi=[0;pi/2; 5*pi/4];   %angle of the circular movement of the mouse
 radius=[.8;.8;.8];
-nm=3;
-sc=zeros(2,nm);
+nm=3;  %number of cats
+sc=zeros(2,nm);  %todo: what's this ?
+%todo: for all cats, do ...?
 for i=1:nm
     sc(:,i)=[1+radius(i)*cos(phi(i));1+radius(i)*sin(phi(i))];
 end
-%nm=size(sc,2); %number of cats
-nz=n+4;
-nx=6;
-nxm=4;
-fov=43*pi/180;
+%nm=size(sc,2); %number of cats  %todo remove?
+nz=n+4;  %number of elements in the measurement vector of the cats = number of landmarks + 4
+nx=6;  %number of variables in the cats' state vector
+nxm=4;  %number of variables in the mouse's state vector
+fov=43*pi/180;  %field of view
 stddegrees = 2;
 lambda = [stddegrees*(pi/180),1e-2,1e-2,1e-20,1e-20];% Standard deviation of measurement noise
         %[bearing angle      ,vx   ,vy   ,cam.ang]
-N=500;                           %Number of time steps
+N=500;  %total number of time steps
 dt=1;
-sm=[1.4; 1];
+sm=[1.4; 1];  %todo: what's this ?
 vm=initvelCirclem;
 vc=initvelCircle;
 
-q=.005;     %std of expected process noise
-qm=.005;    %std of expected process noise
-r=lambda;   %std of expected measurement noise
-rm=lambda(1);
-ra=lambda;       %std of actual measurement noise
-ram=lambda(1);
+q=.005;  %std of expected process noise for the cat
+qm=.005;  %std of expected process noise for the mouse
+r=lambda;  %std of expected measurement noise for the cat
+rm=lambda(1);  %std of expected measurement noise for the mouse
+ra=lambda;  %std of actual measurement noise for the cat
+ram=lambda(1);  %std of actual measurement noise for the mouse
 k1=dt;          %how much the noise in the wheel tachometers is amplified
 k2=dt;     %how much the noise in the camera motor tachometers is amplified
-Q=q^2*[ dt^4/4  0       dt^3/2  0       0    0;...   % covariance of process
+Q=q^2*[ dt^4/4  0       dt^3/2  0       0    0;...   % covariance of process for the cat
         0       dt^4/4  0       dt^3/2  0    0;...
         dt^3/2  0       dt^2    0       0    0;...
         0       dt^3/2  0       dt^2    0    0;...
         0       0       0       0       k1   0;...
         0       0       0       0       0    k2];
-Qm=qm^2*[ dt^4/4  0        dt^3/2  0     ;...
+Qm=qm^2*[ dt^4/4  0        dt^3/2  0     ;...  % covariance of process for the mouse
           0       dt^4/4  0        dt^3/2;...
           dt^3/2  0       dt^2     0     ;...
           0       dt^3/2  0        dt^2] ;
