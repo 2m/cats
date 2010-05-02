@@ -66,10 +66,12 @@ public class UnscentedKalmanFilterTest
 		
 		//Example values used for testing
 		System.out.println("Test started");
-		UnscentedKalmanFilter ukf_obj = new UnscentedKalmanFilter(3,1);
+		
+		int n=3;  //number of states
+		int m=1;  //number of measurements
+		UnscentedKalmanFilter ukf_obj = new UnscentedKalmanFilter(n,m);
 		System.out.println("Debug: printing ukf object:\n" +ukf_obj);
 		
-		int n=3;      //number of state
 		float q=0.1f;    //std of process
 		float r=0.1f;    //std of measurement
 		Matrix Q = Matlab.eye(n);  //covariance of process
@@ -82,15 +84,15 @@ public class UnscentedKalmanFilterTest
 		/*temp_s[0][0] = 0;
 		temp_s[1][0] = 0;
 		temp_s[2][0] = 1;*/
-		Matrix s = new Matrix(temp_s);
-		Matrix x = new Matrix(3,3);  //initial state 
+		Matrix s = new Matrix(temp_s); //true state vector
+		Matrix x = new Matrix(3,3);  //state estimate
 		x=s.copy();//s.plus( Matrix.random(3,1).times(q) );  //initial state with noise
 		Matrix P = Matlab.eye(n);  //initial state covraiance
 		
 		//First iteration with UKF
 		Matrix z = h.eval(s);  //h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
 		Matrix[] result = ukf_obj.ukf(f, x, P, h, z, Q, R);
-		x = result[0];
+		x = result[0];  
 		P = result[1];
 		s = f.eval(s);  //update process 
 

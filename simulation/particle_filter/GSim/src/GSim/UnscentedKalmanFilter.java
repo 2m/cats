@@ -19,7 +19,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	private int L;  
 	
 	/** Number of measurements*/
-	private int m;  //
+	private int m;  
 	
 	/** Tunable. */
 	private double alpha;  
