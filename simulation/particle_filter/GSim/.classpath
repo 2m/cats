@@ -2,9 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/opt/lejos_nxj/lib/classes.jar"/>
-	<classpathentry kind="lib" path="/opt/lejos_nxj/lib/jtools.jar"/>
-	<classpathentry kind="lib" path="/opt/lejos_nxj/lib/pccomm.jar"/>
-	<classpathentry kind="lib" path="/opt/lejos_nxj/lib/pctools.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/leJOS NXJ/lib/bluecove-2.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/leJOS NXJ/lib/classes.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/leJOS NXJ/lib/jtools.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/leJOS NXJ/lib/pccomm.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/leJOS NXJ/lib/pctools.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
