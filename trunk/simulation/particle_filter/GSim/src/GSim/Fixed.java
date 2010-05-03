@@ -13,21 +13,26 @@ public final class Fixed {
 	public static final int ONE = 1 << FIXED_POINT;
 	public static final int HALF = ONE >> 1;
 
-	// Circle size: 2048
 	private static final int TRIG_SHIFT = 30;
-	public static final int QUARTER_CIRCLE = 512; // => sizeof(SIN_TABLE)= 2048b
+	public static final int QUARTER_CIRCLE = 128; // => sizeof(SIN_TABLE)= 1024b
 	public static final int CIRCLE_MASK = QUARTER_CIRCLE * 4 - 1;
+
 	/** Pseudo degrees on a circle */
-	public static final int DEGREES = 2048;
-	public static final int RADIANS_TO_DEGREES = (int) ((QUARTER_CIRCLE * 4)
-			* ONE / (2 * Math.PI));
-	public static final int ANGLE_MASK = ONE * (QUARTER_CIRCLE * 4) - 1;
-	public static final int DOUBLE_CIRCLE_MASK = QUARTER_CIRCLE * 8 - 1;
-	// private static final int SIN_PRECALC = 26350943;
-	private static final int SIN_PRECALC = 3294096;
-	/* Equivalent to: sin((2 * PI) / (QUARTER_CIRCLE * 4)) * 2^TRIG_SHIFT */
-	private static final int COS_PRECALC = 2147473542;
-	/* Equivalent to: cos((2 * PI) / (QUARTER_CIRCLE * 4)) * 2 * 2^TRIG_SHIFT */
+	public static final int DEGREES = 4 * QUARTER_CIRCLE;
+	public static final int RADIANS_TO_DEGREES = (int) ((float) (QUARTER_CIRCLE * 2 * ONE) / Math.PI);
+	//public static final int ANGLE_MASK_FIXED = ONE * (QUARTER_CIRCLE * 4) - 1;
+	//public static final int DOUBLE_CIRCLE_MASK = QUARTER_CIRCLE * 8 - 1;
+
+	/*
+	 * Equivalent to: sin((2 * PI) / (QUARTER_CIRCLE * 4)) * 2^TRIG_SHIFT
+	 * int32(sin((2*pi)/(256*4))*2^30)
+	 */
+	private static final int SIN_PRECALC = 13176464;
+	/*
+	 * Equivalent to: cos((2 * PI) / (QUARTER_CIRCLE * 4)) * 2 * 2^TRIG_SHIFT
+	 * int32(cos((2*pi)/(256*4))*2*2^30)
+	 */
+	private static final int COS_PRECALC = 2147321946;
 	private static final int[] SIN_TABLE = new int[QUARTER_CIRCLE + 1];
 
 	// Initialise random number generator
@@ -164,7 +169,10 @@ public final class Fixed {
 		}
 		long sum = 0;
 		int bit = 0x40000000;
-		while (bit >= 0x100) { // lower values give more accurate results
+		// TODO: Check if this gives enough accuracy
+		// lower values in while loop condition give more accurate results
+		// while (bit >= 0x100) {
+		while (bit >= 0x10) {
 			long tmp = sum | bit;
 			if (n >= tmp) {
 				n -= tmp;

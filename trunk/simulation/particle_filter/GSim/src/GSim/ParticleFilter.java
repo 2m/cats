@@ -23,6 +23,7 @@ public class ParticleFilter {
 	 * @return weight as 12.20 fixed point integer
 	 */
 	public static int penalty(int z) {
+		// TODO: Plot to see if this is right
 		int w;
 		if (z >= CUT[4]) {
 			if (CUT[2] < z) {

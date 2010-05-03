@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.Random;
 
 /** Particle filter for absolute positioning of one cat. */
 public class AbsolutePositioningParticleFilter extends
@@ -22,8 +23,7 @@ public class AbsolutePositioningParticleFilter extends
 	private int varXX = Fixed.floatToFixed(0.0001);
 	private int varYY = Fixed.floatToFixed(0.0001);
 	private int varXY = Fixed.floatToFixed(0.0);
-	private int varAngle = Fixed
-			.floatToFixed(3 * (2 * Math.PI / Fixed.DEGREES));
+	private int varAngle = Fixed.floatToFixed(3 * (Fixed.DEGREES / 360));
 	private boolean zerosum;
 	private int lastCurrentTime, currentTime;
 	private int sum_w;
@@ -75,11 +75,11 @@ public class AbsolutePositioningParticleFilter extends
 		// Set means for x, y and angle
 		mean_x = Fixed.floatToFixed(x);
 		mean_y = Fixed.floatToFixed(y);
-		mean_angle = Fixed.floatToFixed(angle);
+		mean_angle = Fixed.floatToFixed(angle) * Fixed.RADIANS_TO_DEGREES;
 		varXX = Fixed.floatToFixed(0.0001);
 		varYY = Fixed.floatToFixed(0.0001);
 		varXY = Fixed.floatToFixed(0.0);
-		varAngle = Fixed.floatToFixed(3 * (2 * Math.PI / Fixed.DEGREES));
+		varAngle = Fixed.floatToFixed(3 * ((float) Fixed.DEGREES / 360));
 		// Re-sample so particles get the new data
 		reSample();
 	}
@@ -95,7 +95,7 @@ public class AbsolutePositioningParticleFilter extends
 		// System.out.print("Move: " + distance + " - ");
 		while (link != null) {
 			PositioningParticle part = (PositioningParticle) link.data;
-			final int a = Fixed.floor(part.angle);
+			int a = Fixed.floor(part.angle);
 			// System.out.print(a + " ");
 			int c = Fixed.cos(a);
 			int s = Fixed.sin(a);
@@ -119,11 +119,19 @@ public class AbsolutePositioningParticleFilter extends
 		while (link != null) {
 			PositioningParticle part = (PositioningParticle) link.data;
 			part.angle = part.angle + theta;
-			part.angle &= Fixed.ANGLE_MASK;
+			// TODO: Verify relevance of this method
+			// Try to get the angles away from 0/-2pi, but not too far of
+
+			/*
+			 * if (Fixed.floor(part.angle) < Fixed.QUARTER_CIRCLE) { part.angle
+			 * += 4 * Fixed.QUARTER_CIRCLE * Fixed.ONE; } if
+			 * (Fixed.floor(part.angle) > 5 * Fixed.QUARTER_CIRCLE) { part.angle
+			 * -= 4 * Fixed.QUARTER_CIRCLE * Fixed.ONE; }
+			 */
+
 			link = link.next;
 		}
 		mean_angle += theta;
-		mean_angle &= Fixed.ANGLE_MASK;
 	}
 
 	private void compareParticles(float sensorangle, int type) {
@@ -134,31 +142,37 @@ public class AbsolutePositioningParticleFilter extends
 		while (part != null) {
 			// TODO: Check strange convergence, if theta is changed the particle
 			// still converge but in other places.
-			int theta = Fixed.round(-part.angle
-					- Fixed.mul(Fixed.floatToFixed(sensorangle),
-							Fixed.RADIANS_TO_DEGREES));
-			int cos = Fixed.cos(theta);
-			int sin = Fixed.sin(theta);
+			/*
+			 * int theta = Fixed.round(-part.angle -
+			 * Fixed.mul(Fixed.floatToFixed(sensorangle),
+			 * Fixed.RADIANS_TO_DEGREES)); int cos = Fixed.cos(theta); int sin =
+			 * Fixed.sin(theta) int a;
+			 */
 			int z = 0;
-			int a;
+			// TODO: Verify code against matlab
 			// Loop through landmarks
 			for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
 				if (type == landmarks[i][2]) {
+
 					int toMark_x = landmarks[i][0] - part.x; // landmark_x-x
 					int toMark_y = landmarks[i][1] - part.y; // landmark_y-y
-					int norm = Fixed.norm(toMark_x, toMark_y);
-					if (norm == 0) {
-						// Zero distance to landmark
-						System.out
-								.println("Disvision by zero in compareParticles()");
-						a = 0;
-					} else {
-						int v1 = Fixed.mul(toMark_x, cos)
-								- Fixed.mul(toMark_y, sin);
-						a = Fixed.div(v1, norm);
-					}
-					if (a > z) {
-						z = a;
+					float toLandm = (float) Math.atan2(toMark_y, toMark_x);
+					float sens = (float) ((Fixed.fixedToFloat(part.angle) * (Math.PI / (2 * Fixed.QUARTER_CIRCLE))));
+					float h = (float) ((Math.cos(sens) * Math.cos(toLandm)) + (Math
+							.sin(sens) * Math.sin(toLandm)));
+					int hf = Fixed.floatToFixed(h);
+					/*
+					 * int norm = Fixed.norm(toMark_x, toMark_y); if (norm == 0)
+					 * { // Zero distance to landmark System.out
+					 * .println("Disvision by zero in compareParticles()"); a =
+					 * 0; } else { int v1 = Fixed.mul(toMark_x, cos) -
+					 * Fixed.mul(toMark_y, sin); a = Fixed.div(v1, norm); }
+					 */
+					/*
+					 * if (a > z) { z = a; }
+					 */
+					if (hf > z) {
+						z = hf;
 					}
 					/*
 					 * if (z > ParticleFilter.CUT[4]) { // Break loop if
@@ -168,17 +182,23 @@ public class AbsolutePositioningParticleFilter extends
 			}
 			// Penalty function
 			int w = ParticleFilter.penalty(z);
-			part.w = w;
+			if (w < 0) {
+				w = 0;
+			}
+			// Multiply weight from this iteration with particle weight
+			part.w = Fixed.mul(part.w, w);
+			// System.out.println("Weight: " + Fixed.fixedToFloat(part.w));
 			// Sum weights
-			sum_w_tmp += w;
+			sum_w_tmp += part.w;
 			// Insert particle into new list
 			newlist.insertSorted(part);
+			// Pop new particle for the next iteration
 			part = (PositioningParticle) data.popFirst();
 		}
 		// TODO: free(data)
 		data = newlist;
-		// System.out.println(toString());
 		sum_w = sum_w_tmp;
+		System.out.println("sum_w=" + Fixed.fixedToFloat(sum_w));
 		zerosum = (sum_w_tmp == 0);
 		if (data.length() != N) {
 			System.out.println("Particles lost! (count:" + data.length() + ")");
@@ -213,13 +233,24 @@ public class AbsolutePositioningParticleFilter extends
 			// TODO: Stop full re-sampling
 			cut = 0;
 		}
+		/*
+		 * V[0][0] = Fixed.floatToFixed(0.001); V[1][1] =
+		 * Fixed.floatToFixed(0.001); V[0][1] = Fixed.floatToFixed(0.0); V[1][0]
+		 * = Fixed.floatToFixed(0.0);
+		 * 
+		 * varAngle = Fixed.floatToFixed(1 * ((float) Fixed.DEGREES / 360));
+		 */
 
 		Link link = data.first;
+
 		for (int i = 0; (i < cut) && (link != null); i++) {
 			link.data.w = norm;
 			link = link.next;
 		}
 
+		Random rnd = new Random();
+		int stdAngle = Fixed.sqrt(varAngle);
+		System.out.println("stdAngle: " + Fixed.fixedToFloat(stdAngle));
 		while (link != null) {
 			PositioningParticle part = (PositioningParticle) link.data;
 			int a = nextRandn();
@@ -227,7 +258,11 @@ public class AbsolutePositioningParticleFilter extends
 			part.x = mean_x + Fixed.mul(V[0][0], a) + Fixed.mul(V[0][1], b);
 			part.y = mean_y + Fixed.mul(V[1][0], a) + Fixed.mul(V[1][1], b);
 			int c = nextRandn();
-			part.angle = mean_angle + Fixed.mul(varAngle, c);
+			int ang = Fixed.mul(stdAngle, c);
+			part.angle = mean_angle + ang;
+
+			part.angle = Fixed.floatToFixed(rnd.nextGaussian()
+					* Fixed.fixedToFloat(stdAngle));
 			part.w = norm;
 			link = link.next;
 		}
@@ -252,7 +287,8 @@ public class AbsolutePositioningParticleFilter extends
 			}
 			norm = Nnorm;
 		} else {
-			System.out.println("(weighted) sum_w: " + sum_w);
+			System.out
+					.println("(weighted) sum_w: " + Fixed.fixedToFloat(sum_w));
 			// Weighted mean
 			Link link = data.first;
 			while (link != null) {
@@ -260,7 +296,6 @@ public class AbsolutePositioningParticleFilter extends
 				PositioningParticle part = (PositioningParticle) link.data;
 				tmean_x += Fixed.mul(part.x, part.w);
 				tmean_y += Fixed.mul(part.y, part.w);
-				// TODO: Check angle mean
 				tmean_a += Fixed.mul(part.angle, part.w);
 				link = link.next;
 			}
@@ -275,7 +310,7 @@ public class AbsolutePositioningParticleFilter extends
 			varXX = Fixed.HALF;
 			varXY = 0;
 			varYY = Fixed.HALF;
-			varAngle = Fixed.ONE * Fixed.QUARTER_CIRCLE;
+			varAngle = Fixed.ONE * Fixed.QUARTER_CIRCLE * 2;
 		} else {
 			int tvarXX = 0, tvarXY = 0, tvarYY = 0, tvarAngle = 0;
 			Link link = data.first;
@@ -296,8 +331,8 @@ public class AbsolutePositioningParticleFilter extends
 			varXX = Fixed.mul(tvarXX, norm);
 			varXY = Fixed.mul(tvarXY, norm);
 			varYY = Fixed.mul(tvarYY, norm);
-			// TODO: Returns zero, why?
-			varAngle = tvarAngle;
+			// TODO: Returns zero sometimes, why?
+			varAngle = Fixed.mul(tvarAngle, norm);
 		}
 		// Check means and covariances
 		if (mean_x < Fixed.floatToFixed(Arena.min_x)) {
@@ -319,17 +354,20 @@ public class AbsolutePositioningParticleFilter extends
 		if (varYY < Fixed.floatToFixed(0.0001)) {
 			varYY = Fixed.floatToFixed(0.0001);
 		}
-		if (varAngle < Fixed.floatToFixed(0.0001)) {
-			varAngle = Fixed.floatToFixed(0.0001);
+		if (varAngle < 0) {
+			varAngle = -varAngle;
 		}
-		if (varXX > Fixed.floatToFixed(2)) {
-			varXX = Fixed.floatToFixed(2);
+		if (varAngle < Fixed.floatToFixed(0.01)) {
+			varAngle = Fixed.floatToFixed(0.01);
 		}
-		if (varYY > Fixed.floatToFixed(2)) {
-			varYY = Fixed.floatToFixed(2);
+		if (varXX > Fixed.HALF) {
+			varXX = Fixed.HALF;
 		}
-		if (varAngle > Fixed.floatToFixed(90 * (Fixed.DEGREES / 360))) {
-			varAngle = Fixed.floatToFixed(90 * (Fixed.DEGREES / 360));
+		if (varYY > Fixed.HALF) {
+			varYY = Fixed.HALF;
+		}
+		if (varAngle > (Fixed.ONE * Fixed.QUARTER_CIRCLE * 2)) {
+			varAngle = (Fixed.ONE * Fixed.QUARTER_CIRCLE * 2);
 		}
 	}
 
@@ -401,6 +439,7 @@ public class AbsolutePositioningParticleFilter extends
 	public void update() {
 		// System.out.println("Update");
 		// Get time reference
+		// TODO: Needs revision and clean up
 		currentTime = rttime.getTime();
 		int evaluationsSinceResample = 0;
 		int mtime = currentTime + 1;
@@ -444,7 +483,7 @@ public class AbsolutePositioningParticleFilter extends
 				}
 				if (Math.abs(mdata.dangle) > 0.00001) {
 					// Turning angle as fixed
-					turnParticles(Fixed.mul(Fixed.floatToFixed(-mdata.dangle),
+					turnParticles(Fixed.mul(Fixed.floatToFixed(mdata.dangle),
 							Fixed.RADIANS_TO_DEGREES));
 					lastCurrentTime = mdata.timestamp;
 				}
@@ -460,7 +499,7 @@ public class AbsolutePositioningParticleFilter extends
 				sdataUsed = true;
 			}
 			// Re-sample every n:th evaluation
-			if (evaluationsSinceResample >= 3) {
+			if (evaluationsSinceResample >= 4) {
 				calcMean();
 				reSample();
 				evaluationsSinceResample = 0;
