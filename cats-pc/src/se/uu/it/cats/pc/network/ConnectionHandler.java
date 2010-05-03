@@ -103,9 +103,13 @@ public class ConnectionHandler implements Runnable
 			}
 			catch (IOException ioe)
 			{
-				Logger.println("IO Exception reading bytes:");
-				Logger.println(ioe.getMessage());
-				break;
+				Logger.println("IO Exception reading bytes. Closing connection to "+getRemoteName());				
+				setAlive(false);
+			}
+			catch (IndexOutOfBoundsException ex)
+			{
+				Logger.println("IndexOutOfBoundsException Exception reading bytes. Closing connection to "+getRemoteName());
+				setAlive(false);
 			}
 			
 			if (System.currentTimeMillis() - startTime > 3000)
@@ -135,11 +139,18 @@ public class ConnectionHandler implements Runnable
 			
 			try { Thread.sleep(1); } catch (Exception ex) {}
 		}
+		
+		ConnectionManager.getInstance().closeConnection(this);
 	}
 	
 	protected String getRemoteName()
 	{
 		return _remoteName;
+	}
+	
+	protected void close()
+	{
+		_alive = false;
 	}
 
 }
