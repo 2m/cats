@@ -5,11 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import javax.swing.event.*;
-
-import se.uu.it.cats.pc.network.ConnectionHandler;
-
-import java.util.Hashtable;
+import se.uu.it.cats.pc.network.ConnectionManager;
 
 public class DataPanel extends JPanel{ // implements ActionListener
   
@@ -27,8 +23,7 @@ public class DataPanel extends JPanel{ // implements ActionListener
         public void actionPerformed(ActionEvent e)
         {
         	JButton button = (JButton)e.getSource();
-        	Thread t = new Thread(new ConnectionHandler(button.getText()));
-    		t.start();
+        	ConnectionManager.getInstance().openConnection(button.getText());        	
         }
     };
     
