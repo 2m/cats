@@ -40,7 +40,7 @@ public abstract class ConnectionHandler implements Runnable
 	public ConnectionHandler(BTConnection btc)
 	{
 		_btc = btc;
-		_remoteDevice = ConnectionManager.getInstance().getDeviceByAddress(_btc.getAddress());
+		_remoteDevice = Identity.getDeviceByAddress(_btc.getAddress());
 	}
 	
 	/**
@@ -92,12 +92,12 @@ public abstract class ConnectionHandler implements Runnable
 	
 	protected int getLocalId()
 	{
-		return ConnectionManager.getInstance().getIdByName(_localName);
+		return Identity.getIdByName(_localName);
 	}
 	
 	protected int getRemoteId()
 	{
-		return ConnectionManager.getInstance().getIdByAddress(_btc.getAddress());
+		return Identity.getIdByAddress(_btc.getAddress());
 	}	
 
 	@Override

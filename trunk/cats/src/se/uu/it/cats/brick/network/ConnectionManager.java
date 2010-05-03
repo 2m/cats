@@ -3,22 +3,13 @@ package se.uu.it.cats.brick.network;
 import javax.bluetooth.RemoteDevice;
 
 import lejos.nxt.comm.BTConnection;
+import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.packet.Packet;
 
 public class ConnectionManager
 {
-	public static final RemoteDevice[] _devices = new RemoteDevice[] {
-		new RemoteDevice("cat1", "00165302CC4E", new byte[] {0, 0, 8, 4}),
-		new RemoteDevice("cat2", "0016530E6938", new byte[] {0, 0, 8, 4}),
-		new RemoteDevice("cat3", "00165302CDC3", new byte[] {0, 0, 8, 4}),
-		new RemoteDevice("dongle1", "0015832A3670", new byte[] {0, 0, 8, 4}),
-		new RemoteDevice("dongle2", "000C783394E7", new byte[] {0, 0, 8, 4}),
-		new RemoteDevice("MartinPC", "002556F9072D", new byte[] {0, 0, 8, 4}),
-		new RemoteDevice("ChristianPC", "002243B7BDAA", new byte[] {0, 0, 8, 4})
-	};
-	
-	public static final int MAX_OUTBOUND_CONN = _devices.length;
+	public static final int MAX_OUTBOUND_CONN = Identity._devices.length;
 	public static final int INBOUND_CONN_ID = MAX_OUTBOUND_CONN;
 	
 	private static ConnectionManager _instanceHolder = new ConnectionManager();
@@ -46,7 +37,7 @@ public class ConnectionManager
 		
 		ConnectionHandler ch = null;
 		
-		ch = new KeepAlive(_devices[i]);
+		ch = new KeepAlive(Identity.getDeviceById(i));
 		
 		_outboundConnectionHolder[i] = ch;
 		Thread initiatorThread = new Thread(ch);
@@ -215,32 +206,5 @@ public class ConnectionManager
 			if (isAlive(i) && !getConnection(i).getRemoteName().equals(name))
 				getConnection(i).sendPacket(p);
 		}
-	}
-	
-	public RemoteDevice getDeviceByAddress(String address)
-	{
-		for (int i = 0; i < _devices.length; i++)
-			if (_devices[i].getDeviceAddr().equals(address))
-				return _devices[i];
-		
-		return null;
-	}
-	
-	public int getIdByAddress(String address)
-	{
-		for (int i = 0; i < _devices.length; i++)
-			if (_devices[i].getDeviceAddr().equals(address))
-				return i;
-		
-		return -1;
-	}
-	
-	public int getIdByName(String name)
-	{
-		for (int i = 0; i < _devices.length; i++)
-			if (_devices[i].getFriendlyName(false).equals(name))
-				return i;
-		
-		return -1;
 	}
 }
