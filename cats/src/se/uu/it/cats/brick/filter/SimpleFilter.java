@@ -2,6 +2,7 @@ package se.uu.it.cats.brick.filter;
 
 import java.awt.Rectangle;
 
+import se.uu.it.cats.brick.CatPosCalc;
 import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.ConnectionManager;
@@ -53,8 +54,9 @@ public class SimpleFilter implements Runnable {
 		int motorAng; //Motor angle relative to starting position
 		float motorAngRad;
 		float angToTargetRelCat;
+		float angToTargetAbs;
 		float motorCal = 0.978f;//1.19f; //linear calibration
-		float gearRatio = 0.2f*motorCal; //1:5 gear down (smallest gear to biggest)
+		float gearRatio = -0.2f*motorCal; //1:5 gear down (smallest gear to biggest)
 		int maxAngAbs = 180;
 		int upperMaxAng = maxAngAbs;
 		int lowerMaxAng = maxAngAbs*-1;
@@ -71,7 +73,7 @@ public class SimpleFilter implements Runnable {
 	
 		while(!Button.ESCAPE.isPressed()) {
 			
-			motorAng = (int) (Motor.A.getTachoCount()*gearRatio);
+			motorAng = (int) (Motor.B.getTachoCount()*gearRatio);
 			motorAngRad = (float) (motorAng * Math.PI/180.0);
 			numObjects = camera.getNumberOfObjects();
 			
@@ -106,6 +108,7 @@ public class SimpleFilter implements Runnable {
 				err = xAvg - 176/2 + offset; //0-88-19=-107 worst case
 				angToTarget = err*radPerPix;
 				angToTargetRelCat = motorAngRad + angToTarget;
+				angToTargetAbs = angToTargetRelCat + CatPosCalc.getCatAng();
 				System.out.println("CamMotor:" + motorAng);
 				
 				// send measurements to everyone
@@ -121,12 +124,13 @@ public class SimpleFilter implements Runnable {
 						new SimpleMeasurement(angToTargetRelCat)
 				);
 				
-				//Logger.println("Found at:" + (int) (angToTargetRelCat*180/Math.PI));
-				//Logger.println("            CamMotor:" + motorAng);
+				//Logger.println("Found at:" + (int) (angToTargetAbs*180/Math.PI));
+				//Logger.println("Rel cat:" + (int) (angToTargetRelCat*180/Math.PI));
+				Logger.println("CamMotor:" + motorAng);
 				
 				if (Math.abs(err) < 0) //P: 10
 				{
-					Motor.A.stop();
+					Motor.B.stop();
 				}
 				else
 				{
@@ -137,16 +141,16 @@ public class SimpleFilter implements Runnable {
 					
 					//newSpeed = (int)Math.exp(Math.abs(err) * 0.08);
 					if (Math.abs(newSpeed) > maxSpeed)
-						Motor.A.setSpeed(maxSpeed);
+						Motor.B.setSpeed(maxSpeed);
 					else
-						Motor.A.setSpeed(Math.abs(newSpeed));
+						Motor.B.setSpeed(Math.abs(newSpeed));
 					
 					if (newSpeed < 0) {
-						Motor.A.forward();
+						Motor.B.backward();
 						//dir=1;
 					}
 					else {
-						Motor.A.backward();
+						Motor.B.forward();
 						//dir=-1;
 					}
 					if (err < 0)
@@ -155,14 +159,14 @@ public class SimpleFilter implements Runnable {
 						dir=-1;
 					//Stop if motor is at maximum turning angle
 					if (motorAng>upperMaxAng) {
-						Motor.A.stop();
+						Motor.B.stop();
 					}
 					if (motorAng<lowerMaxAng) {
-						Motor.A.stop();
+						Motor.B.stop();
 					}	
 				}
 				
-				//Logger.println("x: "+xAvg+" err:"+err+" numObj:"+numObjects+" speed:"+Motor.A.getSpeed());
+				//Logger.println("x: "+xAvg+" err:"+err+" numObj:"+numObjects+" speed:"+Motor.B.getSpeed());
 				
 				/*LCD.drawInt(xAvg, 3, 0, 5);
 				LCD.drawInt(yAvg, 3, 4, 5);
@@ -171,7 +175,7 @@ public class SimpleFilter implements Runnable {
 			else {
 				//Logger.println("No found!");
 				Sound.beep(); //Beep if no target is found
-				Motor.A.setSpeed(maxSpeed); //Search for mouse with maximum speed
+				Motor.B.setSpeed(maxSpeed); //Search for mouse with maximum speed
 				
 				//Reverse motor direction if at maximum turning angle
 				if (motorAng>upperMaxAng) {
@@ -182,10 +186,10 @@ public class SimpleFilter implements Runnable {
 				}
 				
 				if (dir==1) {
-					Motor.A.forward();
+					Motor.B.backward();
 				}
 				else {
-					Motor.A.backward();
+					Motor.B.forward();                                                                                                                                                                                                                                             
 				}
 			}
 
