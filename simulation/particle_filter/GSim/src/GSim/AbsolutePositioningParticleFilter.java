@@ -10,6 +10,12 @@ import java.util.Random;
 public class AbsolutePositioningParticleFilter extends
 		AbsolutePositioningFilter {
 
+	// TODO: Use fixed representation of radians as angle data
+	// TODO: Document thoroughly
+	// TODO: Re-factor and structure
+	// TODO: Implement an iteration counter and timer to get average time
+	// consumption
+
 	/** Linked list for particles */
 	private LinkedList data;
 
@@ -311,6 +317,7 @@ public class AbsolutePositioningParticleFilter extends
 
 		// Calculate covariance
 		if (zerosum) {
+			// TODO: Change to steadily increasing (more realistic)
 			varXX = Fixed.HALF;
 			varXY = 0;
 			varYY = Fixed.HALF;
@@ -442,6 +449,8 @@ public class AbsolutePositioningParticleFilter extends
 	}
 
 	public void update() {
+		// TODO: Start with sorting all data to one buffer and remove redundant
+		// entries
 		// System.out.println("Update");
 		// Get time reference
 		// TODO: Needs revision and clean up

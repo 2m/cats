@@ -8,6 +8,7 @@ package GSim;
  * 
  */
 public class BufferSorted extends Buffer {
+	// TODO: Base this on LinkedList
 	private BufferNode first;
 	private BufferNode last;
 	private Object lockOnLast;
@@ -59,8 +60,8 @@ public class BufferSorted extends Buffer {
 			}
 			nonodes++;
 		}
-		//System.out.println(nonodes
-		//		+ " number of objects buffered in SortedBuffer");
+		// System.out.println(nonodes
+		// + " number of objects buffered in SortedBuffer");
 	}
 
 	/**

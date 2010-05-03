@@ -24,6 +24,11 @@ public class SightingData extends BufferData {
 		this.type = type;
 	}
 
+	// TODO: Make this work
+	public boolean isSighting() {
+		return true;
+	}
+
 	public String toString() {
 		return "[" + timestamp + ", " + x + ", " + y + ", " + angle + ", "
 				+ type + "]";

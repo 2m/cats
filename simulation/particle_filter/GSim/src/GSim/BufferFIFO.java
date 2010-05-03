@@ -8,6 +8,7 @@ package GSim;
  * 
  */
 public class BufferFIFO extends Buffer {
+	// TODO: Base this on LinkedList
 	private BufferNode first;
 	private BufferNode last;
 	private Object lockOnLast;

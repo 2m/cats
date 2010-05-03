@@ -13,24 +13,28 @@ public final class Fixed {
 	public static final int ONE = 1 << FIXED_POINT;
 	public static final int HALF = ONE >> 1;
 
+	// TODO: Fix so radians can be used as angle
+	public static final int PI = (int) (Math.PI * ONE);
 	private static final int TRIG_SHIFT = 30;
-	public static final int QUARTER_CIRCLE = 128; // => sizeof(SIN_TABLE)= 1024b
+	public static final int QUARTER_CIRCLE = 512; // => sizeof(SIN_TABLE)= 1024b
 	public static final int CIRCLE_MASK = QUARTER_CIRCLE * 4 - 1;
 
 	/** Pseudo degrees on a circle */
 	public static final int DEGREES = 4 * QUARTER_CIRCLE;
 	public static final int RADIANS_TO_DEGREES = (int) ((float) (QUARTER_CIRCLE * 2 * ONE) / Math.PI);
-	//public static final int ANGLE_MASK_FIXED = ONE * (QUARTER_CIRCLE * 4) - 1;
-	//public static final int DOUBLE_CIRCLE_MASK = QUARTER_CIRCLE * 8 - 1;
+	// public static final int ANGLE_MASK_FIXED = ONE * (QUARTER_CIRCLE * 4) -
+	// 1;
+	// public static final int DOUBLE_CIRCLE_MASK = QUARTER_CIRCLE * 8 - 1;
 
 	/*
 	 * Equivalent to: sin((2 * PI) / (QUARTER_CIRCLE * 4)) * 2^TRIG_SHIFT
-	 * int32(sin((2*pi)/(256*4))*2^30)
+	 * int32(sin((2*pi)/(512*4))*2^30)
 	 */
+	// TODO: Regenerate SIN_PRECALC
 	private static final int SIN_PRECALC = 13176464;
 	/*
 	 * Equivalent to: cos((2 * PI) / (QUARTER_CIRCLE * 4)) * 2 * 2^TRIG_SHIFT
-	 * int32(cos((2*pi)/(256*4))*2*2^30)
+	 * int32(cos((2*pi)/(512*4))*2*2^30)
 	 */
 	private static final int COS_PRECALC = 2147321946;
 	private static final int[] SIN_TABLE = new int[QUARTER_CIRCLE + 1];
