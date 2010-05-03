@@ -119,16 +119,6 @@ public class AbsolutePositioningParticleFilter extends
 		while (link != null) {
 			PositioningParticle part = (PositioningParticle) link.data;
 			part.angle = part.angle + theta;
-			// TODO: Verify relevance of this method
-			// Try to get the angles away from 0/-2pi, but not too far of
-
-			/*
-			 * if (Fixed.floor(part.angle) < Fixed.QUARTER_CIRCLE) { part.angle
-			 * += 4 * Fixed.QUARTER_CIRCLE * Fixed.ONE; } if
-			 * (Fixed.floor(part.angle) > 5 * Fixed.QUARTER_CIRCLE) { part.angle
-			 * -= 4 * Fixed.QUARTER_CIRCLE * Fixed.ONE; }
-			 */
-
 			link = link.next;
 		}
 		mean_angle += theta;
@@ -233,13 +223,6 @@ public class AbsolutePositioningParticleFilter extends
 			// TODO: Stop full re-sampling
 			cut = 0;
 		}
-		/*
-		 * V[0][0] = Fixed.floatToFixed(0.001); V[1][1] =
-		 * Fixed.floatToFixed(0.001); V[0][1] = Fixed.floatToFixed(0.0); V[1][0]
-		 * = Fixed.floatToFixed(0.0);
-		 * 
-		 * varAngle = Fixed.floatToFixed(1 * ((float) Fixed.DEGREES / 360));
-		 */
 
 		Link link = data.first;
 
@@ -249,7 +232,7 @@ public class AbsolutePositioningParticleFilter extends
 		}
 
 		Random rnd = new Random();
-		int stdAngle = Fixed.sqrt(varAngle);
+		int stdAngle = Fixed.sqrt(varAngle) * 10;
 		System.out.println("stdAngle: " + Fixed.fixedToFloat(stdAngle));
 		while (link != null) {
 			PositioningParticle part = (PositioningParticle) link.data;
@@ -296,6 +279,13 @@ public class AbsolutePositioningParticleFilter extends
 				PositioningParticle part = (PositioningParticle) link.data;
 				tmean_x += Fixed.mul(part.x, part.w);
 				tmean_y += Fixed.mul(part.y, part.w);
+				// Try to get the angles away from 0/-2pi, but not too far of
+				if (Fixed.floor(part.angle) < Fixed.QUARTER_CIRCLE) {
+					part.angle += 4 * Fixed.QUARTER_CIRCLE * Fixed.ONE;
+				}
+				if (Fixed.floor(part.angle) > 5 * Fixed.QUARTER_CIRCLE) {
+					part.angle -= 4 * Fixed.QUARTER_CIRCLE * Fixed.ONE;
+				}
 				tmean_a += Fixed.mul(part.angle, part.w);
 				link = link.next;
 			}
@@ -305,11 +295,26 @@ public class AbsolutePositioningParticleFilter extends
 		mean_y = Fixed.mul(tmean_y, norm);
 		mean_angle = Fixed.mul(tmean_a, norm);
 
+		// TODO: Verify relevance of this method
+		boolean exitloop = false;
+		while (exitloop) {
+			exitloop = true;
+			if (Fixed.floor(mean_angle) < Fixed.QUARTER_CIRCLE) {
+				mean_angle += 4 * Fixed.QUARTER_CIRCLE * Fixed.ONE;
+				exitloop = false;
+			}
+			if (Fixed.floor(mean_angle) > 5 * Fixed.QUARTER_CIRCLE) {
+				mean_angle -= 4 * Fixed.QUARTER_CIRCLE * Fixed.ONE;
+				exitloop = false;
+			}
+		}
+
 		// Calculate covariance
 		if (zerosum) {
 			varXX = Fixed.HALF;
 			varXY = 0;
 			varYY = Fixed.HALF;
+			// TODO: stdAngle overflows
 			varAngle = Fixed.ONE * Fixed.QUARTER_CIRCLE * 2;
 		} else {
 			int tvarXX = 0, tvarXY = 0, tvarYY = 0, tvarAngle = 0;
