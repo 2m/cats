@@ -70,7 +70,6 @@ public class SensorHandler {
 				positioningBuffer.push(d);
 			}
 		}
-		System.out.println("posbuffer: " + positioningBuffer);
 		// TODO: Check if initial convergence phase has ended
 	}
 
