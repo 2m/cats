@@ -1,5 +1,6 @@
 function zm = measurem(xm)
-%calculates the bearings from the cats to the mouse and adds measurement noise
+%calculates the bearings from the cats to the mouse
+%xm is where the cats think the mouse is
 global x; %where we think the cats are
 %global nm;
 nm=size(x,2);

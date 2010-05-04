@@ -4,7 +4,7 @@ close all
 warning off all;
 
 global cats; %true position of the cats
-global actCats; %contains the index of the cats that sees the mouse
+global actCats; %contains the indices of the cats that sees the mouse
 global rm; %std of expected bearing measurement noise 
 global nm; %number of cats
 global nxm; %number of variables in the mouse's state vector
@@ -14,7 +14,7 @@ global xVm; %contains the current and all past state estimates of the mouse
 global xm; %current state estimate of the mouse
 
 global s; %true state of the cats
-global landm; %ture pos of the landmaks
+global landm; %true position of the landmaks
 global actLandm; %the indices of the landmarks that are seen
 global R; % covariance of measurement of the cats
 global xV; %contains the current and all past state estimates of the cats 
@@ -48,17 +48,9 @@ landm=[1 , 1];
 %         1.9,0.1
 %         1.9,1.9];
 
-n=size(landm,1);
-phi=[0;pi/2; 5*pi/4];   %angle of the circular movement of the mouse
-radius=[.8;.8;.8];
+n=size(landm,1);  %number of landmarks
 nm=3;  %number of cats
-sc=zeros(2,nm);  %todo: what's this ?
-%todo: for all cats, do ...?
-for i=1:nm
-    sc(:,i)=[1+radius(i)*cos(phi(i));1+radius(i)*sin(phi(i))];
-end
-%nm=size(sc,2); %number of cats  %todo remove?
-nz=n+4;  %number of elements in the measurement vector of the cats = number of landmarks + 4
+nz=n+4;  %?? number of elements in the measurement vector of the cats = number of landmarks + 4
 nx=6;  %number of variables in the cats' state vector
 nxm=4;  %number of variables in the mouse's state vector
 fov=43*pi/180;  %field of view
@@ -67,9 +59,6 @@ lambda = [stddegrees*(pi/180),1e-2,1e-2,1e-20,1e-20];% Standard deviation of mea
         %[bearing angle      ,vx   ,vy   ,cam.ang]
 N=500;  %total number of time steps
 dt=1;
-sm=[1.4; 1];  %todo: what's this ?
-vm=initvelCirclem;
-vc=initvelCircle;
 
 q=.005;  %std of expected process noise for the cat
 qm=.005;  %std of expected process noise for the mouse
@@ -90,14 +79,14 @@ Qm=qm^2*[ dt^4/4  0        dt^3/2  0     ;...  % covariance of process for the m
           dt^3/2  0       dt^2     0     ;...
           0       dt^3/2  0        dt^2] ;
 
-R=cell(1,nm);
+R=cell(1,nm);  % covariance of measurement of the cats
 for i=1:nm
     R{1,i} = r(1)^2*eye(nz);            % covariance of measurement
     for j=1:nz-n
         R{1,i}(n+j,n+j) = r(j+1)^2;
     end
 end
-Rm = rm^2*eye(nm);
+Rm = rm^2*eye(nm);  % covariance of measurement of the mouse
 
 f = @update2;                               % nonlinear state equations
 h = @measure2WspeedMeasurements;            % measurement equation
@@ -106,22 +95,34 @@ for i=1:nm
     P{1,i} = 1e-3*eye(nx);                  % initial state covraiance
 end
 fm = @update;                               % nonlinear state equations
-hmT = @measuremT;                           % true measurement equation
-hm = @measurem;                             % measurement equation
+hmT = @measuremT;  % true measurement equation, used to generate measurements
+hm = @measurem;  % measurement equation, used by the ukf
 Pm = 1e-3*eye(nxm);                         % initial state covraiance
 
-s=zeros(nx,nm);
+sc=zeros(2,nm);  %todo: what's this ? true initial position of the cats ?
+phi=[0;pi/2; 5*pi/4];   %angle of the circular movement of the mouse
+radius=[.8;.8;.8];
+%todo: for all cats, do ...?
+for i=1:nm
+    sc(:,i)=[1+radius(i)*cos(phi(i));1+radius(i)*sin(phi(i))];
+end
+
+vc=initvelCircle;  %the velocities of the cats
+
+s=zeros(nx,nm);  %true state of the cats, each cats state is a column
 initpos=zeros(2,nm);
-camA=zeros(1,nm); %estimated initial relative camera angle
-camAabs=zeros(1,nm); %estimated initial absolute camera angle
+camA=zeros(1,nm); %estimated initial relative camera angles of the cats
+camAabs=zeros(1,nm); %estimated initial absolute camera angles of the cats
 for i=1:nm
     s(:,i) = [sc(:,i); vc{1,i}(:,1);...
-        atan2( vc{1,i}(2,1),vc{1,i}(1,1) ); pi/4];          % true initial state
-    initpos(:,i)=sc(:,i);%ls_est2(h(s)+ mNoise(i));             % initial position with noise
-    x(:,i) = [initpos(:,i); 0; 0; 0; camAabs(i)];                % estimated initial state
+        atan2( vc{1,i}(2,1),vc{1,i}(1,1) ); pi/4];  % true initial state
+    initpos(:,i)=sc(:,i);%ls_est2(h(s)+ mNoise(i));  % initial position with noise
+    x(:,i) = [initpos(:,i); 0; 0; 0; camAabs(i)];  % estimated initial state
     x(:,i)=initboundcorr(x(:,i),bound);
 end
 
+sm=[1.4; 1];  %todo: what's this ? true initial position of the mouse ?
+vm=initvelCirclem;  %the velocity of the mouse
 s2 = [sm; vm(:,1)];                         % true initial state
 initposm=ls_estm(hm(s2) + ram*randn(nm,1)); % initial position with noise
 xm = [initposm; 0; 0];                      % estimated initial state
@@ -194,7 +195,7 @@ for k=1:N
     
     for i=1:nm
         xV{1,i}(:,k) = x(:,i);               % store state estimate
-        z(:,i)=h(s(:,i)) + mNoise(i)+noiseShift;        % measurements
+        z(:,i)=h(s(:,i)) + mNoise(i)+k*noiseShift;        % measurements
 %         z(1:3,i)=z(1:3,i)+x(5,i)
 %         z(1:3,i)=mod(z(i,1),2*pi);
     end
