@@ -143,6 +143,7 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 			linelength = 90;
 			g2d.setColor(Color.blue);
 			
+			//Draw camera angles
 			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength));
 			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength));
 
@@ -152,11 +153,14 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 			entityPosX = centFix_X+_cats[i].getX()*zk/50;
 			entityPosY = centFix_Y-_cats[i].getY()*zk/50;
 			
+			
 			g2d.fillOval( (int) entityPosX-5, (int) entityPosY-5, 10, 10);
 			//Streckat test
 			g2d.setStroke(dashedBackground);
-			g2d.draw(new Rectangle((int) entityPosX-5,(int) entityPosY-5,20,20));
-			g2d.setStroke(solid);	
+			//g2d.draw(new Rectangle((int) entityPosX-5,(int) entityPosY-5,20,20));
+			g2d.setStroke(solid);
+			//Draw cat ids
+			g2d.drawString(_cats[i].getCatName(), entityPosX-10f, entityPosY-10f);
 		}
     }
 	
@@ -166,8 +170,11 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 			g2d.setColor(Color.green); 
 			if(i==3) { g2d.setColor(Color.blue); }
 			g2d.fillOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-15), (int) centFix_Y-(_lighthouse[i].getY()*zk/50+15), 30, 30);
+			g2d.setColor(Color.black); 
+			g2d.drawString(_lighthouse[i].getLighthouseName(), (int) centFix_X+(_lighthouse[i].getX()*zk/50-15)-10, (int) centFix_Y-(_lighthouse[i].getY()*zk/50+15)-10f);
+
 		}
-    }
+    } 
 	
 	//Print mouse
 	g2d.setColor(Color.red);

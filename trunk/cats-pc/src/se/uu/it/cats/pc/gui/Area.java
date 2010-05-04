@@ -65,6 +65,12 @@ public class Area { // implements ActionListener
   public int getArenaHeight() {
 	return arenaHeight;
   }
+  public void setArenaWidth(int w) {
+	  arenaWidth = w;
+  }
+  public void setArenaHeight(int h) {
+	  arenaHeight = h;
+  }
   public Cat[] getCats() {
 	return _cats;
   }
