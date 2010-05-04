@@ -7,16 +7,32 @@ import static GSim.Matlab.*;
 public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
 {
 	//Instance variables
+	/** Unscented Kalman Filter */
+	private UnscentedKalmanFilter ufk_filter;
 	
-	
-	private UnscentedKalmanFilterTest ufk_filter;
+	/** nonlinear state equations */
 	private IFunction f;
+	
+	/** estimated state vector, (1)x(n) Matrix, of the cat */
 	private Matrix xc;
-	private Matrix[] P;
+	
+	/** true state of the cat */
+	private Matrix sc;
+	
+	/** state covariance */
+	private Matrix P;
+	
+	/** measurement equation */
 	private IFunction h;
+	
+	/** measurments */
 	private Matrix z;
-	private Matrix Q;
-	private Matrix[] R;
+	
+	/** covariance of process for the cat */
+	private Matrix Q; 
+	
+	/** covariance of measurement of the cat */
+	private Matrix R;
 
 	
 	/*
@@ -28,11 +44,11 @@ public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
 	{		
 		//LandmarkList, true positions of the landmarks are in this static class. HmeasCat accesses the landmark list directly
 		int n = 1;//TODO use the following: LandmarkList.landmarkX.length;  //number of landmarks
-		int nm=3;  //number of cats
+		//int nm=1;  //number of cats, should always be one for a single positioning filter
 		int nz=n+4;  //?? number of elements in the measurement vector of the cats = number of landmarks + 4
 		int nx=6;  //number of variables in the cats' state vector
 		
-		UnscentedKalmanFilter ufk_filter = new UnscentedKalmanFilter(nx,nz);
+		ufk_filter = new UnscentedKalmanFilter(nx,nz);
 	
 		float dt=1;  //sampling period, must be 1 for now TODO adjust to matlab real dt ????
 		float q = 0.005f;  //std of expected process noise for the cat
@@ -50,28 +66,21 @@ public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
 		Q = new Matrix(temp_Q);  //covariance of process for the cat
 		Q.timesEquals(pow(q,2));
 		
-		R = new Matrix[nm];  //covariance of measurement of the cats
-		for (int i=1; i<=nm; i++)
+		R = eye(nz).timesEquals( pow(r.get(1-1,1-1),2) );  //covariance of measurement of the cat
+		for (int j=1; j<=nz-n; j++)
 		{
-			R[i-1] = eye(nz).timesEquals( pow(r.get(1-1,1-1),2) );  // covariance of measurement of the cats
-	
-			for (int j=1; j<=nz-n; j++)
-			{
-				R[i-1].set( n+j-1, n+j-1, pow(r.get(1-1, j+1-1),2) );
-			}
+			R.set( n+j-1, n+j-1, pow(r.get(1-1, j+1-1),2) );
 		}
+
 		
 		f = new FstateCat();  //nonlinear state equations
 		h = new HmeasCat();  //measurement equation
 		
-		P = new Matrix[nm];  //initial state covariance
-		for (int i=1; i<=nm; i++)
-		{
-			P[i-1] = eye(nz).timesEquals( pow(10,-3) );
-		}
+		P = eye(nz).timesEquals( pow(10,-3) );  //initial state covariance
+
 		
-		Matrix s = zeros(nx,nm);  //true state of the cats, each cats state is a column
-		xc = s.copy();  //initial state
+		sc = zeros(nx,1);  //initial true state of the cat
+		xc = sc.copy();  //initial estimated state
 		/*
 		double[][] temp_s = {{0.0}, {0.0}, {1.0}};;  //initial state of the cats  TODO get initial state from buffer?
 		Matrix s = new Matrix(temp_s);  //true state of the cats
@@ -118,26 +127,25 @@ public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
 	}
 	
 	
-	public Matrix update(Matrix xc)
-	{/*
-		
+	public Matrix[] update(Matrix xc)
+	{
+		//TODO how to get input readings ???
 		//One iteration with UKF
-		Matrix z = h.eval(s);  //h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
-		Matrix[] result = ukf(f, xc, P, h, z, Q, R);
-		x = result[0];  
+		z = h.eval(sc);  //h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
+		Matrix[] result = ufk_filter.ukf(f, xc, P, h, z, Q, R);
+		xc = result[0];  
 		P = result[1];
-		s = f.eval(s);  //update process 
+		sc = f.eval(sc);  //update process 
 		
-		*/
-		return null;
+		return result;
 	}
 	
 	/**
 	 * Updates the filter without explicitly returning the values
 	 */
-	public void update()
+	public void update() throws Exception
 	{
-
+		System.out.println("ERROR: not implemented yet!");
 	}
 	
 	/** Poll estimated x position value from filter */
