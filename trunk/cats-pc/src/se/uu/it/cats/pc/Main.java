@@ -21,6 +21,7 @@ import se.uu.it.cats.pc.Logger;
 
 import se.uu.it.cats.pc.gui.Area;
 import se.uu.it.cats.pc.gui.DataPanel;
+import se.uu.it.cats.pc.gui.MainPanel;
 import se.uu.it.cats.pc.gui.PanelBluetooth;
 import se.uu.it.cats.pc.gui.PrintArea;
 
@@ -30,11 +31,13 @@ public class Main
 	private DataPanel dataPanel;
 	private PrintArea printNewArea;
 	private PanelBluetooth panelBluetooth;
+	private MainPanel mainPanel;
 	private int arenaWidth = 400;
 	private int arenaHeight = 400;
 	private int windowWidth = 800;
 	private int windowHeight = 700;
 	private JCheckBoxMenuItem sgrid;
+	private JCheckBoxMenuItem sslider;
 	
 	public Main() {
 		
@@ -42,6 +45,7 @@ public class Main
 		printNewArea = new PrintArea(newArea, arenaWidth, arenaHeight);
 		dataPanel = new DataPanel(newArea, arenaHeight);
 		panelBluetooth = new PanelBluetooth(windowWidth);
+		mainPanel = new MainPanel(newArea, arenaHeight);
 		
 		// Create the Frame-window
 		JFrame frame = new JFrame("Cats - Arena");
@@ -71,6 +75,22 @@ public class Main
         });
 		view.add(sgrid);
 		
+		// Add slider-box to view-menu
+		sslider = new JCheckBoxMenuItem("Show zoom");
+		sslider.setState(false);
+		sslider.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (sslider.getState() == false ) { //Worked with false for some reason
+                	sslider.setState(false);
+                    printNewArea.showSlider(false);
+                } else {
+                	sslider.setState(true);
+                    printNewArea.showSlider(true);
+                }
+            }
+        });
+		view.add(sslider);
+		
 		//Add close-item to file-menu
 	    JMenuItem fileClose = new JMenuItem("Close", icon);
 	    fileClose.setMnemonic(KeyEvent.VK_C);
@@ -91,15 +111,14 @@ public class Main
 		JPanel panelData = new JPanel();
 		JPanel panelArena = new JPanel();
 		JPanel panelRawdata = new JPanel();
+		JPanel panelSettings = new JPanel();
 		
 		//frame.getContentPane().add(newArea);
 		
 		panelBackground.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		panelData.setBorder(BorderFactory.createLineBorder(Color.gray));
 		panelArena.setBorder(BorderFactory.createLineBorder(Color.gray));
-		
-		JButton button1 = new JButton("Button Text");
-		JLabel label1 = new JLabel("Label Text");
+		panelSettings.setBorder(BorderFactory.createLineBorder(Color.gray));
 		
 		/*panelLeft.add(button1, BorderLayout.NORTH);
 		panelLeft.add(label1, BorderLayout.EAST);*/
@@ -110,10 +129,12 @@ public class Main
 		panelArena.add(printNewArea);
 		panelData.add(dataPanel);
 		panelRawdata.add(panelBluetooth);
+		panelSettings.add(mainPanel);
 		
 		panelBackground.add(BorderLayout.WEST, panelData);
-		panelBackground.add(BorderLayout.EAST, panelArena);
+		panelBackground.add(BorderLayout.CENTER, panelArena);
 		panelBackground.add(BorderLayout.SOUTH, panelRawdata);
+		panelBackground.add(BorderLayout.EAST, panelSettings);
 		
 		
 		frame.getContentPane().add(panelBackground);
