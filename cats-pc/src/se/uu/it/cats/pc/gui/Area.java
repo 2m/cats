@@ -10,8 +10,8 @@ public class Area { // implements ActionListener
   // The absolute time
   private int time = 0;
   
-  private int arenaWidth = 300;
-  private int arenaHeight = 300;
+  private int arenaWidth = 200;
+  private int arenaHeight = 200;
   
   private static Area instanceHolder = new Area(); 
   
@@ -47,6 +47,7 @@ public class Area { // implements ActionListener
 	_lighthouse[2] = new Lighthouse("Beacon 3");
 	_lighthouse[3] = new Lighthouse("Beacon 4");
 	
+	
 	_lighthouse[0].newPosition(0,0);
 	_lighthouse[1].newPosition(arenaWidth,0);
 	_lighthouse[2].newPosition(arenaWidth,arenaHeight);
@@ -67,15 +68,23 @@ public class Area { // implements ActionListener
   }
   public void setArenaWidth(int w) {
 	  arenaWidth = w;
+	  update(); // Update positions of lighthouses
   }
   public void setArenaHeight(int h) {
 	  arenaHeight = h;
+	  update(); //Update positions of lighthouses
   }
   public Cat[] getCats() {
 	return _cats;
   }
   public Mouse getMouse() {
 	return _mouse;
+  }
+  public void update() {
+	  _lighthouse[0].newPosition(0,0);
+	  _lighthouse[1].newPosition(arenaWidth,0);
+	  _lighthouse[2].newPosition(arenaWidth,arenaHeight);
+	  _lighthouse[3].newPosition(0,arenaHeight);
   }
   public Lighthouse[] getLighthouse() {
 	return _lighthouse;

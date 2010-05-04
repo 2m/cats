@@ -105,6 +105,9 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 	_lighthouse = _newArea.getLighthouse();
 	_mouse = _newArea.getMouse();
 	
+	_arenaHeight = _newArea.getArenaHeight();
+    _arenaWidth = _newArea.getArenaWidth();
+	
 	wBetDashedLines_zk = wBetDashedLines*zk/50; //Adjusting grid for zoom
     //Draw lines
 	if(_showgrid){
@@ -163,6 +166,7 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
 			g2d.drawString(_cats[i].getCatName(), entityPosX-10f, entityPosY-10f);
 		}
     }
+	
 	
 	//Print lighthouses
 	for (int i = 0; i < _lighthouse.length; i++) {

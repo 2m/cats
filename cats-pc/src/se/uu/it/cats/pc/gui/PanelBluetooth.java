@@ -16,7 +16,7 @@ import se.uu.it.cats.pc.network.ConnectionHandler;
 
 import java.util.Hashtable;
 
-public class PanelBluetooth extends JPanel{ // implements ActionListener
+public class PanelBluetooth extends JPanel implements ActionListener{ // implements ActionListener
   
   private int _areaWidth;
   private JTextArea infoBox;
@@ -51,6 +51,7 @@ public class PanelBluetooth extends JPanel{ // implements ActionListener
 	
 	// Filewriting button
 	savefileButton = new JButton("Save");
+	savefileButton.addActionListener(this);
 	add(savefileButton);
   }
   
