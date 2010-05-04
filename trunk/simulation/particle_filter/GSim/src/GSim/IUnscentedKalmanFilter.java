@@ -26,7 +26,7 @@ public interface IUnscentedKalmanFilter
 	 * @param R  measurement noise covariance
 	 * @return  "a posteriori" state estimate and P: "a posteriori" state covariance
 	 */
-	public Matrix[] ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, float R);
+	public Matrix[] ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, Matrix R);
 	
 
 	/*

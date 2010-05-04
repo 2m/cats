@@ -11,9 +11,11 @@ public class HmeasCat implements IFunction{
 	public Matrix eval(Matrix xc){	
 		/*Original matlab code:
 		function z = measure2WspeedMeasurements(x)
-		%calculates the bearings from the landm to the mouse
+		%calculates the bearings from the landm to the cats
 		global landm;
-		for i=1:n
+		%global n;
+		n = size(landm,1);
+			for i=1:n
 		    %use either acos or asin
 		%     if (landm(i,2)-x(2,1)>=0) %needed because of ambiguity in acos (and asin)
 		%         %can be simplified(?)
@@ -24,15 +26,14 @@ public class HmeasCat implements IFunction{
 		%             sqrt((landm(i,1)-x(1,1))^2 + (landm(i,2)-x(2,1))^2));
 		%     end
 		%something wrong with the above, use instead:
-		    
-		    %Alternative: (somtimes less divergent, sometimes more)
+			    %Alternative: (somtimes less divergent, sometimes more)
 		     z(i,1)=atan2(landm(i,2)-x(2,1),landm(i,1)-x(1,1));
 		     z(i,1)=mod(z(i,1),2*pi);
 		end
-		z(n+1,1)=x(3,1);
-		z(n+2,1)=x(4,1);
-		z(n+3,1)=x(5,1);
-		z(n+4,1)=x(6,1);
+		z(n+1,1)=x(1,1); %measure x position
+		z(n+2,1)=x(2,1); %measure y position
+		z(n+3,1)=x(5,1); %measure cat orientation
+		z(n+4,1)=x(6,1); %measure camera orientation	
 		*/
 		
 		//TODO test measurement function
@@ -44,8 +45,8 @@ public class HmeasCat implements IFunction{
 			zc.set(i-1,1-1, Math.atan2(LandmarkList.landmarkY[i-1] - xc.get(2-1,1-1), LandmarkList.landmarkX[i-1] - xc.get(1-1,1-1)));
 			zc.set(i-1,1-1, zc.get(i-1,1-1)%2*Math.PI);
 		}
-		zc.set(n+1-1,1-1, xc.get(3-1,1-1));
-		zc.set(n+2-1,1-1, xc.get(4-1,1-1));
+		zc.set(n+1-1,1-1, xc.get(1-1,1-1));
+		zc.set(n+2-1,1-1, xc.get(2-1,1-1));
 		zc.set(n+3-1,1-1, xc.get(5-1,1-1));
 		zc.set(n+4-1,1-1, xc.get(6-1,1-1));
 	
