@@ -1,6 +1,8 @@
 package GSim;
 
 import lejos.util.Matrix;
+import static java.lang.Math.*;
+import static GSim.Matlab.*;
 
 /**
  * The Unscented Kalman Filter 
@@ -52,21 +54,21 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		this.m = m;
 		alpha=3.5f;  //1e-3 default
 		ki=0;  //default
-		beta=Math.pow(alpha, 2) -0.9f;  //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
-		lambda=Math.pow(alpha, 2)*(L+ki)-L;  
+		beta=pow(alpha, 2) -0.9f;  //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
+		lambda=pow(alpha, 2)*(L+ki)-L;  
 		c=L+lambda; 
 		Wm = new Matrix(1, (2*L+1), 0.5/c);
 		Wm.set(0,0,lambda/c);  
 		Wc=Wm.copy();
-		Wc.set(0,0, Wc.get(0,0) + 1 - Math.pow(alpha, 2) + beta);          
-		c=Math.sqrt(c);	
+		Wc.set(0,0, Wc.get(0,0) + 1 - pow(alpha, 2) + beta);          
+		c=sqrt(c);	
 	}
 	
 
     /* (non-Javadoc)
      * @see IUnscentedKalmanFilter#ukf()
      */
-	public Matrix[] ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, float R)
+	public Matrix[] ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, Matrix R)
 	{
 		//L=x.getColumnDimension();  //Currently not needed //TODO check that its the right dimension (column/row)
 		//m=z.getColumnDimension(); 
@@ -88,7 +90,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		
 		//Not used, X1=sigmas(x1,P1,c);  //sigma points around x1
 		//Not used, X2=X1.minus(  x1.times( ones(1,X1.getColumnDimension()) )  );  //deviation of X1
-		Matrix[] ut_h_matrices =ut(h,X1,Wm,Wc,m, new Matrix(1,1,(double)R) );  //unscented transformation of measurments
+		Matrix[] ut_h_matrices =ut(h,X1,Wm,Wc,m, R);  //unscented transformation of measurments
 		Matrix z1 = ut_h_matrices[0];
 		Matrix Z1 = ut_h_matrices[1];
 		Matrix P2 = ut_h_matrices[2];
@@ -101,7 +103,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		printM(P2);
 		System.out.println("Debug: ukf, Z2:");
 		printM(Z2);*/
-		Matrix P12 = ( X2.times(Matlab.diag(Wc)) ).times(Z2.transpose());  //transformed cross-covariance
+		Matrix P12 = ( X2.times(diag(Wc)) ).times(Z2.transpose());  //transformed cross-covariance
 		//System.out.println("Debug: ukf, P12:");
 		//printM(P12);
 		//Matrix K = P12.arrayRightDivide(P2);
@@ -158,8 +160,8 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	private Matrix[] ut(IFunction f, Matrix X, Matrix Wm, Matrix Wc, int n, Matrix R)
 	{
 		int L = X.getColumnDimension();
-		Matrix y = Matlab.zeros(n,1);
-		Matrix Y = Matlab.zeros(n,L);
+		Matrix y = zeros(n,1);
+		Matrix Y = zeros(n,L);
 		
 		//System.out.println("Debug: ut, X:");
 		//printM(X);
@@ -194,7 +196,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		//System.out.println("Debug: ut, Y1:");
 		//printM(Y1);	
 		
-		Matrix P = Y1.times(Matlab.diag(Wc));
+		Matrix P = Y1.times(diag(Wc));
 		P = P.times(Y1.transpose());
 		P.plusEquals(R);
 		//System.out.println("Debug: ut, P:");

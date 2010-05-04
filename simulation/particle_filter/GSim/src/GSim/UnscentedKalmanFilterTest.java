@@ -1,6 +1,8 @@
 package GSim;
 
 import lejos.util.Matrix;
+import static java.lang.Math.*;
+import static GSim.Matlab.*;
 
 /**
  * A class for testing The Unscented Kalman Filter on some basic functions and inputs.
@@ -74,20 +76,21 @@ public class UnscentedKalmanFilterTest
 		
 		float q=0.1f;    //std of process
 		float r=0.1f;    //std of measurement
-		Matrix Q = Matlab.eye(n);  //covariance of process
-		Q = Q.times(Math.pow(q, 2));	
-		float R=(float)Math.pow(r, 2);  //covariance of measurement
+		Matrix Q = eye(n);  //covariance of process
+		Q = Q.times(pow(q, 2));	
+		double R_temp = pow(r, 2);  //covariance of measurement
+		Matrix R = new Matrix(1,1,R_temp);
 		IFunction f = test.f_example; //@(x)[x(2);x(3);0.05*x(1)*(x(2)+x(3))];  % nonlinear state equations
 		IFunction h = test.h_example;  //h=@(x)x(1);          % measurement equation
 		
-		double[][] temp_s = {{0.0}, {0.0}, {1.0}};;  //initial state
+		double[][] temp_s = {{0.0}, {0.0}, {1.0}};  //initial state
 		/*temp_s[0][0] = 0;
 		temp_s[1][0] = 0;
 		temp_s[2][0] = 1;*/
 		Matrix s = new Matrix(temp_s); //true state vector
 		Matrix x = new Matrix(3,3);  //state estimate
 		x=s.copy();//s.plus( Matrix.random(3,1).times(q) );  //initial state with noise
-		Matrix P = Matlab.eye(n);  //initial state covraiance
+		Matrix P = eye(n);  //initial state covraiance
 		
 		//First iteration with UKF
 		Matrix z = h.eval(s);  //h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
@@ -97,20 +100,20 @@ public class UnscentedKalmanFilterTest
 		s = f.eval(s);  //update process 
 
 		System.out.println("Debug: ukf, x after iteration 1:");
-		Matlab.printM(x);
+		printM(x);
 		System.out.println("Debug: ukf, P after iteration 1:");
-		Matlab.printM(P);	
+		printM(P);	
 		
 		//Verify correctness
 		double[][] x_updated_arr = x.getArray();
 		double[][] x_correct_arr = {{0.0}, {1.0}, {0.0}};
 		System.out.println("Debug: ukfTest, x_correct_arr:" );
-		Matlab.printM( new Matrix(x_correct_arr) );	
+		printM( new Matrix(x_correct_arr) );	
 		for (int i = 0; i<3; i++)
 		{
 			for (int j = 0; j<1; j++)
 			{
-				if( Math.abs(x_updated_arr[i][j] - x_correct_arr[i][j]) > 0.01)
+				if( abs(x_updated_arr[i][j] - x_correct_arr[i][j]) > 0.01)
 				{
 					//Assert doesn't seem to work :( */						
 					Exception Exception = null ;
@@ -122,12 +125,12 @@ public class UnscentedKalmanFilterTest
 		double[][] P_updated_arr = P.getArray();
 		double[][] P_correct_arr = {{0.019900990099010,  0.0,  0.0},{0.0,  1.010000000000000,  0.0},{0.0,  0.0,  0.012500000000000}}; 
 		System.out.println("Debug: ukfTest, P_correct_arr:" );
-		Matlab.printM( new Matrix(P_correct_arr) );
+		printM( new Matrix(P_correct_arr) );
 		for (int i = 0; i<3; i++)
 		{
 			for (int j = 0; j<3; j++)
 			{
-				if( Math.abs(P_updated_arr[i][j] - P_correct_arr[i][j]) > 0.01){
+				if( abs(P_updated_arr[i][j] - P_correct_arr[i][j]) > 0.01){
 					//Assert doesn't seem to work :( */					
 					Exception Exception = null ;
 					throw Exception ;
@@ -144,9 +147,9 @@ public class UnscentedKalmanFilterTest
 			P = result[1];
 			s = f.eval(s);  //update process 
 			System.out.println("Debug: ukf test, x after iteration " +i+" :");
-			Matlab.printM(x);
+			printM(x);
 			System.out.println("Debug: ukf test, P after iteration " +i+" :");
-			Matlab.printM(P);	
+			printM(P);	
 		}
 		
 
