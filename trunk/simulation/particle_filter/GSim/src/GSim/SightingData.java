@@ -7,7 +7,7 @@ package GSim;
  * @version $Rev$
  * 
  */
-public class SightingData extends BufferData {
+public class SightingData extends ComparableData {
 	/** Position in global reference system (used for mouse sightings) */
 	public float x;
 	public float y;
@@ -24,13 +24,12 @@ public class SightingData extends BufferData {
 		this.type = type;
 	}
 
-	// TODO: Make this work
-	public boolean isSighting() {
+	public boolean isSightingData() {
 		return true;
 	}
 
 	public String toString() {
-		return "[" + timestamp + ", " + x + ", " + y + ", " + angle + ", "
-				+ type + "]";
+		return "[" + comparable + ", " + x + ", " + y + ", " + angle
+				* (180 / Math.PI) + ", " + type + "]";
 	}
 }

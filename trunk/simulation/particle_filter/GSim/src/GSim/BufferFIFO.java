@@ -8,15 +8,11 @@ package GSim;
  * 
  */
 public class BufferFIFO extends Buffer {
-	// TODO: Base this on LinkedList
-	private BufferNode first;
-	private BufferNode last;
 	private Object lockOnLast;
 	private int nonodes = 0;
 
 	public BufferFIFO() {
-		first = null;
-		last = null;
+		super();
 		lockOnLast = new Object();
 	}
 
@@ -26,20 +22,14 @@ public class BufferFIFO extends Buffer {
 	 * @param BufferData
 	 *            Any BufferData
 	 */
-	public void push(BufferData value) {
-		BufferNode newNode = new BufferNode(value, null);
+	public void push(ComparableData value) {
 
 		synchronized (lockOnLast) {
-			if (last != null) {
-				last.next = newNode;
-				last = newNode;
-			} else {
-				first = newNode;
-				last = newNode;
+			if (value != null) {
+				list.insertLast(value);
+				nonodes++;
 			}
-			nonodes++;
 		}
-		// System.out.println(nonodes + " number of objects buffered in FIFO");
 	}
 
 	/**
@@ -47,25 +37,15 @@ public class BufferFIFO extends Buffer {
 	 * 
 	 * @return BufferData oldest BufferData or null
 	 */
-	public synchronized BufferData pop() {
-		BufferData ret = null;
-		if (first != null) {
-			BufferNode next = first.next;
-			ret = first.value;
-			first = next;
+	public synchronized ComparableData pop() {
+		ComparableData ret = list.popFirst();
+		if (ret != null) {
 			nonodes--;
 		}
 		return ret;
 	}
 
 	public String toString() {
-		BufferNode ptr = first;
-		String ret = "{";
-		while (ptr != null) {
-			ret += " " + ptr.value;
-			ptr = ptr.next;
-		}
-		ret += " }";
-		return ret;
+		return list.toString();
 	}
 }
