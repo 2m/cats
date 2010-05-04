@@ -34,8 +34,8 @@ public class Main
 	private MainPanel mainPanel;
 	private int arenaWidth = 400;
 	private int arenaHeight = 400;
-	private int windowWidth = 800;
-	private int windowHeight = 700;
+	private int windowWidth = 900;
+	private int windowHeight = 600;
 	private JCheckBoxMenuItem sgrid;
 	private JCheckBoxMenuItem sslider;
 	
@@ -131,10 +131,11 @@ public class Main
 		panelRawdata.add(panelBluetooth);
 		panelSettings.add(mainPanel);
 		
-		panelBackground.add(BorderLayout.WEST, panelData);
+		panelBackground.add(BorderLayout.WEST, panelSettings);
 		panelBackground.add(BorderLayout.CENTER, panelArena);
+		panelBackground.add(BorderLayout.EAST, panelData);		
 		panelBackground.add(BorderLayout.SOUTH, panelRawdata);
-		panelBackground.add(BorderLayout.EAST, panelSettings);
+		
 		
 		
 		frame.getContentPane().add(panelBackground);
