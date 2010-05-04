@@ -21,4 +21,8 @@ class Lighthouse {
 		x=newX;
 		y=newY;
 	}
+	
+	public String getLighthouseName() {
+		return lighthouseName;
+	}
 }
