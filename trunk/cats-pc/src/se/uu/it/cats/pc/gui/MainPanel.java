@@ -8,7 +8,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 
-public class MainPanel extends JPanel{ // implements ActionListener
+public class MainPanel extends JPanel implements ActionListener{ // implements ActionListener
   
   private Area world;
   private int _areaHeight;
@@ -21,7 +21,6 @@ public class MainPanel extends JPanel{ // implements ActionListener
   private String temp;
   
   public void actionPerformed(ActionEvent ae) {
-		//If save-button is pressed  
 	
 		if (ae.getSource() == buttonAreaWidthHeight) {
 			try {
@@ -29,7 +28,6 @@ public class MainPanel extends JPanel{ // implements ActionListener
 				world.setArenaHeight(Integer.parseInt(temp));
 				temp = inputArenaWidth.getText();
 				world.setArenaWidth(Integer.parseInt(temp));
-				System.out.println("Tryck");
 			}	
 			  	
 			catch (NullPointerException e) {
@@ -55,11 +53,12 @@ public class MainPanel extends JPanel{ // implements ActionListener
 	
 	labelArenaWidth = new JLabel("Distance X");
 	labelArenaHeight = new JLabel("Distance Y");
-	inputArenaWidth = new JTextField(world.getArenaWidth());
-	inputArenaHeight = new JTextField(world.getArenaHeight());
+	inputArenaWidth = new JTextField(""+world.getArenaWidth());
+	inputArenaHeight = new JTextField(""+world.getArenaHeight());
 	inputArenaWidth.setColumns(5); 
 	inputArenaHeight.setColumns(5);
 	buttonAreaWidthHeight = new JButton("Update");
+	buttonAreaWidthHeight.addActionListener(this);
 	add(labelArenaWidth);
 	add(inputArenaWidth);
 	add(labelArenaHeight);
