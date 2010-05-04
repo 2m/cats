@@ -7,23 +7,17 @@ package GSim;
  * @version $Rev$
  */
 public class Buffer {
+	protected LinkedList list;
 
-	public synchronized BufferData pop() {
+	public Buffer() {
+		list = new LinkedList();
+	}
+
+	public synchronized ComparableData pop() {
 		return null;
 	}
 
-	public void push(BufferData value) {
+	public void push(ComparableData value) {
 	}
 
-}
-
-/** Buffer node */
-final class BufferNode {
-	public BufferData value;
-	public BufferNode next;
-
-	public BufferNode(BufferData value, BufferNode next) {
-		this.value = value;
-		this.next = next;
-	}
 }

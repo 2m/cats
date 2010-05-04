@@ -1,6 +1,6 @@
 package GSim;
 
-public class MovementData extends BufferData {
+public class MovementData extends ComparableData {
 	public float dr; // Distance travelled
 	public float dangle; // Radians turned
 
@@ -10,7 +10,11 @@ public class MovementData extends BufferData {
 		this.dangle = dangle;
 	}
 
+	public boolean isMovementData() {
+		return true;
+	}
+
 	public String toString() {
-		return "[" + timestamp + ", " + dr + ", " + dangle + "]";
+		return "[" + comparable + ", " + dr + ", " + dangle + "]";
 	}
 }

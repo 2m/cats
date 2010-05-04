@@ -31,12 +31,12 @@ public final class Fixed {
 	 * int32(sin((2*pi)/(512*4))*2^30)
 	 */
 	// TODO: Regenerate SIN_PRECALC
-	private static final int SIN_PRECALC = 13176464;
+	private static final int SIN_PRECALC = 3294193;
 	/*
 	 * Equivalent to: cos((2 * PI) / (QUARTER_CIRCLE * 4)) * 2 * 2^TRIG_SHIFT
 	 * int32(cos((2*pi)/(512*4))*2*2^30)
 	 */
-	private static final int COS_PRECALC = 2147321946;
+	private static final int COS_PRECALC = 2147473542;
 	private static final int[] SIN_TABLE = new int[QUARTER_CIRCLE + 1];
 
 	// Initialise random number generator

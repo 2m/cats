@@ -1,12 +1,13 @@
 package GSim;
 
 /**
- * Linked list for particles. List is sorded with highest weight first.
+ * Linked list for particles. List is sorted with highest weight first.
  * 
  * @author Fredrik Wahlberg
  * 
  */
 public class LinkedList {
+	// TODO: Make this use ComparableData
 	/** Pointer to first element. */
 	public Link first;
 	/** Pointer to last element. Needed for insertion as last element */
@@ -21,7 +22,7 @@ public class LinkedList {
 		return (first == null);
 	}
 
-	public void insertFirst(Particle data) {
+	public void insertFirst(ComparableData data) {
 		Link newLink = new Link(data);
 		if (isEmpty()) {
 			first = newLink;
@@ -32,7 +33,7 @@ public class LinkedList {
 		}
 	}
 
-	public void insertLast(Particle dd) {
+	public void insertLast(ComparableData dd) {
 		Link newLink = new Link(dd);
 		if (isEmpty()) {
 			first = newLink;
@@ -43,7 +44,7 @@ public class LinkedList {
 		}
 	}
 
-	public Particle popFirst() {
+	public ComparableData popFirst() {
 		if (isEmpty()) {
 			// List is empty
 			return null;
@@ -76,15 +77,15 @@ public class LinkedList {
 		}
 	}
 
-	public void insertSorted(Particle data) {
+	public void insertSorted(ComparableData data) {
 		if (isEmpty()) {
 			Link newLink = new Link(data);
 			first = newLink;
 			last = newLink;
 		} else {
-			if (first.data.w <= data.w) {
+			if (first.data.comparable <= data.comparable) {
 				insertFirst(data);
-			} else if (last.data.w > data.w) {
+			} else if (last.data.comparable > data.comparable) {
 				insertLast(data);
 			} else {
 				// Link should be inserted inside list
@@ -93,7 +94,7 @@ public class LinkedList {
 				while (current != null) {
 					// Check if current weight is smaller than the particle
 					// weight.
-					if (data.w >= current.data.w) {
+					if (data.comparable >= current.data.comparable) {
 						break;
 					}
 					// Step forward in list
@@ -126,10 +127,10 @@ public class LinkedList {
 }
 
 class Link {
-	public Particle data; // data item
+	public ComparableData data; // data item
 	public Link next; // next link in list
 
-	public Link(Particle d) {
+	public Link(ComparableData d) {
 		data = d;
 	}
 

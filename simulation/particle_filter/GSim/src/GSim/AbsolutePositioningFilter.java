@@ -57,4 +57,23 @@ public abstract class AbsolutePositioningFilter {
 	/** Reset filter with some initial data */
 	public void initData(float x, float y, float angle) {
 	}
+
+	/**
+	 * Pause the execution of thread.
+	 * 
+	 * @param millis
+	 *            to pause as a long int
+	 * @return Result as boolean
+	 */
+	protected boolean sleep(long millis) {
+		if (Thread.interrupted())
+			return false;
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			return false;
+		}
+		return true;
+	}
+
 }

@@ -1,13 +1,20 @@
 package GSim;
 
-public class TrackingParticle extends Particle {
+public class TrackingParticle extends ComparableData {
+	public int x;
+	public int y;
 	public int xv;
 	public int yv;
 
 	public TrackingParticle(int x, int y, int xv, int yv, int w) {
-		super(x, y, w);
+		super(w);
+		this.x = x;
+		this.y = y;
 		this.xv = xv;
 		this.yv = yv;
 	}
 
+	public boolean isTrackingParticle() {
+		return true;
+	}
 }
