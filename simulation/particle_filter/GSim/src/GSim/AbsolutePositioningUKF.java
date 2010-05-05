@@ -1,10 +1,15 @@
 package GSim;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+
 import lejos.util.Matrix;
 import static java.lang.Math.*;
 import static GSim.Matlab.*;
 
-public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
+public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 {
 	//Instance variables
 	/** Unscented Kalman Filter */
@@ -13,10 +18,11 @@ public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
 	/** nonlinear state equations */
 	private IFunction f;
 	
-	/** estimated state vector, (1)x(n) Matrix, of the cat */
+	/** estimated state vector, (1)x(n) Matrix, of the cat 
+	 * x, y, vx, vy, orientation, absCamAngle*/
 	private Matrix xc;
 	
-	/** true state of the cat */
+	/** true state of the cat (simulation only)*/
 	private Matrix sc;
 	
 	/** state covariance */
@@ -35,13 +41,12 @@ public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
 	private Matrix R;
 
 	
-	/*
 	public AbsolutePositioningUKF(float T, Buffer sensorData, Buffer movementData, RealTimeClock rttime)		
 	{	
 		super(T, sensorData, movementData, rttime);
-	*/
+	/*
 	public AbsolutePositioningUKF()		
-	{		
+	{*/		
 		//LandmarkList, true positions of the landmarks are in this static class. HmeasCat accesses the landmark list directly
 		int n = 1;//TODO use the following: LandmarkList.landmarkX.length;  //number of landmarks
 		//int nm=1;  //number of cats, should always be one for a single positioning filter
@@ -72,30 +77,23 @@ public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
 			R.set( n+j-1, n+j-1, pow(r.get(1-1, j+1-1),2) );
 		}
 
-		
 		f = new FstateCat();  //nonlinear state equations
 		h = new HmeasCat();  //measurement equation
 		
 		P = eye(nz).timesEquals( pow(10,-3) );  //initial state covariance
 
-		
-		sc = zeros(nx,1);  //initial true state of the cat
-		xc = sc.copy();  //initial estimated state
+		sc = zeros(nx,1);  //initial true state of the cat (simulation only)
+		xc = zeros(nx,1);  //initial estimated state
 		/*
 		double[][] temp_s = {{0.0}, {0.0}, {1.0}};;  //initial state of the cats  TODO get initial state from buffer?
 		Matrix s = new Matrix(temp_s);  //true state of the cats
 		*/
 		
-
-		/*
-		
+		/*	
 		global actLandm; %the indices of the landmarks that are seen
 		global ra; %std of actual measurement noise 
 		global vc; %the velocities of the cats
 		global k;  %current time step
-		global N;  %total number of time steps
-		global x;  %state vector of the cats
-		global phi; %Angle of circular motion of the cats
 		*/
 	}
 	
@@ -126,7 +124,7 @@ public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
 		*/
 	}
 	
-	
+	/*
 	public Matrix[] update(Matrix xc)
 	{
 		//TODO how to get input readings ???
@@ -138,31 +136,48 @@ public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
 		sc = f.eval(sc);  //update process 
 		
 		return result;
-	}
+	}*/
 	
 	/**
 	 * Updates the filter without explicitly returning the values
 	 */
-	public void update() throws Exception
+	public void update()
 	{
-		System.out.println("ERROR: not implemented yet!");
+		//One iteration with UKF
+		//z = h.eval(sc);  //h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments	
+		
+		MovementData mdata = (MovementData) movementData.pop();
+		SightingData sdata = (SightingData) sensorData.pop();//TODO is sighting data only one landmark ??
+		double[] bearingToLandmarks;
+		//TODO: fovCheckMerge...
+		//double tempX = getX() + mdata. //TODO add tacometer data
+		//double tempY = getY() + mdata.
+		double tempOrientation = xc.get(0, 4) + mdata.dangle;
+		z.set(0,4,tempOrientation);
+	
+		Matrix[] result = ufk_filter.ukf(f, xc, P, h, z, Q, R);
+		xc = result[0];  
+		P = result[1];
+		//sc = f.eval(sc);  //update process, TODO: Remove ? Don't know true state ?
 	}
 	
 	/** Poll estimated x position value from filter */
 	public float getX() {
-		return (float) 0.0;
+		return (float)xc.get(0, 0);
 	}
 
 	/** Poll estimated y position value from filter */
 	public float getY() {
-		return (float) 0.0;
+		return (float)xc.get(0, 1);
 	}
 
+	//TODO Rename to getOrientation ??
 	/** Poll estimated direction angle value from filter */
 	public float getAngle() {
-		return (float) 0.0;
+		return (float)xc.get(0, 4);
 	}
 	
+	/*
 	public static void main(String args[])
 	{
 		Buffer sensorData;
@@ -170,6 +185,37 @@ public class AbsolutePositioningUKF //extends AbsolutePositioningFilter
 		float T;
 		RealTimeClock rttime;
 		AbsolutePositioningUKF test = new AbsolutePositioningUKF();
+	}*/
+	
+	/*
+	 * Draw particles (NOT brick material)
+	 */
+	public void draw(Graphics g) {
+		// TODO: Remove graphics code from filter
+		final int size = 4; // Diameter
+		final int linelength = 8;
+
+		Graphics2D g2 = (Graphics2D) g;
+
+		// Save the current tranform
+		AffineTransform oldTransform = g2.getTransform();
+
+		// Rotate and translate the actor
+		// g2.rotate(iangle, ix, iy);
+
+	
+		// Plot mean
+		g2.setColor(Color.red);
+		int ix = Actor.e2gX(getX());
+		int iy = Actor.e2gY(getY());
+		double iangle = -getAngle();
+		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
+				(int) size);
+		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
+				* linelength), (int) (iy + Math.sin(iangle) * linelength));
+
+		// Reset the transformation matrix
+		g2.setTransform(oldTransform);
 	}
 
 }
