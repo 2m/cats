@@ -7,11 +7,12 @@ import java.awt.Graphics;
  * talken out befor use on the NXT)
  */
 public abstract class AbsolutePositioningFilter {
-	/* Buffers with data no movement and landmark sightings */
+	/* Buffers with data on movement and landmark sightings */
 	protected final Buffer sensorData;
 	protected final Buffer movementData;
-	/* Period of filter (can be changed by filter for adaptive period) */
+	/* Period of filter */
 	protected final float T;
+	/* Period of filter in milliseconds*/
 	protected final int Tint;
 	/* Pointer to common clock object */
 	protected final RealTimeClock rttime;
@@ -20,7 +21,7 @@ public abstract class AbsolutePositioningFilter {
 			Buffer movementData, RealTimeClock rttime) {
 		/** Period of filter */
 		this.T = T;
-		this.Tint = Fixed.floatToFixed(T);
+		this.Tint = (int)(T*1000);
 		/** Sorded buffer with sensor readings */
 		this.sensorData = sensorData;
 		/** Sorted buffer wi th data on movement */
@@ -57,23 +58,4 @@ public abstract class AbsolutePositioningFilter {
 	/** Reset filter with some initial data */
 	public void initData(float x, float y, float angle) {
 	}
-
-	/**
-	 * Pause the execution of thread.
-	 * 
-	 * @param millis
-	 *            to pause as a long int
-	 * @return Result as boolean
-	 */
-	protected boolean sleep(long millis) {
-		if (Thread.interrupted())
-			return false;
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) {
-			return false;
-		}
-		return true;
-	}
-
 }

@@ -27,10 +27,13 @@ public class Actor {
 	protected SensorHandler sensors;
 	protected int iter;
 	protected BillBoard billboard;
+	
+	protected int id;
 
 	public Actor(Actor mouse, double tx, double ty, double tangle, int ttype,
-			RealTimeClock clock, BillBoard billboard) {
+			RealTimeClock clock, BillBoard billboard, int id) {
 		motor = new MotorControl(tx, ty, tangle, motorBuffer, clock);
+		this.id=id;
 		type = ttype;
 		gotox = tx;
 		gotoy = ty;

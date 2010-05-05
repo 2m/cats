@@ -9,8 +9,8 @@ package GSim;
  */
 public class Mouse extends Actor {
 	public Mouse(Actor mouse, double x, double y, double angle,
-			RealTimeClock clock, BillBoard billboard) {
-		super(mouse, x, y, angle, MOUSE, clock, billboard);
+			RealTimeClock clock, BillBoard billboard, int id) {
+		super(mouse, x, y, angle, MOUSE, clock, billboard, id);
 	}
 
 }

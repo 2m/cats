@@ -12,18 +12,26 @@ import java.awt.Graphics;
 public class Cat extends Actor {
 	protected Buffer positioningBuffer, trackerBuffer;
 	protected AbsolutePositioningFilter positioningFilter;
+	protected TrackingFilter trackingFilter;
 
 	public Cat(Actor mouse, double x, double y, double angle,
-			RealTimeClock clock, BillBoard billboard) {
-		super(mouse, x, y, angle, CAT, clock, billboard);
+			RealTimeClock clock, BillBoard billboard, int id) {
+		super(mouse, x, y, angle, CAT, clock, billboard, id);
 		sensors = new SensorHandler(mouse, clock);
 		sensors.register(this);
 		positioningBuffer = sensors.regPositioner();
 		trackerBuffer = sensors.regTracker();
-		int N = 300;
+		int N = 80;
 		float T = (float) 0.5;
-		positioningFilter = new AbsolutePositioningParticleFilter(N, T,
-				positioningBuffer, motorBuffer, clock);
+		/*positioningFilter = new AbsolutePositioningUKF(T, positioningBuffer,
+				motorBuffer, clock);
+				*/
+		/*
+		 * positioningFilter = new AbsolutePositioningParticleFilter(N, T,
+		 * positioningBuffer, motorBuffer, clock);
+		 */
+		/*trackingFilter = new TrackingParticleFilter(id, N, T, trackerBuffer,
+				clock, billboard);*/
 		positioningFilter.initData((float) motor.getX(), (float) motor.getY(),
 				(float) motor.getAngle());
 	}
@@ -35,18 +43,15 @@ public class Cat extends Actor {
 		motor.goTo(gotox, gotoy);
 		if ((iter % 5) == 0) {
 			sensors.update();
-			// System.out.println(positioningFilter);
 			positioningFilter.update();
-			// trackingFilter.update();
-			trackerBuffer.pop();
-			System.out.println("---");
+			//trackingFilter.update();
 		}
 		iter++;
 	}
 
 	public void drawMore(Graphics g) {
-		positioningFilter.draw(g);
-		// trackingFilter.draw(g);
+		// positioningFilter.draw(g);
+		trackingFilter.draw(g);
 
 	}
 }

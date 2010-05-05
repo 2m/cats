@@ -22,15 +22,11 @@ public final class Fixed {
 	/** Pseudo degrees on a circle */
 	public static final int DEGREES = 4 * QUARTER_CIRCLE;
 	public static final int RADIANS_TO_DEGREES = (int) ((float) (QUARTER_CIRCLE * 2 * ONE) / Math.PI);
-	// public static final int ANGLE_MASK_FIXED = ONE * (QUARTER_CIRCLE * 4) -
-	// 1;
-	// public static final int DOUBLE_CIRCLE_MASK = QUARTER_CIRCLE * 8 - 1;
 
 	/*
 	 * Equivalent to: sin((2 * PI) / (QUARTER_CIRCLE * 4)) * 2^TRIG_SHIFT
 	 * int32(sin((2*pi)/(512*4))*2^30)
 	 */
-	// TODO: Regenerate SIN_PRECALC
 	private static final int SIN_PRECALC = 3294193;
 	/*
 	 * Equivalent to: cos((2 * PI) / (QUARTER_CIRCLE * 4)) * 2 * 2^TRIG_SHIFT
@@ -40,7 +36,7 @@ public final class Fixed {
 	private static final int[] SIN_TABLE = new int[QUARTER_CIRCLE + 1];
 
 	// Initialise random number generator
-	private static Random rng = new Random();
+	private static Random rng = new Random(45765848);
 
 	/*
 	 * Generates the tables and fills in any remaining static ints.
