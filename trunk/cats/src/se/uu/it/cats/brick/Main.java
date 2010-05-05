@@ -45,8 +45,8 @@ public class Main
 		listenerThread.start();
 		
 		//Run SimpleFilter:
-		Thread filterThread = new Thread(new SimpleFilter());
-		filterThread.start();
+		//Thread filterThread = new Thread(new SimpleFilter());
+		//filterThread.start();
 		
 		//Run MovementPilot:
 		float[] sCat = {0, 0, (float) (Math.PI/2)};
@@ -64,6 +64,8 @@ public class Main
 		Button.waitForPress();
 		Thread.sleep(2000);
 		
+		//mPilot.travel(0f,-0.3f);
+		//mPilot.travel(0f,0f);
 		for (int i=0; i<3; i++){ //turn in square
 			mPilot.travel(0.6f, 0.6f);
 			mPilot.travel(  0f, 1.2f);
