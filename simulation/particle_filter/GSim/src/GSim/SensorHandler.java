@@ -13,7 +13,7 @@ public class SensorHandler {
 	private double field_of_view = 43 * (Math.PI / 180); // F.O.V in radians
 	public Buffer positioningBuffer, trackingBuffer;
 	private Actor cat, mouse;
-	private boolean initialPhase = true;
+	private boolean initialPhase = false;
 	private RealTimeClock realtime;
 	private Random rnd = new Random();
 
@@ -37,8 +37,10 @@ public class SensorHandler {
 		float angle1 = (float) Math.atan2(y1, x1);
 		int t = realtime.getTime();
 		int type = 0;
-		SightingData d = new SightingData(t, cx, cy, (float) ((angle1 - cat
-				.getAngle()) + rnd.nextGaussian() * 3 * (Math.PI / 180)), type);
+		// TODO: Use estimated x and y in tracking data
+		SightingData d = new SightingData(t, cx, cy, (float) (angle1 + rnd
+				.nextGaussian()
+				* 1 * (Math.PI / 180)), type);
 		// System.out.println("Push: " + d);
 		trackingBuffer.push(d);
 		for (int i = 0; i < LandmarkList.landmarkX.length; i++) {

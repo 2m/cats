@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.util.Random;
 
 /** Particle filter for absolute positioning of one cat using landmarks. */
 public class AbsolutePositioningParticleFilter extends
@@ -141,7 +140,7 @@ public class AbsolutePositioningParticleFilter extends
 	 *            The distance driven
 	 */
 	private void moveParticles(int distance) {
-		// Bet pointer to first element in data list
+		// Set pointer to first element in data list
 		Link link = data.first;
 		// Loop through all particles
 		while (link != null) {
@@ -200,10 +199,18 @@ public class AbsolutePositioningParticleFilter extends
 		PositioningParticle part = (PositioningParticle) data.popFirst();
 		// Loop through all particles
 		while (part != null) {
+			// Get rotation angle
 			int theta = Fixed.round(Fixed.mul(-part.angle - sensorangle,
 					Fixed.RADIANS_TO_DEGREES));
-			int cos = Fixed.cos(theta);
-			int sin = Fixed.sin(theta);
+			// int cos = Fixed.cos(theta);// OK
+			// int sin = Fixed.sin(theta);// Check this
+			double angle = Fixed.fixedToFloat(-part.angle - sensorangle);
+			int cos = Fixed.floatToFixed(Math.cos(angle));
+			int sin = Fixed.floatToFixed(Math.sin(angle));
+
+			// u = (1, 0)
+			int u1 = Fixed.ONE;
+			int u2 = 0;
 
 			int z = 0;
 			// Loop through landmarks
@@ -219,9 +226,16 @@ public class AbsolutePositioningParticleFilter extends
 					int norm = Fixed.norm(toMark_x, toMark_y);
 
 					float toLandm = (float) Math.atan2(toMark_y, toMark_x);
-					float sens = Fixed.fixedToFloat(part.angle);
-					float h = (float) ((Math.cos(sens) * Math.cos(toLandm)) + (Math
-							.sin(sens) * Math.sin(toLandm)));
+					float sens = Fixed.fixedToFloat(sensorangle);
+					float partangle = Fixed.fixedToFloat(part.angle);
+					float cmpang = sens + partangle;
+					/*
+					 * float h = (float) ((Math.cos(cmpang) * Math.cos(toLandm))
+					 * + (Math .sin(cmpang) * Math.sin(toLandm)));
+					 */
+					float h = (float) ((Math.cos(0) * Math
+							.cos(toLandm - cmpang)) + (Math.sin(0) * Math
+							.sin(toLandm - cmpang)));
 					int hf = Fixed.floatToFixed(h);
 
 					// Check for zero distance to landmark
@@ -230,24 +244,32 @@ public class AbsolutePositioningParticleFilter extends
 								.println("Division by zero in compareParticles()");
 						a = 0;
 					} else {
-						int v1 = Fixed.mul(toMark_x, cos)
-								- Fixed.mul(toMark_y, sin);
-						a = Fixed.div(v1, norm);
+						int toMark_x_norm = Fixed.div(toMark_x, norm);
+						int toMark_y_norm = Fixed.div(toMark_y, norm);
+						// rot_p = [cos(theta) -sin(theta); sin(theta)
+						// cos(theta)];
+						// v=rot_p*toMark
+						// After this rotation the landmark vector should point
+						// to
+						// (1, 0) if the particle has the correct values.
+						int v1 = Fixed.mul(toMark_x_norm, cos)
+								+ Fixed.mul(toMark_y_norm, -sin);
+						int v2 = Fixed.mul(toMark_x_norm, sin)
+								+ Fixed.mul(toMark_y_norm, cos);
+						// Inner product between vectors u and v =>
+						// cos(angle_diff)
+						a = Fixed.mul(v1, u1) + Fixed.mul(v2, u2);
 					}
 
 					// Check to see if this landmark gives a better hit
 					if (a > z) {
 						z = a;
 					}
-
-					if (hf > z) {
-						z = hf;
-					}
-
+					// hf is approx the same as a
 					/*
-					 * if (z > ParticleFilter.CUT[4]) { // Break loop if
-					 * comparison is a hit break; }
+					 * if (hf > z) { z = hf; }
 					 */
+
 				}
 			}
 			// Run penalty function
@@ -274,9 +296,10 @@ public class AbsolutePositioningParticleFilter extends
 		// Check if the sum of weights are zero
 		zerosum = (sum_w_tmp == 0);
 
-		System.out.println("sum_w=" + Fixed.fixedToFloat(sum_w));
-		if (data.length() != N) {
-			System.out.println("Particles lost! (count:" + data.length() + ")");
+		//System.out.println("sum_w=" + Fixed.fixedToFloat(sum_w));
+		if (data.getLength() != N) {
+			System.out.println("Particles lost! (count:" + data.getLength()
+					+ ")");
 		}
 	}
 
@@ -314,16 +337,13 @@ public class AbsolutePositioningParticleFilter extends
 		if (!zerosum) {
 			// Only the worst particles needs to be re-sampled, so some
 			// particles can be skipped.
-			// TODO: Stop full re-sampling
-			/*
-			 * for (int i = 0; (i < Ncut) && (link != null); i++) { link.data.w
-			 * = Nnorm; link = link.next; }
-			 */
+			for (int i = 0; (i < Ncut) && (link != null); i++) {
+				link.data.comparable = Nnorm;
+				link = link.next;
+			}
 		}
 
 		int stdAngle = Fixed.sqrt(varAngle);
-		System.out.println("stdAngle: " + Fixed.fixedToFloat(stdAngle)
-				* (180 / Math.PI));
 		// Loop through all particles
 		while (link != null) {
 			PositioningParticle part = (PositioningParticle) link.data;
@@ -347,11 +367,11 @@ public class AbsolutePositioningParticleFilter extends
 	 * they are within limits.
 	 */
 	public void calcMean() {
-		System.out.print("Calculating mean ");
+		//System.out.print("Calculating mean ");
 		// Create local vaiables
 		int tmean_x = 0, tmean_y = 0, tmean_a = 0, norm;
 		if (zerosum) {
-			System.out.println("(ordinary)");
+			//System.out.println("(ordinary)");
 			// Calculate an ordinary mean
 			Link link = data.first;
 			// Loop through all particle
@@ -366,8 +386,7 @@ public class AbsolutePositioningParticleFilter extends
 			// same weight.
 			norm = Nnorm;
 		} else {
-			System.out
-					.println("(weighted) sum_w: " + Fixed.fixedToFloat(sum_w));
+			//System.out.println("(weighted) sum_w: " + Fixed.fixedToFloat(sum_w));
 			// Calculate a weighted mean
 			Link link = data.first;
 			// This should be equal to tmean_x=sum(x.*w) ...
@@ -591,14 +610,17 @@ public class AbsolutePositioningParticleFilter extends
 		// TODO: Remove redundant buffer objects and merge where possible
 		while (mdata != null) {
 			if (mdata.getComparable() <= currentTime) {
-				list.insertSorted(mdata);
+				if ((Math.abs(mdata.dangle) > 0.001)
+						|| (Math.abs(mdata.dr) > 0.001)) {
+					list.insertSorted(mdata);
+				}
 				mdata = (MovementData) movementData.pop();
 			} else {
 				movementData.push(mdata);
 				mdata = null;
 			}
 		}
-		System.out.println(list.toString());
+		//System.out.println(list.toString());
 
 		// Counter for number of compares since re-sample
 		int evaluationsSinceResample = 0;
@@ -634,7 +656,7 @@ public class AbsolutePositioningParticleFilter extends
 			bufferdata = list.popFirst();
 
 			// Re-sample every n:th evaluation or if there is no more data
-			if ((evaluationsSinceResample >= 4) || (bufferdata == null)) {
+			if ((evaluationsSinceResample >= 2) || (bufferdata == null)) {
 				calcMean();
 				reSample();
 				evaluationsSinceResample = 0;
@@ -650,7 +672,7 @@ public class AbsolutePositioningParticleFilter extends
 	public void run() {
 		// TODO: Implement main loop and thread timer
 		/*
-		 * while (true) { update(); sleep((long) (rttime.getTime() % T)); }
+		 * while (true) { update(); sleep((long) (rttime.getTime() % Tint)); }
 		 */
 	}
 

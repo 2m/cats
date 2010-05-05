@@ -62,7 +62,7 @@ public class LinkedList {
 		}
 	}
 
-	public int length() {
+	public int getLength() {
 		if (isEmpty()) {
 			// List is empty
 			return 0;

@@ -21,7 +21,11 @@ public class BillBoard {
 	public BillBoard(int noOfCats) {
 		NUMBER_OF_CATS = noOfCats;
 		data = new float[NUMBER_OF_CATS][DATA_PER_CAT];
-		sightings = new float[NUMBER_OF_CATS*3];
+		sightings = new float[NUMBER_OF_CATS * 3];
+		for (int i = 0; i < NUMBER_OF_CATS * 3; i++) {
+			sightings[i] = -1;
+		}
+
 	}
 
 	public void setLatestSighting(int id, float x, float y, float theta) {
@@ -31,7 +35,11 @@ public class BillBoard {
 		sightings[(id - 1) * 3 + 2] = theta;
 	}
 
-	public float[] getLatestSightings(float x, float y, float theta) {
+	public int getNoCats() {
+		return NUMBER_OF_CATS;
+	}
+
+	public float[] getLatestSightings() {
 		return sightings;
 	}
 
@@ -40,17 +48,18 @@ public class BillBoard {
 			float mean_xv, float mean_yv, float var_xx, float var_xy,
 			float var_yy, float var_xvxv, float var_xvyv, float var_yvyv,
 			float weight) {
-		data[id][0] = mean_x;
-		data[id][1] = mean_y;
-		data[id][2] = mean_xv;
-		data[id][3] = mean_yv;
-		data[id][4] = var_xx;
-		data[id][5] = var_xy;
-		data[id][6] = var_yy;
-		data[id][7] = var_xvxv;
-		data[id][8] = var_xvyv;
-		data[id][9] = var_yvyv;
-		data[id][10] = weight;
+		int i = id - 1;
+		data[i][0] = mean_x;
+		data[i][1] = mean_y;
+		data[i][2] = mean_xv;
+		data[i][3] = mean_yv;
+		data[i][4] = var_xx;
+		data[i][5] = var_xy;
+		data[i][6] = var_yy;
+		data[i][7] = var_xvxv;
+		data[i][8] = var_xvyv;
+		data[i][9] = var_yvyv;
+		data[i][10] = weight;
 	}
 
 	/**
@@ -72,7 +81,11 @@ public class BillBoard {
 				ret[i] += data[j][10] * data[j][i];
 			}
 			// Normalise weights
-			ret[i] /= total_weight;
+			if (total_weight == 0) {
+				ret[i] = 0;
+			} else {
+				ret[i] /= total_weight;
+			}
 		}
 		return ret;
 	}
