@@ -122,6 +122,9 @@ public class Actor {
 	 * Draw an Actor Code for drawing the position and angle of the actor.
 	 */
 	public void draw(Graphics g) {
+		// Hook for filter graphics code
+		drawMore(g);
+		
 		final int size = 5; // Diameter
 		final int linelength = 12;
 		int ix = e2gX(motor.getX());
@@ -159,9 +162,6 @@ public class Actor {
 
 		// Reset the tranformation matrix
 		g2.setTransform(oldTransform);
-
-		// Hook for filter graphics code
-		drawMore(g);
 	}
 
 	public void drawMore(Graphics g) {

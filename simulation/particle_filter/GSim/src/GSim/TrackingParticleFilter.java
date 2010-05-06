@@ -183,7 +183,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 
 			// Check for zero distance to landmark
 			if (norm == 0) {
-				System.out.println("Division by zero in compareParticles()");
+				// System.out.println("Division by zero in compareParticles()");
 			} else {
 				int toMouse_x_norm = Fixed.div(toMouse_x, norm);
 				int toMouse_y_norm = Fixed.div(toMouse_y, norm);
@@ -251,6 +251,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 */
 	private void reSample() {
 		float[] net = billboard.getMeanAndCoveriance();
+		// FIXME: Check for zerosum
 		// ret = {m_x, m_y, m'_x, m'_y, xx, xy, yy, x'x', x'y', y'y'}
 		int[][] C1 = new int[2][2];
 		int[][] C2 = new int[2][2];
@@ -320,12 +321,12 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 * they are within limits.
 	 */
 	public void calcMean() {
-		System.out.print(id + ": Calculating mean ");
+		// System.out.print(id + ": Calculating mean ");
 		// Create local vaiables
 		int tmean_x = 0, tmean_y = 0, tmean_xv = 0, tmean_yv = 0, norm;
 		int mx = 0, my = 0; // Unweighted means
 		if (zerosum) {
-			System.out.println("(ordinary)");
+			// System.out.println("(ordinary)");
 			// Calculate an ordinary mean
 			Link link = data.first;
 			// Loop through all particle
@@ -343,8 +344,8 @@ public class TrackingParticleFilter extends TrackingFilter {
 			mx = tmean_x;
 			my = tmean_y;
 		} else {
-			System.out
-					.println("(weighted) sum_w: " + Fixed.fixedToFloat(sum_w));
+			// System.out.println("(weighted) sum_w: " +
+			// Fixed.fixedToFloat(sum_w));
 			// Calculate a weighted mean
 			Link link = data.first;
 			// This should be equal to tmean_x=sum(x.*w) ...
@@ -557,21 +558,18 @@ public class TrackingParticleFilter extends TrackingFilter {
 
 		g2.setColor(Color.green);
 		// Plot particles
-		Link link = data.first;
-		while (link != null) {
-			TrackingParticle part = (TrackingParticle) link.data;
-			int ix = Actor.e2gX(Fixed.fixedToFloat(part.x));
-			int iy = Actor.e2gY(Fixed.fixedToFloat(part.y));
-			float xv = Fixed.fixedToFloat(part.xv);
-			float yv = Fixed.fixedToFloat(part.yv);
-			linelength = (int) Fixed.fixedToFloat(Fixed.norm(part.xv, part.yv));
-			double iangle = -Math.atan2(yv, xv);
-			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
-					(int) size, (int) size);
-			g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
-					* linelength), (int) (iy + Math.sin(iangle) * linelength));
-			link = link.next;
-		}
+		/*
+		 * Link link = data.first; while (link != null) { TrackingParticle part
+		 * = (TrackingParticle) link.data; int ix =
+		 * Actor.e2gX(Fixed.fixedToFloat(part.x)); int iy =
+		 * Actor.e2gY(Fixed.fixedToFloat(part.y)); float xv =
+		 * Fixed.fixedToFloat(part.xv); float yv = Fixed.fixedToFloat(part.yv);
+		 * linelength = (int) Fixed.fixedToFloat(Fixed.norm(part.xv, part.yv));
+		 * double iangle = -Math.atan2(yv, xv); g2.fillOval((int) ix - (size /
+		 * 2), (int) iy - (size / 2), (int) size, (int) size); g2.drawLine((int)
+		 * ix, (int) iy, (int) (ix + Math.cos(iangle) linelength), (int) (iy +
+		 * Math.sin(iangle) * linelength)); link = link.next; }
+		 */
 		// Plot mean
 		g2.setColor(Color.red);
 		int ix = Actor.e2gX(getX());
@@ -597,7 +595,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		}
 		// Push latest sighting to billboard
 		if (sens != null) {
-			System.out.println(id + ": Sighting: " + sens);
+			// System.out.println(id + ": Sighting: " + sens);
 			billboard.setLatestSighting(id, sens.x, sens.y, sens.angle);
 		}
 
@@ -633,10 +631,11 @@ public class TrackingParticleFilter extends TrackingFilter {
 	}
 
 	public void run() {
-		// TODO: Implement main loop and thread timer
+
 		/*
-		 * while (true) { update(); sleep((long) (rttime.getTime() % Tint)); }
+		 * while (true) { update(); pause((long) (rttime.getTime() % Tint)); }
 		 */
+
 	}
 
 	/**

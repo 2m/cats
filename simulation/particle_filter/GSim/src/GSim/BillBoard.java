@@ -7,13 +7,12 @@ package GSim;
  * 
  */
 public class BillBoard {
-	// TODO: Make billboard ukf friendly
+	// FIXME: See how much needs to be synced for ukf
 
 	/** Data to be synced */
 	private float[][] data;
 	private float[] sightings;
 	/** Floats to sync per cat */
-	// TODO: See how much needs to be synced for ukf
 	private final int DATA_PER_CAT = 11;
 	/** Number of cats (set in constructor) */
 	public final int NUMBER_OF_CATS;

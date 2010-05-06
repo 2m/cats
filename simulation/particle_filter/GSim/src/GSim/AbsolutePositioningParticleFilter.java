@@ -190,7 +190,6 @@ public class AbsolutePositioningParticleFilter extends
 	 *            The type of the seen landmark
 	 */
 	private void compareParticles(int sensorangle, int type) {
-		// TODO: Verify code against matlab
 		// Create temporary weight summation variable
 		int sum_w_tmp = 0;
 		// Create new data list
@@ -238,8 +237,7 @@ public class AbsolutePositioningParticleFilter extends
 
 					// Check for zero distance to landmark
 					if (norm == 0) {
-						System.out
-								.println("Division by zero in compareParticles()");
+						// System.out.println("Division by zero in AbsolutePositioningParticleFilter.compareParticles()");
 						a = 0;
 					} else {
 						int toMark_x_norm = Fixed.div(toMark_x, norm);
@@ -443,7 +441,6 @@ public class AbsolutePositioningParticleFilter extends
 				tvarXX += Fixed.mul(xw, x);
 				tvarXY += Fixed.mul(xw, y);
 				tvarYY += Fixed.mul(yw, y);
-				// TODO: Check circle errors in mean
 				tvarAngle += Fixed
 						.mul(part.angle - mean_angle, part.comparable);
 				link = link.next;
@@ -494,6 +491,7 @@ public class AbsolutePositioningParticleFilter extends
 			// std is approx 71 degrees
 			varAngle = (Fixed.PI >> 1);
 		}
+		// FIXME: Set caps on covariance
 	}
 
 	/**
@@ -587,8 +585,6 @@ public class AbsolutePositioningParticleFilter extends
 	}
 
 	public void update() {
-		// TODO: Needs revision and clean up
-
 		// Get time reference
 		currentTime = rttime.getTime();
 
@@ -669,9 +665,8 @@ public class AbsolutePositioningParticleFilter extends
 	}
 
 	public void run() {
-		// TODO: Implement main loop and thread timer
 		/*
-		 * while (true) { update(); sleep((long) (rttime.getTime() % Tint)); }
+		 * while (true) { update(); pause((long) (rttime.getTime() % Tint)); }
 		 */
 	}
 

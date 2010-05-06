@@ -6,13 +6,13 @@ import java.awt.Graphics;
  * Base class for the absolute positioning filter (graphics code should be
  * talken out befor use on the NXT)
  */
-public abstract class AbsolutePositioningFilter {
+public abstract class AbsolutePositioningFilter extends Thread {
 	/* Buffers with data on movement and landmark sightings */
 	protected final Buffer sensorData;
 	protected final Buffer movementData;
 	/* Period of filter */
 	protected final float T;
-	/* Period of filter in milliseconds*/
+	/* Period of filter in milliseconds */
 	protected final int Tint;
 	/* Pointer to common clock object */
 	protected final RealTimeClock rttime;
@@ -21,13 +21,16 @@ public abstract class AbsolutePositioningFilter {
 			Buffer movementData, RealTimeClock rttime) {
 		/** Period of filter */
 		this.T = T;
-		this.Tint = (int)(T*1000);
+		this.Tint = (int) (T * 1000);
 		/** Sorded buffer with sensor readings */
 		this.sensorData = sensorData;
 		/** Sorted buffer wi th data on movement */
 		this.movementData = movementData;
 		/** Real time clock */
 		this.rttime = rttime;
+		// Set priority for thread
+		// TODO: Decide priority for absolute positioning filter
+		setPriority(Thread.MIN_PRIORITY); 
 	}
 
 	/** Poll estimated x position value from filter */
@@ -58,4 +61,23 @@ public abstract class AbsolutePositioningFilter {
 	/** Reset filter with some initial data */
 	public void initData(float x, float y, float angle) {
 	}
+
+	/**
+	 * Pause the excution this many milliseconds
+	 * 
+	 * @param millis
+	 *            to pause as a long int
+	 * @return Result as boolean
+	 */
+	public boolean pause(long millis) {
+		if (Thread.interrupted())
+			return false;
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			return false;
+		}
+		return true;
+	}
+
 }

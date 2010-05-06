@@ -33,7 +33,6 @@ public class BufferSorted extends Buffer {
 	 * @return BufferData oldest BufferData or null
 	 */
 	public synchronized ComparableData pop() {
-		// TODO: Needs to check pointer last
 		ComparableData ret = list.popFirst();
 		return ret;
 	}

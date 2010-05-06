@@ -6,7 +6,7 @@ import java.awt.Graphics;
  * Base class for the absolute positioning filter (graphics code should be
  * talken out befor use on the NXT)
  */
-public abstract class TrackingFilter {
+public abstract class TrackingFilter extends Thread{
 	/** Id number */
 	protected int id;
 	/** Buffers with data on mouse sightings */
@@ -33,6 +33,9 @@ public abstract class TrackingFilter {
 		this.rttime = rttime;
 		/** Shared data */
 		this.billboard = billboard;
+		// Set priority for thread
+		// TODO: Decide priority for absolute positioning filter
+		setPriority(Thread.MIN_PRIORITY); 
 	}
 
 	/** Poll estimated x position value from filter */
@@ -67,5 +70,22 @@ public abstract class TrackingFilter {
 
 	/** Reset filter with some initial data */
 	public void initData(float x, float y, float xv, float yv) {
+	}
+	/**
+	 * Pause the excution this many milliseconds
+	 * 
+	 * @param millis
+	 *            to pause as a long int
+	 * @return Result as boolean
+	 */
+	public boolean pause(long millis) {
+		if (Thread.interrupted())
+			return false;
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			return false;
+		}
+		return true;
 	}
 }
