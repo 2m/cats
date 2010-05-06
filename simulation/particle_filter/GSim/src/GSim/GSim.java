@@ -42,8 +42,7 @@ public class GSim extends JFrame implements MouseListener {
 		addMouseListener(this);
 
 		actors[0] = new Mouse(null, 1.5, 1.5, 0.0, clock, billboard, 0);
-		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, clock, billboard,
-				1);
+		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, clock, billboard, 1);
 		actors[2] = new Cat(actors[0], 1.0, 1.0, 0, clock, billboard, 2);
 		actors[3] = new Cat(actors[0], 1.5, 0.1, 0, clock, billboard, 3);
 	}
