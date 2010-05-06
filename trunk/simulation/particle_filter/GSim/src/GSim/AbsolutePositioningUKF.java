@@ -19,7 +19,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	private IFunction f;
 	
 	/** estimated state vector, (n)x(1) Matrix, of the cat 
-	 * x, y, vx, vy, orientation, (absCamAngle)*/
+	 * x, y, vx, vy, orientation in radians, (absCamAngle)*/
 	private Matrix xc;
 	
 	///** true state of the cat (basic simulation only)*/
@@ -53,18 +53,18 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		//LandmarkList, true positions of the landmarks are in this static class. HmeasCat accesses the landmark list directly
 		int n = 1;//TODO use the following: LandmarkList.landmarkX.length;  //number of landmarks
 		//int nm=1;  //number of cats, should always be one for a single positioning filter
-		int nz=n+3;  //TODO: change back to nz=n+4  //number of elements in the measurement vector of the cats = number of landmarks + 4
-		int nx=5;  //TODO: change back to nx=6 //number of variables in the cats' state vector
+		int nz = n+3;  //TODO: change back to nz=n+4  //number of elements in the measurement vector of the cats = number of landmarks + 4
+		int nx = 5;  //TODO: change back to nx=6 //number of variables in the cats' state vector
 		
 		ufk_filter = new UnscentedKalmanFilter(nx,nz);
 	
-		float dt=1;  //sampling period, must be 1 for now TODO adjust to matlab real dt ????
+		float dt = 1;  //sampling period, must be 1 for now TODO adjust to matlab real dt ????
 		float q = 0.005f;  //std of expected process noise for the cat
 		float stddegrees = 2;
 		double[][] temp_r = {{stddegrees*(PI/180), pow(10, -2), pow(10, -2), pow(10, -20), pow(10, -20)}};
 		Matrix r = new Matrix(temp_r);  //std of expected measurement noise for the catdouble[][] temp_r = {{stddegrees*(Math.PI/180), Math.pow(10, -2), Math.pow(10, -2), Math.pow(10, -20),Math.pow(10, -20)}};
-		float k1=dt;  //how much the noise in the wheel tachometers is amplified
-		float k2=dt;  //how much the noise in the camera motor tachometers is amplified
+		float k1 = dt;  //how much the noise in the wheel tachometers is amplified
+		float k2 = dt;  //how much the noise in the camera motor tachometers is amplified
 		double[][] temp_Q = {{pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0,            0.0,            0.0},
 							{0.0,             pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0,            0.0},
 							{pow(dt, 3)/2.0,  0.0,            pow(dt, 2),     0.0,            0.0,            0.0},
@@ -87,6 +87,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 
 		//sc = zeros(nx,1);  //initial true state of the cat (basic simulation only)
 		xc = zeros(nx,1);  //initial estimated state
+		z = zeros(nz,1);  //initial estimated state
 		/*
 		double[][] temp_s = {{0.0}, {0.0}, {1.0}};;  //initial state of the cats  TODO get initial state from buffer?
 		Matrix s = new Matrix(temp_s);  //true state of the cats
@@ -134,20 +135,20 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 			if (sdata.getComparable() <= currentTime) 
 			{
 				//Determine which landmark it is
-				double absLandmarkAngle =  sdata.angle;
-				if (absLandmarkAngle>=0 && absLandmarkAngle<90) //upper right corner
+				double absLandmarkAngle =  sdata.angle % 2*PI;
+				if (absLandmarkAngle>=0 && absLandmarkAngle<PI/2.0) //upper right corner
 				{
 					z.set(3,0,sdata.angle);
 				}
-				else if (absLandmarkAngle>=90 && absLandmarkAngle<180) //upper left corner
+				else if (absLandmarkAngle>=PI/2.0 && absLandmarkAngle<PI) //upper left corner
 				{
 					z.set(1,0,sdata.angle);
 				}
-				else if (absLandmarkAngle>=180 && absLandmarkAngle<270) //lower left corner
+				else if (absLandmarkAngle>=PI && absLandmarkAngle<3.0*PI/2.0) //lower left corner
 				{
 					z.set(0,0,sdata.angle);
 				}
-				else if (absLandmarkAngle>=270 && absLandmarkAngle<360)  //lower right corner
+				else if (absLandmarkAngle>=3.0*PI/2.0 && absLandmarkAngle<2*PI)  //lower right corner
 				{
 					z.set(2,0,sdata.angle);
 				}
@@ -203,13 +204,13 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 
 	/** Poll estimated y position value from filter */
 	public float getY() {
-		return (float)xc.get(0, 1);
+		return (float)xc.get(1, 0);
 	}
 
 	//TODO Rename to getOrientation ??
 	/** Poll estimated direction angle value from filter */
 	public float getAngle() {
-		return (float)xc.get(0, 4);
+		return (float)xc.get(4, 0);
 	}
 	
 	/*
@@ -252,5 +253,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		// Reset the transformation matrix
 		g2.setTransform(oldTransform);
 	}
-
+	
+	
+	
 }
+

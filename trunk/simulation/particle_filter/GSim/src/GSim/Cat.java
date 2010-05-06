@@ -14,7 +14,12 @@ public class Cat extends Actor {
 	protected AbsolutePositioningFilter positioningFilter;
 	protected TrackingFilter trackingFilter;
 	private Guide guide;
-
+	private boolean usePositioningParticleFilter = false;
+	private boolean usePositioningUnscentedKalmanFilter = true;
+	private boolean useTrackingParticleFilter = false;
+	private boolean useTrackingUnscentedKalmanFilter = false;
+	private boolean useGuide = false;
+	
 	public Cat(Actor mouse, double x, double y, double angle,
 			RealTimeClock clock, BillBoard billboard, int id) {
 		super(mouse, x, y, angle, CAT, clock, billboard, id);
@@ -24,41 +29,68 @@ public class Cat extends Actor {
 		trackerBuffer = sensors.regTracker();
 		int N = 80;
 		float T = (float) 0.5;
-		/*
-		 * positioningFilter = new AbsolutePositioningUKF(T, positioningBuffer,
-		 * motorBuffer, clock);
-		 */
-
-		positioningFilter = new AbsolutePositioningParticleFilter(N, T,
-				positioningBuffer, motorBuffer, clock);
-
-		trackingFilter = new TrackingParticleFilter(id, N, T, trackerBuffer,
-				clock, billboard);
-		positioningFilter.initData((float) motor.getX(), (float) motor.getY(),
-				(float) motor.getAngle());
-		guide = new Guide(id, billboard);
+		
+		if (usePositioningParticleFilter) {
+			positioningFilter = new AbsolutePositioningParticleFilter(N, T,
+					positioningBuffer, motorBuffer, clock);
+		}
+		else if (usePositioningUnscentedKalmanFilter){
+			positioningFilter = new AbsolutePositioningUKF(T, positioningBuffer,
+					 motorBuffer, clock);
+		}
+		
+		if (useTrackingParticleFilter) {
+			trackingFilter = new TrackingParticleFilter(id, N, T, trackerBuffer,
+					clock, billboard);
+		}
+		else if (useTrackingUnscentedKalmanFilter){
+			//TODO implement
+			/*trackingFilter = new TrackingUKF(id, N, T, trackerBuffer,
+					clock, billboard);*/
+		}
+		
+		if (usePositioningParticleFilter || usePositioningUnscentedKalmanFilter){
+			positioningFilter.initData((float) motor.getX(), (float) motor.getY(),
+					(float) motor.getAngle());
+		}
+		if (useGuide){
+			guide = new Guide(id, billboard);
+		}
+		
 	}
 
 	/**
 	 * Update the actor This should be overloaded
 	 */
 	public void update() {
-		motor.goTo(gotox, gotoy);
-		float[] g = guide.getGradient((float) gotox, (float) gotoy);
-		gotox += 0.01 * Math.signum(g[0]);
-		gotoy += 0.01 * Math.signum(g[1]);
+		if (useGuide){
+			motor.goTo(gotox, gotoy);
+			float[] g = guide.getGradient((float) gotox, (float) gotoy);
+			gotox += 0.01 * Math.signum(g[0]);
+			gotoy += 0.01 * Math.signum(g[1]);
+		}
+		
 		if ((iter % 5) == 0) {
 			sensors.update();
-			positioningFilter.update();
-			trackingFilter.update();
+			if (usePositioningParticleFilter || usePositioningUnscentedKalmanFilter){
+				positioningFilter.update();
+			}
+			if (useTrackingParticleFilter || useTrackingUnscentedKalmanFilter){
+				trackingFilter.update();
+			}	
 		}
 		iter++;
 	}
 
 	public void drawMore(Graphics g) {
-		// positioningFilter.draw(g);
-		trackingFilter.draw(g);
-		guide.draw(g);
-
+		if (usePositioningParticleFilter || usePositioningUnscentedKalmanFilter){
+			positioningFilter.draw(g);
+		}
+		if (useTrackingParticleFilter || useTrackingUnscentedKalmanFilter){
+			trackingFilter.draw(g);
+		}	
+		if (useGuide){
+			guide.draw(g);
+		}
 	}
 }
