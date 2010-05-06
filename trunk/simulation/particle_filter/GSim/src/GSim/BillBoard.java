@@ -16,7 +16,7 @@ public class BillBoard {
 	// TODO: See how much needs to be synced for ukf
 	private final int DATA_PER_CAT = 11;
 	/** Number of cats (set in constructor) */
-	private final int NUMBER_OF_CATS;
+	public final int NUMBER_OF_CATS;
 
 	public BillBoard(int noOfCats) {
 		NUMBER_OF_CATS = noOfCats;
