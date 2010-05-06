@@ -7,7 +7,6 @@ package GSim;
  * 
  */
 public class LinkedList {
-	// TODO: Make this use ComparableData
 	/** Pointer to first element. */
 	public Link first;
 	/** Pointer to last element. Needed for insertion as last element */

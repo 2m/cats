@@ -13,7 +13,6 @@ public final class Fixed {
 	public static final int ONE = 1 << FIXED_POINT;
 	public static final int HALF = ONE >> 1;
 
-	// TODO: Fix so radians can be used as angle
 	public static final int PI = (int) (Math.PI * ONE);
 	private static final int TRIG_SHIFT = 30;
 	public static final int QUARTER_CIRCLE = 512; // => sizeof(SIN_TABLE)= 1024b
@@ -27,6 +26,7 @@ public final class Fixed {
 	 * Equivalent to: sin((2 * PI) / (QUARTER_CIRCLE * 4)) * 2^TRIG_SHIFT
 	 * int32(sin((2*pi)/(512*4))*2^30)
 	 */
+	// FIXME: Check if sin lut if accurate
 	private static final int SIN_PRECALC = 3294193;
 	/*
 	 * Equivalent to: cos((2 * PI) / (QUARTER_CIRCLE * 4)) * 2 * 2^TRIG_SHIFT

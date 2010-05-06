@@ -44,7 +44,9 @@ public class Cat extends Actor {
 	 */
 	public void update() {
 		motor.goTo(gotox, gotoy);
-
+		float[] g = guide.getGradient((float) gotox, (float) gotoy);
+		gotox += 0.01 * Math.signum(g[0]);
+		gotoy += 0.01 * Math.signum(g[1]);
 		if ((iter % 5) == 0) {
 			sensors.update();
 			positioningFilter.update();
@@ -56,6 +58,7 @@ public class Cat extends Actor {
 	public void drawMore(Graphics g) {
 		// positioningFilter.draw(g);
 		trackingFilter.draw(g);
+		guide.draw(g);
 
 	}
 }
