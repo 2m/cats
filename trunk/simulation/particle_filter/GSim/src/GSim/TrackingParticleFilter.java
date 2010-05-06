@@ -174,11 +174,12 @@ public class TrackingParticleFilter extends TrackingFilter {
 			// Calculate norm of (toMouse_x, toMouse_y).
 			int norm = Fixed.norm(toMouse_x, toMouse_y);
 
-			float toMouse = (float) Math.atan2(toMouse_y, toMouse_x);
-			float sens = Fixed.fixedToFloat(angle);
-			float h = (float) ((Math.cos(sens) * Math.cos(toMouse)) + (Math
-					.sin(sens) * Math.sin(toMouse)));
-			int hf = Fixed.floatToFixed(h);
+			/*
+			 * float toMouse = (float) Math.atan2(toMouse_y, toMouse_x); float
+			 * sens = Fixed.fixedToFloat(angle); float h = (float)
+			 * ((Math.cos(sens) * Math.cos(toMouse)) + (Math .sin(sens) *
+			 * Math.sin(toMouse))); int hf = Fixed.floatToFixed(h);
+			 */
 
 			// Check for zero distance to landmark
 			if (norm == 0) {
