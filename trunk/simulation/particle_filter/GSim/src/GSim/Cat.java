@@ -13,6 +13,7 @@ public class Cat extends Actor {
 	protected Buffer positioningBuffer, trackerBuffer;
 	protected AbsolutePositioningFilter positioningFilter;
 	protected TrackingFilter trackingFilter;
+	private Guide guide;
 
 	public Cat(Actor mouse, double x, double y, double angle,
 			RealTimeClock clock, BillBoard billboard, int id) {
@@ -23,17 +24,19 @@ public class Cat extends Actor {
 		trackerBuffer = sensors.regTracker();
 		int N = 80;
 		float T = (float) 0.5;
-		/*positioningFilter = new AbsolutePositioningUKF(T, positioningBuffer,
-				motorBuffer, clock);
-				*/
 		/*
-		 * positioningFilter = new AbsolutePositioningParticleFilter(N, T,
-		 * positioningBuffer, motorBuffer, clock);
+		 * positioningFilter = new AbsolutePositioningUKF(T, positioningBuffer,
+		 * motorBuffer, clock);
 		 */
-		/*trackingFilter = new TrackingParticleFilter(id, N, T, trackerBuffer,
-				clock, billboard);*/
+
+		positioningFilter = new AbsolutePositioningParticleFilter(N, T,
+				positioningBuffer, motorBuffer, clock);
+
+		trackingFilter = new TrackingParticleFilter(id, N, T, trackerBuffer,
+				clock, billboard);
 		positioningFilter.initData((float) motor.getX(), (float) motor.getY(),
 				(float) motor.getAngle());
+		guide = new Guide(id, billboard);
 	}
 
 	/**
@@ -41,10 +44,11 @@ public class Cat extends Actor {
 	 */
 	public void update() {
 		motor.goTo(gotox, gotoy);
+
 		if ((iter % 5) == 0) {
 			sensors.update();
 			positioningFilter.update();
-			//trackingFilter.update();
+			trackingFilter.update();
 		}
 		iter++;
 	}
