@@ -225,18 +225,16 @@ public class AbsolutePositioningParticleFilter extends
 					// Calculate norm of (toMark_x, toMark_y).
 					int norm = Fixed.norm(toMark_x, toMark_y);
 
-					float toLandm = (float) Math.atan2(toMark_y, toMark_x);
-					float sens = Fixed.fixedToFloat(sensorangle);
-					float partangle = Fixed.fixedToFloat(part.angle);
-					float cmpang = sens + partangle;
 					/*
-					 * float h = (float) ((Math.cos(cmpang) * Math.cos(toLandm))
-					 * + (Math .sin(cmpang) * Math.sin(toLandm)));
+					 * float toLandm = (float) Math.atan2(toMark_y, toMark_x);
+					 * float sens = Fixed.fixedToFloat(sensorangle); float
+					 * partangle = Fixed.fixedToFloat(part.angle); float cmpang
+					 * = sens + partangle; float h = (float) ((Math.cos(cmpang)
+					 * * Math.cos(toLandm)) + (Math .sin(cmpang) *
+					 * Math.sin(toLandm))); float h = (float) ((Math.cos(0) *
+					 * Math .cos(toLandm - cmpang)) + (Math.sin(0) * Math
+					 * .sin(toLandm - cmpang))); int hf = Fixed.floatToFixed(h);
 					 */
-					float h = (float) ((Math.cos(0) * Math
-							.cos(toLandm - cmpang)) + (Math.sin(0) * Math
-							.sin(toLandm - cmpang)));
-					int hf = Fixed.floatToFixed(h);
 
 					// Check for zero distance to landmark
 					if (norm == 0) {
@@ -296,7 +294,7 @@ public class AbsolutePositioningParticleFilter extends
 		// Check if the sum of weights are zero
 		zerosum = (sum_w_tmp == 0);
 
-		//System.out.println("sum_w=" + Fixed.fixedToFloat(sum_w));
+		// System.out.println("sum_w=" + Fixed.fixedToFloat(sum_w));
 		if (data.getLength() != N) {
 			System.out.println("Particles lost! (count:" + data.getLength()
 					+ ")");
@@ -367,11 +365,11 @@ public class AbsolutePositioningParticleFilter extends
 	 * they are within limits.
 	 */
 	public void calcMean() {
-		//System.out.print("Calculating mean ");
+		// System.out.print("Calculating mean ");
 		// Create local vaiables
 		int tmean_x = 0, tmean_y = 0, tmean_a = 0, norm;
 		if (zerosum) {
-			//System.out.println("(ordinary)");
+			// System.out.println("(ordinary)");
 			// Calculate an ordinary mean
 			Link link = data.first;
 			// Loop through all particle
@@ -386,7 +384,8 @@ public class AbsolutePositioningParticleFilter extends
 			// same weight.
 			norm = Nnorm;
 		} else {
-			//System.out.println("(weighted) sum_w: " + Fixed.fixedToFloat(sum_w));
+			// System.out.println("(weighted) sum_w: " +
+			// Fixed.fixedToFloat(sum_w));
 			// Calculate a weighted mean
 			Link link = data.first;
 			// This should be equal to tmean_x=sum(x.*w) ...
@@ -620,7 +619,7 @@ public class AbsolutePositioningParticleFilter extends
 				mdata = null;
 			}
 		}
-		//System.out.println(list.toString());
+		// System.out.println(list.toString());
 
 		// Counter for number of compares since re-sample
 		int evaluationsSinceResample = 0;
