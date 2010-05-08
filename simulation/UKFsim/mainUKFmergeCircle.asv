@@ -3,8 +3,8 @@ clear
 close all
 warning off all;
 
-global cats; %true position of the cats
-global actCats; %contains the indices of the cats that sees the mouse
+global cats; %true position of the cats TODO and some other stuff...
+global activeCats; %contains the indices of the cats that sees the mouse
 global rm; %std of expected bearing measurement noise 
 global nm; %number of cats
 global nxm; %number of variables in the mouse's state vector
@@ -15,7 +15,7 @@ global xm; %current state estimate of the mouse
 
 global s; %true state of the cats
 global landm; %true position of the landmaks
-global actLandm; %the indices of the landmarks that are seen
+global activeLandm; %the indices of the landmarks that are seen
 global R; % covariance of measurement of the cats
 global xV; %contains the current and all past state estimates of the cats 
 global zV; %contains the current and all past bearings measurements to the cats
@@ -56,7 +56,7 @@ nxm=4;  %number of variables in the mouse's state vector
 fov=43*pi/180;  %field of view
 stddegrees = 2;
 lambda = [stddegrees*(pi/180),1e-2,1e-2,1e-20,1e-20];% Standard deviation of measurement noise
-        %[bearing angle      ,vx   ,vy   ,cam.ang]
+        %[bearing angle      ,x   ,y   ,orient., cam.ang]
 N=500;  %total number of time steps
 dt=1;
 
@@ -92,39 +92,39 @@ f = @update2;                               % nonlinear state equations
 h = @measure2WspeedMeasurements;            % measurement equation
 P=cell(1,nm);
 for i=1:nm
-    P{1,i} = 1e-3*eye(nx);                  % initial state covraiance
+    P{1,i} = 1e-3*eye(nx);                  % initial state covariance
 end
 fm = @update;                               % nonlinear state equations
 hmT = @measuremT;  % true measurement equation, used to generate measurements
 hm = @measurem;  % measurement equation, used by the ukf
-Pm = 1e-3*eye(nxm);                         % initial state covraiance
+Pm = 1e-3*eye(nxm);                         % initial state covariance
 
-sc=zeros(2,nm);  %todo: what's this ? true initial position of the cats ?
+pos=zeros(2,nm);  %true initial position of the cats
 phi=[0;pi/2; 5*pi/4];   %angle of the circular movement of the mouse
 radius=[.8;.8;.8];
 %todo: for all cats, do ...?
 for i=1:nm
-    sc(:,i)=[1+radius(i)*cos(phi(i));1+radius(i)*sin(phi(i))];
+    pos(:,i)=[1+radius(i)*cos(phi(i));1+radius(i)*sin(phi(i))];
 end
 
 vc=initvelCircle;  %the velocities of the cats
 
 s=zeros(nx,nm);  %true state of the cats, each cats state is a column
 initpos=zeros(2,nm);
-camA=zeros(1,nm); %estimated initial relative camera angles of the cats
-camAabs=zeros(1,nm); %estimated initial absolute camera angles of the cats
+camAngle=zeros(1,nm); %estimated initial relative camera angles of the cats
+absCamAngle=zeros(1,nm); %estimated initial absolute camera angles of the cats
 for i=1:nm
-    s(:,i) = [sc(:,i); vc{1,i}(:,1);...
+    s(:,i) = [pos(:,i); vc{1,i}(:,1);...
         atan2( vc{1,i}(2,1),vc{1,i}(1,1) ); pi/4];  % true initial state
-    initpos(:,i)=sc(:,i);%ls_est2(h(s)+ mNoise(i));  % initial position with noise
-    x(:,i) = [initpos(:,i); 0; 0; 0; camAabs(i)];  % estimated initial state
+    initpos(:,i)=pos(:,i);%ls_est2(h(s)+ mNoise(i));  % initial position with noise
+    x(:,i) = [initpos(:,i); 0; 0; 0; absCamAngle(i)];  % estimated initial state
     x(:,i)=initboundcorr(x(:,i),bound);
 end
 
-sm=[1.4; 1];  %todo: what's this ? true initial position of the mouse ?
+posm=[1.4; 1];  %true initial position of the mouse
 vm=initvelCirclem;  %the velocity of the mouse
-s2 = [sm; vm(:,1)];                         % true initial state
-initposm=ls_estm(hm(s2) + ram*randn(nm,1)); % initial position with noise
+mouse = [posm; vm(:,1)];                         % true initial state
+initposm=ls_estm(hm(mouse) + ram*randn(nm,1)); % initial position with noise
 xm = [initposm; 0; 0];                      % estimated initial state
 xm=initboundcorr(xm,bound);
 
@@ -153,56 +153,56 @@ velErrNorm=zeros(N,1);
 posErrNormm=zeros(N,1);
 velErrNormm=zeros(N,1);
 
-actLandm=cell(1,nm);
+activeLandm=cell(1,nm);
 for i=1:nm
-    actLandm{1,i}=[];
+    activeLandm{1,i}=[];
 end
-actCats=[];
+activeCats=[];
 large=1e9;
 arrowl=0.17;
 tail=5;
 
 cats=zeros(nx,nm);
 dir=ones(1,nm);
-maxCamAngSpeed=0.03;
+maxCamAngularVel=0.03;
 
 noiseShift=zeros(nz,1);
 noiseShift(n+1:n+2)=.001;
 
 for k=1:N
     %%
-    camAabs=mod(camA+s(5,:),2*pi);
+    absCamAngle=mod(camAngle+s(5,:),2*pi);
     
     for i=1:nm
-        catAng=atan2(vc{1,i}(2,k),vc{1,i}(1,k));
-        if catAng<0
-            catAng=2*pi+catAng;
+        catOrientation=atan2(vc{1,i}(2,k),vc{1,i}(1,k));
+        if catOrientation<0
+            catOrientation=2*pi+catOrientation;
         end
-        cats(:,i)=[sc(:,i); vc{1,i}(:,k);catAng;camAabs(i)];    %update true state
+        cats(:,i)=[pos(:,i); vc{1,i}(:,k);catOrientation;absCamAngle(i)];    %update true state
     end
-    mouse=[sm; vm(:,k)];                 %update position
+    mouse=[posm; vm(:,k)];                 %update position
     
 %    posErrNorm(k)=norm(s(1:2,:)-x(1:2,:));
 %    velErrNorm(k)=norm(s(3:4,:)-x(3:4,:)*dt);
-    posErrNormm(k)=norm(s2(1:2)-xm(1:2));
-    velErrNormm(k)=norm(s2(3:4)-xm(3:4)*dt);
+    posErrNormm(k)=norm(mouse(1:2)-xm(1:2));
+    velErrNormm(k)=norm(mouse(3:4)-xm(3:4)*dt);
     
     for i=1:nm
-        sc(:,i)=sc(:,i)+vc{1,i}(:,k);
+        pos(:,i)=pos(:,i)+vc{1,i}(:,k);
     end
-    sm=sm+vm(:,k);
+    posm=posm+vm(:,k);
     
     
     for i=1:nm
         xV{1,i}(:,k) = x(:,i);               % store state estimate
-        z(:,i)=h(s(:,i)) + mNoise(i)+noiseShift;        % measurements
+        z(:,i)=h(s(:,i)) + mNoise(i)+k*noiseShift;        % measurements
 %         z(1:3,i)=z(1:3,i)+x(5,i)
 %         z(1:3,i)=mod(z(i,1),2*pi);
     end
     
     xVm(:,k) = xm;                       % store state estimate
     zm=hmT(mouse) + ram*randn(nm,1);        % measurements
-    [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camAabs);
+    [Rm,activeLandm,activeCats]=fovCheckMerge(z,zm,fov,large,absCamAngle);  %updates covariance of measurement of the cats and
     %Use previous measurement if target is out of view
     z=noCheat(z);
     zm=noCheatm(zm);
@@ -216,45 +216,45 @@ for k=1:N
         s(:,i) = cats(:,i);                            % update process
     end
     
-    sVm(:,k)= s2;                        % save actual state
+    sVm(:,k)= mouse;                        % save actual state
     zVm(1:nm,k) = zm;                    % save measurment
     [xm, Pm] = ukf(fm,xm,Pm,hm,zm,Qm,Rm);
     xm=outOfBoundsCorrm(xm,xVm,bound);
-    s2 = mouse;                          % update process
+    %s2 = mouse = mouse; ???                         % update process
     
     %Camera control
     inactCats=1:nm; %all by default
-    inactCats(actCats)=[]; %remove active cats
+    inactCats(activeCats)=[]; %remove active cats
     %If the mouse is out of view, search for it
     for i=inactCats
-        camA(i)=searchm(maxCamAngSpeed,camA(i),dir(i));
+        camAngle(i)=searchm(maxCamAngularVel,camAngle(i),dir(i));
     end
     %If the mouse is in view, track it using small adjustment
-    for i=actCats
+    for i=activeCats
 %         disp('adjusting cam ');
 %         disp(i);
-        [camA(i) dir(i)]=trackm(zm(i,1),maxCamAngSpeed,camA(i),camAabs(i));
+        [camAngle(i) dir(i)]=trackm(zm(i,1),maxCamAngularVel,camAngle(i),absCamAngle(i));
     end
 %%    
     %Real time plotting
     for i=1:nm
-        for j=actLandm{1,i}
+        for j=activeLandm{1,i}
             raysX{j,i}(1,:)=[xV{1,i}(1,k), cos(zV{1,i}(j,k))+xV{1,i}(1,k) + faraway*cos(zV{1,i}(j,k))];
             raysY{j,i}(1,:)=[xV{1,i}(2,k), sin(zV{1,i}(j,k))+xV{1,i}(2,k) + faraway*sin(zV{1,i}(j,k))];
         end
-        for j=actCats
+        for j=activeCats
             raysXm{j,i}(1,:)=[xV{1,j}(1,k), cos(zVm(j,k))+xV{1,j}(1,k) + faraway*cos(zVm(j,k))];
             raysYm{j,i}(1,:)=[xV{1,j}(2,k), sin(zVm(j,k))+xV{1,j}(2,k) + faraway*sin(zVm(j,k))];
         end
     end
    
     for i=1:nm
-        for j=actLandm{1,i}
+        for j=activeLandm{1,i}
             landmLineHandle=plot([raysX{j,i}],[raysY{j,i}],':');
             set(landmLineHandle,'Color',[.8 .8 .8])
             hold on
         end
-        for j=actCats
+        for j=activeCats
             plot([raysXm{j,i}],[raysYm{j,i}],'k');
             hold on
         end

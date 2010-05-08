@@ -56,7 +56,7 @@ nxm=4;  %number of variables in the mouse's state vector
 fov=43*pi/180;  %field of view
 stddegrees = 2;
 lambda = [stddegrees*(pi/180),1e-2,1e-2,1e-20,1e-20];% Standard deviation of measurement noise
-        %[bearing angle      ,vx   ,vy   ,cam.ang]
+        %[bearing angle      ,x   ,y   ,orient., cam.ang]
 N=500;  %total number of time steps
 dt=1;
 
@@ -164,7 +164,7 @@ tail=5;
 
 cats=zeros(nx,nm);
 dir=ones(1,nm);
-maxCamAngSpeed=0.03;
+maxCamAngularVel=0.03;
 
 noiseShift=zeros(nz,1);
 noiseShift(n+1:n+2)=.001;
@@ -202,7 +202,7 @@ for k=1:N
     
     xVm(:,k) = xm;                       % store state estimate
     zm=hmT(mouse) + ram*randn(nm,1);        % measurements
-    [Rm,activeLandm,activeCats]=fovCheckMerge(z,zm,fov,large,absCamAngle);
+    [Rm,activeLandm,activeCats]=fovCheckMerge(z,zm,fov,large,absCamAngle);  %updates covariance of measurement of the cats and covariance of measurement of the mouse according to what the cats sees
     %Use previous measurement if target is out of view
     z=noCheat(z);
     zm=noCheatm(zm);
@@ -227,13 +227,13 @@ for k=1:N
     inactCats(activeCats)=[]; %remove active cats
     %If the mouse is out of view, search for it
     for i=inactCats
-        camAngle(i)=searchm(maxCamAngSpeed,camAngle(i),dir(i));
+        camAngle(i)=searchm(maxCamAngularVel,camAngle(i),dir(i));
     end
     %If the mouse is in view, track it using small adjustment
     for i=activeCats
 %         disp('adjusting cam ');
 %         disp(i);
-        [camAngle(i) dir(i)]=trackm(zm(i,1),maxCamAngSpeed,camAngle(i),absCamAngle(i));
+        [camAngle(i) dir(i)]=trackm(zm(i,1),maxCamAngularVel,camAngle(i),absCamAngle(i));
     end
 %%    
     %Real time plotting

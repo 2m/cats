@@ -1,11 +1,11 @@
 function [Rm,actLandm,actCats]=fovCheckMerge(z,zm,fov,large,camAabs)
     %global Rfull;
-    global n;
-    global r;
+    global n;  %number of landmarks
+    global r;  %std of expected measurement noise 
     %global Rfullm;
-    global nm;
-    global rm;
-    global R;
+    global nm;  %number of cats
+    global rm;  %std of expected bearing measurement noise 
+    global R;  %covariance of measurement of the cats
     
     for i=1:nm
         %R{1,i}=Rfull{1,i};
