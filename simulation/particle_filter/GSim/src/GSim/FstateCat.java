@@ -22,13 +22,18 @@ public class FstateCat implements IFunction{
 		
 		//TODO test this function		
 		Matrix xc_updated = Matlab.zeros(xc.getRowDimension(), xc.getColumnDimension());
-		Matrix F = Matlab.eye(4);
+		Matlab.printM(xc);
+		if (xc.getRowDimension() != 5|| xc.getColumnDimension() != 1)
+			{
+			System.out.println("WARNING, update FstateCat to match the state vector");
+			}
+		Matrix F = Matlab.eye(xc.getRowDimension());
 		//here dt=1 since speed is measured in m/samples, thus:
 		F.set(1-1,3-1, 1);
 		F.set(2-1,4-1, 1);
 		xc_updated=F.times( xc.getMatrix(1-1, 4-1, 1-1, 1-1) );
 		xc_updated.set(5-1, 1-1, xc.get(5-1, 1-1));
-		xc_updated.set(6-1, 1-1, xc.get(6-1, 1-1));
+		//xc_updated.set(6-1, 1-1, xc.get(6-1, 1-1)); 
 
 		return xc_updated; 
 	}
