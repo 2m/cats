@@ -27,11 +27,17 @@ public class FstateCat implements IFunction{
 			{
 			System.out.println("WARNING, update FstateCat to match the state vector");
 			}
-		Matrix F = Matlab.eye(xc.getRowDimension());
+		Matrix F = Matlab.eye(4);
+		Matlab.printM(F);
 		//here dt=1 since speed is measured in m/samples, thus:
 		F.set(1-1,3-1, 1);
 		F.set(2-1,4-1, 1);
-		xc_updated=F.times( xc.getMatrix(1-1, 4-1, 1-1, 1-1) );
+		Matrix xc_updated_part = new Matrix(4,1,0);
+		xc_updated_part=F.times( xc.getMatrix(1-1, 4-1, 1-1, 1-1) );
+		Matlab.printM(xc_updated_part);
+		xc_updated.setMatrix(1-1, 4-1, 1-1, 1-1, xc_updated_part);
+		System.out.println("xc_updated: ");
+		Matlab.printM(xc_updated);
 		xc_updated.set(5-1, 1-1, xc.get(5-1, 1-1));
 		//xc_updated.set(6-1, 1-1, xc.get(6-1, 1-1)); 
 
