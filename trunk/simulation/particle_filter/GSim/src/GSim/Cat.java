@@ -18,7 +18,7 @@ public class Cat extends Actor {
 	private boolean usePositioningUnscentedKalmanFilter = true;
 	private boolean useTrackingParticleFilter = false;
 	private boolean useTrackingUnscentedKalmanFilter = false;
-	private boolean useGuide = false;
+	private boolean useGuide = true;
 	
 	public Cat(Actor mouse, double x, double y, double angle,
 			RealTimeClock clock, BillBoard billboard, int id) {
@@ -63,8 +63,8 @@ public class Cat extends Actor {
 	 * Update the actor This should be overloaded
 	 */
 	public void update() {
-		if (useGuide){
-			motor.goTo(gotox, gotoy);
+		motor.goTo(gotox, gotoy);
+		if (useGuide){		
 			float[] g = guide.getGradient((float) gotox, (float) gotoy);
 			gotox += 0.01 * Math.signum(g[0]);
 			gotoy += 0.01 * Math.signum(g[1]);
