@@ -40,7 +40,7 @@ public class HmeasCat implements IFunction{
 		//NB: All -1 in the indices are used to indicate the shift form the first array index in matlab = 1 to java's = 0.
 		int n = LandmarkList.landmarkX.length;
 		Matrix zc = Matlab.zeros(n+3, n+3);
-		System.out.println("Debug, JmeasCat: n = " +n);
+		//System.out.println("Debug, HmeasCat: n = " +n);
 		for (int i = 1; i<n; i++)
 		{
 			zc.set(i-1,1-1, Math.atan2(LandmarkList.landmarkY[i-1] - xc.get(2-1,1-1), LandmarkList.landmarkX[i-1] - xc.get(1-1,1-1)));
