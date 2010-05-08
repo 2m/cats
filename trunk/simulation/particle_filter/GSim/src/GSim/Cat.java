@@ -14,11 +14,11 @@ public class Cat extends Actor {
 	protected AbsolutePositioningFilter positioningFilter;
 	protected TrackingFilter trackingFilter;
 	private Guide guide;
-	private boolean usePositioningParticleFilter = false;
-	private boolean usePositioningUnscentedKalmanFilter = true;
+	private boolean usePositioningParticleFilter = true;
+	private boolean usePositioningUnscentedKalmanFilter = false;
 	private boolean useTrackingParticleFilter = false;
 	private boolean useTrackingUnscentedKalmanFilter = false;
-	private boolean useGuide = true;
+	private boolean useGuide = false;
 	
 	public Cat(Actor mouse, double x, double y, double angle,
 			RealTimeClock clock, BillBoard billboard, int id) {

@@ -74,6 +74,15 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		//m=z.getColumnDimension(); 
 		
 		Matrix X = sigmas(x,P,c);  //sigma points around x, NB: c has been set in the constructor
+		System.out.println("Debug: ukf, X dim: " + X.getRowDimension() + " x " + X.getColumnDimension() + ", X:");
+		printM(X);
+		System.out.println("Debug: ukf, Wm dim: " + Wm.getRowDimension() + " x " + Wm.getColumnDimension() + ", Wm:");
+		printM(Wm);
+		System.out.println("Debug: ukf, Wc dim: " + Wc.getRowDimension() + " x " + Wc.getColumnDimension() + ", Wc:");
+		printM(Wc);
+		System.out.println("Debug: ukf, L:" + L);
+		System.out.println("Debug: ukf, Q dim: " + Q.getRowDimension() + " x " + Q.getColumnDimension() + ", Q:");
+		printM(Q);
 		Matrix[] ut_f_matrices= ut(f,X,Wm,Wc,L,Q);  //unscented transformation of process
 		Matrix x1 = ut_f_matrices[0];
 		Matrix X1 = ut_f_matrices[1];
@@ -171,8 +180,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		//printM(Y);
 		
 		for (int k=0; k<L; k++)
-		{
-			
+		{	
 			//for all columns in X, compute fstate for the given row vector and put the result in Y
 			Matrix row_in_X = X.getMatrix(0, X.getRowDimension()-1, k, k);
 			//System.out.println("Debug: ut, row_in_X:");

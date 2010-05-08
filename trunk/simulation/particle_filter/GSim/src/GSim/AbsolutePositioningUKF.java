@@ -42,6 +42,13 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	
 	/** Varible for time */
 	private int lastCurrentTime, currentTime;
+	
+	/** Counter and timer too keep track of mean iteration execution time */
+	private int iterationCounter = 0;
+	private int iterationTime = 0;
+	
+	/**Toggle debug info*/
+	private final boolean DEBUG = true;
 
 	
 	public AbsolutePositioningUKF(float T, Buffer sensorData, Buffer movementData, RealTimeClock rttime)		
@@ -51,7 +58,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	public AbsolutePositioningUKF()		
 	{*/		
 		//LandmarkList, true positions of the landmarks are in this static class. HmeasCat accesses the landmark list directly
-		int n = 1;//TODO use the following: LandmarkList.landmarkX.length;  //number of landmarks
+		int n = LandmarkList.landmarkX.length;  //number of landmarks
 		//int nm=1;  //number of cats, should always be one for a single positioning filter
 		int nz = n+3;  //TODO: change back to nz=n+4  //number of elements in the measurement vector of the cats = number of landmarks + 4
 		int nx = 5;  //TODO: change back to nx=6 //number of variables in the cats' state vector
@@ -83,11 +90,26 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		f = new FstateCat();  //nonlinear state equations
 		h = new HmeasCat();  //measurement equation
 		
-		P = eye(nz).timesEquals( pow(10,-3) );  //initial state covariance
+		P = eye(nx).timesEquals( pow(10,-3) );  //initial state covariance
+
 
 		//sc = zeros(nx,1);  //initial true state of the cat (basic simulation only)
 		xc = zeros(nx,1);  //initial estimated state
 		z = zeros(nz,1);  //initial estimated state
+		
+		if (DEBUG){
+			debug("Creating AbsolutePositioningUKF object");
+			debug("Debug: pos.ukf, Q dim: " + Q.getRowDimension() + " x " + Q.getColumnDimension() + ", Q:");
+			printM(Q);
+			debug("Debug: pos.ukf, R dim: " + R.getRowDimension() + " x " + R.getColumnDimension() + ", R:");
+			printM(R);
+			debug("Debug: pos.ukf, P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", P:");
+			printM(P);
+			debug("Debug: pos.ukf, xc dim: " + xc.getRowDimension() + " x " + xc.getColumnDimension() + ", xc:");
+			printM(xc);
+			debug("Debug: pos.ukf, z dim: " + z.getRowDimension() + " x " + z.getColumnDimension() + ", z:");
+			printM(z);
+		}
 		/*
 		double[][] temp_s = {{0.0}, {0.0}, {1.0}};;  //initial state of the cats  TODO get initial state from buffer?
 		Matrix s = new Matrix(temp_s);  //true state of the cats
@@ -130,36 +152,34 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 
 		// Update landmark angle in the measurement matrix
 		SightingData sdata = (SightingData) sensorData.pop();
-		while (sdata != null) 
+		debug("enter sdata loop");
+		if (sdata.getComparable() <= currentTime) 
 		{
-			if (sdata.getComparable() <= currentTime) 
+			//Determine which landmark it is
+			double absLandmarkAngle =  sdata.angle % 2*PI;
+			if (absLandmarkAngle>=0 && absLandmarkAngle<PI/2.0) //upper right corner
 			{
-				//Determine which landmark it is
-				double absLandmarkAngle =  sdata.angle % 2*PI;
-				if (absLandmarkAngle>=0 && absLandmarkAngle<PI/2.0) //upper right corner
-				{
-					z.set(3,0,sdata.angle);
-				}
-				else if (absLandmarkAngle>=PI/2.0 && absLandmarkAngle<PI) //upper left corner
-				{
-					z.set(1,0,sdata.angle);
-				}
-				else if (absLandmarkAngle>=PI && absLandmarkAngle<3.0*PI/2.0) //lower left corner
-				{
-					z.set(0,0,sdata.angle);
-				}
-				else if (absLandmarkAngle>=3.0*PI/2.0 && absLandmarkAngle<2*PI)  //lower right corner
-				{
-					z.set(2,0,sdata.angle);
-				}
-				else System.out.print("ERROR in update!");
-			} 
-			else 
-			{
-				sensorData.push(sdata);
-				sdata = null;
+				z.set(3,0,sdata.angle);
 			}
+			else if (absLandmarkAngle>=PI/2.0 && absLandmarkAngle<PI) //upper left corner
+			{
+				z.set(1,0,sdata.angle);
+			}
+			else if (absLandmarkAngle>=PI && absLandmarkAngle<3.0*PI/2.0) //lower left corner
+			{
+				z.set(0,0,sdata.angle);
+			}
+			else if (absLandmarkAngle>=3.0*PI/2.0 && absLandmarkAngle<2*PI)  //lower right corner
+			{
+				z.set(2,0,sdata.angle);
+			}
+			else System.out.print("ERROR in update!");
+		} else 
+		{
+			sensorData.push(sdata);
+			sdata = null;
 		}
+
 		
 		// Update cat velocity and orientation in the measurement matrix
 		MovementData mdata = (MovementData) movementData.pop();	
@@ -168,13 +188,13 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		double orientationFromTachometer = xc.get(4, 0);
 		while (mdata != null) 
 		{
+			debug("enter mdata loop");
 			if (mdata.getComparable() <= currentTime) 
 			{
 				double distance = mdata.dr;
 				xPositionFromTachometer += cos(distance);
 				yPositionFromTachometer += sin(distance);
-				orientationFromTachometer += mdata.dangle;
-				
+				orientationFromTachometer += mdata.dangle;	
 				mdata = (MovementData) movementData.pop();
 			}
 			else {
@@ -189,12 +209,20 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		z.set(4, 0, orientationFromTachometer);	
 		
 		//One iteration with UKF
+		debug("enter ufk_filter");
 		Matrix[] result = ufk_filter.ukf(f, xc, P, h, z, Q, R);
 		xc = result[0];  
 		P = result[1];
 		//sc = f.eval(sc);  //update process (basic simulation only)
 		
-		lastCurrentTime = currentTime;	
+		
+		// Increase iteration counter and timer (with full execution time)
+		iterationCounter++;
+		iterationTime += rttime.getTime() - currentTime;
+		// Update public time
+		lastCurrentTime = currentTime;
+		
+		debug("current iterationTime" + (rttime.getTime() - currentTime) + ", iteration: " + iterationCounter);
 	}//end of update
 	
 	/** Poll estimated x position value from filter */
@@ -239,11 +267,12 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		// Rotate and translate the actor
 		// g2.rotate(iangle, ix, iy);
 
-	
-		// Plot mean
+		// Plot position
 		g2.setColor(Color.red);
 		int ix = Actor.e2gX(getX());
 		int iy = Actor.e2gY(getY());
+		debug(" ix: " + ix + ", iy: "+ iy);
+
 		double iangle = -getAngle();
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
 				(int) size);
@@ -252,6 +281,17 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 
 		// Reset the transformation matrix
 		g2.setTransform(oldTransform);
+	}
+	
+	public void run() {
+		/*
+		 * while (true) { update(); pause((long) (rttime.getTime() % Tint)); }
+		 */
+	}
+	
+	private void debug(Object info){
+		if (DEBUG) System.out.println(info);
+		
 	}
 	
 	
