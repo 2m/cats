@@ -71,13 +71,18 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		double[][] temp_r = {{stddegrees*(PI/180), pow(10, -2), pow(10, -2), pow(10, -20), pow(10, -20)}};
 		Matrix r = new Matrix(temp_r);  //std of expected measurement noise for the catdouble[][] temp_r = {{stddegrees*(Math.PI/180), Math.pow(10, -2), Math.pow(10, -2), Math.pow(10, -20),Math.pow(10, -20)}};
 		float k1 = dt;  //how much the noise in the wheel tachometers is amplified
-		float k2 = dt;  //how much the noise in the camera motor tachometers is amplified
+		/*float k2 = dt;  //how much the noise in the camera motor tachometers is amplified
 		double[][] temp_Q = {{pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0,            0.0,            0.0},
 							{0.0,             pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0,            0.0},
 							{pow(dt, 3)/2.0,  0.0,            pow(dt, 2),     0.0,            0.0,            0.0},
 							{0.0,             pow(dt, 3)/2.0, 0.0,            pow(dt, 2),     0.0,            0.0},
 							{0.0,             0.0,            0.0,            0.0,            k1,             0.0},
-							{0.0,             0.0,            0.0,            0.0,            0.0,            k2}};
+							{0.0,             0.0,            0.0,            0.0,            0.0,            k2}};*/
+		double[][] temp_Q = {{pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0,            0.0 },
+							{0.0,             pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0 },
+							{pow(dt, 3)/2.0,  0.0,            pow(dt, 2),     0.0,            0.0 },
+							{0.0,             pow(dt, 3)/2.0, 0.0,            pow(dt, 2),     0.0 },
+							{0.0,             0.0,            0.0,            0.0,            k1 }};
 		Q = new Matrix(temp_Q);  //covariance of process for the cat
 		Q.timesEquals(pow(q,2));
 		
@@ -153,6 +158,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		// Update landmark angle in the measurement matrix
 		SightingData sdata = (SightingData) sensorData.pop();
 		debug("enter sdata loop");
+		debug(currentTime);
 		if (sdata.getComparable() <= currentTime) 
 		{
 			//Determine which landmark it is
@@ -222,7 +228,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		// Update public time
 		lastCurrentTime = currentTime;
 		
-		debug("current iterationTime" + (rttime.getTime() - currentTime) + ", iteration: " + iterationCounter);
+		debug("current iterationTime= " + (rttime.getTime() - currentTime) + ", iteration= " + iterationCounter);
 	}//end of update
 	
 	/** Poll estimated x position value from filter */
