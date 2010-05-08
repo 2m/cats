@@ -40,12 +40,19 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	/** covariance of measurement of the cat */
 	private Matrix R;
 	
+	/** std of expected measurement noise for the cat (for bearing angle, x, y, orient., cam.ang respectivly)*/
+	private double[] std_array;
+	private Matrix r; //TODO never used ? remove ?
+	
 	/** Varible for time */
 	private int lastCurrentTime, currentTime;
 	
 	/** Counter and timer too keep track of mean iteration execution time */
 	private int iterationCounter = 0;
 	private int iterationTime = 0;
+	
+	/** number of landmarks */
+	private int numberOfLandmarks;
 	
 	/**Toggle debug info*/
 	private final boolean DEBUG = true;
@@ -54,22 +61,18 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	public AbsolutePositioningUKF(float T, Buffer sensorData, Buffer movementData, RealTimeClock rttime)		
 	{	
 		super(T, sensorData, movementData, rttime);
-	/*
-	public AbsolutePositioningUKF()		
-	{*/		
+
 		//LandmarkList, true positions of the landmarks are in this static class. HmeasCat accesses the landmark list directly
-		int n = LandmarkList.landmarkX.length;  //number of landmarks
-		//int nm=1;  //number of cats, should always be one for a single positioning filter
-		int nz = n+3;  //TODO: change back to nz=n+4  //number of elements in the measurement vector of the cats = number of landmarks + 4
+		numberOfLandmarks = LandmarkList.landmarkX.length;  //number of landmarks
+		int nz = numberOfLandmarks+3;  //TODO: change back to nz=n+4  //number of elements in the measurement vector of the cats = number of landmarks + 4
 		int nx = 5;  //TODO: change back to nx=6 //number of variables in the cats' state vector
-		
 		ufk_filter = new UnscentedKalmanFilter(nx,nz);
-	
-		float dt = 1;  //sampling period, must be 1 for now TODO adjust to matlab real dt ????
+		float dt = T;  //sampling period, must be 1 for now TODO adjust to real dt ????
 		float q = 0.005f;  //std of expected process noise for the cat
 		float stddegrees = 2;
-		double[][] temp_r = {{stddegrees*(PI/180), pow(10, -2), pow(10, -2), pow(10, -20), pow(10, -20)}};
-		Matrix r = new Matrix(temp_r);  //std of expected measurement noise for the catdouble[][] temp_r = {{stddegrees*(Math.PI/180), Math.pow(10, -2), Math.pow(10, -2), Math.pow(10, -20),Math.pow(10, -20)}};
+		std_array = new double[]{stddegrees*(PI/180), pow(10, -2), pow(10, -2), pow(10, -20), pow(10, -20)};
+		double[][] r_temp = {std_array};
+		r = new Matrix(r_temp);  //std of expected measurement noise for the cat (for bearing angle, x, y, orient., cam.ang respectivly)
 		float k1 = dt;  //how much the noise in the wheel tachometers is amplified
 		/*float k2 = dt;  //how much the noise in the camera motor tachometers is amplified
 		double[][] temp_Q = {{pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0,            0.0,            0.0},
@@ -87,12 +90,12 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		Q.timesEquals(pow(q,2));
 		
 		R = eye(nz).timesEquals( pow(r.get(1-1,1-1),2) );  //covariance of measurement of the cat
-		for (int j=1; j<=nz-n; j++)
+		for (int j=1; j<=nz-numberOfLandmarks; j++)
 		{
-			R.set( n+j-1, n+j-1, pow(r.get(1-1, j+1-1),2) );
+			R.set( numberOfLandmarks+j-1, numberOfLandmarks+j-1, pow(r.get(1-1, j+1-1),2) );
 		}
 
-		f = new FstateCat();  //nonlinear state equations
+		f = new FstateCat(T);  //nonlinear state equations
 		h = new HmeasCat();  //measurement equation
 		
 		P = eye(nx).timesEquals( pow(10,-3) );  //initial state covariance
@@ -114,6 +117,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 			printM(xc);
 			debug("Debug: pos.ukf, z dim: " + z.getRowDimension() + " x " + z.getColumnDimension() + ", z:");
 			printM(z);
+			debug("Debug: pos.ukf, number of landmarks= " + numberOfLandmarks);
+			debug("Array of std of expected measurement= " + std_array[0] +", " + std_array[1] +", " + std_array[2] +", " + std_array[3]);
 		}
 		/*
 		double[][] temp_s = {{0.0}, {0.0}, {1.0}};;  //initial state of the cats  TODO get initial state from buffer?
@@ -147,6 +152,40 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		xc.set(4, 0, angle);	
 	}
 	
+	/** Poll estimated x position value from filter */
+	public float getX() {
+		return (float)xc.get(0, 0);
+	}
+
+	/** Poll estimated y position value from filter */
+	public float getY() {
+		return (float)xc.get(1, 0);
+	}
+
+	//TODO Rename to getOrientation ??
+	/** Poll estimated direction angle value from filter */
+	public float getAngle() {
+		return (float)xc.get(4, 0);
+	}
+	
+	/**
+	 * Returns time of the last update of the filter (this includes minor
+	 * updates).
+	 * 
+	 * @return time in milliseconds
+	 */
+	public int getTime() {
+		return lastCurrentTime;
+	}
+	
+	/**
+	 * Returns the mean iteration execution time in seconds.
+	 * 
+	 * @return time in seconds
+	 */
+	public float getExecutionTime() {
+		return ((((float) iterationTime) / 1000) / ((float) iterationCounter));
+	}
 	
 	/**
 	 * Updates the filter without explicitly returning the values
@@ -156,35 +195,64 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		currentTime = rttime.getTime();
 
 		// Update landmark angle in the measurement matrix
+		
 		SightingData sdata = (SightingData) sensorData.pop();
-		debug("enter sdata loop");
-		debug(currentTime);
-		if (sdata.getComparable() <= currentTime) 
+		boolean[] landmarksSighted = new boolean[numberOfLandmarks];
+		debug("Debug, entering update: current time= " + currentTime + "number of landmarks= " +landmarksSighted.length);
+		for (boolean landmark: landmarksSighted)
 		{
-			//Determine which landmark it is
-			double absLandmarkAngle =  sdata.angle % 2*PI;
-			if (absLandmarkAngle>=0 && absLandmarkAngle<PI/2.0) //upper right corner
-			{
-				z.set(3,0,sdata.angle);
-			}
-			else if (absLandmarkAngle>=PI/2.0 && absLandmarkAngle<PI) //upper left corner
-			{
-				z.set(1,0,sdata.angle);
-			}
-			else if (absLandmarkAngle>=PI && absLandmarkAngle<3.0*PI/2.0) //lower left corner
-			{
-				z.set(0,0,sdata.angle);
-			}
-			else if (absLandmarkAngle>=3.0*PI/2.0 && absLandmarkAngle<2*PI)  //lower right corner
-			{
-				z.set(2,0,sdata.angle);
-			}
-			else System.out.print("ERROR in update!");
-		} else 
-		{
-			sensorData.push(sdata);
-			sdata = null;
+			landmark = false;
 		}
+
+		if (sdata != null)
+		{
+			if (sdata.getComparable() <= currentTime)
+
+			{
+				//Determine which landmark it is
+				double absLandmarkAngle =  sdata.angle % 2*PI;
+				if (absLandmarkAngle>=0 && absLandmarkAngle<PI/2.0) //upper right corner
+				{
+					z.set(3,0,sdata.angle);
+					landmarksSighted[3] = true;
+				}
+				else if (absLandmarkAngle>=PI/2.0 && absLandmarkAngle<PI) //upper left corner
+				{
+					z.set(1,0,sdata.angle);
+					landmarksSighted[1] = true;
+				}
+				else if (absLandmarkAngle>=PI && absLandmarkAngle<3.0*PI/2.0) //lower left corner
+				{
+					z.set(0,0,sdata.angle);
+					landmarksSighted[0] = true;
+				}
+				else if (absLandmarkAngle>=3.0*PI/2.0 && absLandmarkAngle<2*PI)  //lower right corner
+				{
+					z.set(2,0,sdata.angle);
+					landmarksSighted[2] = true;
+				}
+				else System.out.print("ERROR in update!");
+			} 
+			else 
+			{
+				if (sdata != null)
+				{
+					sensorData.push(sdata);
+				}
+			}
+		}
+		
+		//TODO check if correct
+		R = eye(z.getRowDimension());
+		for (boolean landmarkSighted: landmarksSighted)
+		{
+			if (landmarkSighted)
+			{
+				R.set(0, 0, pow(std_array[0],2) );
+			}
+				
+		}
+				
 
 		
 		// Update cat velocity and orientation in the measurement matrix
@@ -194,7 +262,6 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		double orientationFromTachometer = xc.get(4, 0);
 		while (mdata != null) 
 		{
-			debug("enter mdata loop");
 			if (mdata.getComparable() <= currentTime) 
 			{
 				double distance = mdata.dr;
@@ -215,12 +282,23 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		z.set(4, 0, orientationFromTachometer);	
 		
 		//One iteration with UKF
-		debug("enter ufk_filter");
 		Matrix[] result = ufk_filter.ukf(f, xc, P, h, z, Q, R);
-		xc = result[0];  
+		xc = result[0]; 
 		P = result[1];
-		//sc = f.eval(sc);  //update process (basic simulation only)
 		
+		// Check x and y so they keep inside the arena
+		if (xc.get(0, 0) < Arena.min_x) {
+			xc.set(0, 0, Arena.min_x);
+		}
+		if (xc.get(0, 0) > Arena.max_x) {
+			xc.set(0, 0, Arena.max_x);
+		}
+		if (xc.get(1, 0) < Arena.min_y) {
+			xc.set(1, 0, Arena.min_y);
+		}
+		if (xc.get(1, 0) > Arena.max_y) {
+			xc.set(1, 0, Arena.max_y);
+		}		
 		
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
@@ -228,24 +306,10 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		// Update public time
 		lastCurrentTime = currentTime;
 		
-		debug("current iterationTime= " + (rttime.getTime() - currentTime) + ", iteration= " + iterationCounter);
+		debug("Debug, leaving update at iteration " + iterationCounter + ", current iterationTime= " + (rttime.getTime() - currentTime) );
 	}//end of update
 	
-	/** Poll estimated x position value from filter */
-	public float getX() {
-		return (float)xc.get(0, 0);
-	}
 
-	/** Poll estimated y position value from filter */
-	public float getY() {
-		return (float)xc.get(1, 0);
-	}
-
-	//TODO Rename to getOrientation ??
-	/** Poll estimated direction angle value from filter */
-	public float getAngle() {
-		return (float)xc.get(4, 0);
-	}
 	
 	/*
 	public static void main(String args[])
@@ -277,7 +341,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		g2.setColor(Color.red);
 		int ix = Actor.e2gX(getX());
 		int iy = Actor.e2gY(getY());
-		debug(" ix: " + ix + ", iy: "+ iy);
+		debug("Debug, in abs.pos.ukf draw: ix= " + ix + ", iy= "+ iy);
 
 		double iangle = -getAngle();
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
