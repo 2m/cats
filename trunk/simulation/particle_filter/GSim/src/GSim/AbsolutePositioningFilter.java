@@ -7,14 +7,14 @@ import java.awt.Graphics;
  * talken out befor use on the NXT)
  */
 public abstract class AbsolutePositioningFilter extends Thread {
-	/* Buffers with data on movement and landmark sightings */
+	/** Buffers with data on movement and landmark sightings */
 	protected final Buffer sensorData;
 	protected final Buffer movementData;
-	/* Period of filter */
+	/** Period of filter in seconds */
 	protected final float T;
-	/* Period of filter in milliseconds */
+	/** Period of filter in milliseconds */
 	protected final int Tint;
-	/* Pointer to common clock object */
+	/** Pointer to common clock object */
 	protected final RealTimeClock rttime;
 
 	public AbsolutePositioningFilter(float T, Buffer sensorData,
