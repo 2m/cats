@@ -14,11 +14,12 @@ public class Cat extends Actor {
 	protected AbsolutePositioningFilter positioningFilter;
 	protected TrackingFilter trackingFilter;
 	private Guide guide;
-	private boolean usePositioningParticleFilter = true;
+	private boolean usePositioningParticleFilter = false;
 	private boolean usePositioningUnscentedKalmanFilter = false;
-	private boolean useTrackingParticleFilter = false;
+	private boolean useTrackingParticleFilter = true;
 	private boolean useTrackingUnscentedKalmanFilter = false;
 	private boolean useGuide = false;
+	private int timestepsBetweenFilterUpdates = 5;
 	
 	public Cat(Actor mouse, double x, double y, double angle,
 			RealTimeClock clock, BillBoard billboard, int id) {
@@ -28,7 +29,8 @@ public class Cat extends Actor {
 		positioningBuffer = sensors.regPositioner();
 		trackerBuffer = sensors.regTracker();
 		int N = 80;
-		float T = (float) 0.5;
+		float T = (float) GSim.timestep*timestepsBetweenFilterUpdates/1000; //5;//0.5;
+		
 		
 		if (usePositioningParticleFilter) {
 			positioningFilter = new AbsolutePositioningParticleFilter(N, T,
@@ -70,7 +72,7 @@ public class Cat extends Actor {
 			gotoy += 0.01 * Math.signum(g[1]);
 		}
 		
-		if ((iter % 5) == 0) {
+		if ((iter % timestepsBetweenFilterUpdates) == 0) {
 			sensors.update();
 			if (usePositioningParticleFilter || usePositioningUnscentedKalmanFilter){
 				positioningFilter.update();

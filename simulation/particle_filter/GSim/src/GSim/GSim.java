@@ -30,21 +30,31 @@ public class GSim extends JFrame implements MouseListener {
 	// Size of arena
 	public static final double ARENA_WIDTH = 3;
 	public static final double ARENA_HEIGHT = 3;
+	
+	// Time between updates in milliseconds
+	public static final int timestep = 100;
 
 	// Array with all the actors
-	private Actor[] actors = new Actor[1 + 3];
+	private Actor[] actors = new Actor[1+3];// [1 + 3];
 	private boolean marked = false;
 	public LandmarkList llist = new LandmarkList();
 	public RealTimeClock clock = new RealTimeClock();
 	public BillBoard billboard = new BillBoard(3);
 
 	public GSim() {
+		/*
 		addMouseListener(this);
+		actors[0] = new Mouse(null, 1.5, 1.5, 0.0, clock, billboard, 0);
+		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, clock, billboard, 1);
+		*/
 
+		
+		addMouseListener(this);
 		actors[0] = new Mouse(null, 1.5, 1.5, 0.0, clock, billboard, 0);
 		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, clock, billboard, 1);
 		actors[2] = new Cat(actors[0], 1.0, 1.0, 0, clock, billboard, 2);
 		actors[3] = new Cat(actors[0], 1.5, 0.1, 0, clock, billboard, 3);
+		
 	}
 
 	/**
@@ -117,13 +127,14 @@ public class GSim extends JFrame implements MouseListener {
 	public void run() {
 		openWindow(); // Open window
 		while (true) { // Main loop
+			System.out.println("Starting new loop at:" + clock.getTime() );
 			// Update all actors
 			for (int i = 0; i < actors.length; i++) {
 				actors[i].update();
 			}
 
 			repaint(); // Redraw all objects
-			sleep(100); // Wait before new update
+			sleep(timestep); // Wait before new update
 		}
 	}
 
