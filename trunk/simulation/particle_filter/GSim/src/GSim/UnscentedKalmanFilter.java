@@ -46,6 +46,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	
 	private final boolean DEBUG = false;
 	private final boolean DEBUG_LIGHT = false;
+	private final boolean DEBUG2 = false; //ukf.ut()
 
 	/**Constructor
 	 * @param L  number of states
@@ -205,7 +206,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	 * Unscented Transformation
 	 * @param f  nonlinear map
 	 * @param X  sigma points
-	 * @param m  weights for mean
+	 * @param Wm  weights for mean
 	 * @param Wc  weights for covariance
 	 * @param n  number of outputs of f
 	 * @param R  additive covariance
@@ -228,11 +229,17 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		{	
 			//for all columns in X, compute fstate for the given row vector and put the result in Y
 			Matrix row_in_X = X.getMatrix(0, X.getRowDimension()-1, k, k);
-			//System.out.println("Debug: ut, row_in_X:");
-			//printM(row_in_X);
+			if (DEBUG2)
+			{
+				System.out.println("Debug: ukf.ut, row_in_X =");
+				printM(row_in_X);
+			}
 			Y.setMatrix(0, Y.getRowDimension()-1, k, k, func.eval(row_in_X) );
-			//System.out.println("Debug: ut, Y:");
-			//printM(Y);
+			if (DEBUG2)
+			{
+				System.out.println("Debug: ukf.ut, Y (after function evaluation) =");
+				printM(Y);
+			}
 			Matrix row_in_Y = Y.getMatrix(0, Y.getRowDimension()-1, k, k);
 			//System.out.println("Debug: ut, row_in_Y:");
 			//printM(row_in_Y);
