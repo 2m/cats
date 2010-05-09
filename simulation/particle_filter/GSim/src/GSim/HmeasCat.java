@@ -41,7 +41,7 @@ public class HmeasCat implements IFunction{
 		int n = LandmarkList.landmarkX.length;
 		Matrix zc = Matlab.zeros(n+3, n+3);
 		//System.out.println("Debug, HmeasCat: n = " +n);
-		for (int i = 1; i<n; i++)
+		for (int i = 1; i<=n; i++)
 		{
 			zc.set(i-1,1-1, Math.atan2(LandmarkList.landmarkY[i-1] - xc.get(2-1,1-1), LandmarkList.landmarkX[i-1] - xc.get(1-1,1-1)));
 			zc.set(i-1,1-1, zc.get(i-1,1-1)%2*Math.PI);

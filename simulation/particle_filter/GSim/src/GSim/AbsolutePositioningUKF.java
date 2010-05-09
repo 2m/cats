@@ -194,11 +194,10 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		// Get time reference
 		currentTime = rttime.getTime();
 
-		// Update landmark angle in the measurement matrix
-		
+		// Update landmark angle in the measurement matrix	
 		SightingData sdata = (SightingData) sensorData.pop();
 		boolean[] landmarksSighted = new boolean[numberOfLandmarks];
-		debug("Debug, entering update: current time= " + currentTime + "number of landmarks= " +landmarksSighted.length);
+		debug("Debug, entering update: current time= " + currentTime + ", number of landmarks= " +landmarksSighted.length);
 		for (boolean landmark: landmarksSighted)
 		{
 			landmark = false;
@@ -210,28 +209,32 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 
 			{
 				//Determine which landmark it is
-				double absLandmarkAngle =  sdata.angle % 2*PI;
+				double absLandmarkAngle =  (sdata.angle + 2.0*PI)% 2.0*PI;
 				if (absLandmarkAngle>=0 && absLandmarkAngle<PI/2.0) //upper right corner
 				{
-					z.set(3,0,sdata.angle);
+					z.set(3,0,absLandmarkAngle);
 					landmarksSighted[3] = true;
+					debug("Sighting landmark with index 3 (upper right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) );
 				}
 				else if (absLandmarkAngle>=PI/2.0 && absLandmarkAngle<PI) //upper left corner
 				{
-					z.set(1,0,sdata.angle);
+					z.set(1,0,absLandmarkAngle);
 					landmarksSighted[1] = true;
+					debug("Sighting landmark with index 3 (upper left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) );
 				}
 				else if (absLandmarkAngle>=PI && absLandmarkAngle<3.0*PI/2.0) //lower left corner
 				{
-					z.set(0,0,sdata.angle);
+					z.set(0,0,absLandmarkAngle);
 					landmarksSighted[0] = true;
+					debug("Sighting landmark with index 3 (lower left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) );
 				}
 				else if (absLandmarkAngle>=3.0*PI/2.0 && absLandmarkAngle<2*PI)  //lower right corner
 				{
-					z.set(2,0,sdata.angle);
+					z.set(2,0,absLandmarkAngle);
 					landmarksSighted[2] = true;
+					debug("Sighting landmark with index 3 (lower right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) );
 				}
-				else System.out.print("ERROR in update!");
+				else System.out.println("ERROR in update! absLandmarkAngle in radians = " + absLandmarkAngle + " and in degrees = "+ toDegrees(absLandmarkAngle) );
 			} 
 			else 
 			{
@@ -240,8 +243,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 					sensorData.push(sdata);
 				}
 			}
-		}
-		
+		}	
 		//TODO check if correct
 		R = eye(z.getRowDimension());
 		for (boolean landmarkSighted: landmarksSighted)
@@ -251,9 +253,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 				R.set(0, 0, pow(std_array[0],2) );
 			}
 				
-		}
-				
-
+		}		
 		
 		// Update cat velocity and orientation in the measurement matrix
 		MovementData mdata = (MovementData) movementData.pop();	
