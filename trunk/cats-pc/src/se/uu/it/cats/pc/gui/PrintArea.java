@@ -7,7 +7,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import java.util.Hashtable;
 
-public class PrintArea extends JPanel implements ChangeListener{ // implements ActionListener
+public class PrintArea extends JPanel implements ChangeListener, MouseWheelListener{ // implements ActionListener
   
 	private Area _newArea;
 	private Cat[] _cats;
@@ -73,6 +73,8 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
     scaleSlider.setPaintLabels(true);
     scaleSlider.setBackground(Color.white);
     scaleSlider.addChangeListener(this);
+    
+    addMouseWheelListener(this);
 
     // Change view of slider
     Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
@@ -197,10 +199,27 @@ public class PrintArea extends JPanel implements ChangeListener{ // implements A
   
   public void stateChanged(ChangeEvent ce) {
 	  if (ce.getSource() == scaleSlider) {
-	      SCALE_CURRENT = scaleSlider.getValue();
-	      //_arenaHeight = (int) arenaHeightFix*SCALE_CURRENT/50;
-	      zk = SCALE_CURRENT;
-	      System.out.println(SCALE_CURRENT);
+	      setScale(scaleSlider.getValue());
 	  }
+  }
+  
+  public void mouseWheelMoved(MouseWheelEvent e) {
+	  setScale(getScale() + (e.getWheelRotation() * 3));
+	  scaleSlider.setValue(getScale());
+  }
+  
+  public void setScale(int newScale)
+  {
+	  if (newScale < 100 && newScale > 0)
+	  {
+		  SCALE_CURRENT = newScale;
+		  zk = newScale;
+		  System.out.println(newScale);
+	  }	  
+  }
+  
+  public int getScale()
+  {
+	  return zk;
   }
 };
