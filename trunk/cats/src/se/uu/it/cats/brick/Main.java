@@ -49,7 +49,7 @@ public class Main
 		//filterThread.start();
 		
 		//Run MovementPilot:
-		float[] sCat = {0, 0, (float) (Math.PI/2)};
+		float[] sCat = {0, 0, (float) (Math.PI/2f)};
 		MovementPilot mPilot = new MovementPilot();
 		CatPosCalc.setPilot(mPilot);
 		CatPosCalc.setCatState(sCat);
@@ -64,9 +64,16 @@ public class Main
 		Button.waitForPress();
 		Thread.sleep(2000);
 		
-		//mPilot.travel(0f,-0.3f);
+		mPilot.travel(0f,3f);
 		//mPilot.travel(0f,0f);
-		for (int i=0; i<3; i++){ //turn in square
+		/*for (int i=0; i<3; i++){ //turn in square
+			mPilot.travel(0.4f, 0f);
+			mPilot.travel(0.4f, 0.4f);
+			mPilot.travel(0f,   0.4f);
+			mPilot.travel(0f,     0f);
+			System.out.println("COMMAND FINISHED!");
+		}*/
+		/*for (int i=0; i<3; i++){ //turn in square
 			mPilot.travel(0.6f, 0.6f);
 			mPilot.travel(  0f, 1.2f);
 			mPilot.travel(0.6f, 1.2f);
@@ -75,7 +82,7 @@ public class Main
 			mPilot.travel(  0f, 1.2f);
 			mPilot.travel(  0f,   0f);
 			System.out.println("COMMAND FINISHED!");
-		}
+		}*/
 		
 		Button.LEFT.addButtonListener(new ButtonListener() {
 			public void buttonPressed(Button b) {}

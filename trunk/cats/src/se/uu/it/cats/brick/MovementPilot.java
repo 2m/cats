@@ -2,14 +2,16 @@ package se.uu.it.cats.brick;
 
 import lejos.nxt.Button;
 import lejos.nxt.Motor;
+import lejos.nxt.Sound;
 import lejos.robotics.navigation.TachoPilot;
 
 public class MovementPilot extends TachoPilot {	
 	
 	public MovementPilot()
 	{
-		//super(0.054725f,0.0544862f, 0.167f,Motor.A, Motor.C, false); //0.05475f //old design cat1
-		super(0.055f, 0.172f, Motor.A, Motor.C, false); //new design
+		//super(0.054725f,0.0544862f, 0.167f,Motor.C, Motor.A, true); //0.05475f //old design cat1, old controller
+		super(0.05475f,0.05475f, 0.167f,Motor.C, Motor.A, false); //0.05475f //old design cat1
+		//super(0.055f, 0.172f, Motor.C, Motor.A, false); //new design
 		
 		/*Motor.A.regulateSpeed(true);
 		Motor.C.regulateSpeed(true);
@@ -19,20 +21,28 @@ public class MovementPilot extends TachoPilot {
 		setTurnSpeed(getTurnMaxSpeed()/2);*/
 	}	 
 	
-	public void travel(float y, float x){
+	public void travel(float x, float y){
+		
+		//for some strange reason I have to switch these to get the right coordiantes:
+		float switchTemp = x;
+		x = y;
+		y = switchTemp;
 		
 		float[] catPos = CatPosCalc.getCatPos();
 		
 		float deltaX = x-catPos[0];
 		float deltaY = y-catPos[1];
+		System.out.println("deltaY: " + deltaY);
 		float r = (float) Math.sqrt(deltaX*deltaX + deltaY*deltaY);
 		float newAngle = (float) Math.atan2(deltaY,deltaX);
+		System.out.println("newAngle: " + newAngle*180f/Math.PI);
 		
-		float turnAngle = (float) ((newAngle - catPos[2]) % (Math.PI*2));
+		float turnAngle = (float) ((newAngle - catPos[2]) % (Math.PI*2f));  //TODO: not 0 when it should!
+		System.out.println("turnAngle before: " + turnAngle*180f/Math.PI);
 		if (turnAngle < -Math.PI)
-			turnAngle += 2 * Math.PI;
+			turnAngle += 2f * Math.PI;
 		else if (turnAngle > Math.PI)
-			turnAngle -= 2 * Math.PI;
+			turnAngle -= 2f * Math.PI;
 		
 		//drive backward or forward
 		boolean forward;
@@ -48,7 +58,8 @@ public class MovementPilot extends TachoPilot {
 			forward = true;
 	
 		
-		turnAngle = (float) ((turnAngle)*180/Math.PI); // to angles
+		turnAngle = (float) ((turnAngle)*180f/Math.PI); // to angles
+		System.out.println("turnAngle: " + turnAngle);
 		
 		/*Logger.println("Before rotate");
 		Logger.println("r:"+r+" deltaX"+deltaX+" deltaY"+deltaY+" catPos[0]"+catPos[0]+" catPos[1]"+catPos[1]);
@@ -56,12 +67,12 @@ public class MovementPilot extends TachoPilot {
 		
 		//rotate(turnAngle); // blocks while rotating
 		if (turnAngle > 0) { //turn counter clockwise
-			Motor.A.backward();
-			Motor.C.forward();
-		}
-		else if (turnAngle < 0) { //turn clockwise
 			Motor.A.forward();
 			Motor.C.backward();
+		}
+		else if (turnAngle < 0) { //turn clockwise
+			Motor.A.backward();
+			Motor.C.forward();
 		}
 		angularAcceleration(turnAngle);
 		
@@ -84,6 +95,7 @@ public class MovementPilot extends TachoPilot {
 		
 	}
 	private void angularAcceleration(float turnAngle) {
+		Sound.beep(); //for debugging
 		float  startAngle = super.getAngle();
 		float  targetAngle = startAngle + turnAngle;
 		float currentAngle;
@@ -115,9 +127,11 @@ public class MovementPilot extends TachoPilot {
 		while (Math.abs(targetAngle - currentAngle) > angleEpsilon );
 		Motor.A.stop();
 		Motor.C.stop();
+		/*
 		System.out.println("Final angle error: " + (currentAngle - targetAngle));
 		System.out.println("angCount: " + angCount);
 		System.out.println("Turning finished, press button");
+		*/
 		//Button.waitForPress();
 		//try{Thread.sleep(1000);}catch(Exception ex){}
 	}
@@ -129,7 +143,7 @@ public class MovementPilot extends TachoPilot {
 		float distEpsilon = 0.001f;
 		float normalizeDist = 0.05f;
 		int maxPower = 900;
-		int minPower = 250;
+		int minPower = 200;
 		int currentPower = minPower;
 		int distCount = 0;
 
@@ -153,9 +167,11 @@ public class MovementPilot extends TachoPilot {
 		while (Math.abs(targetDist - currentDist) > distEpsilon );
 		Motor.A.stop();
 		Motor.C.stop();
+		/*
 		System.out.println("Final dist error: " + (currentDist - targetDist));
 		System.out.println("distCount: " + distCount);
 		System.out.println("Travel finished, press button");
+		*/
 		//Button.waitForPress();
 	}
 }
