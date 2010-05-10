@@ -19,14 +19,6 @@ public class DataPanel extends JPanel{ // implements ActionListener
 	// Size of window
     setPreferredSize(new Dimension(200,_areaHeight));
     
-    ActionListener buttonListener = new ActionListener() {                    
-        public void actionPerformed(ActionEvent e)
-        {
-        	JButton button = (JButton)e.getSource();
-        	ConnectionManager.getInstance().openConnection(button.getText());        	
-        }
-    };
-    
 	// Bakgrundsfärgen
     setBackground(Color.white);
 	setLayout(new GridLayout(12,1,0,0)); //rows, cols, hgap, vgap
@@ -35,9 +27,6 @@ public class DataPanel extends JPanel{ // implements ActionListener
 		idLabel.setFont(new Font("Monotype Corsiva",1,17));
 		add(idLabel);
 		add(new JLabel("Position: ("+world.getCats()[i].getX()+","+world.getCats()[i].getY()+")"));
-		JButton button = new JButton(world.getCats()[i].getCatName());
-		button.addActionListener(buttonListener);
-		add(button);
 	}	
   }
 };
