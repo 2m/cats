@@ -44,7 +44,7 @@ public class CatPosCalc {
 	
 	public static void update() {
 		float distNew = pilot.getTravelDistance();
-		ang = (startAng + pilot.getAngle()) % 360 * (float)Math.PI/180f;
+		ang = (float) ((startAng + pilot.getAngle()*Math.PI/180f) % (2f*Math.PI));
 		
 		float deltaDist = distNew - distLast;
 		
