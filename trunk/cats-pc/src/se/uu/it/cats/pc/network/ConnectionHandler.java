@@ -21,7 +21,7 @@ public class ConnectionHandler implements Runnable
 	
 	public ConnectionHandler(String remoteName)
 	{
-		_remoteName = remoteName;
+		_remoteName = remoteName;		
 	}
 	
 	public boolean connect()
@@ -95,6 +95,8 @@ public class ConnectionHandler implements Runnable
 					index -= bytesRead;
 					packetCounter[p.getSource()]++;
 					
+					ConnectionManager.getInstance().relayPacketToAllExcept(p, getRemoteName());
+					
 					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				}
 				
@@ -152,5 +154,34 @@ public class ConnectionHandler implements Runnable
 	{
 		_alive = false;
 	}
-
+	
+	public void relayPacket(Packet p)
+	{
+		try
+		{
+			_dos.write(p.writeImpl());
+			_dos.flush();
+		}
+		catch (IOException ioe)
+		{
+			Logger.println("IO Exception writing bytes to "+getRemoteName());				
+			setAlive(false);
+		}
+	}
+	
+	public void sendPacket(Packet p)
+	{
+		try
+		{
+			p.setSource(-1);
+			
+			_dos.write(p.writeImpl());
+			_dos.flush();
+		}
+		catch (IOException ioe)
+		{
+			Logger.println("IO Exception writing bytes to "+getRemoteName());				
+			setAlive(false);
+		}
+	}
 }

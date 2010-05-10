@@ -16,6 +16,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import se.uu.it.cats.pc.Logger;
 
@@ -35,7 +37,7 @@ public class Main
 	private int arenaWidth = 400;
 	private int arenaHeight = 400;
 	private int windowWidth = 900;
-	private int windowHeight = 600;
+	private int windowHeight = 700;
 	private JCheckBoxMenuItem sgrid;
 	private JCheckBoxMenuItem sslider;
 	
@@ -118,6 +120,12 @@ public class Main
 		panelBackground.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		panelData.setBorder(BorderFactory.createLineBorder(Color.gray));
 		panelArena.setBorder(BorderFactory.createLineBorder(Color.gray));
+		panelRawdata.setBorder(new TitledBorder(
+				new LineBorder(Color.gray, 1, false),
+				"Connectivity",
+				TitledBorder.LEFT,
+				TitledBorder.DEFAULT_POSITION)
+		);
 		panelSettings.setBorder(BorderFactory.createLineBorder(Color.gray));
 		
 		/*panelLeft.add(button1, BorderLayout.NORTH);
