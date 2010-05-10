@@ -46,7 +46,7 @@ public class Main
 		newArea = Area.getInstance();
 		printNewArea = new PrintArea(newArea, arenaWidth, arenaHeight);
 		dataPanel = new DataPanel(newArea, arenaHeight);
-		panelBluetooth = new PanelBluetooth(windowWidth);
+		panelBluetooth = new PanelBluetooth();
 		mainPanel = new MainPanel(newArea, arenaHeight);
 		
 		// Create the Frame-window
