@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import se.uu.it.cats.brick.network.packet.Packet;
 import se.uu.it.cats.pc.Logger;
+import se.uu.it.cats.pc.gui.PanelBluetooth;
 import se.uu.it.cats.pc.network.packet.PacketManager;
 
 import lejos.pc.comm.NXTConnector;
@@ -95,6 +96,10 @@ public class ConnectionHandler implements Runnable
 					index -= bytesRead;
 					packetCounter[p.getSource()]++;
 					
+					// add info to log panel
+					PanelBluetooth.updatePacket(p.toString());
+					
+					// forward packet to other cats
 					ConnectionManager.getInstance().relayPacketToAllExcept(p, getRemoteName());
 					
 					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
