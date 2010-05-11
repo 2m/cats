@@ -69,10 +69,11 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		int nz = numberOfLandmarks+3;  //TODO: change back to nz=n+4  //number of elements in the measurement vector of the cats = number of landmarks + 4
 		int nx = 5;  //TODO: change back to nx=6 //number of variables in the cats' state vector
 		ufk_filter = new UnscentedKalmanFilter(nx,nz);
-		float dt = T;  //sampling period, must be 1 for now TODO adjust to real dt ????
+		float dt = T;//1f;  //sampling period, must be 1 for now TODO adjust to real dt ????
+		//T = 1;
 		float q = 0.005f;  //std of expected process noise for the cat
 		float stddegrees = 2;
-		std_array = new double[]{stddegrees*(PI/180), pow(10, -2), pow(10, -2), pow(10, -20), pow(10, -20)};
+		std_array = new double[]{stddegrees*(PI/180), pow(10, -2), pow(10, -2), pow(10, -7)};//, pow(10, -20)};
 		double[][] r_temp = {std_array};
 		r = new Matrix(r_temp);  //std of expected measurement noise for the cat (for bearing angle, x, y, orient., cam.ang respectivly)
 		float k1 = dt;  //how much the noise in the wheel tachometers is amplified
@@ -244,8 +245,11 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 				}
 			}
 		}	
-		//TODO check if correct
-		R = eye(z.getRowDimension()).times(large);
+		//Default if no sighting
+		R.set(0,0, large);
+		R.set(1,1, large);
+		R.set(2,2, large);
+		R.set(3,3, large);
 		for (int i = 0; i < numberOfLandmarks; i++ )
 		{
 			if (landmarksSighted[i])
@@ -256,17 +260,18 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		
 		// Update cat velocity and orientation in the measurement matrix
 		MovementData mdata = (MovementData) movementData.pop();	
-		double xPositionFromTachometer = xc.get(0, 0);
-		double yPositionFromTachometer = xc.get(1, 0);
+		double xPositionFromTachometer = 0.0;//xc.get(0, 0);
+		double yPositionFromTachometer = 0.0;//xc.get(1, 0);
 		double orientationFromTachometer = xc.get(4, 0);
 		while (mdata != null) 
 		{
 			if (mdata.getComparable() <= currentTime) 
 			{
-				double distance = mdata.dr;
-				xPositionFromTachometer += cos(distance);
-				yPositionFromTachometer += sin(distance);
 				orientationFromTachometer += mdata.dangle;	
+				double distance = mdata.dr;
+				xPositionFromTachometer += distance*cos(orientationFromTachometer);
+				yPositionFromTachometer += distance*sin(orientationFromTachometer);
+
 				mdata = (MovementData) movementData.pop();
 			}
 			else {
@@ -274,34 +279,35 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 				mdata = null;
 			}
 		}
-		double xVelocityFromTachometer = (z.get(0, 0) - xPositionFromTachometer) / (lastCurrentTime - currentTime);
-		double yVelocityFromTachometer = (z.get(1, 0) - yPositionFromTachometer) / (lastCurrentTime - currentTime);
-		z.set(2, 0, xVelocityFromTachometer);
-		z.set(3, 0, yVelocityFromTachometer);	
-		z.set(4, 0, orientationFromTachometer);	
+		double xVelocityFromTachometer = (xPositionFromTachometer)/T; // - xc.get(0, 0)) / T;//(lastCurrentTime - currentTime);
+		double yVelocityFromTachometer = (yPositionFromTachometer)/T; // - xc.get(1, 0)) / T;//(lastCurrentTime - currentTime);
+		z.set(numberOfLandmarks-1 +1, 0, xVelocityFromTachometer);
+		z.set(numberOfLandmarks-1 +2, 0, yVelocityFromTachometer);	
+		z.set(numberOfLandmarks-1 +3, 0, orientationFromTachometer);	
 		
 		//One iteration with UKF
 		Matrix[] result = ufk_filter.ukf(f, xc, P, h, z, Q, R);
 		xc = result[0]; 
 		P = result[1];
 		
+		
 		// Check x and y so they keep inside the arena and also set velocity in that direction to zero if outside the arena
 		if (xc.get(0, 0) < Arena.min_x) {
 			xc.set(0, 0, Arena.min_x);
-			xc.set(3, 0, 0);
+			//xc.set(3, 0, 0);
 		}
 		if (xc.get(0, 0) > Arena.max_x) {
 			xc.set(0, 0, Arena.max_x);
-			xc.set(3, 0, 0);
+			//xc.set(3, 0, 0);
 		}
 		if (xc.get(1, 0) < Arena.min_y) {
 			xc.set(1, 0, Arena.min_y);
-			xc.set(4, 0, 0);
+			//xc.set(4, 0, 0);
 		}
 		if (xc.get(1, 0) > Arena.max_y) {
 			xc.set(1, 0, Arena.max_y);
-			xc.set(4, 0, 0);
-		}		
+			//xc.set(4, 0, 0);
+		}
 		
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
@@ -344,7 +350,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		g2.setColor(Color.red);
 		int ix = Actor.e2gX(getX());
 		int iy = Actor.e2gY(getY());
-		debug("Debug, in abs.pos.ukf draw: ix= " + ix + ", iy= "+ iy);
+		//debug("Debug, in abs.pos.ukf draw: ix= " + ix + ", iy= "+ iy);
 
 		double iangle = -getAngle();
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,

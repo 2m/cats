@@ -45,7 +45,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	private Matrix Wc; 
 	
 	private final boolean DEBUG = false;
-	private final boolean DEBUG_LIGHT = true;
+	private final boolean DEBUG_LIGHT = false;
 	private final boolean DEBUG2 = false; //ukf.ut()
 
 	/**Constructor
