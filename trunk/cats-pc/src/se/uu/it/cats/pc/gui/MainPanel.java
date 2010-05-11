@@ -51,8 +51,8 @@ public class MainPanel extends JPanel implements ActionListener{ // implements A
 	settingsLabel.setFont(new Font("Monotype Corsiva",1,24));
 	add(settingsLabel);
 	
-	labelArenaWidth = new JLabel("Distance X");
-	labelArenaHeight = new JLabel("Distance Y");
+	labelArenaWidth = new JLabel("Distance X [cm]");
+	labelArenaHeight = new JLabel("Distance Y [cm]");
 	inputArenaWidth = new JTextField(""+world.getArenaWidth());
 	inputArenaHeight = new JTextField(""+world.getArenaHeight());
 	inputArenaWidth.setColumns(5); 
