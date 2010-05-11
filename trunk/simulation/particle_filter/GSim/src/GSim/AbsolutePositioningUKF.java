@@ -54,6 +54,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	/** number of landmarks */
 	private int numberOfLandmarks;
 	
+	private float large = (float)pow(10,10);
+	
 	/**Toggle debug info*/
 	private final boolean DEBUG = true;
 
@@ -202,11 +204,9 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		{
 			landmark = false;
 		}
-
 		if (sdata != null)
 		{
 			if (sdata.getComparable() <= currentTime)
-
 			{
 				//Determine which landmark it is
 				double absLandmarkAngle =  (sdata.angle + 2.0*PI)% 2.0*PI;
@@ -220,19 +220,19 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 				{
 					z.set(1,0,absLandmarkAngle);
 					landmarksSighted[1] = true;
-					debug("Sighting landmark with index 3 (upper left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) );
+					debug("Sighting landmark with index 1 (upper left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) );
 				}
 				else if (absLandmarkAngle>=PI && absLandmarkAngle<3.0*PI/2.0) //lower left corner
 				{
 					z.set(0,0,absLandmarkAngle);
 					landmarksSighted[0] = true;
-					debug("Sighting landmark with index 3 (lower left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) );
+					debug("Sighting landmark with index 0 (lower left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) );
 				}
 				else if (absLandmarkAngle>=3.0*PI/2.0 && absLandmarkAngle<2*PI)  //lower right corner
 				{
 					z.set(2,0,absLandmarkAngle);
 					landmarksSighted[2] = true;
-					debug("Sighting landmark with index 3 (lower right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) );
+					debug("Sighting landmark with index 2 (lower right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) );
 				}
 				else System.out.println("ERROR in update! absLandmarkAngle in radians = " + absLandmarkAngle + " and in degrees = "+ toDegrees(absLandmarkAngle) );
 			} 
@@ -245,14 +245,13 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 			}
 		}	
 		//TODO check if correct
-		R = eye(z.getRowDimension());
-		for (boolean landmarkSighted: landmarksSighted)
+		R = eye(z.getRowDimension()).times(large);
+		for (int i = 0; i < numberOfLandmarks; i++ )
 		{
-			if (landmarkSighted)
-			{
-				R.set(0, 0, pow(std_array[0],2) );
-			}
-				
+			if (landmarksSighted[i])
+			{		
+				R.set(i, i, pow(std_array[0],2) );
+			}		
 		}		
 		
 		// Update cat velocity and orientation in the measurement matrix
@@ -286,18 +285,22 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		xc = result[0]; 
 		P = result[1];
 		
-		// Check x and y so they keep inside the arena
+		// Check x and y so they keep inside the arena and also set velocity in that direction to zero if outside the arena
 		if (xc.get(0, 0) < Arena.min_x) {
 			xc.set(0, 0, Arena.min_x);
+			xc.set(3, 0, 0);
 		}
 		if (xc.get(0, 0) > Arena.max_x) {
 			xc.set(0, 0, Arena.max_x);
+			xc.set(3, 0, 0);
 		}
 		if (xc.get(1, 0) < Arena.min_y) {
 			xc.set(1, 0, Arena.min_y);
+			xc.set(4, 0, 0);
 		}
 		if (xc.get(1, 0) > Arena.max_y) {
 			xc.set(1, 0, Arena.max_y);
+			xc.set(4, 0, 0);
 		}		
 		
 		// Increase iteration counter and timer (with full execution time)
