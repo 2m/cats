@@ -33,6 +33,8 @@ public class BillBoard {
 		sightings[(id - 1) * 3 + 1] = y;
 		sightings[(id - 1) * 3 + 2] = theta;
 	}
+	
+	//TODO: For UKF, add getter for tachometer positioning and landmark sighting 
 
 	public int getNoCats() {
 		return NUMBER_OF_CATS;
