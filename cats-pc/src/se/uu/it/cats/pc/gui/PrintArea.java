@@ -5,9 +5,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
-import java.util.Hashtable;
 
-public class PrintArea extends JPanel implements ChangeListener, MouseWheelListener{ // implements ActionListener
+//import GSim.Actor;
+
+import java.util.Hashtable;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+public class PrintArea extends JPanel implements ChangeListener, MouseWheelListener, MouseListener{ // implements ActionListener
   
 	private Area _newArea;
 	private Cat[] _cats;
@@ -48,6 +53,8 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	static final int SCALE_MAX = 100;
 	static final int SCALE_INIT = 50;
 	private int SCALE_CURRENT = SCALE_INIT;
+	
+	private boolean marked = false;
   
   public PrintArea(Area newArea, int areaHeight, int areaWidth) {
 	_newArea = newArea;
@@ -75,6 +82,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
     scaleSlider.addChangeListener(this);
     
     addMouseWheelListener(this);
+    addMouseListener(this);
 
     // Change view of slider
     Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
@@ -148,17 +156,25 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			linelength = 90;
 			g2d.setColor(Color.blue);
 			
-			//Draw camera angles
-			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength));
-			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength));
-
-			g2d.setColor(Color.black); // Black cats
-			
 			//Draw the cats
 			entityPosX = centFix_X+_cats[i].getX()*zk/50;
 			entityPosY = centFix_Y-_cats[i].getY()*zk/50;
+
+			//Draw camera angles
+			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength));
+			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength));
+			
+			if(_cats[i].isManualOrder()) {
+				g2d.setColor(Color.red); 
+				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (centFix_X+_cats[i].getGoToX()*zk/50), (int) (centFix_Y+_cats[i].getGoToY()*zk/50));
+			}
+			
+			g2d.setColor(Color.black); // Black cats
 			
 			
+			if(_cats[i].isMarked()) {
+				g2d.setColor(Color.yellow); // Black cats
+			}
 			g2d.fillOval( (int) entityPosX-5, (int) entityPosY-5, 10, 10);
 			//Streckat test
 			g2d.setStroke(dashedBackground);
@@ -222,4 +238,55 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
   {
 	  return zk;
   }
+  
+  public void mousePressed(MouseEvent e) {
+		// saySomething("Mouse pressed", e);
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// saySomething("Mouse released", e);
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// saySomething("Mouse entered", e);
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// saySomething("Mouse exited", e);
+	}
+	
+	public void mouseClicked(MouseEvent e) {
+		centFix_X = _areaWidth/2-_arenaWidth/2*zk/50;
+		centFix_Y = _areaHeight/2+_arenaHeight/2*zk/50;
+		if (marked) {
+			for (int i = 0; i < _newArea.getCats().length; i++) {
+				if (_newArea.getCats()[i].isMarked()) {
+					_newArea.getCats()[i].goTo(e.getX()-centFix_X, e.getY()-centFix_Y);
+					_newArea.getCats()[i].setMarked(false);
+					_newArea.getCats()[i].setManualOrder(true);
+				}
+			}
+			marked = false;
+		} else {
+			
+			
+			double dist, mindist = _arenaWidth * _arenaWidth + _arenaHeight
+					* _arenaHeight;
+			int j = 0;
+			for (int i = 0; i < _newArea.getCats().length; i++) {
+				entityPosX = centFix_X+_cats[i].getX()*zk/50;
+				entityPosY = centFix_Y-_cats[i].getY()*zk/50;
+				
+				dist = Math.pow(entityPosX - e.getX(), 2)
+						+ Math.pow(entityPosY - e.getY(), 2);
+				if (dist < mindist) {
+					mindist = dist;
+					j = i;
+				}
+			}
+			_cats[j].setMarked(true);
+			marked = true;
+		}
+	}
+
 };

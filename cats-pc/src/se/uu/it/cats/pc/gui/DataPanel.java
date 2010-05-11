@@ -27,6 +27,8 @@ public class DataPanel extends JPanel{ // implements ActionListener
 		idLabel.setFont(new Font("Monotype Corsiva",1,17));
 		add(idLabel);
 		add(new JLabel("Position: ("+world.getCats()[i].getX()+","+world.getCats()[i].getY()+")"));
+		add(new JLabel("Angle: "+world.getCats()[i].getAngle_c()+", Angle cam: "+world.getCats()[i].getAngle_cam()));
+
 	}	
   }
 };

@@ -7,6 +7,10 @@ public class Cat {
 	private float angle_cam;
 	private float cam_angle_width = 30;
 	private String catName;
+	private boolean manualOrder = false;
+	private int goToX; //Orders for new X-position
+	private int goToY; //Orders for new X-position
+	private boolean marked = false;
 	
 	public Cat(String name) {
 		catName = name;
@@ -24,6 +28,30 @@ public class Cat {
 		return y;
 	}
 	
+	public void goTo(int newOrderX, int newOrderY) {
+		goToX = newOrderX;
+		goToY = newOrderY;
+	}
+	public int getGoToX() {
+		return goToX;
+	}
+	public int getGoToY() {
+		return goToY;
+	}
+	
+	public boolean isManualOrder() {
+		return manualOrder;
+	}
+	public void setManualOrder(boolean manual) {
+		manualOrder = manual;
+	}
+	public boolean isMarked() {
+		return marked;
+	}
+	public void setMarked(boolean mark) {
+		marked = mark;
+	}
+	
 	public float getAngle_c() {
 		return angle_c;
 	}
@@ -36,6 +64,10 @@ public class Cat {
 		y = newY;
 		angle_c = newAngle_c;
 		angle_cam = newAngle_cam;
+		//Remove order if closer than 5x5 cm square
+		if (Math.abs(x-goToX) < 5 && Math.abs(y-goToY) < 5) {
+			manualOrder = false;
+		}
 	}
 	
 	public void updateAngleCam(float newAngle_cam) {
