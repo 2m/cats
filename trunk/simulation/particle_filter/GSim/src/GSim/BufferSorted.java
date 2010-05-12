@@ -7,6 +7,8 @@ package GSim;
  * @version $Rev$
  * 
  */
+
+// FIXME: add getLatestAndFlushBuffer()
 public class BufferSorted extends Buffer {
 	private Object lockOnLast;
 
