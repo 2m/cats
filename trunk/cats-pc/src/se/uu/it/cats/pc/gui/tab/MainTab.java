@@ -1,8 +1,14 @@
-package se.uu.it.cats.pc.gui;
+package se.uu.it.cats.pc.gui.tab;
 
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
+
+import se.uu.it.cats.pc.gui.Area;
+import se.uu.it.cats.pc.gui.DataPanel;
+import se.uu.it.cats.pc.gui.MainPanel;
+import se.uu.it.cats.pc.gui.PanelBluetooth;
+import se.uu.it.cats.pc.gui.PrintArea;
 
 public class MainTab extends JPanel
 {
