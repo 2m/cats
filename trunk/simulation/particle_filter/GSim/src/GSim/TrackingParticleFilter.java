@@ -155,10 +155,12 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Loop through all particles
 		while (part != null) {
 			// Get rotation angle
-			int theta = Fixed
-					.round(Fixed.mul(-angle, Fixed.RADIANS_TO_DEGREES));
-			// int cos = Fixed.cos(theta);// OK
-			// int sin = Fixed.sin(theta);// Check this
+			// FIXME: Check sine lut
+			/*
+			 * int theta = Fixed .round(Fixed.mul(-angle,
+			 * Fixed.RADIANS_TO_DEGREES)); int cos = Fixed.cos(theta); int sin =
+			 * Fixed.sin(theta);
+			 */
 			double anglef = Fixed.fixedToFloat(-angle);
 			int cos = Fixed.floatToFixed(Math.cos(anglef));
 			int sin = Fixed.floatToFixed(Math.sin(anglef));
@@ -558,20 +560,25 @@ public class TrackingParticleFilter extends TrackingFilter {
 
 		g2.setColor(Color.green);
 		// Plot particles
-		/*
-		 * Link link = data.first; while (link != null) { TrackingParticle part
-		 * = (TrackingParticle) link.data; int ix =
-		 * Actor.e2gX(Fixed.fixedToFloat(part.x)); int iy =
-		 * Actor.e2gY(Fixed.fixedToFloat(part.y)); float xv =
-		 * Fixed.fixedToFloat(part.xv); float yv = Fixed.fixedToFloat(part.yv);
-		 * linelength = (int) Fixed.fixedToFloat(Fixed.norm(part.xv, part.yv));
-		 * double iangle = -Math.atan2(yv, xv); g2.fillOval((int) ix - (size /
-		 * 2), (int) iy - (size / 2), (int) size, (int) size); g2.drawLine((int)
-		 * ix, (int) iy, (int) (ix + Math.cos(iangle) linelength), (int) (iy +
-		 * Math.sin(iangle) * linelength)); link = link.next; }
-		 */
+
+		Link link = data.first;
+		while (link != null) {
+			TrackingParticle part = (TrackingParticle) link.data;
+			int ix = Actor.e2gX(Fixed.fixedToFloat(part.x));
+			int iy = Actor.e2gY(Fixed.fixedToFloat(part.y));
+			float xv = Fixed.fixedToFloat(part.xv);
+			float yv = Fixed.fixedToFloat(part.yv);
+			linelength = (int) Fixed.fixedToFloat(Fixed.norm(part.xv, part.yv));
+			double iangle = -Math.atan2(yv, xv);
+			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
+					(int) size, (int) size);
+			g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
+					* linelength), (int) (iy + Math.sin(iangle) * linelength));
+			link = link.next;
+		}
+
 		// Plot mean
-		g2.setColor(Color.red);
+		g2.setColor(Color.pink);
 		int ix = Actor.e2gX(getX());
 		int iy = Actor.e2gY(getY());
 		double iangle = -Math.atan2(getYv(), getXv());
@@ -631,10 +638,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 	}
 
 	public void run() {
-
-		/*
-		 * while (true) { update(); pause((long) (rttime.getTime() % Tint)); }
-		 */
+		while (true) {
+			// update();
+			pause((long) (rttime.getTime() % Tint));
+		}
 
 	}
 

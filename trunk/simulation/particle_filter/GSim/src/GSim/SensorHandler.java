@@ -13,7 +13,7 @@ public class SensorHandler {
 	private double field_of_view = 43 * (Math.PI / 180); // F.O.V in radians
 	public Buffer positioningBuffer, trackingBuffer;
 	private Actor cat, mouse;
-	private boolean initialPhase = false;
+	private boolean initialPhase = true;
 	private RealTimeClock realtime;
 	private Random rnd = new Random();
 

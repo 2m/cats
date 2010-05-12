@@ -199,10 +199,12 @@ public class AbsolutePositioningParticleFilter extends
 		// Loop through all particles
 		while (part != null) {
 			// Get rotation angle
-			int theta = Fixed.round(Fixed.mul(-part.angle - sensorangle,
-					Fixed.RADIANS_TO_DEGREES));
-			// int cos = Fixed.cos(theta);// OK
-			// int sin = Fixed.sin(theta);// Check this
+			/*
+			 * int theta = Fixed.round(Fixed.mul(-part.angle - sensorangle,
+			 * Fixed.RADIANS_TO_DEGREES)); int cos = Fixed.cos(theta); int sin =
+			 * Fixed.sin(theta);
+			 */
+			// FIXME: Fix (co)sin lut in compareParticle
 			double angle = Fixed.fixedToFloat(-part.angle - sensorangle);
 			int cos = Fixed.floatToFixed(Math.cos(angle));
 			int sin = Fixed.floatToFixed(Math.sin(angle));
@@ -492,6 +494,7 @@ public class AbsolutePositioningParticleFilter extends
 			varAngle = (Fixed.PI >> 1);
 		}
 		// FIXME: Set caps on covariance
+		varXY = 0;
 	}
 
 	/**
@@ -556,7 +559,7 @@ public class AbsolutePositioningParticleFilter extends
 		// Rotate and translate the actor
 		// g2.rotate(iangle, ix, iy);
 
-		g2.setColor(Color.green);
+		g2.setColor(Color.DARK_GRAY);
 		// Plot particles
 		Link link = data.first;
 		while (link != null) {
@@ -571,7 +574,7 @@ public class AbsolutePositioningParticleFilter extends
 			link = link.next;
 		}
 		// Plot mean
-		g2.setColor(Color.red);
+		g2.setColor(Color.LIGHT_GRAY);
 		int ix = Actor.e2gX(getX());
 		int iy = Actor.e2gY(getY());
 		double iangle = -getAngle();
@@ -665,9 +668,12 @@ public class AbsolutePositioningParticleFilter extends
 	}
 
 	public void run() {
-		/*
-		 * while (true) { update(); pause((long) (rttime.getTime() % Tint)); }
-		 */
+
+		while (true) {
+			// update();
+			pause((long) (rttime.getTime() % Tint));
+		}
+
 	}
 
 	/**
