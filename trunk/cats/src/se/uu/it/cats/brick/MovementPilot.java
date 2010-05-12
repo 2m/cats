@@ -6,11 +6,12 @@ import lejos.nxt.Sound;
 import lejos.robotics.navigation.TachoPilot;
 
 public class MovementPilot extends TachoPilot {	
-	
+	 //should be >0 for correcting right to left drift
+	 //and <0 for left to right drift
+	static float driftBalance = 0.0004444f; //for cat 1
 	public MovementPilot()
 	{
-		//super(0.054725f,0.0544862f, 0.167f,Motor.C, Motor.A, true); //0.05475f //old design cat1, old controller
-		super(0.05475f,0.05475f, 0.167f,Motor.C, Motor.A, false); //0.05475f //old design cat1
+		super(0.0552975f-driftBalance,0.0552975f+driftBalance, 0.163f,Motor.C, Motor.A, false); //0.05475f //old design cat1
 		//super(0.055f, 0.172f, Motor.C, Motor.A, false); //new design
 		
 		/*Motor.A.regulateSpeed(true);
@@ -24,13 +25,14 @@ public class MovementPilot extends TachoPilot {
 	public void travel(float x, float y){
 		
 		//for some strange reason I have to switch these to get the right coordiantes:
-		float switchTemp = x;
+		/*float switchTemp = x;
 		x = y;
-		y = switchTemp;
+		y = switchTemp;*/
 		
 		float[] catPos = CatPosCalc.getCatPos();
 		
 		float deltaX = x-catPos[0];
+		System.out.println("deltaX: " + deltaX);
 		float deltaY = y-catPos[1];
 		System.out.println("deltaY: " + deltaY);
 		float r = (float) Math.sqrt(deltaX*deltaX + deltaY*deltaY);
@@ -38,7 +40,7 @@ public class MovementPilot extends TachoPilot {
 		System.out.println("newAngle: " + newAngle*180f/Math.PI);
 		
 		float turnAngle = (float) ((newAngle - catPos[2]) % (Math.PI*2f));  //TODO: not 0 when it should!
-		System.out.println("turnAngle before: " + turnAngle*180f/Math.PI);
+		//System.out.println("turnAngle before: " + turnAngle*180f/Math.PI);
 		if (turnAngle < -Math.PI)
 			turnAngle += 2f * Math.PI;
 		else if (turnAngle > Math.PI)
@@ -67,8 +69,8 @@ public class MovementPilot extends TachoPilot {
 		
 		//rotate(turnAngle); // blocks while rotating
 		if (turnAngle > 0) { //turn counter clockwise
-			Motor.A.forward();
-			Motor.C.backward();
+			_right.forward();
+			_left.backward();
 		}
 		else if (turnAngle < 0) { //turn clockwise
 			Motor.A.backward();
@@ -80,13 +82,13 @@ public class MovementPilot extends TachoPilot {
 		
 		//travel(r); // blocks while moving
 		if (forward) { //turn counter clockwise
-			Motor.A.forward();
-			Motor.C.forward();
+			_right.forward();
+			_left.forward();
 			travelAcceleration(r);
 		}
 		else { //turn clockwise
-			Motor.A.backward();
-			Motor.C.backward();
+			_right.backward();
+			_left.backward();
 			travelAcceleration(-r);
 		}
 		
@@ -102,9 +104,9 @@ public class MovementPilot extends TachoPilot {
 		float deltaAngle;
 		float angleEpsilon = .75f;
 		float normalizeAngle = 60f;
-		int maxPower = 700;
-		int minPower = 300;
-		int currentPower = minPower;
+		float maxPower = this.getTurnMaxSpeed();
+		float minPower = maxPower/3f;
+		float currentPower = minPower;
 		int angCount = 0;
 
 		do {
@@ -114,19 +116,18 @@ public class MovementPilot extends TachoPilot {
 			//maximum power after "normalizeAngle" degrees rotation, 
 			//also throttle down when less than "normalizeAngle" left to go
 			//Gives a linear acceleration
-			currentPower = (int) (maxPower*deltaAngle/normalizeAngle);
+			currentPower = maxPower*deltaAngle/normalizeAngle;
 			//power clipping:
 			if (currentPower>maxPower)
 				currentPower = maxPower;
 			else if (currentPower<minPower)
 				currentPower = minPower;
-			Motor.A.setSpeed(currentPower); //0-100 input argument interval
-			Motor.C.setSpeed(currentPower);
+			this.setTurnSpeed(currentPower); //0-100 input argument interval
 			try{Thread.sleep(10);}catch(Exception ex){}
 		}
 		while (Math.abs(targetAngle - currentAngle) > angleEpsilon );
-		Motor.A.stop();
-		Motor.C.stop();
+		_right.stop();
+		_left.stop();
 		/*
 		System.out.println("Final angle error: " + (currentAngle - targetAngle));
 		System.out.println("angCount: " + angCount);
@@ -142,9 +143,9 @@ public class MovementPilot extends TachoPilot {
 		float deltaDist;
 		float distEpsilon = 0.001f;
 		float normalizeDist = 0.05f;
-		int maxPower = 900;
-		int minPower = 200;
-		int currentPower = minPower;
+		float maxPower = this.getMoveMaxSpeed();
+		float minPower = maxPower*.2f;
+		float currentPower = minPower;
 		int distCount = 0;
 
 		do {
@@ -154,19 +155,18 @@ public class MovementPilot extends TachoPilot {
 			//maximum power after "normalizeDist" meters traveled, 
 			//also throttle down when less than "normalizeDist" meters left to go
 			//Gives a linear acceleration
-			currentPower = (int) (maxPower*deltaDist/normalizeDist);
+			currentPower = maxPower*deltaDist/normalizeDist;
 			//power clipping:
 			if (currentPower>maxPower)
 				currentPower = maxPower;
 			else if (currentPower<minPower)
 				currentPower = minPower;
-			Motor.A.setSpeed(currentPower); //0-900 input argument interval
-			Motor.C.setSpeed(currentPower);
+			super.setMoveSpeed(currentPower); //0-900 input argument interval
 			try{Thread.sleep(10);}catch(Exception ex){}
 		}
 		while (Math.abs(targetDist - currentDist) > distEpsilon );
-		Motor.A.stop();
-		Motor.C.stop();
+		_right.stop();
+		_left.stop();
 		/*
 		System.out.println("Final dist error: " + (currentDist - targetDist));
 		System.out.println("distCount: " + distCount);
@@ -174,4 +174,23 @@ public class MovementPilot extends TachoPilot {
 		*/
 		//Button.waitForPress();
 	}
+	public void setTurnSpeed(float speed) {
+		_robotTurnSpeed = speed;
+		setSpeed(Math.round(speed * _leftTurnRatio), Math.round(speed
+				* _rightTurnRatio));
+	}
+	
+	public void setMoveSpeed(float speed) {
+		_robotMoveSpeed = speed;
+		_motorSpeed = Math.round(0.5f * speed
+				* (_leftDegPerDistance + _rightDegPerDistance));
+		setSpeed(Math.round(speed * _leftDegPerDistance), Math.round(speed
+				* _rightDegPerDistance));
+	}
+	
+	private void setSpeed(final int leftSpeed, final int rightSpeed) {
+		_left.setSpeed(leftSpeed);
+		_right.setSpeed(rightSpeed);
+	}
+	
 }

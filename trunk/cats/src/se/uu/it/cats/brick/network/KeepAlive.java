@@ -29,8 +29,8 @@ public class KeepAlive extends LowLevelHandler
 		byte[] bArr = new byte[255];
 		int index = 0;
 		
-		int byteCounter[] = new int[] {0, 0, 0};
-		int packetCounter[] = new int[] {0, 0, 0};
+		int byteCounter[] = new int[ConnectionManager.MAX_OUTBOUND_CONN];
+		int packetCounter[] = new int[ConnectionManager.MAX_OUTBOUND_CONN];
 		
 		int packetsSoFar = 0;
 		

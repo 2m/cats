@@ -49,10 +49,6 @@ public class Main
 		//filterThread.start();
 		
 		//Run MovementPilot:
-		float[] sCat = {0, 0, (float) (Math.PI/2f)};
-		MovementPilot mPilot = new MovementPilot();
-		CatPosCalc.setPilot(mPilot);
-		CatPosCalc.setCatState(sCat);
 		
 		//try{Thread.sleep(1000);}catch(Exception ex){}
 		
@@ -64,8 +60,22 @@ public class Main
 		Button.waitForPress();
 		Thread.sleep(2000);
 		
+		float[] sCat = {0, 0, (float) (Math.PI/2f)};
+		MovementPilot mPilot = new MovementPilot();
+		CatPosCalc.setPilot(mPilot);
+		CatPosCalc.setCatState(sCat);
+		
+		//drive from (0,0) to (0,3) to (-1,4) to (-1,5) i steps
+		mPilot.travel(0f,.5f);
+		mPilot.travel(0f,1f);
+		mPilot.travel(0f,1.5f);
+		mPilot.travel(0f,2.5f);
 		mPilot.travel(0f,3f);
-		//mPilot.travel(0f,0f);
+		mPilot.travel(-.5f,3.5f);
+		mPilot.travel(-1f,4f);
+		mPilot.travel(-1f,4.5f);
+		mPilot.travel(-1f,5f);
+		
 		/*for (int i=0; i<3; i++){ //turn in square
 			mPilot.travel(0.4f, 0f);
 			mPilot.travel(0.4f, 0.4f);
