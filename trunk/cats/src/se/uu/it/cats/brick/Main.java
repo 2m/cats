@@ -65,8 +65,24 @@ public class Main
 		CatPosCalc.setPilot(mPilot);
 		CatPosCalc.setCatState(sCat);
 		
+		mPilot.travel(0f,.2f);
+		mPilot.travel(0f,.4f);
+		mPilot.travel(0f,.6f);
+		mPilot.travel(0f,.8f);
+		mPilot.travel(0f,1f);
+		mPilot.travel(0f,1.2f);
+		mPilot.travel(0f,1.4f);
+		mPilot.travel(0f,1.6f);
+		mPilot.travel(0f,1.8f);
+		mPilot.travel(0f,2f);
+		mPilot.travel(0f,2.2f);
+		mPilot.travel(0f,2.4f);
+		mPilot.travel(0f,2.6f);
+		mPilot.travel(0f,2.8f);
+		mPilot.travel(0f,3f);
+		
 		//drive from (0,0) to (0,3) to (-1,4) to (-1,5) i steps
-		mPilot.travel(0f,.5f);
+		/*mPilot.travel(0f,.5f);
 		mPilot.travel(0f,1f);
 		mPilot.travel(0f,1.5f);
 		mPilot.travel(0f,2.5f);
@@ -74,7 +90,7 @@ public class Main
 		mPilot.travel(-.5f,3.5f);
 		mPilot.travel(-1f,4f);
 		mPilot.travel(-1f,4.5f);
-		mPilot.travel(-1f,5f);
+		mPilot.travel(-1f,5f);*/
 		
 		/*for (int i=0; i<3; i++){ //turn in square
 			mPilot.travel(0.4f, 0f);
