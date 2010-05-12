@@ -4,6 +4,9 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
+
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
 
 //import GSim.Actor;
@@ -56,8 +59,8 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	
 	private boolean marked = false;
   
-  public PrintArea(Area newArea, int areaHeight, int areaWidth) {
-	_newArea = newArea;
+  public PrintArea(int areaHeight, int areaWidth) {
+	_newArea = Area.getInstance();
 	_areaHeight = areaHeight;
 	_areaWidth = areaWidth;
 	
@@ -67,10 +70,11 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	arenaHeightFix = _arenaHeight;
 	arenaWidthFix = _arenaWidth;
 	// Size of window
-    setPreferredSize(new Dimension(_areaWidth,_areaHeight));
+    //setPreferredSize(new Dimension(_areaWidth,_areaHeight));
     
 	// Bakgrundsfärgen
-    setBackground(Color.white);
+    setBackground(Color.white);    
+    setBorder(BorderFactory.createLineBorder(Color.gray));
     
     // Add a slider with purpose to change scale
     scaleSlider = new JSlider(JSlider.HORIZONTAL, SCALE_MIN, SCALE_MAX, SCALE_INIT);
