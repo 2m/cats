@@ -25,9 +25,10 @@ import se.uu.it.cats.pc.Logger;
 import se.uu.it.cats.pc.gui.Area;
 import se.uu.it.cats.pc.gui.DataPanel;
 import se.uu.it.cats.pc.gui.MainPanel;
-import se.uu.it.cats.pc.gui.MainTab;
 import se.uu.it.cats.pc.gui.PanelBluetooth;
 import se.uu.it.cats.pc.gui.PrintArea;
+import se.uu.it.cats.pc.gui.tab.BillBoardTab;
+import se.uu.it.cats.pc.gui.tab.MainTab;
 
 public class Main
 {
@@ -91,6 +92,7 @@ public class Main
 
 		JTabbedPane tabbedPane = new JTabbedPane();
 		tabbedPane.addTab("Main", _mainTab);
+		tabbedPane.addTab("BillBoard", new BillBoardTab());
 
 		frame.getContentPane().add(tabbedPane);
 
