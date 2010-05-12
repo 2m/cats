@@ -27,6 +27,13 @@ public class PanelBluetooth extends JPanel{
 	public PanelBluetooth() {
 		super(new BorderLayout());		
 		setVisible(true);
+		
+		setBorder(new TitledBorder(
+				new LineBorder(Color.gray, 1, false),
+				"Connectivity",
+				TitledBorder.LEFT,
+				TitledBorder.DEFAULT_POSITION)
+		);
 
 		// connection panels
 		JPanel panel = new JPanel(new BorderLayout());

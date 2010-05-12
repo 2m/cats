@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
 
 
@@ -12,7 +14,6 @@ public class MainPanel extends JPanel implements ActionListener{ // implements A
   
   private Area world;
   private int _areaHeight;
-  private JLabel settingsLabel;
   private JLabel labelArenaWidth;
   private JLabel labelArenaHeight;
   private JTextField inputArenaWidth;
@@ -36,20 +37,23 @@ public class MainPanel extends JPanel implements ActionListener{ // implements A
 		}
 	}
 
-  public MainPanel(Area newArea, int areaHeight) {	
+  public MainPanel(int areaHeight) {	
 	  
-	world = newArea;
+	world = Area.getInstance();
 	_areaHeight = areaHeight;
 	// Size of window
     setPreferredSize(new Dimension(200,_areaHeight));
     
 	// Bakgrundsfärgen
     setBackground(Color.white);
+    setBorder(new TitledBorder(
+			new LineBorder(Color.gray, 1, true),
+			"Settings",
+			TitledBorder.LEFT,
+			TitledBorder.DEFAULT_POSITION)
+	);
+    
 	setLayout(new GridLayout(12,1,0,0)); //rows, cols, hgap, vgap
-	
-	settingsLabel = new JLabel("Settings");
-	settingsLabel.setFont(new Font("Monotype Corsiva",1,24));
-	add(settingsLabel);
 	
 	labelArenaWidth = new JLabel("Distance X [cm]");
 	labelArenaHeight = new JLabel("Distance Y [cm]");
