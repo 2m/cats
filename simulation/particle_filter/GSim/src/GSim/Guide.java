@@ -241,7 +241,7 @@ public class Guide {
 	 */
 	public void draw(Graphics g) {
 		final int size = 4; // Diameter
-		final int linelength = 8;
+		// final int linelength = 8;
 
 		Graphics2D g2 = (Graphics2D) g;
 
@@ -263,8 +263,10 @@ public class Guide {
 		for (int i = 0; i < billboard.getNoCats() - 1; i++) {
 			ix = Actor.e2gX(otherCats[i][0]);
 			iy = Actor.e2gY(otherCats[i][1]);
-			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
-					(int) size, (int) size);
+			/*
+			 * g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int)
+			 * size, (int) size);
+			 */
 		}
 
 		for (float radius = (float) 0.1; radius <= 0.35; radius += 0.1) {
@@ -273,13 +275,18 @@ public class Guide {
 				float y = (float) (myPos[1] + Math.sin(theta) * radius);
 				ix = Actor.e2gX(x);
 				iy = Actor.e2gY(y);
-				g2.setColor(new Color(sample(x, y), (float) 0.0, (float) 0.0));
-				g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
-						(int) size, (int) size);
+				float s = sample(x, y);
+				if (s >= 1f) {
+					s = 1.0f;
+				}
+				g2.setColor(new Color(s, (float) 0.0, (float) 0.0));
+				/*
+				 * g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
+				 * (int) size, (int) size);
+				 */
 			}
 		}
 		// Reset the transformation matrix
 		g2.setTransform(oldTransform);
 	}
-
 }
