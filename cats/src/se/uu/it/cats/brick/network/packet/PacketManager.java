@@ -3,6 +3,7 @@ package se.uu.it.cats.brick.network.packet;
 import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.KeepAlive;
+import se.uu.it.cats.brick.storage.BillBoard;
 
 public class PacketManager
 {
@@ -69,6 +70,28 @@ public class PacketManager
 					p.readImpl(bArr);
 					
 					//addToBuffer(p);
+				}
+				break;
+			}
+			case 0x03:
+			{
+				if (arrayEndIndex >= LatestSightingUpdate.LENGTH)
+				{
+					p = new LatestSightingUpdate();
+					p.readImpl(bArr);
+					
+					BillBoard.getInstance().setLatestSighting((LatestSightingUpdate)p);
+				}
+				break;
+			}
+			case 0x04:
+			{
+				if (arrayEndIndex >= MeanAndCovarianceUpdate.LENGTH)
+				{
+					p = new MeanAndCovarianceUpdate();
+					p.readImpl(bArr);
+					
+					BillBoard.getInstance().setMeanAndCovariance((MeanAndCovarianceUpdate)p);
 				}
 				break;
 			}
