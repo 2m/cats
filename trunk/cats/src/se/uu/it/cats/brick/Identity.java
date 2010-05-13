@@ -6,6 +6,8 @@ import lejos.nxt.comm.Bluetooth;
 
 public class Identity
 {
+	public static final int CAT_COUNT = 3;
+	
 	public static final RemoteDevice[] _devices = new RemoteDevice[] {
 		new RemoteDevice("cat0", "00165302CDC3", new byte[] {0, 0, 8, 4}),
 		new RemoteDevice("cat1", "00165302CC4E", new byte[] {0, 0, 8, 4}),
@@ -21,6 +23,11 @@ public class Identity
 	public static String getName()
 	{
 		return _name;
+	}
+	
+	public static int getId()
+	{
+		return getIdByName(getName());
 	}
 	
 	public static RemoteDevice getDeviceById(int id)

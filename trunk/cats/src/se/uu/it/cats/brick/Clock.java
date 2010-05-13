@@ -6,15 +6,21 @@ import lejos.util.Stopwatch;
 
 public class Clock
 {
-	private static Stopwatch _sw = null;
-	private static int _offset;
+	private static final String SERVER_NAME = "cat0";
+	private static final int SERVER_ID = 0;
 	
-	private static boolean _master = false;
+	private static Stopwatch _sw = null;
+	private static int _offset = 0;
+	
+	private static boolean _server = false;	
 	
 	public static void init()
 	{
 		_sw = new Stopwatch();
 		_sw.reset();
+		
+		if (Identity.getName().equals(SERVER_NAME))
+			_server = true;
 	}
 	
 	public static int timestamp()
@@ -22,27 +28,29 @@ public class Clock
 		return _sw.elapsed() + _offset;
 	}
 	
-	public static void syncWith(int i)
+	public static void syncTime()
 	{
-		_master = true;
-		ConnectionManager.getInstance().sendPacketTo(i, new Timestamp(Clock.timestamp()));
+		if (!_server)
+			ConnectionManager.getInstance().sendPacketTo(SERVER_ID, new Timestamp(Clock.timestamp()));
 	}
 	
 	public static void incommingPacket(Timestamp p)
 	{
-		if (!_master)
+		if (_server)
 		{
-			p.setRoundTripTime(Clock.timestamp());
+			// server actions
+			p.setDestination(p.getSource());
+			p.setServerTime(Clock.timestamp());			
 			ConnectionManager.getInstance().sendPacketTo(p.getSource(), p);
 		}
-		else
+		else if (p.getSource() == SERVER_ID && p.getDestination() == Identity.getId())
 		{
-			int lag = (p.getTimestamp() - Clock.timestamp()) - 2;
+			// client actions if the packet came from server 
+			int lag = (Clock.timestamp() - p.getClientTime()) / 2;
 			
-			_offset = p.getRoundTripTime() - (Clock.timestamp() - lag);
-			Logger.println("Received second packet. Lag is:"+lag);
-			
-			_master = false;
+			int offsetDelta = p.getServerTime() + lag - Clock.timestamp();
+			_offset += offsetDelta;
+			//Logger.println("Lag:"+lag+" offsetDelta:"+offsetDelta+" _offset:"+_offset+" p.getClientTime()"+p.getClientTime()+" p.getServerTime()"+p.getServerTime());
 		}
 	}
 }

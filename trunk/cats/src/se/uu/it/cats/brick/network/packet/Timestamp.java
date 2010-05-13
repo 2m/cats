@@ -6,43 +6,55 @@ public class Timestamp extends Packet
 {
 	public byte _type = 0x00;
 	
-	private int _timestamp;
-	private int _roundTripTime;
+	private byte _dst;
+	private int _clientTime;
+	private int _serverTime;
 	
 	public static int LENGTH =
 		1		// _type - 1byte
 		+ 1		// _src  - 1byte
-		+ 4		// _timestamp - 1int - 4bytes
-		+ 4;	// _roundTripTime - 1int - 4bytes
+		+ 1		// _dst  - 1byte
+		+ 4		// _clientTime - 1int - 4bytes
+		+ 4;	// _serverTime - 1int - 4bytes
 	
 	public Timestamp()
 	{		
 	}
 	
-	public Timestamp(int timestamp)
+	public Timestamp(int clientTime)
 	{
-		_timestamp = timestamp;
-		Logger.println("timestamp:"+_timestamp);
+		_clientTime = clientTime;
+		Logger.println("_clientTime:"+_clientTime);
 	}
 	
-	public void setTimestamp(int timestamp)
+	public void setDestination(int dst)
 	{
-		_timestamp = timestamp;
+		_dst = (byte)dst;
 	}
 	
-	public int getTimestamp()
+	public int getDestination()
 	{
-		return _timestamp;
+		return (int)_dst;
 	}
 	
-	public void setRoundTripTime(int roundTripTime)
+	public void setClientTime(int clientTime)
 	{
-		_roundTripTime = roundTripTime;
+		_clientTime = clientTime;
 	}
 	
-	public int getRoundTripTime()
+	public int getClientTime()
 	{
-		return _roundTripTime;
+		return _clientTime;
+	}
+	
+	public void setServerTime(int serverTime)
+	{
+		_serverTime = serverTime;
+	}
+	
+	public int getServerTime()
+	{
+		return _serverTime;
 	}	
 	
 	public void readImpl(byte[] bArr)
@@ -52,10 +64,11 @@ public class Timestamp extends Packet
 	
 		// read byte
 		_src = readByte(bArr, 1);
+		_dst = readByte(bArr, 2);
 		
 		// read int
-		_timestamp = readInt(bArr, 2);
-		_roundTripTime = readInt(bArr, 6);
+		_clientTime = readInt(bArr, 3);
+		_serverTime = readInt(bArr, 7);
 	}
 	
 	public byte[] writeImpl()
@@ -68,9 +81,11 @@ public class Timestamp extends Packet
 		// write byte
 		writeByte(_src, output, 1);
 		
+		writeByte(_dst, output, 2);
+		
 		// write integer
-		writeInt(_timestamp, output, 2);
-		writeInt(_roundTripTime, output, 6);
+		writeInt(_clientTime, output, 3);
+		writeInt(_serverTime, output, 7);
 		
 		return output;
 	}
@@ -82,6 +97,6 @@ public class Timestamp extends Packet
 	
 	public String toString()
 	{
-		return "Timestamp[_type:"+_type+", _src:"+_src+", _timestamp:"+_timestamp+", _roundTripTime:"+_roundTripTime+"]";
+		return "Timestamp[_type:"+_type+", _src:"+_src+", _dst:"+_dst+" _clientTime:"+_clientTime+", _serverTime:"+_serverTime+"]";
 	}
 }

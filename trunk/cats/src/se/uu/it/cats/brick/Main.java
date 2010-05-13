@@ -65,7 +65,7 @@ public class Main
 		CatPosCalc.setPilot(mPilot);
 		CatPosCalc.setCatState(sCat);
 		
-		mPilot.travel(0f,.2f);
+		/*mPilot.travel(0f,.2f);
 		mPilot.travel(0f,.4f);
 		mPilot.travel(0f,.6f);
 		mPilot.travel(0f,.8f);
@@ -79,7 +79,7 @@ public class Main
 		mPilot.travel(0f,2.4f);
 		mPilot.travel(0f,2.6f);
 		mPilot.travel(0f,2.8f);
-		mPilot.travel(0f,3f);
+		mPilot.travel(0f,3f);*/
 		
 		//drive from (0,0) to (0,3) to (-1,4) to (-1,5) i steps
 		/*mPilot.travel(0f,.5f);
@@ -164,8 +164,7 @@ public class Main
 					});
 					t.start();*/
 					//byte data = (byte)(StorageManager.getInstance().getData() + 1);					
-					//StorageManager.getInstance().setData(data);
-					Clock.syncWith(1);
+					//StorageManager.getInstance().setData(data);					
 				}
 				else
 					ConnectionManager.getInstance().openConnection(1);
@@ -213,7 +212,7 @@ public class Main
 					//ConnectionManager.getInstance().sendPacketToAll(new Timestamp(Clock.timestamp()));
 					Clock.syncWith(-1);					
 				}*/
-				for (int i = 0; i < 100; i++)
+				/*for (int i = 0; i < 100; i++)
 				{
 					Random r = new Random();			
 					ConnectionManager.getInstance().sendPacketToAll(
@@ -221,8 +220,8 @@ public class Main
 					);
 					
 					try {Thread.sleep(100);}catch(Exception ex){}
-				}
-
+				}*/
+				Clock.syncTime();
 			}
 		});
 		
@@ -235,12 +234,12 @@ public class Main
 			);*/
 			
 			//LCD.drawInt((byte)StorageManager.getInstance().getData(), 2, 2);
-			//int milisUntilNextSec = 1000 - (Clock.timestamp() % 1000);
-			//Thread.sleep(milisUntilNextSec + 1000);
+			int milisUntilNextSec = 2000 - (Clock.timestamp() % 2000);
+			Thread.sleep(milisUntilNextSec);
 						
-			Thread.sleep(100);
+			//Thread.sleep(100);
 			//Thread.yield();
-			//Sound.beep();
+			Sound.beep();
 		}
 		
 		if (RConsole.isOpen())
