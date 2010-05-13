@@ -10,7 +10,7 @@ import se.uu.it.cats.pc.network.ConnectionHandler;
 
 public class ConnectionManager
 {
-	public static final String[] _deviceNames = new String[] {"cat1", "cat2", "cat3", "FREDRIK-PC", "FREDRIK-PC", "FREDRIK-PC", "FREDRIK-PC"};
+	public static final String[] _deviceNames = new String[] {"cat0", "cat1", "cat2", "FREDRIK-PC", "FREDRIK-PC", "FREDRIK-PC", "FREDRIK-PC"};
 	
 	public static final int MAX_OUTBOUND_CONN = _deviceNames.length;
 	

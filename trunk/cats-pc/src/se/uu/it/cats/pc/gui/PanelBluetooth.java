@@ -37,9 +37,9 @@ public class PanelBluetooth extends JPanel{
 
 		// connection panels
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new ConnectionPanel("cat1"), BorderLayout.NORTH);
-		panel.add(new ConnectionPanel("cat2"), BorderLayout.CENTER);
-		panel.add(new ConnectionPanel("cat3"), BorderLayout.SOUTH);
+		panel.add(new ConnectionPanel("cat0"), BorderLayout.NORTH);
+		panel.add(new ConnectionPanel("cat1"), BorderLayout.CENTER);
+		panel.add(new ConnectionPanel("cat2"), BorderLayout.SOUTH);
 		add(panel, BorderLayout.WEST);
 
 		panel = new JPanel(new BorderLayout());	
