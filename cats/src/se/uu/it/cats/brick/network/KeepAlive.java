@@ -32,8 +32,6 @@ public class KeepAlive extends LowLevelHandler
 		int byteCounter[] = new int[ConnectionManager.MAX_OUTBOUND_CONN];
 		int packetCounter[] = new int[ConnectionManager.MAX_OUTBOUND_CONN];
 		
-		int packetsSoFar = 0;
-		
 		sw.reset();
 		while (isAlive())
 		{
@@ -86,16 +84,24 @@ public class KeepAlive extends LowLevelHandler
 						
 			if (sw.elapsed() > 3000)
 			{
-				packetsSoFar += packetCounter[0] + packetCounter[1] + packetCounter[2];
-				//float byteBw = (float)(byteCounter[0] + byteCounter[1] + byteCounter[2]) / 3;
-				float packetBw = (float)(packetCounter[0] + packetCounter[1] + packetCounter[2]) / 3;
-				//Logger.println("Byte bw from "+getRemoteName()+":"+byteBw+"B/s");
-				Logger.println("Pck bw from "+getRemoteName()+":"+packetBw+"Pck/s"+" "+(float)packetCounter[0] / 3+" "+(float)packetCounter[1] / 3+" "+(float)packetCounter[2] / 3+" "+packetsSoFar);
+				int packetsSoFar = 0;
+				int bwSoFar = 0;
+				for (int i = 0; i < packetCounter.length; i++)
+				{
+					packetsSoFar += packetCounter[i];
+					packetCounter[i] = 0;
+					
+					bwSoFar += byteCounter[i];
+					byteCounter[i] = 0;
+				}
+				
+				float packetBw = (float)packetsSoFar / 3;
+				float byteBw = (float)bwSoFar / 3;				
+				
+				if (packetBw != 0)
+					Logger.println("Pck bw from "+getRemoteName()+":"+packetBw+"Pck/s");
 				
 				sw.reset();
-				
-				byteCounter[0] = 0; byteCounter[1] = 0; byteCounter[2] = 0;
-				packetCounter[0] = 0; packetCounter[1] = 0; packetCounter[2] = 0;
 			}
 			
 			Thread.yield();

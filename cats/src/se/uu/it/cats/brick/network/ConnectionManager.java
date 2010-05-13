@@ -183,7 +183,12 @@ public class ConnectionManager
 		}
 		else if (isAlive(INBOUND_CONN_ID))
 		{
-			if (getConnection(INBOUND_CONN_ID).getRemoteId() == i || i == -1)
+			int remoteId = getConnection(INBOUND_CONN_ID).getRemoteId();
+			
+			// if incomming connection is made by the packet destination cat OR
+			// if incomming connection is made by the computer, which relays packets OR
+			// if packet destination is -1, which means send to incomming connection
+			if (remoteId == i || remoteId >= Identity.CAT_COUNT || i == -1)
 			{
 				getConnection(INBOUND_CONN_ID).sendPacket(p);
 				return;
