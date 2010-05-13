@@ -6,24 +6,27 @@ public class LatestSightingUpdate extends Packet
 	
 	private float _x;
 	private float _y;
-	private float _theta;	
+	private float _theta;
+	private int _timestamp;
 	
 	public static int LENGTH =
 		1		// _type - 1byte
 		+ 1		// _src  - 1byte
 		+ 4		// _x - 1float - 4bytes
 		+ 4		// _y - 1float - 4bytes
-		+ 4;	// _theta - 1float - 4bytes
+		+ 4		// _theta - 1float - 4bytes
+		+ 4;	// _timestamp - 1int - 4bytes
 	
 	public LatestSightingUpdate()
 	{		
 	}
 	
-	public LatestSightingUpdate(float x, float y, float theta)
+	public LatestSightingUpdate(float x, float y, float theta, int timestamp)
 	{
 		_x = x;
 		_y = y;
 		_theta = theta;
+		_timestamp = timestamp;
 	}
 	
 	public float getX()
@@ -41,6 +44,11 @@ public class LatestSightingUpdate extends Packet
 		return _theta;
 	}
 	
+	public int getTimestamp()
+	{
+		return _timestamp;
+	}
+	
 	public void readImpl(byte[] bArr)
 	{
 		// _type is already defined,
@@ -53,6 +61,8 @@ public class LatestSightingUpdate extends Packet
 		_x = readFloat(bArr, 2);
 		_y = readFloat(bArr, 6);
 		_theta = readFloat(bArr, 10);
+		
+		_timestamp = readInt(bArr, 14);
 	}
 	
 	public byte[] writeImpl()
@@ -70,6 +80,8 @@ public class LatestSightingUpdate extends Packet
 		writeFloat(_y, output, 6);
 		writeFloat(_theta, output, 10);
 		
+		writeInt(_timestamp, output, 14);
+		
 		return output;
 	}
 	
@@ -80,6 +92,6 @@ public class LatestSightingUpdate extends Packet
 	
 	public String toString()
 	{
-		return "LatestSightingUpdate[_type:"+_type+", _src:"+_src+", _x:"+_x+", _y:"+_y+", _theta:"+_theta+"]";
+		return "LatestSightingUpdate[_type:"+_type+", _src:"+_src+", _x:"+_x+", _y:"+_y+", _theta:"+_theta+", _timestamp"+_timestamp+"]";
 	}
 }

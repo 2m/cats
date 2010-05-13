@@ -15,6 +15,7 @@ public class MeanAndCovarianceUpdate extends Packet
 	private float _var_xvyv;
 	private float _var_yvyv;
 	private float _weight;
+	private int _timestamp;
 	
 	public static int LENGTH =
 		1		// _type - 1byte
@@ -29,14 +30,15 @@ public class MeanAndCovarianceUpdate extends Packet
 		+ 4		// _var_xvxv - 1float - 4bytes
 		+ 4		// _var_xvyv - 1float - 4bytes
 		+ 4		// _var_yvyv - 1float - 4bytes
-		+ 4;	// _weight - 1float - 4bytes
+		+ 4		// _weight - 1float - 4bytes
+		+ 4;	// _timestamp - 1int - 4bytes
 	
 	public MeanAndCovarianceUpdate()
 	{		
 	}
 	
 	public MeanAndCovarianceUpdate(float mean_x, float mean_y, float mean_xv, float mean_yv,
-			float var_xx, float var_xy, float var_yy, float var_xvxv, float var_xvyv, float var_yvyv, float weight)
+			float var_xx, float var_xy, float var_yy, float var_xvxv, float var_xvyv, float var_yvyv, float weight, int timestamp)
 	{
 		_mean_x = mean_x;
 		_mean_y = mean_y;
@@ -49,6 +51,7 @@ public class MeanAndCovarianceUpdate extends Packet
 		_var_xvyv = var_xvyv;
 		_var_yvyv = var_yvyv;
 		_weight = weight;
+		_timestamp = timestamp;
 	}
 	
 	public float getMeanX()
@@ -106,6 +109,11 @@ public class MeanAndCovarianceUpdate extends Packet
 		return _weight;
 	}
 	
+	public int getTimestamp()
+	{
+		return _timestamp;
+	}
+	
 	public void readImpl(byte[] bArr)
 	{
 		// _type is already defined,
@@ -126,6 +134,8 @@ public class MeanAndCovarianceUpdate extends Packet
 		_var_xvyv = readFloat(bArr, 34);
 		_var_yvyv = readFloat(bArr, 38);
 		_weight = readFloat(bArr, 42);
+		
+		_timestamp = readInt(bArr, 46);
 	}
 	
 	public byte[] writeImpl()
@@ -151,6 +161,8 @@ public class MeanAndCovarianceUpdate extends Packet
 		writeFloat(_var_yvyv, output, 38);
 		writeFloat(_weight, output, 42);
 		
+		writeInt(_timestamp, output, 46);
+		
 		return output;
 	}
 	
@@ -173,6 +185,7 @@ public class MeanAndCovarianceUpdate extends Packet
 			", _var_xvyv:"+_var_xvyv+
 			", _var_yvyv:"+_var_yvyv+
 			", _weight:"+_weight+
+			", _timestamp:"+_timestamp+
 			"]";
 	}
 }
