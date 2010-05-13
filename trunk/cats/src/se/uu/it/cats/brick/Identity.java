@@ -7,9 +7,9 @@ import lejos.nxt.comm.Bluetooth;
 public class Identity
 {
 	public static final RemoteDevice[] _devices = new RemoteDevice[] {
+		new RemoteDevice("cat0", "00165302CDC3", new byte[] {0, 0, 8, 4}),
 		new RemoteDevice("cat1", "00165302CC4E", new byte[] {0, 0, 8, 4}),
-		new RemoteDevice("cat2", "0016530E6938", new byte[] {0, 0, 8, 4}),
-		new RemoteDevice("cat3", "00165302CDC3", new byte[] {0, 0, 8, 4}),
+		new RemoteDevice("cat2", "0016530E6938", new byte[] {0, 0, 8, 4}),		
 		new RemoteDevice("dongle1", "0015832A3670", new byte[] {0, 0, 8, 4}),
 		new RemoteDevice("dongle2", "000C783394E7", new byte[] {0, 0, 8, 4}),
 		new RemoteDevice("MartinPC", "002556F9072D", new byte[] {0, 0, 8, 4}),
