@@ -31,7 +31,7 @@ public class Area { // implements ActionListener
 
     /* Create 3 cats */
     for(int i = 0; i < 3; i++) {
-      _cats[i] = new Cat("cat"+(i+1));
+      _cats[i] = new Cat("cat"+i);
     }
 	_cats[0].updateXYAngles(10, 100, 0, 0);
 	_cats[1].updateXYAngles(90, 170, 0, 0);
