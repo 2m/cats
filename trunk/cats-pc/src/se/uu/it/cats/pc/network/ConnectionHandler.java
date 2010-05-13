@@ -81,10 +81,10 @@ public class ConnectionHandler implements Runnable
 		{
 			try
 			{
-				// read only 6 bytes or less if the buffer is full
-				// this function blocks as long as there is some input available
-				// we want to execute immediately as at least one packet is available
-				int received = _dis.read(bArr, index, Math.min(6, 255 - index));
+				// read byte by byte
+				// this ensures that we will never be blocked when half of buffer has arrived
+				bArr[index] = _dis.readByte();
+				int received = 1;				
 				
 				/*byte[] receivedBytes = new byte[received];
 				System.arraycopy(bArr, index, receivedBytes, 0, received);
