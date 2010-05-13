@@ -87,7 +87,7 @@ public class PanelBluetooth extends JPanel{
 	}
 
 	public static void updatePacket(String newPacket) {
-		_infoBox.append(newPacket);
+		_infoBox.append(newPacket+"\n");
 	}
 
 	// Write to a file
@@ -230,19 +230,19 @@ public class PanelBluetooth extends JPanel{
 			_receiverGroup = new ButtonGroup();
 
 			panel = new JPanel();
-			JRadioButton catButton = new JRadioButton("cat1");
+			JRadioButton catButton = new JRadioButton("cat0");
 			catButton.setSelected(true);
+			catButton.setActionCommand("cat0");
+			_receiverGroup.add(catButton);
+			panel.add(catButton);
+
+			catButton = new JRadioButton("cat1");
 			catButton.setActionCommand("cat1");
 			_receiverGroup.add(catButton);
 			panel.add(catButton);
 
 			catButton = new JRadioButton("cat2");
 			catButton.setActionCommand("cat2");
-			_receiverGroup.add(catButton);
-			panel.add(catButton);
-
-			catButton = new JRadioButton("cat3");
-			catButton.setActionCommand("cat3");
 			_receiverGroup.add(catButton);
 			panel.add(catButton);
 
