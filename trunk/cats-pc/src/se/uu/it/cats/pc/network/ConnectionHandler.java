@@ -4,6 +4,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import javax.bluetooth.BluetoothStateException;
+import javax.bluetooth.LocalDevice;
+
+import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.network.packet.Packet;
 import se.uu.it.cats.pc.Logger;
 import se.uu.it.cats.pc.gui.PanelBluetooth;
@@ -19,10 +23,18 @@ public class ConnectionHandler implements Runnable
 	boolean _alive = false;
 	
 	String _remoteName;
+	String _localName;
 	
 	public ConnectionHandler(String remoteName)
 	{
-		_remoteName = remoteName;		
+		_remoteName = remoteName;
+		
+		try {
+			_localName = LocalDevice.getLocalDevice().getFriendlyName();
+		} catch (BluetoothStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean connect()
@@ -155,6 +167,11 @@ public class ConnectionHandler implements Runnable
 		return _remoteName;
 	}
 	
+	protected int getLocalId()
+	{
+		return ConnectionManager.getInstance().getIdByName(_localName);
+	}
+	
 	protected void close()
 	{
 		_alive = false;
@@ -178,7 +195,7 @@ public class ConnectionHandler implements Runnable
 	{
 		try
 		{
-			p.setSource(-1);
+			p.setSource(getLocalId());
 			
 			_dos.write(p.writeImpl());
 			_dos.flush();
