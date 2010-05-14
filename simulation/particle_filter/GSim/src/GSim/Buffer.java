@@ -20,6 +20,10 @@ public class Buffer {
 	public void push(ComparableData value) {
 	}
 
+	public ComparableData getLastAndFlush(){
+		return list.getLastAndFlush();
+	}
+	
 	public int getLength() {
 		return list.getLength();
 	}
