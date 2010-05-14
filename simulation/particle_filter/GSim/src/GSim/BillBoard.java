@@ -45,7 +45,7 @@ public class BillBoard {
 	}
 
 	/** Set mean and covariance */
-	public void setMeanAndCoveriance(int id, float mean_x, float mean_y,
+	public void setMeanAndCovariance(int id, float mean_x, float mean_y,
 			float mean_xv, float mean_yv, float var_xx, float var_xy,
 			float var_yy, float var_xvxv, float var_xvyv, float var_yvyv,
 			float weight) {
@@ -67,7 +67,7 @@ public class BillBoard {
 	 * 
 	 * @return ret {m_x, m_y, m'_x, m'_y, xx, xy, yy, x'x', x'y', y'y', weight}
 	 */
-	public float[] getMeanAndCoveriance() {
+	public float[] getMeanAndCovariance() {
 		// ret = {m_x, m_y, m'_x, m'_y, xx, xy, yy, x'x', x'y', y'y'}
 		float[] ret = new float[DATA_PER_CAT];
 		float total_weight = 0;
