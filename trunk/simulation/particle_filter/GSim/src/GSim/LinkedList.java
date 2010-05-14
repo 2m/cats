@@ -43,7 +43,12 @@ public class LinkedList {
 		}
 	}
 
-	public ComparableData popFirst() {
+	/**
+	 * Get first element (the one with lowest weight)
+	 * 
+	 * @return ComparableData
+	 */
+	public ComparableData pop() {
 		if (isEmpty()) {
 			// List is empty
 			return null;
@@ -76,6 +81,12 @@ public class LinkedList {
 		}
 	}
 
+	/**
+	 * Sorted insert. Elements are sorted according to weights with smallest
+	 * (earliest) first.
+	 * 
+	 * @param data ComparableData
+	 */
 	public void insertSorted(ComparableData data) {
 		if (isEmpty()) {
 			Link newLink = new Link(data);
@@ -106,6 +117,13 @@ public class LinkedList {
 			}
 		}
 
+	}
+
+	public ComparableData getLastAndFlush() {
+		ComparableData ret = last.data;
+		first = null;
+		last = null;
+		return ret;
 	}
 
 	public String toString() {

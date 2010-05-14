@@ -38,7 +38,7 @@ public class BufferFIFO extends Buffer {
 	 * @return BufferData oldest BufferData or null
 	 */
 	public synchronized ComparableData pop() {
-		ComparableData ret = list.popFirst();
+		ComparableData ret = list.pop();
 		if (ret != null) {
 			nonodes--;
 		}
