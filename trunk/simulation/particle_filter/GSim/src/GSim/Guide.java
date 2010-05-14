@@ -48,7 +48,7 @@ public class Guide {
 
 		}
 		// Get mouse position if variance is small enough
-		float[] meanAndCoVariance = billboard.getMeanAndCoveriance();
+		float[] meanAndCoVariance = billboard.getMeanAndCovariance();
 		float maxVariance = 1;
 		if ((meanAndCoVariance[4] < maxVariance)
 				&& (meanAndCoVariance[6] < maxVariance)) {

@@ -146,7 +146,8 @@ public class AbsolutePositioningParticleFilter extends
 		while (link != null) {
 			PositioningParticle part = (PositioningParticle) link.data;
 			// Convert radians to pseudo degrees
-			int a = Fixed.round(part.angle * Fixed.RADIANS_TO_DEGREES);
+			int a = Fixed
+					.round(Fixed.mul(part.angle, Fixed.RADIANS_TO_DEGREES));
 			// Get sin and cos
 			int c = Fixed.cos(a);
 			int s = Fixed.sin(a);
@@ -195,19 +196,21 @@ public class AbsolutePositioningParticleFilter extends
 		// Create new data list
 		LinkedList newlist = new LinkedList();
 		// Pop a particle
-		PositioningParticle part = (PositioningParticle) data.popFirst();
+		PositioningParticle part = (PositioningParticle) data.pop();
 		// Loop through all particles
 		while (part != null) {
 			// Get rotation angle
+
+			int theta = Fixed.round(Fixed.mul(-part.angle - sensorangle,
+					Fixed.RADIANS_TO_DEGREES));
+			int cos = Fixed.cos(theta);
+			int sin = Fixed.sin(theta);
+
 			/*
-			 * int theta = Fixed.round(Fixed.mul(-part.angle - sensorangle,
-			 * Fixed.RADIANS_TO_DEGREES)); int cos = Fixed.cos(theta); int sin =
-			 * Fixed.sin(theta);
+			 * double angle = Fixed.fixedToFloat(-part.angle - sensorangle); int
+			 * cos = Fixed.floatToFixed(Math.cos(angle)); int sin =
+			 * Fixed.floatToFixed(Math.sin(angle));
 			 */
-			// FIXME: Fix (co)sin lut in compareParticle
-			double angle = Fixed.fixedToFloat(-part.angle - sensorangle);
-			int cos = Fixed.floatToFixed(Math.cos(angle));
-			int sin = Fixed.floatToFixed(Math.sin(angle));
 
 			// u = (1, 0)
 			int u1 = Fixed.ONE;
@@ -284,7 +287,7 @@ public class AbsolutePositioningParticleFilter extends
 			// Insert particle into new list
 			newlist.insertSorted(part);
 			// Pop new particle for the next iteration
-			part = (PositioningParticle) data.popFirst();
+			part = (PositioningParticle) data.pop();
 		}
 
 		// Replace the old list with the new sorted list
@@ -422,10 +425,10 @@ public class AbsolutePositioningParticleFilter extends
 		if (zerosum) {
 			// No old data should be saved and filter knows nothing about the
 			// current tracked states. Uncertainty increases with time (standard
-			// deviation increases by 20%).
-			varXX *= 1.44;
-			varYY *= 1.44;
-			varAngle *= 1.44;
+			// deviation increases by 41%).
+			varXX *= 2;
+			varYY *= 2;
+			varAngle *= 2;
 			// X and Y can be considered as independent if nothing is known.
 			varXY = 0;
 		} else {
@@ -467,20 +470,20 @@ public class AbsolutePositioningParticleFilter extends
 			mean_y = Fixed.floatToFixed(Arena.max_y);
 		}
 		// Check for min variance
-		if (varXX < Fixed.floatToFixed(0.0001)) {
+		if (varXX < Fixed.floatToFixed(0.0025)) {
 			// 0.0001 => std=1cm
-			varXX = Fixed.floatToFixed(0.0001);
+			varXX = Fixed.floatToFixed(0.0025);
 		}
-		if (varYY < Fixed.floatToFixed(0.0001)) {
-			varYY = Fixed.floatToFixed(0.0001);
+		if (varYY < Fixed.floatToFixed(0.0025)) {
+			varYY = Fixed.floatToFixed(0.0025);
 		}
 		if (varAngle < 0) {
 			// No negative variances in angle
 			varAngle = -varAngle;
 		}
-		if (varAngle < Fixed.floatToFixed(0.0003)) {
-			// std approx 1 degree
-			varAngle = Fixed.floatToFixed(0.0003);
+		if (varAngle < Fixed.floatToFixed(0.0027416)) {
+			// std approx 2 degree
+			varAngle = Fixed.floatToFixed(0.0027416);
 		}
 		// Check for max variance
 		if (varXX > Fixed.HALF) {
@@ -623,7 +626,7 @@ public class AbsolutePositioningParticleFilter extends
 		// Counter for number of compares since re-sample
 		int evaluationsSinceResample = 0;
 
-		ComparableData bufferdata = list.popFirst();
+		ComparableData bufferdata = list.pop();
 		while (bufferdata != null) {
 
 			// Read buffers for integration (angles, distance)
@@ -651,7 +654,7 @@ public class AbsolutePositioningParticleFilter extends
 			}
 
 			// Pops new data
-			bufferdata = list.popFirst();
+			bufferdata = list.pop();
 
 			// Re-sample every n:th evaluation or if there is no more data
 			if ((evaluationsSinceResample >= 2) || (bufferdata == null)) {

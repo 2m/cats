@@ -151,19 +151,19 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Create new data list
 		LinkedList newlist = new LinkedList();
 		// Pop a particle
-		TrackingParticle part = (TrackingParticle) data.popFirst();
+		TrackingParticle part = (TrackingParticle) data.pop();
 		// Loop through all particles
 		while (part != null) {
 			// Get rotation angle
-			// FIXME: Check sine lut
-			/*
-			 * int theta = Fixed .round(Fixed.mul(-angle,
-			 * Fixed.RADIANS_TO_DEGREES)); int cos = Fixed.cos(theta); int sin =
-			 * Fixed.sin(theta);
-			 */
-			double anglef = Fixed.fixedToFloat(-angle);
-			int cos = Fixed.floatToFixed(Math.cos(anglef));
-			int sin = Fixed.floatToFixed(Math.sin(anglef));
+
+			int theta = Fixed
+					.round(Fixed.mul(-angle, Fixed.RADIANS_TO_DEGREES));
+			int cos = Fixed.cos(theta);
+			int sin = Fixed.sin(theta);
+
+			// double anglef = Fixed.fixedToFloat(-angle);
+			// int cos = Fixed.floatToFixed(Math.cos(anglef));
+			// int sin = Fixed.floatToFixed(Math.sin(anglef));
 
 			// u = (1, 0)
 			int u1 = Fixed.ONE;
@@ -218,7 +218,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 			// Insert particle into new list
 			newlist.insertSorted(part);
 			// Pop new particle for the next iteration
-			part = (TrackingParticle) data.popFirst();
+			part = (TrackingParticle) data.pop();
 		}
 
 		// Replace the old list with the new sorted list
@@ -252,7 +252,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 * Re-sample particles
 	 */
 	private void reSample() {
-		float[] net = billboard.getMeanAndCoveriance();
+		float[] net = billboard.getMeanAndCovariance();
 		// FIXME: Check for zerosum
 		// ret = {m_x, m_y, m'_x, m'_y, xx, xy, yy, x'x', x'y', y'y'}
 		int[][] C1 = new int[2][2];
@@ -479,7 +479,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		}
 		varXY = 0;
 		varXvYv = 0;
-		billboard.setMeanAndCoveriance(id, Fixed.fixedToFloat(mean_x), Fixed
+		billboard.setMeanAndCovariance(id, Fixed.fixedToFloat(mean_x), Fixed
 				.fixedToFloat(mean_y), Fixed.fixedToFloat(mean_xv), Fixed
 				.fixedToFloat(mean_yv), Fixed.fixedToFloat(varXX), Fixed
 				.fixedToFloat(varXY), Fixed.fixedToFloat(varYY), Fixed
