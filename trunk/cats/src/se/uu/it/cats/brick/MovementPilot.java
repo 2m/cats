@@ -98,7 +98,7 @@ public class MovementPilot extends TachoPilot {
 	}
 	private void angularAcceleration(float turnAngle) {
 		Sound.beep(); //for debugging
-		float  startAngle = super.getAngle();
+		float  startAngle = this.getAngle();
 		float  targetAngle = startAngle + turnAngle;
 		float currentAngle;
 		float deltaAngle;
@@ -111,7 +111,7 @@ public class MovementPilot extends TachoPilot {
 
 		do {
 			angCount += 1;
-			currentAngle = super.getAngle();
+			currentAngle = this.getAngle();
 			deltaAngle = Math.min(Math.abs(currentAngle-startAngle), Math.abs(currentAngle-targetAngle));
 			//maximum power after "normalizeAngle" degrees rotation, 
 			//also throttle down when less than "normalizeAngle" left to go
@@ -137,7 +137,7 @@ public class MovementPilot extends TachoPilot {
 		//try{Thread.sleep(1000);}catch(Exception ex){}
 	}
 	private void travelAcceleration(float r) {
-		float  startDist = super.getTravelDistance();
+		float  startDist = this.getTravelDistance();
 		float  targetDist = startDist + r;
 		float currentDist;
 		float deltaDist;
@@ -150,7 +150,7 @@ public class MovementPilot extends TachoPilot {
 
 		do {
 			distCount += 1;
-			currentDist = super.getTravelDistance();
+			currentDist = this.getTravelDistance();
 			deltaDist = Math.min(Math.abs(currentDist-startDist), Math.abs(currentDist-targetDist));
 			//maximum power after "normalizeDist" meters traveled, 
 			//also throttle down when less than "normalizeDist" meters left to go
