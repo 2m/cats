@@ -65,6 +65,16 @@ public class LinkedList {
 			return ret.data;
 		}
 	}
+	
+	public ComparableData top() {
+		if (isEmpty()) {
+			// List is empty
+			return null;
+		} else {
+			Link ret = first;
+			return ret.data;
+		}
+	}
 
 	public int getLength() {
 		if (isEmpty()) {
