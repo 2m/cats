@@ -38,6 +38,16 @@ public class BufferSorted extends Buffer {
 		ComparableData ret = list.pop();
 		return ret;
 	}
+	
+	/**
+	 * Get the oldest BufferData object from the buffer without removing it
+	 * 
+	 * @return BufferData oldest BufferData or null
+	 */
+	public synchronized ComparableData top() {
+		ComparableData ret = list.top();
+		return ret;
+	}
 
 	public String toString() {
 		return list.toString();
