@@ -44,6 +44,16 @@ public class BufferFIFO extends Buffer {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Get the oldest BufferData object from the buffer without removing it
+	 * 
+	 * @return BufferData oldest BufferData or null
+	 */
+	public synchronized ComparableData top() {
+		ComparableData ret = list.pop();
+		return ret;
+	}
 
 	public String toString() {
 		return list.toString();

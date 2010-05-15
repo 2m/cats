@@ -16,6 +16,10 @@ public class Buffer {
 	public synchronized ComparableData pop() {
 		return null;
 	}
+	
+	public synchronized ComparableData top() {
+		return null;
+	}
 
 	public void push(ComparableData value) {
 	}
