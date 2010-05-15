@@ -43,8 +43,8 @@ public class HmeasCat implements IFunction{
 		//System.out.println("Debug, HmeasCat: n = " +n);
 		for (int i = 1; i<=n; i++)
 		{
-			zc.set(i-1,1-1, Math.atan2(LandmarkList.landmarkY[i-1] - xc.get(2-1,1-1), LandmarkList.landmarkX[i-1] - xc.get(1-1,1-1)));
-			zc.set(i-1,1-1, zc.get(i-1,1-1)%2*Math.PI);
+			zc.set(i-1,1-1, Math.atan2(LandmarkList.landmarkY[i-1] - xc.get(1,0), LandmarkList.landmarkX[i-1] - xc.get(0,0)));
+			zc.set(i-1,1-1, (zc.get(i-1,1-1)+2*Math.PI)%(2*Math.PI));
 		}
 		zc.set(n+1-1,1-1, xc.get(3-1,1-1));  //measure x velcoity
 		zc.set(n+2-1,1-1, xc.get(4-1,1-1));  //measure y velcoity
