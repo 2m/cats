@@ -55,9 +55,12 @@ public class SensorHandler {
 			}
 			// System.out.println("(cx, cy, angle)=(" + cx + ", " + cy + ", " +
 			// angle2*(180/Math.PI) + ")");
-			float angle_diff = (float) Math.acos((x1 * x2 + y1 * y2)
-					/ (norm1 * norm2));
+			//float angle_diff = (float) Math.acos((x1 * x2 + y1 * y2)
+			//		/ (norm1 * norm2));
+			float angle_diff = (float)Math.abs(angle2-cat.getAngle());
+			//System.out.println("In sensor, landmark " + i + ", angle diff = " + Math.toDegrees(angle_diff) + ", fov/2 = " +  Math.toDegrees((field_of_view / 2)));
 			if ((initialPhase) || (angle_diff < (field_of_view / 2))) {
+				//System.out.println("In sensor, landmark " + i + " within field of view");
 				/*
 				 * d = new SightingData(t, cx, cy, (float) ((angle2 -
 				 * cat.getAngle()) + rnd.nextGaussian() 3 * (Math.PI / 180)),
@@ -72,6 +75,10 @@ public class SensorHandler {
 				positioningBuffer.push(d);
 			}
 		}
+		
+		//Needs to leave initial phase to make the field of view check work
+		if (initialPhase) initialPhase = false;
+		
 		// TODO: Check if initial convergence phase has ended
 	}
 
