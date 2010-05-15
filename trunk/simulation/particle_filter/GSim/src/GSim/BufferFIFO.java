@@ -51,7 +51,7 @@ public class BufferFIFO extends Buffer {
 	 * @return BufferData oldest BufferData or null
 	 */
 	public synchronized ComparableData top() {
-		ComparableData ret = list.pop();
+		ComparableData ret = list.top();
 		return ret;
 	}
 
