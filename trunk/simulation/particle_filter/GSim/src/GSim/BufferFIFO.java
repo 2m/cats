@@ -17,10 +17,10 @@ public class BufferFIFO extends Buffer {
 	}
 
 	/**
-	 * Add a BufferData object to the buffer.
+	 * Push a ComparableData object to the buffer.
 	 * 
-	 * @param BufferData
-	 *            Any BufferData
+	 * @param ComparableData
+	 *            Any ComparableData
 	 */
 	public void push(ComparableData value) {
 
@@ -33,9 +33,9 @@ public class BufferFIFO extends Buffer {
 	}
 
 	/**
-	 * Pop a BufferData object from the buffer
+	 * Pop a ComparableData object from the buffer
 	 * 
-	 * @return BufferData oldest BufferData or null
+	 * @return ComparableData oldest ComparableData or null
 	 */
 	public synchronized ComparableData pop() {
 		ComparableData ret = list.pop();

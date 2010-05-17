@@ -1,7 +1,7 @@
 package GSim;
 
 /**
- * Linked list for particles. List is sorted with highest weight first.
+ * Linked list for particles and buffers. List is sorted with highest weight first.
  * 
  * @author Fredrik Wahlberg
  * 
@@ -127,13 +127,6 @@ public class LinkedList {
 			}
 		}
 
-	}
-
-	public ComparableData getLastAndFlush() {
-		ComparableData ret = last.data;
-		first = null;
-		last = null;
-		return ret;
 	}
 
 	public String toString() {
