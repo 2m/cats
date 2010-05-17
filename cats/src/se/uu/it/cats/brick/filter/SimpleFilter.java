@@ -120,9 +120,9 @@ public class SimpleFilter implements Runnable {
 				{
 					
 				}*/
-				ConnectionManager.getInstance().sendPacketToAll(
+				/*ConnectionManager.getInstance().sendPacketToAll(
 						new SimpleMeasurement(angToTargetRelCat)
-				);
+				);*/
 				
 				//Logger.println("Found at:" + (int) (angToTargetAbs*180/Math.PI));
 				//Logger.println("Rel cat:" + (int) (angToTargetRelCat*180/Math.PI));
