@@ -11,6 +11,10 @@ public class Cat {
 	private int goToX; //Orders for new X-position
 	private int goToY; //Orders for new X-position
 	private boolean marked = false;
+	private int bufferLength = 50;
+	private int[] bufferX = new int[bufferLength];
+	private int[] bufferY = new int[bufferLength];
+	private int posBuffer = 0;
 	
 	public Cat(String name) {
 		catName = name;
@@ -38,6 +42,19 @@ public class Cat {
 	public int getGoToY() {
 		return goToY;
 	}
+	public int[] getBufferX() {
+		return bufferX;
+	}
+	public int[] getBufferY() {
+		return bufferY;
+	}
+	
+	public int getPosBuffer() {
+		return posBuffer;
+	}
+	public int getBufferLength() {
+		return bufferLength;
+	}
 	
 	public boolean isManualOrder() {
 		return manualOrder;
@@ -64,11 +81,19 @@ public class Cat {
 		y = newY;
 		angle_c = newAngle_c;
 		angle_cam = newAngle_cam;
+		//Position buffer
+		if(posBuffer == bufferLength-1) 
+			posBuffer = 0;
+		bufferX[posBuffer] = x;
+		bufferY[posBuffer] = y;
+		posBuffer++;
+		
 		//Remove order if closer than 5x5 cm square
 		if (Math.abs(x-goToX) < 5 && Math.abs(y-goToY) < 5) {
 			manualOrder = false;
 		}
 	}
+	
 	
 	public void updateAngleCam(float newAngle_cam) {
 		angle_cam = newAngle_cam;
