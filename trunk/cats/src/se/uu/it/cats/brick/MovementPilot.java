@@ -8,11 +8,12 @@ import lejos.robotics.navigation.TachoPilot;
 public class MovementPilot extends TachoPilot {	
 	 //should be >0 for correcting right to left drift
 	 //and <0 for left to right drift
-	static float driftBalance = 0.0004444f; //for cat 1
+	//static float driftBalance = 0.0004444f; //for cat 1
+	static float driftBalance = 0.0010f; //for cat 0
 	public MovementPilot()
-	{
-		super(0.0552975f-driftBalance,0.0552975f+driftBalance, 0.163f,Motor.C, Motor.A, false); //0.05475f //old design cat1
-		//super(0.055f, 0.172f, Motor.C, Motor.A, false); //new design
+	{	
+		//super(0.0552975f-driftBalance,0.0552975f+driftBalance, 0.161f,Motor.C, Motor.A, false); //0.05475f //old design cat1
+		super(0.0544680375f-driftBalance,0.0544680375f+driftBalance, 0.177f, Motor.C, Motor.A, false); //new design
 		
 		/*Motor.A.regulateSpeed(true);
 		Motor.C.regulateSpeed(true);
@@ -104,7 +105,7 @@ public class MovementPilot extends TachoPilot {
 		float deltaAngle;
 		float angleEpsilon = .75f;
 		float normalizeAngle = 60f;
-		float maxPower = this.getTurnMaxSpeed();
+		float maxPower = this.getTurnMaxSpeed()/2f;
 		float minPower = maxPower/3f;
 		float currentPower = minPower;
 		int angCount = 0;

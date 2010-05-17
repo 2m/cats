@@ -41,12 +41,12 @@ public class Main
 		//ColorSensorTest2 cst2 = new ColorSensorTest2();
 		//cst2.run();
 		
-		Thread listenerThread = new Thread(new ConnectionListener());
-		listenerThread.start();
+		//Thread listenerThread = new Thread(new ConnectionListener());
+		//listenerThread.start();
 		
 		//Run SimpleFilter:
-		//Thread filterThread = new Thread(new SimpleFilter());
-		//filterThread.start();
+		Thread filterThread = new Thread(new SimpleFilter());
+		filterThread.start();
 		
 		//Run MovementPilot:
 		
@@ -57,6 +57,7 @@ public class Main
 		//System.out.println(pilotPoll.x);
 		//System.out.println(pilotPoll.y);
 		//System.out.println();
+		System.out.println("Press button");
 		Button.waitForPress();
 		Thread.sleep(2000);
 		
@@ -64,6 +65,8 @@ public class Main
 		MovementPilot mPilot = new MovementPilot();
 		CatPosCalc.setPilot(mPilot);
 		CatPosCalc.setCatState(sCat);
+		
+		//mPilot.travel(0f,3f);
 		
 		/*mPilot.travel(0f,.2f);
 		mPilot.travel(0f,.4f);
@@ -92,13 +95,13 @@ public class Main
 		mPilot.travel(-1f,4.5f);
 		mPilot.travel(-1f,5f);*/
 		
-		/*for (int i=0; i<3; i++){ //turn in square
+		for (int i=0; i<3; i++){ //turn in square
 			mPilot.travel(0.4f, 0f);
 			mPilot.travel(0.4f, 0.4f);
 			mPilot.travel(0f,   0.4f);
 			mPilot.travel(0f,     0f);
 			System.out.println("COMMAND FINISHED!");
-		}*/
+		}
 		/*for (int i=0; i<3; i++){ //turn in square
 			mPilot.travel(0.6f, 0.6f);
 			mPilot.travel(  0f, 1.2f);

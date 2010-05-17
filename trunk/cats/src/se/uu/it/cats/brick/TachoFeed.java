@@ -2,10 +2,11 @@ package se.uu.it.cats.brick;
 
 import lejos.robotics.navigation.Pilot;
 
-/* @Nils Törnblom
+/* @Nils Tornblom
  * For the real implementation of the absolute positioning particle filter.
  */
 public class TachoFeed {
+	/*
 	private RealTimeClock realtime;
 	public Buffer MovementBuffer;
 	private static Pilot pilot;
@@ -28,5 +29,6 @@ public class TachoFeed {
 		lastAngle = newAngle;
 		
 	}
+	*/
 		
 }
