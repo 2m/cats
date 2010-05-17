@@ -7,21 +7,19 @@ package GSim;
  * @version $Rev$
  * 
  */
-
-// FIXME: add getLatestAndFlushBuffer()
 public class BufferSorted extends Buffer {
 	private Object lockOnLast;
 
 	public BufferSorted() {
-		// TODO: check if semaphore needs to be used globaly
+		// TODO: check if the same semaphore needs to be used for both popping and pushing
 		lockOnLast = new Object();
 	}
 
 	/**
-	 * Add a BufferData object to the buffer
+	 * Add a ComparableData object to the buffer
 	 * 
-	 * @param BufferData
-	 *            Any BufferData
+	 * @param ComparableData
+	 *            Any ComparableData
 	 */
 	public void push(ComparableData value) {
 		synchronized (lockOnLast) {
@@ -30,9 +28,9 @@ public class BufferSorted extends Buffer {
 	}
 
 	/**
-	 * Pop a BufferData object from the buffer
+	 * Pop a ComparableData object from the buffer
 	 * 
-	 * @return BufferData oldest BufferData or null
+	 * @return ComparableData oldest ComparableData or null
 	 */
 	public synchronized ComparableData pop() {
 		ComparableData ret = list.pop();
