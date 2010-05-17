@@ -37,7 +37,13 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	
 	private int entityPosX;
 	private int entityPosY;
+	private int oldEntityPosX;
+	private int oldEntityPosY;
 	private int linelength;
+	private int[] bufferX;
+	private int[] bufferY;
+	private int posBuffer;
+	private int bufferLength;
 	
 	private boolean _showgrid = true;
 	private boolean _showSlider = false;
@@ -173,9 +179,21 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (centFix_X+_cats[i].getGoToX()*zk/50), (int) (centFix_Y+_cats[i].getGoToY()*zk/50));
 			}
 			
+			// Print the position buffer (fading old positions)
+			bufferX = _cats[i].getBufferX();
+			bufferY = _cats[i].getBufferY();
+			posBuffer = _cats[i].getPosBuffer();
+			bufferLength = _cats[i].getBufferLength();
+			for(int j = 0; j<bufferLength;j++) {
+				oldEntityPosX = centFix_X+bufferX[(posBuffer+j) % bufferLength]*zk/50;
+				oldEntityPosY = centFix_Y-bufferY[(posBuffer+j) % bufferLength]*zk/50;
+				g2d.setColor(new Color((int) j*255/bufferLength, (int) j*255/bufferLength,(int) j*255/bufferLength));
+				g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
+
+			}
+			
 			g2d.setColor(Color.black); // Black cats
-			
-			
+			//Set cat yellow if marked
 			if(_cats[i].isMarked()) {
 				g2d.setColor(Color.yellow); // Black cats
 			}
@@ -265,7 +283,8 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 		if (marked) {
 			for (int i = 0; i < _newArea.getCats().length; i++) {
 				if (_newArea.getCats()[i].isMarked()) {
-					_newArea.getCats()[i].goTo(e.getX()-centFix_X, e.getY()-centFix_Y);
+					_newArea.getCats()[i].goTo(e.getX()+centFix_X, e.getY()-centFix_Y);
+					System.out.println((e.getX()+centFix_X) + " "+(e.getY()-centFix_Y));
 					_newArea.getCats()[i].setMarked(false);
 					_newArea.getCats()[i].setManualOrder(true);
 				}
