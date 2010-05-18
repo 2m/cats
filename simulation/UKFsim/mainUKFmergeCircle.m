@@ -195,7 +195,7 @@ for k=1:N
     
     for i=1:nm
         xV{1,i}(:,k) = x(:,i);               % store state estimate
-        z(:,i)=h(s(:,i)) + mNoise(i)+k*noiseShift;        % measurements
+        z(:,i)=h(s(:,i)) + mNoise(i)+noiseShift;        % measurements
 %         z(1:3,i)=z(1:3,i)+x(5,i)
 %         z(1:3,i)=mod(z(i,1),2*pi);
     end
