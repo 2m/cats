@@ -1,6 +1,8 @@
 package GSim;
 
 import lejos.util.Matrix;
+import static GSim.Matlab.*; //Only for testing
+
 
 /**
  * Measurement function for the (tracked) mouse's position.
@@ -10,8 +12,8 @@ import lejos.util.Matrix;
 public class HmeasMouse implements IFunction{
 	
 	//Instance variables
-	/** (a reference to the) estimated state (position) of the cats.*/
-	private Matrix x;
+	/** (a reference to the) estimated state (position) of the cats and latest sightings.*/
+	private BillBoard billboard;
 	/** number of cats, ie number of columns in x.*/
 	private int nm;
 	
@@ -19,12 +21,15 @@ public class HmeasMouse implements IFunction{
 	 * Constructor needed to be used for this class to work properly
 	 * @param x  a reference to the object containing the estimated state (position) of the cats
 	 */
-	public HmeasMouse(Matrix x){
-		this.x=x;
-		nm = x.getColumnDimension();
+	public HmeasMouse(BillBoard billboard){
+		this.billboard = billboard;
+		nm = billboard.NUMBER_OF_CATS;
 	}
 
+	//FIXME: change to billborad form matrix
 	public Matrix eval(Matrix xm){
+		/*
+		
 		//TODO test measurement function
 		//NB: All -1 in the indices are used to indicate the shift form the first array index in matlab = 1 to java's = 0.
 		Matrix zm = Matlab.zeros(nm, 1);
@@ -43,6 +48,9 @@ public class HmeasMouse implements IFunction{
 			}
 		}	
 		return zm;
+		
+		*/
+		return null;
 		
 		
 		/*Original matlab code::
@@ -68,6 +76,23 @@ public class HmeasMouse implements IFunction{
 		    %z(i,1)=atan2(x(2,1)-cats(i,2),x(1,1)-cats(i,1));
 		end
 		*/
+	}
+	
+	
+	//Only for testing
+	public static void main(String[] arg) {
+		IFunction f = new FstateCat(1);
+		double[][] temp_xc = {{ 1.477369839207423   },
+							  { 0.5028351758705135  },
+							  { 0.04999179014188175   },
+							  { 0.07713072965540284   },
+							  { 0.989083374173641   }};
+		Matrix xc = new Matrix(temp_xc);
+		Matrix zc = f.eval(xc);
+		System.out.println("debug, in HmeasCat: input (xc) = ");
+		printM(xc);
+		System.out.println("debug, in HmeasCat: output (zc) = ");
+		printM(zc);	
 	}
 }
 
