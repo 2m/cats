@@ -69,7 +69,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		int nz = numberOfLandmarks+3;  //TODO: change back to nz=n+4  //number of elements in the measurement vector of the cats = number of landmarks + 4
 		int nx = 5;  //TODO: change back to nx=6 //number of variables in the cats' state vector
 		ufk_filter = new UnscentedKalmanFilter(nx,nz);
-		float dt = T;//1f;  //sampling period, must be 1 for now TODO adjust to real dt ????
+		float dt = T;//1f;  //sampling period in seconds
 		//T = 1;
 		float q = 0.005f;  //std of expected process noise for the cat
 		float stddegrees = 2;
@@ -123,18 +123,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 			debug("Debug: pos.ukf, number of landmarks= " + numberOfLandmarks);
 			debug("Array of std of expected measurement= " + std_array[0] +", " + std_array[1] +", " + std_array[2] +", " + std_array[3]);
 		}
-		/*
-		double[][] temp_s = {{0.0}, {0.0}, {1.0}};;  //initial state of the cats  TODO get initial state from buffer?
-		Matrix s = new Matrix(temp_s);  //true state of the cats
-		*/
-		
-		/*	
-		global actLandm; %the indices of the landmarks that are seen
-		global ra; %std of actual measurement noise 
-		global vc; %the velocities of the cats
-		global k;  %current time step
-		*/
-	}
+	}//End of constructor
 	
 	/**
 	 * Set initial data and run filter once ? and then re-sample. 
@@ -305,6 +294,14 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		xc = result[0]; 
 		P = result[1];
 		
+		if (DEBUG)
+		{
+			debug("Debug: pos.ukf, P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", P:");
+			printM(P);
+			debug("Debug: pos.ukf, xc dim: " + xc.getRowDimension() + " x " + xc.getColumnDimension() + ", xc:");
+			printM(xc);
+		}
+		
 		
 		// Check x and y so they keep inside the arena and also set velocity in that direction to zero if outside the arena
 		if (xc.get(0, 0) < Arena.min_x) {
@@ -333,19 +330,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		debug("Debug, leaving update at iteration " + iterationCounter + ", current iterationTime= " + (rttime.getTime() - currentTime) );
 	}//end of update
 	
-
-	
-	/*
-	public static void main(String args[])
-	{
-		Buffer sensorData;
-		Buffer movementData;
-		float T;
-		RealTimeClock rttime;
-		AbsolutePositioningUKF test = new AbsolutePositioningUKF();
-	}*/
-	
-	/*
+	/**
 	 * Draw particles (NOT brick material)
 	 */
 	public void draw(Graphics g) {
@@ -386,9 +371,6 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	private void debug(Object info){
 		if (DEBUG) System.out.println(info);
 		
-	}
-	
-	
-	
-}
+	}	
+}//End of class
 

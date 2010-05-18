@@ -99,13 +99,15 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			R.set( numberOfLandmarks+j-1, numberOfLandmarks+j-1, pow(r.get(1-1, j+1-1),2) );
 		}
 
-		//f = new FstateMouse(T);  //nonlinear state equations
-		//h = new HmeasMouse();  //measurement equation
+		states = zeros(nx,1);  //initial estimated state
+		measurments = zeros(nz,1);  //initial estimated state
+		
+		f = new FstateMouse(T);  //nonlinear state equations
+		h = new HmeasMouse(billboard);  //measurement equation  //TODO: Needs the position of the cats...
 		
 		P = eye(nx).timesEquals( pow(10,-3) );  //initial state covariance
 
-		states = zeros(nx,1);  //initial estimated state
-		measurments = zeros(nz,1);  //initial estimated state
+
 		
 		if (DEBUG){
 			debug("Creating TrackingUnscentedKalmanFilter object");
@@ -283,6 +285,5 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		if (DEBUG) System.out.println(info);
 	}
 
-
-}
+}//End of class
 

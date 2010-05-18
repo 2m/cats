@@ -1,6 +1,7 @@
 package GSim;
 
 import lejos.util.Matrix;
+import static GSim.Matlab.*; //Only for testing
 
 /**
  * Measurement function for the cats's absolute position
@@ -40,7 +41,7 @@ public class HmeasCat implements IFunction{
 		//NB: All -1 in the indices are used to indicate the shift form the first array index in matlab = 1 to java's = 0.
 		int n = LandmarkList.landmarkX.length;
 		Matrix zc = Matlab.zeros(n+3, n+3);
-		//System.out.println("Debug, HmeasCat: n = " +n);
+		//System.out.println("Debug, HmeasCat: n = " + n);
 		for (int i = 1; i<=n; i++)
 		{
 			zc.set(i-1,1-1, Math.atan2(LandmarkList.landmarkY[i-1] - xc.get(1,0), LandmarkList.landmarkX[i-1] - xc.get(0,0)));
@@ -49,8 +50,26 @@ public class HmeasCat implements IFunction{
 		zc.set(n+1-1,1-1, xc.get(3-1,1-1));  //measure x velcoity
 		zc.set(n+2-1,1-1, xc.get(4-1,1-1));  //measure y velcoity
 		zc.set(n+3-1,1-1, xc.get(5-1,1-1));  //measure cat orientation
-	
+		
+
 		return zc;
 	}
+	
+	//Only for testing
+	public static void main(String[] arg) {
+		IFunction f = new HmeasCat();
+		double[][] temp_xc = {{ 1.477369839207423   },
+							  { 0.5028351758705135  },
+							  { 0.04999179014188175   },
+							  { 0.07713072965540284   },
+							  { 0.989083374173641   }};
+		Matrix xc = new Matrix(temp_xc);
+		Matrix zc = f.eval(xc);
+		System.out.println("debug, in HmeasCat: input (xc) = ");
+		printM(xc);
+		System.out.println("debug, in HmeasCat: output (zc) = ");
+		printM(zc);	
+	}
+		
 }
 

@@ -1,6 +1,7 @@
 package GSim;
 
 import lejos.util.Matrix;
+import static GSim.Matlab.*; //Only for testing
 
 /**
  * State function for the cat's absolute position
@@ -27,8 +28,7 @@ public class FstateCat implements IFunction{
 		x_update(5,1)=x(5,1);%atan2(x(4,1),x(3,1));
 		x_update(6,1)=x(6,1);
 		*/
-		
-		//TODO test this function		
+			
 		Matrix xc_updated = Matlab.zeros(xc.getRowDimension(), xc.getColumnDimension());
 		//Matlab.printM(xc);
 		if (xc.getRowDimension() != 5|| xc.getColumnDimension() != 1)
@@ -47,8 +47,23 @@ public class FstateCat implements IFunction{
 		//System.out.println("xc_updated: ");
 		//Matlab.printM(xc_updated);
 		xc_updated.set(5-1, 1-1, xc.get(5-1, 1-1));
-		//Not currently used  xc_updated.set(6-1, 1-1, xc.get(6-1, 1-1)); 
 
 		return xc_updated; 
+	}
+	
+	//Only for testing
+	public static void main(String[] arg) {
+		IFunction f = new FstateCat(1);
+		double[][] temp_xc = {{ 2 },
+							  { 3 },
+							  { 0.5 },
+							  { 0.0 },
+							  { 3.14 }};
+		Matrix xc = new Matrix(temp_xc);
+		System.out.println("xc before update:");
+		printM(xc);
+		Matrix xm_updated = f.eval(xc);
+		System.out.println("xc after updated:");
+		printM(xm_updated);	
 	}
 }
