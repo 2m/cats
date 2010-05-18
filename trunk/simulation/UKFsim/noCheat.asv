@@ -16,7 +16,7 @@ for i=1:nm
         zcorr(1:n,i)=zV{1,i}(1:n,k-1);    %best guess, use last available value
     end
     %Use only available measurements
-    for j=actLandm{1,i}
+    for j=actLandm{1,i}(:)
         zcorr(j,i)=z(j,i);
     end
 end
