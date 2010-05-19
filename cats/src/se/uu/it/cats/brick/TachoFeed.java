@@ -1,5 +1,6 @@
 package se.uu.it.cats.brick;
 
+import se.uu.it.cats.brick.filter.Buffer;
 import se.uu.it.cats.brick.filter.MovementData;
 import lejos.robotics.navigation.Pilot;
 
@@ -9,7 +10,7 @@ import lejos.robotics.navigation.Pilot;
 public class TachoFeed {
 	
 	
-	public Buffer MovementBuffer;
+	public static Buffer MovementBuffer;
 	private static Pilot pilot;
 	public static float lastR;
 	public static float newR;
