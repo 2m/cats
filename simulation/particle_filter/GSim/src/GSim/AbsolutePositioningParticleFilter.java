@@ -339,7 +339,8 @@ public class AbsolutePositioningParticleFilter extends
 			// Only the worst particles needs to be re-sampled, so some
 			// particles can be skipped.
 			for (int i = 0; (i < Ncut) && (link != null); i++) {
-				link.data.comparable = Nnorm;
+				//link.data.comparable = Nnorm;
+				link.data.comparable = Fixed.ONE;
 				link = link.next;
 			}
 		}
@@ -358,7 +359,8 @@ public class AbsolutePositioningParticleFilter extends
 			// Add mean and get random samples for angular values
 			part.angle = mean_angle + Fixed.mul(stdAngle, nextRandn());
 			// Set norm to standard (all are equal) norm.
-			part.comparable = Nnorm;
+			//part.comparable = Nnorm;
+			part.comparable = Fixed.ONE;
 			link = link.next;
 		}
 	}

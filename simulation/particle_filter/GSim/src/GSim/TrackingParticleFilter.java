@@ -38,7 +38,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	private boolean zerosum;
 
 	/** Varible for time */
-	private int lastCurrentTime, currentTime;
+	private int lastCurrentTime, currentTime, lastIntegration;
 
 	/** Random number lookup table */
 	private final int[] randn_lut;
@@ -155,19 +155,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Loop through all particles
 		while (part != null) {
 			// Get rotation angle
-
 			int theta = Fixed
 					.round(Fixed.mul(-angle, Fixed.RADIANS_TO_DEGREES));
 			int cos = Fixed.cos(theta);
 			int sin = Fixed.sin(theta);
-
-			// double anglef = Fixed.fixedToFloat(-angle);
-			// int cos = Fixed.floatToFixed(Math.cos(anglef));
-			// int sin = Fixed.floatToFixed(Math.sin(anglef));
-
-			// u = (1, 0)
-			int u1 = Fixed.ONE;
-			int u2 = 0;
 
 			int z = 0;
 
@@ -197,11 +188,17 @@ public class TrackingParticleFilter extends TrackingFilter {
 				// (1, 0) if the particle has the correct values.
 				int v1 = Fixed.mul(toMouse_x_norm, cos)
 						+ Fixed.mul(toMouse_y_norm, -sin);
-				int v2 = Fixed.mul(toMouse_x_norm, sin)
-						+ Fixed.mul(toMouse_y_norm, cos);
+				/*
+				 * int v2 = Fixed.mul(toMouse_x_norm, sin) +
+				 * Fixed.mul(toMouse_y_norm, cos);
+				 */
 				// Inner product between vectors u and v =>
 				// cos(angle_diff)
-				z = Fixed.mul(v1, u1) + Fixed.mul(v2, u2);
+				// z = Fixed.mul(v1, u1); + Fixed.mul(v2, u2);
+				// u = (1, 0)
+				// int u1 = Fixed.ONE;
+				// int u2 = 0;
+				z = v1;
 
 			}
 			// Run penalty function
@@ -210,6 +207,11 @@ public class TrackingParticleFilter extends TrackingFilter {
 				// Check for negative values (for debugging).
 				w = 0;
 			}
+			if (w > Fixed.ONE) {
+				// Check for large values (for debugging).
+				w = Fixed.ONE;
+			}
+			// TODO: Add logger
 			// Multiply weight from this iteration with particle weight
 			part.comparable = Fixed.mul(part.comparable, w);
 			// System.out.println("Weight: " + Fixed.fixedToFloat(part.w));
@@ -252,6 +254,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 * Re-sample particles
 	 */
 	private void reSample() {
+		// TODO: Move all networking to update()
 		float[] net = billboard.getMeanAndCovariance();
 		// FIXME: Check for zerosum
 		// ret = {m_x, m_y, m'_x, m'_y, xx, xy, yy, x'x', x'y', y'y'}
@@ -291,7 +294,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 			// particles can be skipped.
 
 			for (int i = 0; (i < Ncut) && (link != null); i++) {
-				link.data.comparable = Nnorm;
+				link.data.comparable = Fixed.ONE;
 				link = link.next;
 			}
 
@@ -313,7 +316,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 			part.xv = mean_xv + Fixed.mul(V2[0][0], c) + Fixed.mul(V2[0][1], d);
 			part.yv = mean_yv + Fixed.mul(V2[1][0], c) + Fixed.mul(V2[1][1], d);
 			// Set norm to standard (all are equal) norm.
-			part.comparable = Nnorm;
+			part.comparable = Fixed.ONE;
 			link = link.next;
 		}
 	}
@@ -479,12 +482,6 @@ public class TrackingParticleFilter extends TrackingFilter {
 		}
 		varXY = 0;
 		varXvYv = 0;
-		billboard.setMeanAndCovariance(id, Fixed.fixedToFloat(mean_x), Fixed
-				.fixedToFloat(mean_y), Fixed.fixedToFloat(mean_xv), Fixed
-				.fixedToFloat(mean_yv), Fixed.fixedToFloat(varXX), Fixed
-				.fixedToFloat(varXY), Fixed.fixedToFloat(varYY), Fixed
-				.fixedToFloat(varXvXv), Fixed.fixedToFloat(varXvYv), Fixed
-				.fixedToFloat(varYvYv), Fixed.fixedToFloat(sum_w));
 	}
 
 	/**
@@ -613,6 +610,8 @@ public class TrackingParticleFilter extends TrackingFilter {
 		currentTime = rttime.getTime();
 
 		// Integrate particles
+		// TODO: Integration should be done with respect to time diff between
+		// sightings
 		integrateParticles(Fixed.floatToFixed(T));
 
 		// Compare sensor data to particles
@@ -629,6 +628,12 @@ public class TrackingParticleFilter extends TrackingFilter {
 
 		// Calculate mean and (co-)variance, then commit data to billboard
 		calcMean();
+		billboard.setMeanAndCovariance(id, Fixed.fixedToFloat(mean_x), Fixed
+				.fixedToFloat(mean_y), Fixed.fixedToFloat(mean_xv), Fixed
+				.fixedToFloat(mean_yv), Fixed.fixedToFloat(varXX), Fixed
+				.fixedToFloat(varXY), Fixed.fixedToFloat(varYY), Fixed
+				.fixedToFloat(varXvXv), Fixed.fixedToFloat(varXvYv), Fixed
+				.fixedToFloat(varYvYv), Fixed.fixedToFloat(sum_w));
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
