@@ -20,7 +20,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	private IFunction f;
 	
 	/** estimated state vector, (n)x(1) Matrix, of the mouse 
-	 * x, y, vx, vy, orientation in radians, (absCamAngle)*/
+	 * x, y, vx, vy */
 	private Matrix states;
 	
 	/** state covariance */
@@ -79,7 +79,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		int nz = billboard.NUMBER_OF_CATS;  //number of cats
 		int nx = 4;  //number of variables in the mouse's state vector
 		
-		ufk_filter = new UnscentedKalmanFilter(nx,nz);  //TODO verify that n should be used as second parameter
+		ufk_filter = new UnscentedKalmanFilter(nx,nz); 
 		float dt = T;//1f;  //sampling period
 		float q = 0.005f;  //std of expected process noise for the cat
 		float stddegrees = 2;
@@ -107,8 +107,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		
 		P = eye(nx).timesEquals( pow(10,-3) );  //initial state covariance
 
-
-		
+	
 		if (DEBUG){
 			debug("Creating TrackingUnscentedKalmanFilter object");
 			debug("Debug: tracking.ukf, Q dim: " + Q.getRowDimension() + " x " + Q.getColumnDimension() + ", Q:");
@@ -127,8 +126,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	}
 
 	/**
-	 * Set initial data means and then re-sample. The input data is considered
-	 * relatively certain so the co-variance matrix will be set as small.
+	 * Set initial values. The input data is considered relatively certain.
 	 * 
 	 * @param x
 	 *            Initial x position
