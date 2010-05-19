@@ -7,7 +7,6 @@ public class MotorControl {
 	public double y;
 	public double angle;
 	public Buffer updateBuffer;
-	public RealTimeClock clock;
 	public final double MAX_SPEED = 0.01;
 	private Random rng = new Random();
 
@@ -17,13 +16,11 @@ public class MotorControl {
 		this.angle = 0;
 	}
 
-	public MotorControl(double x, double y, double angle, Buffer motorUpdate,
-			RealTimeClock clock) {
+	public MotorControl(double x, double y, double angle, Buffer motorUpdate) {
 		this.x = x;
 		this.y = y;
 		this.angle = angle;
 		updateBuffer = motorUpdate;
-		this.clock = clock;
 	}
 
 	public void drive(double distance) {
@@ -35,14 +32,14 @@ public class MotorControl {
 				* (1 + rng.nextDouble() * 0.04 + 0.02)); 
 		setY(getY() + Math.sin(angle) * distance
 				* (1 + rng.nextDouble() * 0.04 + 0.02));
-		updateBuffer.push(new MovementData(clock.getTime(), (float) distance,
+		updateBuffer.push(new MovementData(Clock.getTime(), (float) distance,
 				(float) 0.0));
 	}
 
 	public void turn(double turnangle) {
 		// +-4% noise
 		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() * 0.08 + 0.04)); 
-		updateBuffer.push(new MovementData(clock.getTime(), (float) 0.0,
+		updateBuffer.push(new MovementData(Clock.getTime(), (float) 0.0,
 				(float) turnangle));
 	}
 

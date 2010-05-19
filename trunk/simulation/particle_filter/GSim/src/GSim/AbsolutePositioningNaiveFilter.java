@@ -33,9 +33,9 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	 *            RealTimeClock
 	 */
 	public AbsolutePositioningNaiveFilter(float T, Buffer sensorData,
-			Buffer movementData, RealTimeClock rttime) {
+			Buffer movementData) {
 		// Call constructor of super class
-		super(T, sensorData, movementData, rttime);
+		super(T, sensorData, movementData);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 
 	public void update() {
 		// Get time reference
-		currentTime = rttime.getTime();
+		currentTime = Clock.getTime();
 
 		SightingData sdata = (SightingData) sensorData.pop();
 		while (sdata != null) {
@@ -159,7 +159,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += rttime.getTime() - currentTime;
+		iterationTime += Clock.getTime() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 	}
@@ -167,7 +167,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	public void run() {
 		while (true) {
 			// update();
-			pause((long) (rttime.getTime() % Tint));
+			pause((long) (Clock.getTime() % Tint));
 		}
 
 	}

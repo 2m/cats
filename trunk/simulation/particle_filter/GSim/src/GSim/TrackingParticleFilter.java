@@ -64,9 +64,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 *            Shared network data object
 	 */
 	public TrackingParticleFilter(int id, int N, float T, Buffer sensorData,
-			RealTimeClock rttime, BillBoard billboard) {
+			 BillBoard billboard) {
 		// Call constructor of super class
-		super(id, T, sensorData, rttime, billboard);
+		super(id, T, sensorData, billboard);
 		this.N = N;
 		// Pre-calculate particle weight
 		Nnorm = Fixed.floatToFixed(1 / ((float) N));
@@ -607,7 +607,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		reSample();
 
 		// Get time reference
-		currentTime = rttime.getTime();
+		currentTime = Clock.getTime();
 
 		// Integrate particles
 		// TODO: Integration should be done with respect to time diff between
@@ -637,7 +637,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += rttime.getTime() - currentTime;
+		iterationTime += Clock.getTime() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 	}
@@ -645,7 +645,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	public void run() {
 		while (true) {
 			// update();
-			pause((long) (rttime.getTime() % Tint));
+			pause((long) (Clock.getTime() % Tint));
 		}
 
 	}

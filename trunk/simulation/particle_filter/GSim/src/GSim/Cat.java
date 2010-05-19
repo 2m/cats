@@ -24,9 +24,9 @@ public class Cat extends Actor {
 	private int timestepsBetweenFilterUpdates = 5;
 
 	public Cat(Actor mouse, double x, double y, double angle,
-			RealTimeClock clock, BillBoard billboard, int id) {
-		super(mouse, x, y, angle, CAT, clock, billboard, id);
-		sensors = new SensorHandler(mouse, clock);
+			BillBoard billboard, int id) {
+		super(mouse, x, y, angle, CAT, billboard, id);
+		sensors = new SensorHandler(mouse);
 		sensors.register(this);
 		positioningBuffer = sensors.regPositioner();
 		trackerBuffer = sensors.regTracker();
@@ -35,24 +35,21 @@ public class Cat extends Actor {
 
 		if (usePositioningParticleFilter) {
 			positioningFilter = new AbsolutePositioningParticleFilter(N, T,
-					positioningBuffer, motorBuffer, clock);
+					positioningBuffer, motorBuffer);
 		} else if (usePositioningUnscentedKalmanFilter) {
 			positioningFilter = new AbsolutePositioningUKF(T,
-					positioningBuffer, motorBuffer, clock);
+					positioningBuffer, motorBuffer);
 		} else {
 			positioningFilter = new AbsolutePositioningNaiveFilter(T,
-					positioningBuffer, motorBuffer, clock);
+					positioningBuffer, motorBuffer);
 		}
 
 		if (useTrackingParticleFilter) {
 			trackingFilter = new TrackingParticleFilter(id, N, T,
-					trackerBuffer, clock, billboard);
+					trackerBuffer, billboard);
 		} else if (useTrackingUnscentedKalmanFilter) {
-			// TODO implement tracking UKF in cat
-			/*
-			 * trackingFilter = new TrackingUKF(id, N, T, trackerBuffer, clock,
-			 * billboard);
-			 */
+			trackingFilter = new TrackingUnscentedKalmanFilter(id, T,
+					trackerBuffer, billboard);
 		}
 
 		if (usePositioningParticleFilter || usePositioningUnscentedKalmanFilter) {

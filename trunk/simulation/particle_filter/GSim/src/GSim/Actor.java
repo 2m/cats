@@ -31,8 +31,8 @@ public class Actor {
 	protected int id;
 
 	public Actor(Actor mouse, double tx, double ty, double tangle, int ttype,
-			RealTimeClock clock, BillBoard billboard, int id) {
-		motor = new MotorControl(tx, ty, tangle, motorBuffer, clock);
+			 BillBoard billboard, int id) {
+		motor = new MotorControl(tx, ty, tangle, motorBuffer);
 		this.id=id;
 		type = ttype;
 		gotox = tx;

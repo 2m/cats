@@ -14,12 +14,10 @@ public class SensorHandler {
 	public Buffer positioningBuffer, trackingBuffer;
 	private Actor cat, mouse;
 	private boolean initialPhase = true;
-	private RealTimeClock realtime;
 	private Random rnd = new Random();
 
-	public SensorHandler(Actor mouse, RealTimeClock realtime) {
+	public SensorHandler(Actor mouse) {
 		this.mouse = mouse;
-		this.realtime = realtime;
 	}
 
 	public void update() {
@@ -35,7 +33,7 @@ public class SensorHandler {
 		float y1 = (float) mouse.getY() - cy;
 		float norm1 = (float) Math.sqrt(x1 * x1 + y1 * y1);
 		float angle1 = (float) Math.atan2(y1, x1);
-		int t = realtime.getTime();
+		int t = Clock.getTime();
 		int type = 0;
 		// TODO: Use estimated x and y in tracking data
 		SightingData d = new SightingData(t, cx, cy, (float) (angle1 + rnd
