@@ -112,7 +112,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 
 		Graphics2D g2 = (Graphics2D) g;
 
-		// Save the current tranform
+		// Save the current transform
 		AffineTransform oldTransform = g2.getTransform();
 
 		// Rotate and translate the actor
@@ -120,7 +120,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 
 		// Plot mean
 		g2.setColor(Color.LIGHT_GRAY);
-		float[] position = billboard.getAbsolutePosition();
+		float[] position = billboard.getAbsolutePositions();
 
 		int ix = Actor.e2gX(position[(id - 1) * 3 + 0]);
 		int iy = Actor.e2gY(position[(id - 1) * 3 + 1]);
@@ -136,7 +136,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 
 	public void update() {
 		// Get time reference
-		currentTime = Clock.getTime();
+		currentTime = Clock.timestamp();
 
 		SightingData sdata = (SightingData) sensorData.pop();
 		while (sdata != null) {
@@ -162,7 +162,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += Clock.getTime() - currentTime;
+		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 	}
@@ -170,7 +170,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	public void run() {
 		while (true) {
 			// update();
-			pause((long) (Clock.getTime() % Tint));
+			pause((long) (Clock.timestamp() % Tint));
 		}
 
 	}

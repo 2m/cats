@@ -33,7 +33,7 @@ public class SensorHandler {
 		float y1 = (float) mouse.getY() - cy;
 		// float norm1 = (float) Math.sqrt(x1 * x1 + y1 * y1);
 		float angle1 = (float) Math.atan2(y1, x1);
-		int t = Clock.getTime();
+		int t = Clock.timestamp();
 		int type = 0;
 		// TODO: Use estimated x and y in tracking data
 		SightingData d = new SightingData(t, cx, cy, (float) (angle1 + rnd

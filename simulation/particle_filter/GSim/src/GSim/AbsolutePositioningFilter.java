@@ -22,9 +22,9 @@ public abstract class AbsolutePositioningFilter extends Thread {
 		/** Period of filter */
 		this.T = T;
 		this.Tint = (int) (T * 1000);
-		/** Sorded buffer with sensor readings */
+		/** Sorted buffer with sensor readings */
 		this.sensorData = sensorData;
-		/** Sorted buffer wi th data on movement */
+		/** Sorted buffer with data on movement */
 		this.movementData = movementData;
 		this.billboard = billboard;
 		this.id = id;

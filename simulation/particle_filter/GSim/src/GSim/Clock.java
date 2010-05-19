@@ -12,11 +12,6 @@ public class Clock {
 	public void init() {
 		startTime = System.currentTimeMillis();
 	}
-
-	public static int getTime() {
-		System.out.println("Depricated call of function Clock.getTime()");
-		return timestamp();
-	}
 	
 	public static int timestamp() {
 		return (int) ((int) System.currentTimeMillis() - startTime);
