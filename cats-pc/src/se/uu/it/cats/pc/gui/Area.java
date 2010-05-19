@@ -77,6 +77,11 @@ public class Area { // implements ActionListener
   public Cat[] getCats() {
 	return _cats;
   }
+  
+  public Cat getCat(int id) {
+	  return _cats[id];
+  }
+  
   public String[] getCatNames() {
 	  String[] names = new String[_cats.length];
 	  for (int i = 0; i < _cats.length; i++)
