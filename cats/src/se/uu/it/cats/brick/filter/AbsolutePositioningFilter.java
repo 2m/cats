@@ -1,10 +1,10 @@
 package se.uu.it.cats.brick.filter;
 
-import java.awt.Graphics;
+import se.uu.it.cats.brick.storage.BillBoard;
 
 /**
- * Base class for the absolute positioning filter (graphics code should be
- * talken out befor use on the NXT)
+ * Base class for the absolute positioning filter (graphics code should be taken
+ * out before use on the NXT)
  */
 public abstract class AbsolutePositioningFilter extends Thread {
 	/** Buffers with data on movement and landmark sightings */
@@ -14,11 +14,11 @@ public abstract class AbsolutePositioningFilter extends Thread {
 	protected final float T;
 	/** Period of filter in milliseconds */
 	protected final int Tint;
-	/** Pointer to common clock object */
-	protected final RealTimeClock rttime;
+	protected BillBoard billboard;
+	protected int id;
 
-	public AbsolutePositioningFilter(float T, Buffer sensorData,
-			Buffer movementData, RealTimeClock rttime) {
+	public AbsolutePositioningFilter(int id, float T, Buffer sensorData,
+			Buffer movementData, BillBoard billboard) {
 		/** Period of filter */
 		this.T = T;
 		this.Tint = (int) (T * 1000);
@@ -26,11 +26,11 @@ public abstract class AbsolutePositioningFilter extends Thread {
 		this.sensorData = sensorData;
 		/** Sorted buffer wi th data on movement */
 		this.movementData = movementData;
-		/** Real time clock */
-		this.rttime = rttime;
+		this.billboard = billboard;
+		this.id = id;
 		// Set priority for thread
 		// TODO: Decide priority for absolute positioning filter
-		setPriority(Thread.MIN_PRIORITY); 
+		setPriority(Thread.MIN_PRIORITY);
 	}
 
 	/** Poll estimated x position value from filter */
@@ -52,10 +52,6 @@ public abstract class AbsolutePositioningFilter extends Thread {
 	 * Runs one update of the filter then exits
 	 */
 	public void update() {
-	}
-
-	/** Draw stuff, should not be included in final code on the NXT */
-	public void draw(Graphics g) {
 	}
 
 	/** Reset filter with some initial data */

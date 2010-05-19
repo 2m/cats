@@ -1,9 +1,7 @@
 package se.uu.it.cats.brick.filter;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+import se.uu.it.cats.brick.Clock;
+import se.uu.it.cats.brick.storage.BillBoard;
 
 /** Naive filter for absolute positioning of one cat using landmarks. */
 public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
@@ -32,10 +30,10 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	 * @param rttime
 	 *            RealTimeClock
 	 */
-	public AbsolutePositioningNaiveFilter(float T, Buffer sensorData,
-			Buffer movementData, RealTimeClock rttime) {
+	public AbsolutePositioningNaiveFilter(int id, float T, Buffer sensorData,
+			Buffer movementData, BillBoard billboard) {
 		// Call constructor of super class
-		super(T, sensorData, movementData, rttime);
+		super(id, T, sensorData, movementData, billboard);
 	}
 
 	/**
@@ -102,39 +100,9 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		return ((((float) iterationTime) / 1000) / ((float) iterationCounter));
 	}
 
-	/*
-	 * Draw particles (NOT brick material)
-	 */
-	public void draw(Graphics g) {
-		// TODO: Remove graphics code from filter
-		final int size = 4; // Diameter
-		final int linelength = 8;
-
-		Graphics2D g2 = (Graphics2D) g;
-
-		// Save the current tranform
-		AffineTransform oldTransform = g2.getTransform();
-
-		// Rotate and translate the actor
-		// g2.rotate(iangle, ix, iy);
-
-		// Plot mean
-		g2.setColor(Color.LIGHT_GRAY);
-		int ix = Actor.e2gX(getX());
-		int iy = Actor.e2gY(getY());
-		double iangle = -getAngle();
-		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
-				(int) size);
-		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
-				* linelength), (int) (iy + Math.sin(iangle) * linelength));
-
-		// Reset the transformation matrix
-		g2.setTransform(oldTransform);
-	}
-
 	public void update() {
 		// Get time reference
-		currentTime = rttime.getTime();
+		currentTime = Clock.timestamp();
 
 		SightingData sdata = (SightingData) sensorData.pop();
 		while (sdata != null) {
@@ -155,11 +123,12 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 				movementData.push(mdata);
 				mdata = null;
 			}
+			billboard.setAbsolutePosition(id, getX(), getY(), getAngle());
 		}
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += rttime.getTime() - currentTime;
+		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 	}
@@ -167,7 +136,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	public void run() {
 		while (true) {
 			// update();
-			pause((long) (rttime.getTime() % Tint));
+			pause((long) (Clock.timestamp() % Tint));
 		}
 
 	}
