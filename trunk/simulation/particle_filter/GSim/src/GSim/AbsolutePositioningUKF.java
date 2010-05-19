@@ -283,8 +283,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 				mdata = null;
 			}
 		}
-		double xVelocityFromTachometer = (xMovementFromTachometer) / T; // (lastCurrentTime - currentTime);  // T;
-		double yVelocityFromTachometer = (yMovementFromTachometer) / T; //(lastCurrentTime - currentTime);  // T;
+		double xVelocityFromTachometer = (xMovementFromTachometer) / T; // ((lastCurrentTime - currentTime)*1000);  // T;
+		double yVelocityFromTachometer = (yMovementFromTachometer) / T; // ((lastCurrentTime - currentTime)*1000);  // T;
 		z.set(numberOfLandmarks-1 +1, 0, xVelocityFromTachometer);
 		z.set(numberOfLandmarks-1 +2, 0, yVelocityFromTachometer);	
 		z.set(numberOfLandmarks-1 +3, 0, orientationFromTachometer);	
