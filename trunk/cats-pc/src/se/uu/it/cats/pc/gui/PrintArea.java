@@ -121,6 +121,9 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 
     Graphics2D g2d = (Graphics2D)g; 
 
+    _areaHeight = getHeight();
+    _areaWidth = getWidth();
+    
 	_cats = _newArea.getCats();
 	_lighthouse = _newArea.getLighthouse();
 	_mouse = _newArea.getMouse();
@@ -278,13 +281,14 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	}
 	
 	public void mouseClicked(MouseEvent e) {
-		centFix_X = _areaWidth/2-_arenaWidth/2*zk/50;
-		centFix_Y = _areaHeight/2+_arenaHeight/2*zk/50;
+		centFix_X = getWidth()/2-_arenaWidth/2*zk/50;
+		centFix_Y = getHeight()/2+_arenaHeight/2*zk/50;
 		if (marked) {
 			for (int i = 0; i < _newArea.getCats().length; i++) {
 				if (_newArea.getCats()[i].isMarked()) {
-					_newArea.getCats()[i].goTo(e.getX()+centFix_X, e.getY()-centFix_Y);
-					System.out.println((e.getX()+centFix_X) + " "+(e.getY()-centFix_Y));
+					_newArea.getCats()[i].goTo(((e.getX()-centFix_X)*50/zk), ((e.getY()-centFix_Y)*50/zk));
+					System.out.println(((e.getX()-centFix_X)*50/zk) + " "+((e.getY()-centFix_Y)*50/zk));
+					//System.out.println((e.getX()) + " "+(e.getY()));
 					_newArea.getCats()[i].setMarked(false);
 					_newArea.getCats()[i].setManualOrder(true);
 				}
