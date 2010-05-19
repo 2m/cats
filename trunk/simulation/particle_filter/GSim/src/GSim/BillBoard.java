@@ -29,6 +29,7 @@ public class BillBoard {
 		position = new float[NUMBER_OF_CATS * 3];
 	}
 
+	//TODO: Need a timestamp on this data..?
 	public void setLatestSighting(int id, float x, float y, float theta) {
 		// id in range [1:n]
 		sightings[(id - 1) * 3 + 0] = x;
@@ -53,6 +54,7 @@ public class BillBoard {
 		return NUMBER_OF_CATS;
 	}
 
+	//TODO: Need a timestamp on this data..?
 	public float[] getLatestSightings() {
 		return sightings;
 	}

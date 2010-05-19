@@ -34,7 +34,7 @@ public class HmeasMouse implements IFunction{
 	public Matrix eval(Matrix xm){
 		//Calculates the bearing from the cats to the mouse
 		//xm is where the cats think the mouse is
-		//positions is where the cats thinks they are
+		//positions are where the cats thinks they are
 		//NB: All -1 in the indices are used to indicate the shift form the first array index in matlab = 1 to java's = 0.
 		float[] positions = billboard.getAbsolutePositions();
 		Matrix zm = Matlab.zeros(nm, 1);
@@ -50,6 +50,11 @@ public class HmeasMouse implements IFunction{
 				zm.set(   i-1,1-1, 2*PI-acos(  ( xm.get(1-1,1-1) - positions[(i-1)*3+0] ) / sqrt( Math.pow(xm.get(1-1,1-1) - positions[(i-1)*3+0], 2) + Math.pow(xm.get(2-1,1-1) - positions[(i-1)*3+1], 2) )  )   );
 			}
 		}	
+		
+		System.out.println("Debug, in HmeasCat: x1 = " + positions[(1-1)*3+0] + ", y1 = " + positions[(1-1)*3+1] + "; x2 = " + positions[(2-1)*3+0] + ", y2 = " + positions[(2-1)*3+1]);
+		System.out.println("Debug, in HmeasCat: output (zm) = ");
+		printM(zm);	
+		
 		return zm;
 		
 		

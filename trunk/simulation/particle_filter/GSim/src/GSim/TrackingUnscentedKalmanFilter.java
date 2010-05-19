@@ -19,8 +19,8 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	/** nonlinear state equations */
 	private IFunction f;
 	
-	/** estimated state vector, (n)x(1) Matrix, of the mouse 
-	 * x, y, vx, vy */
+	/** estimated state vector, (n)x(1) Matrix, of the mouse containing
+	 * x, y, vx, vy . (aka 'x'). */
 	private Matrix states;
 	
 	/** state covariance */
@@ -29,7 +29,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	/** measurement equation */
 	private IFunction h;
 	
-	/** measurments */
+	/** measurments (aka 'z') */
 	private Matrix measurments;
 	
 	/** covariance of process for the mouse */
@@ -81,11 +81,11 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		
 		ufk_filter = new UnscentedKalmanFilter(nx,nz); 
 		float dt = T;//1f;  //sampling period
-		float q = 0.005f;  //std of expected process noise for the cat
+		float q = 0.005f;  //std of expected process noise for the mouse
 		float stddegrees = 2;
-		std_array = new double[]{stddegrees*(PI/180), pow(10, -2), pow(10, -2), pow(10, -7)};//, pow(10, -20)};
+		std_array = new double[]{stddegrees*(PI/180)};
 		double[][] r_temp = {std_array};
-		r = new Matrix(r_temp);  //std of expected measurement noise for the cat (for bearing angle, x, y, orient., cam.ang respectivly)
+		r = new Matrix(r_temp);  //std of expected measurement noise for the mouse
 		double[][] temp_Q = {{pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0            },
 							{0.0,             pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0 },
 							{pow(dt, 3)/2.0,  0.0,            pow(dt, 2),     0.0            },
@@ -93,21 +93,19 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		Q = new Matrix(temp_Q);  //covariance of process for the mouse
 		Q.timesEquals(pow(q,2));
 		
-		R = eye(nz).timesEquals( pow(r.get(1-1,1-1),2) );  //covariance of measurement of the cat
-		for (int j=1; j<=nz-numberOfLandmarks; j++)
-		{
-			R.set( numberOfLandmarks+j-1, numberOfLandmarks+j-1, pow(r.get(1-1, j+1-1),2) );
-		}
+		R = eye(nz).timesEquals( pow(std_array[0],2) );  //covariance of measurement of the mouse
 
 		states = zeros(nx,1);  //initial estimated state
 		measurments = zeros(nz,1);  //initial estimated state
 		
 		f = new FstateMouse(T);  //nonlinear state equations
-		h = new HmeasMouse(billboard);  //measurement equation  //TODO: Needs the position of the cats...
+		h = new HmeasMouse(billboard);  //measurement equation  
 		
 		P = eye(nx).timesEquals( pow(10,-3) );  //initial state covariance
 
 	
+		initData(1f, 1f, 0.001f, 0.001f);
+		
 		if (DEBUG){
 			debug("Creating TrackingUnscentedKalmanFilter object");
 			debug("Debug: tracking.ukf, Q dim: " + Q.getRowDimension() + " x " + Q.getColumnDimension() + ", Q:");
@@ -120,8 +118,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			printM(states);
 			debug("Debug: tracking.ukf, measurments dim: " + measurments.getRowDimension() + " x " + measurments.getColumnDimension() + ", measurments:");
 			printM(measurments);
-			debug("Debug: tracking.ukf, number of landmarks= " + numberOfLandmarks);
-			debug("Array of std of expected measurement= " + std_array[0] +", " + std_array[1] +", " + std_array[2] +", " + std_array[3]);
+			debug("Array of std of expected measurement= " + std_array[0] );
 		}
 	}
 
@@ -253,16 +250,30 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 
 		// Compare sensor data to particles
 		float[] sightings = billboard.getLatestSightings();
+		R.set(0,0, large);
+		R.set(1,1, large);
+		R.set(2,2, large);
 		// Loop through cats in billboard
 		for (int i = 1; i <= billboard.getNoCats(); i++) {
-			int x = Fixed.floatToFixed(sightings[(i - 1) * 3]);
-			int y = Fixed.floatToFixed(sightings[(i - 1) * 3 + 1]);
-			int angle = Fixed.floatToFixed(sightings[(i - 1) * 3 + 2]);
-
+			
+			//TODO: if sighting is newer then lastCurrentTime
+			R.set(i-1, i-1, pow(std_array[0],2) );
+			measurments.set(i-1, 0, sightings[(i - 1) * 3 + 2] );
+		}
+				
+		//One iteration with UKF
+		Matrix[] result = ufk_filter.ukf(f, states, P, h, measurments, Q, R);
+		states = result[0]; 
+		P = result[1];
+		if (DEBUG)
+		{
+			debug("Debug: tracking.ukf, P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", P:");
+			printM(P);
+			debug("Debug: tracking.ukf, states dim: " + states.getRowDimension() + " x " + states.getColumnDimension() + ", states:");
+			printM(states);
 		}
 
-		// Calculate mean and (co-)variance, then commit data to billboard
-
+		// Commit data to billboard ??
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
