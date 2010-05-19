@@ -64,10 +64,10 @@ public class AbsolutePositioningParticleFilter extends
 	 * @param rttime
 	 *            RealTimeClock
 	 */
-	public AbsolutePositioningParticleFilter(int N, float T, Buffer sensorData,
-			Buffer movementData) {
+	public AbsolutePositioningParticleFilter(int id, int N, float T,
+			Buffer sensorData, Buffer movementData,BillBoard billboard) {
 		// Call constructor of super class
-		super(T, sensorData, movementData);
+		super(id, T, sensorData, movementData, billboard);
 		this.N = N;
 		// Pre-calculate particle weight
 		Nnorm = Fixed.floatToFixed(1 / ((float) N));
@@ -339,7 +339,7 @@ public class AbsolutePositioningParticleFilter extends
 			// Only the worst particles needs to be re-sampled, so some
 			// particles can be skipped.
 			for (int i = 0; (i < Ncut) && (link != null); i++) {
-				//link.data.comparable = Nnorm;
+				// link.data.comparable = Nnorm;
 				link.data.comparable = Fixed.ONE;
 				link = link.next;
 			}
@@ -359,7 +359,7 @@ public class AbsolutePositioningParticleFilter extends
 			// Add mean and get random samples for angular values
 			part.angle = mean_angle + Fixed.mul(stdAngle, nextRandn());
 			// Set norm to standard (all are equal) norm.
-			//part.comparable = Nnorm;
+			// part.comparable = Nnorm;
 			part.comparable = Fixed.ONE;
 			link = link.next;
 		}
