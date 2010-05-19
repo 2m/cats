@@ -1,30 +1,45 @@
 package se.uu.it.cats.brick;
 
+import se.uu.it.cats.brick.filter.BufferSorted;
+import se.uu.it.cats.brick.filter.MovementData;
 import lejos.nxt.Button;
 import lejos.nxt.Motor;
 import lejos.nxt.Sound;
 import lejos.robotics.navigation.TachoPilot;
 
-public class MovementPilot extends TachoPilot {	
+public class MovementPilot extends TachoPilot {
+	//Instance variables
+	private float startAng;
+	private float distLast;
+	private float dx;
+	private float dy;
+	private float ang;
+	private boolean addedMovementSinceLastPush = false;
+	private int lastTime;
+	private BufferSorted unifiedBuffer;
+	public static float lastR;
+	public static float lastAngle;
 	
 	private static MovementPilot _instanceHolder = new MovementPilot();
 	
 	public static MovementPilot getInstance()
 	{
 		return _instanceHolder;
+	} 
+	
+	/**
+	 * Constructor to be used
+	 * @param unifiedBuffer
+	 */
+	public MovementPilot(BufferSorted unifiedBuffer){
+		this();
+		lastTime = Clock.timestamp();
 	}
 	
 	public MovementPilot()
 	{	
-		super(Settings.WHEEL_DIAMATER - Settings.DRIFT_BALANCE,Settings.WHEEL_DIAMATER + Settings.DRIFT_BALANCE, Settings.TRACK_WIDTH, Motor.C, Motor.A, false);		
-		
-		/*Motor.A.regulateSpeed(true);
-		Motor.C.regulateSpeed(true);
-		Motor.A.smoothAcceleration(true);
-		Motor.C.smoothAcceleration(true);
-		setMoveSpeed(2*getMoveMaxSpeed()/3);
-		setTurnSpeed(getTurnMaxSpeed()/2);*/
-	}	 
+		super(Settings.WHEEL_DIAMATER - Settings.DRIFT_BALANCE,Settings.WHEEL_DIAMATER + Settings.DRIFT_BALANCE, Settings.TRACK_WIDTH, Motor.C, Motor.A, false);			
+	}	
 	
 	public void travel(float x, float y){
 		
@@ -76,8 +91,7 @@ public class MovementPilot extends TachoPilot {
 			Motor.C.forward();
 		}
 		angularAcceleration(turnAngle);
-		
-		CatPosCalc.update();
+		update();	
 		
 		//travel(r); // blocks while moving
 		if (forward) { //turn counter clockwise
@@ -90,9 +104,70 @@ public class MovementPilot extends TachoPilot {
 			_left.backward();
 			travelAcceleration(-r);
 		}
+		update();;
 		
-		CatPosCalc.update();
+	}
+	
+	private void update() {
+		if (Main.useUnscentedKalmanPositioningFilter)
+			addMovementSinceLastPush();
+		else if (Main.useParticlePositioningFilter)
+			;
+			//push to particle filter
+		else if (Main.useBasicPositioningFilter)
+			//push to basic filter	
+			;
+		else
+			System.out.println("No positioning filter selected");
+	}
+	
+	public void addMovementSinceLastPush() {
+
+		float distNew = this.getTravelDistance();
+		ang = (float) ((startAng + getAngle()*Math.PI/180f) % (2f*Math.PI));
 		
+		float deltaDist = distNew - distLast;
+		
+		dx += deltaDist * (float) Math.cos(ang);
+		dy +=  deltaDist * (float) Math.sin(ang);
+
+		distLast = distNew;
+		addedMovementSinceLastPush = true;
+	}
+	
+	/**
+	 * Returns the velocity since the last call (to the UKF positioning filter, 
+	 * this should be done before each filter iteration. Called by the filter.)
+	 * @return MovementData currentTime,vx,vy
+	 */
+	public MovementData getVelocity() {
+		if (!addedMovementSinceLastPush)
+			addMovementSinceLastPush();		
+		int currentTime = Clock.timestamp();
+		double dt = (currentTime - lastTime)*1000; //elapsed time in seconds
+		double vx=dx/dt;
+		double vy=dy/dt;
+		
+		lastTime = currentTime;
+		dx=0;
+		dy=0;
+		addedMovementSinceLastPush = false;
+		
+		return new MovementData(currentTime,vx,vy);
+	}
+	
+	
+	/**
+	 * Pushes tachometer data (since last call) to the buffer, used by the absolute particle filter
+	 */
+	public void pushParticleMovementData() {
+
+		float newR = getTravelDistance();
+		float newAngle = (float) (getAngle() * Math.PI/180f);
+		MovementData MD = new MovementData(Clock.timestamp(), newR - lastR, newAngle - lastAngle);
+		unifiedBuffer.push(MD);
+		lastR = newR;
+		lastAngle = newAngle;;
 	}
 	
 	private void angularAcceleration(float turnAngle) {
@@ -201,5 +276,6 @@ public class MovementPilot extends TachoPilot {
 		_left.setSpeed(leftSpeed);
 		_right.setSpeed(rightSpeed);
 	}
+	
 	
 }

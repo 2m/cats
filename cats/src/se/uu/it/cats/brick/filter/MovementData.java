@@ -3,8 +3,8 @@ package se.uu.it.cats.brick.filter;
 public class MovementData extends ComparableData {
 	public float dr; // Distance travelled
 	public float dangle; // Radians turned
-	public float xv;
-	public float yv;
+	public double vx;  //speed in m/s
+	public double vy;
 
 	public MovementData(int timestamp, float dr, float dangle) {
 		super(timestamp);
@@ -12,13 +12,10 @@ public class MovementData extends ComparableData {
 		this.dangle = dangle;
 	}
 
-	public MovementData(int timestamp, float dr, float dangle, float xv,
-			float yv) {
+	public MovementData(int timestamp, double xv, double yv) {
 		super(timestamp);
-		this.dr = dr;
-		this.dangle = dangle;
-		this.xv = xv;
-		this.yv = yv;
+		this.vx = xv;
+		this.vy = yv;
 	}
 
 	public boolean isMovementData() {
@@ -26,6 +23,6 @@ public class MovementData extends ComparableData {
 	}
 
 	public String toString() {
-		return "[" + comparable + ", " + dr + ", " + dangle + "]";
+		return "[" + comparable + ",dr= " + dr + ",dangle= " + dangle + ",vx= " + vx + ",vy= " + vy + "]";
 	}
 }

@@ -23,6 +23,9 @@ public class Clock
 			_server = true;
 	}
 	
+	/**
+	 * @return Current time in milliseconds
+	 */
 	public static int timestamp()
 	{
 		return _sw.elapsed() + _offset;
