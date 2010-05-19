@@ -38,9 +38,9 @@ public class AbsolutePositioningLeastSquare extends AbsolutePositioningFilter
 	private final boolean DEBUG = true;
 
 	
-	public AbsolutePositioningLeastSquare(float T, Buffer sensorData, Buffer movementData)		
+	public AbsolutePositioningLeastSquare(int id,float T, Buffer sensorData, Buffer movementData,BillBoard billboard)		
 	{	
-		super(T, sensorData, movementData);
+		super(id,T, sensorData, movementData,billboard);
 
 		//LandmarkList, true positions of the landmarks are in this static class. HmeasCat accesses the landmark list directly
 		numberOfLandmarks = LandmarkList.landmarkX.length;  //number of landmarks

@@ -17,6 +17,8 @@ public class BillBoard {
 	/** Number of cats (set in constructor) */
 	public final int NUMBER_OF_CATS;
 
+	public float[] position;
+
 	public BillBoard(int noOfCats) {
 		NUMBER_OF_CATS = noOfCats;
 		data = new float[NUMBER_OF_CATS][DATA_PER_CAT];
@@ -24,7 +26,7 @@ public class BillBoard {
 		for (int i = 0; i < NUMBER_OF_CATS * 3; i++) {
 			sightings[i] = -1;
 		}
-
+		position = new float[NUMBER_OF_CATS * 3];
 	}
 
 	public void setLatestSighting(int id, float x, float y, float theta) {
@@ -33,8 +35,19 @@ public class BillBoard {
 		sightings[(id - 1) * 3 + 1] = y;
 		sightings[(id - 1) * 3 + 2] = theta;
 	}
-	
-	//TODO: For UKF, add getter for tachometer positioning and landmark sighting 
+
+	// TODO: For UKF, add getter for tachometer positioning and landmark
+	// sighting
+
+	public void setAbsolutePosition(int id, float x, float y, float angle) {
+		position[(id - 1) * 3 + 0] = x;
+		position[(id - 1) * 3 + 1] = y;
+		position[(id - 1) * 3 + 2] = angle;
+	}
+
+	public float[] getAbsolutePosition() {
+		return position;
+	}
 
 	public int getNoCats() {
 		return NUMBER_OF_CATS;

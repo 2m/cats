@@ -15,7 +15,7 @@ public class Cat extends Actor {
 	protected TrackingFilter trackingFilter;
 	private Guide guide;
 
-	private boolean usePositioningParticleFilter = true;
+	private boolean usePositioningParticleFilter = false;
 	private boolean usePositioningUnscentedKalmanFilter = false;
 	private boolean useTrackingParticleFilter = true;
 	private boolean useTrackingUnscentedKalmanFilter = false;
@@ -34,14 +34,14 @@ public class Cat extends Actor {
 		float T = (float) GSim.timestep * timestepsBetweenFilterUpdates / 1000; // 5;//0.5;
 
 		if (usePositioningParticleFilter) {
-			positioningFilter = new AbsolutePositioningParticleFilter(N, T,
-					positioningBuffer, motorBuffer);
+			positioningFilter = new AbsolutePositioningParticleFilter(id, N, T,
+					positioningBuffer, motorBuffer, billboard);
 		} else if (usePositioningUnscentedKalmanFilter) {
-			positioningFilter = new AbsolutePositioningUKF(T,
-					positioningBuffer, motorBuffer);
+			positioningFilter = new AbsolutePositioningUKF(id, T,
+					positioningBuffer, motorBuffer, billboard);
 		} else {
-			positioningFilter = new AbsolutePositioningNaiveFilter(T,
-					positioningBuffer, motorBuffer);
+			positioningFilter = new AbsolutePositioningNaiveFilter(id, T,
+					positioningBuffer, motorBuffer, billboard);
 		}
 
 		if (useTrackingParticleFilter) {

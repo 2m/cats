@@ -32,10 +32,10 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	 * @param rttime
 	 *            RealTimeClock
 	 */
-	public AbsolutePositioningNaiveFilter(float T, Buffer sensorData,
-			Buffer movementData) {
+	public AbsolutePositioningNaiveFilter(int id, float T, Buffer sensorData,
+			Buffer movementData, BillBoard billboard) {
 		// Call constructor of super class
-		super(T, sensorData, movementData);
+		super(id, T, sensorData, movementData, billboard);
 	}
 
 	/**
@@ -120,9 +120,11 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 
 		// Plot mean
 		g2.setColor(Color.LIGHT_GRAY);
-		int ix = Actor.e2gX(getX());
-		int iy = Actor.e2gY(getY());
-		double iangle = -getAngle();
+		float[] position = billboard.getAbsolutePosition();
+
+		int ix = Actor.e2gX(position[(id - 1) * 3 + 0]);
+		int iy = Actor.e2gY(position[(id - 1) * 3 + 1]);
+		double iangle = -position[(id - 1) * 3 + 2];
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
 				(int) size);
 		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
@@ -155,6 +157,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 				movementData.push(mdata);
 				mdata = null;
 			}
+			billboard.setAbsolutePosition(id, getX(), getY(), getAngle());
 		}
 
 		// Increase iteration counter and timer (with full execution time)
