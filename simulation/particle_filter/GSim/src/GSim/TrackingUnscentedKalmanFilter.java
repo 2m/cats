@@ -272,8 +272,24 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			debug("Debug: tracking.ukf, states dim: " + states.getRowDimension() + " x " + states.getColumnDimension() + ", states:");
 			printM(states);
 		}
+		
+		// Check x and y so they keep inside the arena and also set velocity in that direction to zero if outside the arena
+		if (states.get(0, 0) < Arena.min_x) {
+			states.set(0, 0, Arena.min_x);
+		}
+		if (states.get(0, 0) > Arena.max_x) {
+			states.set(0, 0, Arena.max_x);
+		}
+		if (states.get(1, 0) < Arena.min_y) {
+			states.set(1, 0, Arena.min_y);
+		}
+		if (states.get(1, 0) > Arena.max_y) {
+			states.set(1, 0, Arena.max_y);
+		}
 
 		// Commit data to billboard ??
+		billboard.setMeanAndCovariance(id, (float)states.get(0, 0), (float)states.get(1, 0), (float)states.get(2, 0), (float)states.get(3, 0),
+				0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
