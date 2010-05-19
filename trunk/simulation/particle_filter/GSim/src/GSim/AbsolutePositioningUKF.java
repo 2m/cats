@@ -136,7 +136,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	 *            Initial angle
 	 */
 	public void initData(float x, float y, float angle) {
-		lastCurrentTime = Clock.getTime();
+		lastCurrentTime = Clock.timestamp();
 		xc.set(0, 0, x);
 		xc.set(1, 0, y);	
 		xc.set(2, 0, 0);
@@ -184,7 +184,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	 */
 	public void update() {
 		// Get time reference
-		currentTime = Clock.getTime();
+		currentTime = Clock.timestamp();
 
 		// Update landmark angle in the measurement matrix	
 		SightingData sdata = (SightingData) sensorData.pop();
@@ -323,11 +323,11 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += Clock.getTime() - currentTime;
+		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 		
-		debug("Debug, leaving update at iteration " + iterationCounter + ", current iterationTime= " + (Clock.getTime() - currentTime) );
+		debug("Debug, leaving update at iteration " + iterationCounter + ", current iterationTime= " + (Clock.timestamp() - currentTime) );
 	}//end of update
 	
 	/**

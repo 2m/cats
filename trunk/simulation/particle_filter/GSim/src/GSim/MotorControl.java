@@ -32,14 +32,14 @@ public class MotorControl {
 				* (1 + rng.nextDouble() * 0.04 + 0.02)); 
 		setY(getY() + Math.sin(angle) * distance
 				* (1 + rng.nextDouble() * 0.04 + 0.02));
-		updateBuffer.push(new MovementData(Clock.getTime(), (float) distance,
+		updateBuffer.push(new MovementData(Clock.timestamp(), (float) distance,
 				(float) 0.0));
 	}
 
 	public void turn(double turnangle) {
 		// +-4% noise
 		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() * 0.08 + 0.04)); 
-		updateBuffer.push(new MovementData(Clock.getTime(), (float) 0.0,
+		updateBuffer.push(new MovementData(Clock.timestamp(), (float) 0.0,
 				(float) turnangle));
 	}
 

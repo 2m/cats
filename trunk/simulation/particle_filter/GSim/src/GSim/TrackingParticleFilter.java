@@ -38,7 +38,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	private boolean zerosum;
 
 	/** Varible for time */
-	private int lastCurrentTime, currentTime, lastIntegration;
+	private int lastCurrentTime, currentTime;// , lastIntegration;
 
 	/** Random number lookup table */
 	private final int[] randn_lut;
@@ -64,7 +64,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 *            Shared network data object
 	 */
 	public TrackingParticleFilter(int id, int N, float T, Buffer sensorData,
-			 BillBoard billboard) {
+			BillBoard billboard) {
 		// Call constructor of super class
 		super(id, T, sensorData, billboard);
 		this.N = N;
@@ -148,6 +148,8 @@ public class TrackingParticleFilter extends TrackingFilter {
 	private void compareParticles(int x, int y, int angle) {
 		// Create temporary weight summation variable
 		int sum_w_tmp = 0;
+		// Counts div by zero for logging
+		int div_by_zero = 0;
 		// Create new data list
 		LinkedList newlist = new LinkedList();
 		// Pop a particle
@@ -167,16 +169,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 			// Calculate norm of (toMouse_x, toMouse_y).
 			int norm = Fixed.norm(toMouse_x, toMouse_y);
 
-			/*
-			 * float toMouse = (float) Math.atan2(toMouse_y, toMouse_x); float
-			 * sens = Fixed.fixedToFloat(angle); float h = (float)
-			 * ((Math.cos(sens) * Math.cos(toMouse)) + (Math .sin(sens) *
-			 * Math.sin(toMouse))); int hf = Fixed.floatToFixed(h);
-			 */
-
-			// Check for zero distance to landmark
+			// Check for zero distance to mouse
 			if (norm == 0) {
-				// System.out.println("Division by zero in compareParticles()");
+				div_by_zero++;
 			} else {
 				int toMouse_x_norm = Fixed.div(toMouse_x, norm);
 				int toMouse_y_norm = Fixed.div(toMouse_y, norm);
@@ -188,10 +183,6 @@ public class TrackingParticleFilter extends TrackingFilter {
 				// (1, 0) if the particle has the correct values.
 				int v1 = Fixed.mul(toMouse_x_norm, cos)
 						+ Fixed.mul(toMouse_y_norm, -sin);
-				/*
-				 * int v2 = Fixed.mul(toMouse_x_norm, sin) +
-				 * Fixed.mul(toMouse_y_norm, cos);
-				 */
 				// Inner product between vectors u and v =>
 				// cos(angle_diff)
 				// z = Fixed.mul(v1, u1); + Fixed.mul(v2, u2);
@@ -206,10 +197,12 @@ public class TrackingParticleFilter extends TrackingFilter {
 			if (w < 0) {
 				// Check for negative values (for debugging).
 				w = 0;
+				System.out.println("Weight smaller than zero!");
 			}
 			if (w > Fixed.ONE) {
 				// Check for large values (for debugging).
 				w = Fixed.ONE;
+				System.out.println("Weight larger than one!");
 			}
 			// TODO: Add logger
 			// Multiply weight from this iteration with particle weight
@@ -229,11 +222,15 @@ public class TrackingParticleFilter extends TrackingFilter {
 		sum_w = sum_w_tmp;
 		// Check if the sum of weights are zero
 		zerosum = (sum_w_tmp == 0);
-
+		// Print to logger if there was a division by zero
+		if (div_by_zero != 0) {
+			Logger.println(div_by_zero
+					+ " instances of division by zero in compareParticles()");
+		}
 		// System.out.println("sum_w=" + Fixed.fixedToFloat(sum_w));
 		if (data.getLength() != N) {
-			System.out.println("Particles lost! (count:" + data.getLength()
-					+ ")");
+			Logger.println("Tracking particles lost! (count:"
+					+ data.getLength() + ")");
 		}
 	}
 
@@ -549,7 +546,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 
 		Graphics2D g2 = (Graphics2D) g;
 
-		// Save the current tranform
+		// Save the current transform
 		AffineTransform oldTransform = g2.getTransform();
 
 		// Rotate and translate the actor
@@ -590,6 +587,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	}
 
 	public void update() {
+		// TODO: Remove pushing sightings to billboard
 		// Get latest sighting
 		SightingData sens = null;
 		SightingData sens2 = (SightingData) sensorData.pop();
@@ -599,15 +597,35 @@ public class TrackingParticleFilter extends TrackingFilter {
 		}
 		// Push latest sighting to billboard
 		if (sens != null) {
-			// System.out.println(id + ": Sighting: " + sens);
 			billboard.setLatestSighting(id, sens.x, sens.y, sens.angle);
 		}
+
+		// Download mean and co-variance data
+		float[] net = billboard.getMeanAndCovariance();
+		// Update the local mean and co-variance
+		if (net[10] == 0) {
+			varXX = Fixed.ONE;
+			varXY = 0;
+			varYY = Fixed.ONE;
+		} else {
+			mean_x = Fixed.floatToFixed(net[0]);
+			mean_y = Fixed.floatToFixed(net[1]);
+			mean_xv = Fixed.floatToFixed(net[2]);
+			mean_yv = Fixed.floatToFixed(net[3]);
+			// Set up co-variance matrices
+			varXX = Fixed.floatToFixed(net[4]);
+			varXY = Fixed.floatToFixed(net[5]);
+			varYY = Fixed.floatToFixed(net[6]);
+		}
+		varXvXv = Fixed.floatToFixed(net[7]);
+		varXvYv = Fixed.floatToFixed(net[8]);
+		varYvYv = Fixed.floatToFixed(net[9]);
 
 		// Re-sample (loads values from billboard)
 		reSample();
 
 		// Get time reference
-		currentTime = Clock.getTime();
+		currentTime = Clock.timestamp();
 
 		// Integrate particles
 		// TODO: Integration should be done with respect to time diff between
@@ -637,7 +655,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += Clock.getTime() - currentTime;
+		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 	}
@@ -645,7 +663,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	public void run() {
 		while (true) {
 			// update();
-			pause((long) (Clock.getTime() % Tint));
+			pause((long) (Clock.timestamp() % Tint));
 		}
 
 	}

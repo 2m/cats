@@ -594,7 +594,7 @@ public class AbsolutePositioningParticleFilter extends
 
 	public void update() {
 		// Get time reference
-		currentTime = Clock.getTime();
+		currentTime = Clock.timestamp();
 
 		// Make a new sorted list with all data up to time currentTime which is
 		// sorted.
@@ -667,7 +667,7 @@ public class AbsolutePositioningParticleFilter extends
 		}
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += Clock.getTime() - currentTime;
+		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 	}
@@ -676,7 +676,7 @@ public class AbsolutePositioningParticleFilter extends
 
 		while (true) {
 			// update();
-			pause((long) (Clock.getTime() % Tint));
+			pause((long) (Clock.timestamp() % Tint));
 		}
 
 	}

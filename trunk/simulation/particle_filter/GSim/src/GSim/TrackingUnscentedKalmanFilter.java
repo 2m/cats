@@ -141,7 +141,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	 */
 	public void initData(float x, float y, float xv, float yv) 
 	{	
-		lastCurrentTime = Clock.getTime();
+		lastCurrentTime = Clock.timestamp();
 		states.set(0, 0, x);
 		states.set(1, 0, y);	
 		states.set(2, 0, xv);
@@ -250,7 +250,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 
 
 		// Get time reference
-		currentTime = Clock.getTime();
+		currentTime = Clock.timestamp();
 
 
 		// Compare sensor data to particles
@@ -268,7 +268,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += Clock.getTime() - currentTime;
+		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 	}
@@ -276,7 +276,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	public void run() {
 		while (true) {
 			// update();
-			pause((long) (Clock.getTime() % Tint));
+			pause((long) (Clock.timestamp() % Tint));
 		}
 
 	}
