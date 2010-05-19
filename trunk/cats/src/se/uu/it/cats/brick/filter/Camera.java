@@ -3,8 +3,11 @@ package se.uu.it.cats.brick.filter;
 import java.awt.Rectangle;
 
 import se.uu.it.cats.brick.CatPosCalc;
+import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.Main;
+import se.uu.it.cats.brick.MovementPilot;
 import se.uu.it.cats.brick.Settings;
 import se.uu.it.cats.brick.network.ConnectionManager;
 import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
@@ -15,24 +18,35 @@ import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.addon.NXTCam;
 
-public class SimpleFilter implements Runnable {
+public class Camera implements Runnable {
 	
 	final static int dt = 10; // milliseconds
+	private MovementPilot movementPilot;
+	private AbsolutePositioningFilter positioning;
+	private BufferSorted unifiedBuffer;
+	private float lastCatAngle;
+	
+	public Camera(MovementPilot movementPilot, BufferSorted unifiedBuffer, AbsolutePositioningFilter positioning){
+		this.movementPilot = movementPilot;
+		this.unifiedBuffer = unifiedBuffer;
+		this.positioning = positioning;
+		lastCatAngle = movementPilot.getAngle();
+	}
 	
 	public void run() {
 		
 		//Motor.A.setSpeed(100);
 		
-		NXTCam camera = new NXTCam(SensorPort.S3);
+		NXTCam NXTcamera = new NXTCam(SensorPort.S3);
 		//String objects = "Objects: ";
 		int numObjects;
 		
-		//camera.sendCommand('A'); // sort objects by size
-		//camera.sendCommand('E'); // start tracking
+		//NXTcamera.sendCommand('A'); // sort objects by size
+		//NXTcamera.sendCommand('E'); // start tracking
 		
-		camera.setTrackingMode(NXTCam.OBJECT_TRACKING);
-		camera.sortBy(NXTCam.SIZE);
-		camera.enableTracking(true);
+		NXTcamera.setTrackingMode(NXTCam.OBJECT_TRACKING);
+		NXTcamera.sortBy(NXTCam.SIZE);
+		NXTcamera.enableTracking(true);
 		
 		int xSum;
 		int ySum ;
@@ -70,12 +84,12 @@ public class SimpleFilter implements Runnable {
 			
 			motorAng = (int) (Motor.B.getTachoCount()*gearRatio);
 			motorAngRad = (float) (motorAng * Math.PI/180.0);
-			numObjects = camera.getNumberOfObjects();
+			numObjects = NXTcamera.getNumberOfObjects();
 			
 			/*LCD.clear();
-			LCD.drawString(camera.getProductID(), 0, 0);
-			LCD.drawString(camera.getSensorType(), 0, 1);
-			LCD.drawString(camera.getVersion(), 9, 1);
+			LCD.drawString(NXTcamera.getProductID(), 0, 0);
+			LCD.drawString(NXTcamera.getSensorType(), 0, 1);
+			LCD.drawString(NXTcamera.getVersion(), 9, 1);
 			LCD.drawString(objects, 0, 2);
 			LCD.drawInt(numObjects,1,9,2);*/
 			
@@ -84,13 +98,13 @@ public class SimpleFilter implements Runnable {
 			
 			if (numObjects >= 1) {// && numObjects <= 8) {
 				for (int i=0;i<numObjects;i++) {
-					Rectangle r = camera.getRectangle(i);
+					Rectangle r = NXTcamera.getRectangle(i);
 					
 					xSum += r.x + r.width / 2;
 					ySum += r.y - r.height / 2;
 					
 					/*if (r.height > 30 && r.width > 30) {
-						LCD.drawInt(camera.getObjectColor(i), 2, 0, 3+i);
+						LCD.drawInt(NXTcamera.getObjectColor(i), 2, 0, 3+i);
 						LCD.drawInt(r.width, 3, 3, 3+i);
 						LCD.drawInt(r.height, 3, 7, 3+i);
 						LCD.drawInt(r.y, 3, 11, 3+i);
@@ -99,11 +113,39 @@ public class SimpleFilter implements Runnable {
 					
 				}
 				
+				int type = 1; //TODO: Set according to observed landmark or mouse
 				xAvg = xSum / numObjects;
 				err = xAvg - 176/2 + offset; //0-88-19=-107 worst case
 				angToTarget = err*radPerPix;
 				angToTargetRelCat = motorAngRad + angToTarget;
-				angToTargetAbs = angToTargetRelCat + CatPosCalc.getCatAng();
+				
+				//FIXME:
+				float currentCatAngle = positioning.getAngle();// + (movementPilot.getAngle() - lastCatAngle);
+				angToTargetAbs = angToTargetRelCat;
+				//lastCatAngle = currentCatAngle;
+				
+				if (Main.useUnscentedKalmanTrackingFilter || Main.useParticleTrackingFilter)
+					//Update billboard
+					;
+				
+				if (Main.useUnscentedKalmanPositioningFilter) {
+					//Push absolute angle to UKF positioning filter
+					unifiedBuffer.push(new SightingData(Clock.timestamp(), positioning.getX(), positioning.getY(), angToTargetAbs, type));
+				}
+					
+				else if (Main.useParticlePositioningFilter) {
+					//Push relative(?) angle to particle filter
+					unifiedBuffer.push(new SightingData(Clock.timestamp(), positioning.getX(), positioning.getY(), angToTargetRelCat, type));
+					movementPilot.pushParticleMovementData();	
+				}
+					
+				else if (Main.useBasicPositioningFilter)
+					//push to basic filter	
+					;
+				else
+					System.out.println("No positioning filter selected");
+			
+				
 				System.out.println("CamMotor:" + motorAng);
 				
 				// send measurements to everyone
@@ -192,6 +234,6 @@ public class SimpleFilter implements Runnable {
 			try{Thread.sleep(dt);}catch(Exception ex){}
 			
 			//iterCounter = (iterCounter + 1) % 100;
-		}
+		}//end of while
 	}
 }

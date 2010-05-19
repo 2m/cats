@@ -10,7 +10,9 @@ import lejos.nxt.Sound;
 import lejos.nxt.comm.RConsole;
 import lejos.util.Timer;
 import lejos.util.TimerListener;
-import se.uu.it.cats.brick.filter.SimpleFilter;
+import se.uu.it.cats.brick.filter.AbsolutePositioningFilter;
+import se.uu.it.cats.brick.filter.BufferSorted;
+import se.uu.it.cats.brick.filter.Camera;
 import se.uu.it.cats.brick.network.ConnectionListener;
 import se.uu.it.cats.brick.network.ConnectionManager;
 import se.uu.it.cats.brick.network.packet.PFMeasurement;
@@ -25,11 +27,26 @@ import se.uu.it.cats.brick.storage.StorageManager;
  */
 public class Main
 {	
+
+	public static boolean useParticlePositioningFilter = false;
+	public static boolean useUnscentedKalmanPositioningFilter = true;
+	public static boolean useBasicPositioningFilter = false;
+	public static boolean useParticleTrackingFilter = false;
+	public static boolean useUnscentedKalmanTrackingFilter = false;
+	public static boolean useGuide = false;
+	
+	
+	
+	
 	public static void main(String[] args) throws InterruptedException
 	{
 		Settings.init();
 		Logger.init();
 		Clock.init();		
+		MovementPilot movementPilot = new MovementPilot();
+		BufferSorted unifiedBuffer = new BufferSorted();
+		AbsolutePositioningFilter positioningFilter;//FIXME create all objects needed
+		
 		
 		float[] sCat = {0, 0, (float) (Math.PI/2f)};
 		//MovementPilot mPilot = new MovementPilot();
@@ -51,8 +68,8 @@ public class Main
 		listenerThread.start();
 		
 		//Run SimpleFilter:
-		Thread filterThread = new Thread(new SimpleFilter());
-		filterThread.start();
+		//Thread filterThread = new Thread(new Camera(movementPilot, unifiedBuffer, positioningFilter));
+		//filterThread.start();
 		
 		//Run MovementPilot:
 		
