@@ -45,7 +45,7 @@ public class BillBoard {
 		position[(id - 1) * 3 + 2] = angle;
 	}
 
-	public float[] getAbsolutePosition() {
+	public float[] getAbsolutePositions() {
 		return position;
 	}
 
