@@ -71,10 +71,10 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	 *            Shared network data object
 	 */
 	public TrackingUnscentedKalmanFilter(int id, float T, Buffer sensorData,
-			RealTimeClock rttime, BillBoard billboard) 
+			 BillBoard billboard) 
 	{
 		// Call constructor of super class
-		super(id, T, sensorData, rttime, billboard);
+		super(id, T, sensorData, billboard);
 		
 		int nz = billboard.NUMBER_OF_CATS;  //number of cats
 		int nx = 4;  //number of variables in the mouse's state vector
@@ -141,7 +141,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	 */
 	public void initData(float x, float y, float xv, float yv) 
 	{	
-		lastCurrentTime = rttime.getTime();
+		lastCurrentTime = Clock.getTime();
 		states.set(0, 0, x);
 		states.set(1, 0, y);	
 		states.set(2, 0, xv);
@@ -250,7 +250,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 
 
 		// Get time reference
-		currentTime = rttime.getTime();
+		currentTime = Clock.getTime();
 
 
 		// Compare sensor data to particles
@@ -268,7 +268,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += rttime.getTime() - currentTime;
+		iterationTime += Clock.getTime() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 	}
@@ -276,7 +276,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	public void run() {
 		while (true) {
 			// update();
-			pause((long) (rttime.getTime() % Tint));
+			pause((long) (Clock.getTime() % Tint));
 		}
 
 	}

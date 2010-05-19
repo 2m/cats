@@ -65,9 +65,9 @@ public class AbsolutePositioningParticleFilter extends
 	 *            RealTimeClock
 	 */
 	public AbsolutePositioningParticleFilter(int N, float T, Buffer sensorData,
-			Buffer movementData, RealTimeClock rttime) {
+			Buffer movementData) {
 		// Call constructor of super class
-		super(T, sensorData, movementData, rttime);
+		super(T, sensorData, movementData);
 		this.N = N;
 		// Pre-calculate particle weight
 		Nnorm = Fixed.floatToFixed(1 / ((float) N));
@@ -594,7 +594,7 @@ public class AbsolutePositioningParticleFilter extends
 
 	public void update() {
 		// Get time reference
-		currentTime = rttime.getTime();
+		currentTime = Clock.getTime();
 
 		// Make a new sorted list with all data up to time currentTime which is
 		// sorted.
@@ -667,7 +667,7 @@ public class AbsolutePositioningParticleFilter extends
 		}
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += rttime.getTime() - currentTime;
+		iterationTime += Clock.getTime() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 	}
@@ -676,7 +676,7 @@ public class AbsolutePositioningParticleFilter extends
 
 		while (true) {
 			// update();
-			pause((long) (rttime.getTime() % Tint));
+			pause((long) (Clock.getTime() % Tint));
 		}
 
 	}

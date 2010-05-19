@@ -4,7 +4,7 @@ import java.awt.Graphics;
 
 /**
  * Base class for the absolute positioning filter (graphics code should be
- * talken out befor use on the NXT)
+ * taken out before use on the NXT)
  */
 public abstract class AbsolutePositioningFilter extends Thread {
 	/** Buffers with data on movement and landmark sightings */
@@ -14,11 +14,9 @@ public abstract class AbsolutePositioningFilter extends Thread {
 	protected final float T;
 	/** Period of filter in milliseconds */
 	protected final int Tint;
-	/** Pointer to common clock object */
-	protected final RealTimeClock rttime;
 
 	public AbsolutePositioningFilter(float T, Buffer sensorData,
-			Buffer movementData, RealTimeClock rttime) {
+			Buffer movementData) {
 		/** Period of filter */
 		this.T = T;
 		this.Tint = (int) (T * 1000);
@@ -26,8 +24,6 @@ public abstract class AbsolutePositioningFilter extends Thread {
 		this.sensorData = sensorData;
 		/** Sorted buffer wi th data on movement */
 		this.movementData = movementData;
-		/** Real time clock */
-		this.rttime = rttime;
 		// Set priority for thread
 		// TODO: Decide priority for absolute positioning filter
 		setPriority(Thread.MIN_PRIORITY); 

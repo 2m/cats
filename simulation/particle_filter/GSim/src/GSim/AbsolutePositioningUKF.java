@@ -60,9 +60,9 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	private final boolean DEBUG = true;
 
 	
-	public AbsolutePositioningUKF(float T, Buffer sensorData, Buffer movementData, RealTimeClock rttime)		
+	public AbsolutePositioningUKF(float T, Buffer sensorData, Buffer movementData)		
 	{	
-		super(T, sensorData, movementData, rttime);
+		super(T, sensorData, movementData);
 
 		//LandmarkList, true positions of the landmarks are in this static class. HmeasCat accesses the landmark list directly
 		numberOfLandmarks = LandmarkList.landmarkX.length;  //number of landmarks
@@ -136,7 +136,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	 *            Initial angle
 	 */
 	public void initData(float x, float y, float angle) {
-		lastCurrentTime = rttime.getTime();
+		lastCurrentTime = Clock.getTime();
 		xc.set(0, 0, x);
 		xc.set(1, 0, y);	
 		xc.set(2, 0, 0);
@@ -184,7 +184,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	 */
 	public void update() {
 		// Get time reference
-		currentTime = rttime.getTime();
+		currentTime = Clock.getTime();
 
 		// Update landmark angle in the measurement matrix	
 		SightingData sdata = (SightingData) sensorData.pop();
@@ -323,11 +323,11 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += rttime.getTime() - currentTime;
+		iterationTime += Clock.getTime() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 		
-		debug("Debug, leaving update at iteration " + iterationCounter + ", current iterationTime= " + (rttime.getTime() - currentTime) );
+		debug("Debug, leaving update at iteration " + iterationCounter + ", current iterationTime= " + (Clock.getTime() - currentTime) );
 	}//end of update
 	
 	/**
@@ -364,7 +364,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	
 	public void run() {
 		/*
-		 * while (true) { update(); pause((long) (rttime.getTime() % Tint)); }
+		 * while (true) { update(); pause((long) (Clock.getTime() % Tint)); }
 		 */
 	}
 	
