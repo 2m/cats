@@ -123,7 +123,8 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 				movementData.push(mdata);
 				mdata = null;
 			}
-			billboard.setAbsolutePosition(id, getX(), getY(), getAngle());
+			// FIXME: Remove commented line
+			//billboard.setAbsolutePosition(id, getX(), getY(), getAngle());
 		}
 
 		// Increase iteration counter and timer (with full execution time)
