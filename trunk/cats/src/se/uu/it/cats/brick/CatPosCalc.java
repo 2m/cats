@@ -1,11 +1,12 @@
 package se.uu.it.cats.brick;
 
-import lejos.robotics.navigation.Pilot;
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.filter.Buffer;
+import se.uu.it.cats.brick.filter.BufferSorted;
+import se.uu.it.cats.brick.filter.MovementData;
 
 public class CatPosCalc {
-	private static Pilot pilot;
-	
+
 	private static float startAng;
 	private static float distLast;
 	
@@ -13,10 +14,7 @@ public class CatPosCalc {
 	public static float y;
 	public static float ang;
 	
-	public static void setPilot(Pilot p)
-	{
-		pilot = p;
-	}
+	public static Buffer movementData = new BufferSorted();
 	
 	public static void setCatState(float[] sCat)
 	{
@@ -37,14 +35,24 @@ public class CatPosCalc {
 		return ang;
 	}
 	
-	public static float getCatDist()
+	public static float getTravelDistance()
 	{
-		return pilot.getTravelDistance();
+		return MovementPilot.getInstance().getTravelDistance();
+	}
+	
+	public static float getCurrentAngle()
+	{
+		return MovementPilot.getInstance().getAngle();
+	}
+	
+	public static Buffer getCatMovementBuffer()
+	{
+		return movementData;
 	}
 	
 	public static void update() {
-		float distNew = pilot.getTravelDistance();
-		ang = (float) ((startAng + pilot.getAngle()*Math.PI/180f) % (2f*Math.PI));
+		float distNew = getTravelDistance();
+		ang = (float) ((startAng + getCurrentAngle()*Math.PI/180f) % (2f*Math.PI));
 		
 		float deltaDist = distNew - distLast;
 		
@@ -52,6 +60,9 @@ public class CatPosCalc {
 		y = y + deltaDist * (float) Math.sin(ang);
 		
 		distLast = distNew;
+		
+		//MovementData md = new MovementData(Clock.timestamp(), deltaDist, ang);
+		//movementData.push(md);
 		
 		/*Logger.println("x: " + (int)(x*100));
 		Logger.println("y: " + (int)(y*100));

@@ -1,5 +1,6 @@
 package se.uu.it.cats.brick;
 
+import java.io.File;
 import java.util.Random;
 
 import lejos.nxt.Button;
@@ -26,8 +27,13 @@ public class Main
 {	
 	public static void main(String[] args) throws InterruptedException
 	{
+		Settings.init();
 		Logger.init();
-		Clock.init();
+		Clock.init();		
+		
+		float[] sCat = {0, 0, (float) (Math.PI/2f)};
+		//MovementPilot mPilot = new MovementPilot();
+		CatPosCalc.setCatState(sCat);
 		
 		//ColorSensorTest cst = new ColorSensorTest();
 		//cst.run();
@@ -41,8 +47,8 @@ public class Main
 		//ColorSensorTest2 cst2 = new ColorSensorTest2();
 		//cst2.run();
 		
-		//Thread listenerThread = new Thread(new ConnectionListener());
-		//listenerThread.start();
+		Thread listenerThread = new Thread(new ConnectionListener());
+		listenerThread.start();
 		
 		//Run SimpleFilter:
 		Thread filterThread = new Thread(new SimpleFilter());
@@ -61,12 +67,7 @@ public class Main
 		Button.waitForPress();
 		Thread.sleep(2000);
 		
-		float[] sCat = {0, 0, (float) (Math.PI/2f)};
-		MovementPilot mPilot = new MovementPilot();
-		CatPosCalc.setPilot(mPilot);
-		CatPosCalc.setCatState(sCat);
-		
-		//mPilot.travel(0f,3f);
+		//MovementPilot.getInstance().travel(0f,3f);
 		
 		/*mPilot.travel(0f,.2f);
 		mPilot.travel(0f,.4f);
@@ -95,11 +96,11 @@ public class Main
 		mPilot.travel(-1f,4.5f);
 		mPilot.travel(-1f,5f);*/
 		
-		for (int i=0; i<3; i++){ //turn in square
-			mPilot.travel(0.4f, 0f);
-			mPilot.travel(0.4f, 0.4f);
-			mPilot.travel(0f,   0.4f);
-			mPilot.travel(0f,     0f);
+		for (int i=0; i<4; i++){ //turn in square
+			MovementPilot.getInstance().travel(0.75f, 0f);
+			MovementPilot.getInstance().travel(0.75f, 0.75f);
+			MovementPilot.getInstance().travel(0f,   0.75f);
+			MovementPilot.getInstance().travel(0f,     0f);
 			System.out.println("COMMAND FINISHED!");
 		}
 		/*for (int i=0; i<3; i++){ //turn in square
@@ -117,7 +118,12 @@ public class Main
 			public void buttonPressed(Button b) {}
 			
 			public void buttonReleased(Button b)
-			{
+			{				
+				Sound.playSample(new File("phaser.wav"), 100);
+				
+				if (1 == 1)
+					return;
+				
 				if (ConnectionManager.getInstance().isAlive(0))
 				{
 					/*Timer t = new Timer(50, new TimerListener() {

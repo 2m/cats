@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import se.uu.it.cats.brick.CatPosCalc;
 import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.Settings;
 import se.uu.it.cats.brick.network.ConnectionManager;
 import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
 
@@ -61,13 +62,7 @@ public class SimpleFilter implements Runnable {
 		int upperMaxAng = maxAngAbs;
 		int lowerMaxAng = maxAngAbs*-1;
 		
-		int offset = 0; //measured in pixels
-		if (Identity.getName().equals("cat1"))
-				offset = -7; //for camera on cat1.
-		else if (Identity.getName().equals("cat2"))
-				offset = -19; //for camera on cat2
-		else if (Identity.getName().equals("cat3"))
-			offset = -8; //for camera on cat3
+		int offset = Settings.CAMERA_OFFSET;
 		
 		float radPerPix = -1*(float) ((float) 43*Math.PI/180.0 / 176);
 	
