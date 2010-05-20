@@ -240,9 +240,9 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		// Push latest sighting to billboard
 		if (sens != null) {
 			// System.out.println(id + ": Sighting: " + sens);
-			billboard.setLatestSighting(id, sens.x, sens.y, sens.angle);
+			billboard.setLatestSighting(id, sens.x, sens.y, sens.angle, sens.comparable);
 		}
-
+		
 
 		// Get time reference
 		currentTime = Clock.timestamp();
@@ -258,7 +258,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			
 			//TODO: if sighting is newer then lastCurrentTime
 			R.set(i-1, i-1, pow(std_array[0],2) );
-			measurments.set(i-1, 0, sightings[(i - 1) * 3 + 2] );
+			measurments.set(i-1, 0, sightings[(i - 1) * 4 + 2] );
 		}
 				
 		//One iteration with UKF

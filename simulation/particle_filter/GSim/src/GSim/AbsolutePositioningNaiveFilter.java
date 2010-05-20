@@ -122,9 +122,9 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		g2.setColor(Color.LIGHT_GRAY);
 		float[] position = billboard.getAbsolutePositions();
 
-		int ix = Actor.e2gX(position[(id - 1) * 3 + 0]);
-		int iy = Actor.e2gY(position[(id - 1) * 3 + 1]);
-		double iangle = -position[(id - 1) * 3 + 2];
+		int ix = Actor.e2gX(position[(id - 1) * 4 + 0]);
+		int iy = Actor.e2gY(position[(id - 1) * 4 + 1]);
+		double iangle = -position[(id - 1) * 4 + 2];
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
 				(int) size);
 		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
@@ -157,7 +157,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 				movementData.push(mdata);
 				mdata = null;
 			}
-			billboard.setAbsolutePosition(id, getX(), getY(), getAngle());
+			billboard.setAbsolutePosition(id, getX(), getY(), getAngle(), Clock.timestamp());
 		}
 
 		// Increase iteration counter and timer (with full execution time)

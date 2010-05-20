@@ -597,7 +597,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		}
 		// Push latest sighting to billboard
 		if (sens != null) {
-			billboard.setLatestSighting(id, sens.x, sens.y, sens.angle);
+			billboard.setLatestSighting(id, sens.x, sens.y, sens.angle, sens.comparable);
 		}
 
 		// Download mean and co-variance data
@@ -636,9 +636,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 		float[] sightings = billboard.getLatestSightings();
 		// Loop through cats in billboard
 		for (int i = 1; i <= billboard.getNoCats(); i++) {
-			int x = Fixed.floatToFixed(sightings[(i - 1) * 3]);
-			int y = Fixed.floatToFixed(sightings[(i - 1) * 3 + 1]);
-			int angle = Fixed.floatToFixed(sightings[(i - 1) * 3 + 2]);
+			int x = Fixed.floatToFixed(sightings[(i - 1) * 4]);
+			int y = Fixed.floatToFixed(sightings[(i - 1) * 4 + 1]);
+			int angle = Fixed.floatToFixed(sightings[(i - 1) * 4 + 2]);
 			if (x >= 0) {
 				compareParticles(x, y, angle);
 			}

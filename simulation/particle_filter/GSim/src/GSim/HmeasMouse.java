@@ -41,17 +41,17 @@ public class HmeasMouse implements IFunction{
 		for (int i = 1; i<=nm; i++)
 		{
 			//use either acos or asin
-			if (xm.get(2-1,1-1) - positions[(i-1)*3+1] >=0) //needed because of ambiguity in acos (and asin)
+			if (xm.get(2-1,1-1) - positions[(i-1)*4+1] >=0) //needed because of ambiguity in acos (and asin)
 			{
-				zm.set(   i-1,1-1, acos(  ( xm.get(1-1,1-1) - positions[(i-1)*3+0] ) / sqrt( Math.pow(xm.get(1-1,1-1) - positions[(i-1)*3+0], 2) + Math.pow(xm.get(2-1,1-1) - positions[(i-1)*3+1], 2) )  )   );
+				zm.set(   i-1,1-1, acos(  ( xm.get(1-1,1-1) - positions[(i-1)*4+0] ) / sqrt( Math.pow(xm.get(1-1,1-1) - positions[(i-1)*4+0], 2) + Math.pow(xm.get(2-1,1-1) - positions[(i-1)*4+1], 2) )  )   );
 			}
 			else
 			{
-				zm.set(   i-1,1-1, 2*PI-acos(  ( xm.get(1-1,1-1) - positions[(i-1)*3+0] ) / sqrt( Math.pow(xm.get(1-1,1-1) - positions[(i-1)*3+0], 2) + Math.pow(xm.get(2-1,1-1) - positions[(i-1)*3+1], 2) )  )   );
+				zm.set(   i-1,1-1, 2*PI-acos(  ( xm.get(1-1,1-1) - positions[(i-1)*4+0] ) / sqrt( Math.pow(xm.get(1-1,1-1) - positions[(i-1)*4+0], 2) + Math.pow(xm.get(2-1,1-1) - positions[(i-1)*4+1], 2) )  )   );
 			}
 		}	
 		
-		System.out.println("Debug, in HmeasCat: x1 = " + positions[(1-1)*3+0] + ", y1 = " + positions[(1-1)*3+1] + "; x2 = " + positions[(2-1)*3+0] + ", y2 = " + positions[(2-1)*3+1]);
+		System.out.println("Debug, in HmeasCat: x1 = " + positions[(1-1)*4+0] + ", y1 = " + positions[(1-1)*4+1] + "; x2 = " + positions[(2-1)*4+0] + ", y2 = " + positions[(2-1)*4+1]);
 		System.out.println("Debug, in HmeasCat: output (zm) = ");
 		printM(zm);	
 		
@@ -89,11 +89,11 @@ public class HmeasMouse implements IFunction{
 		BillBoard bb = new BillBoard(3);
 		IFunction h = new HmeasMouse(bb);
 		
-		bb.setAbsolutePosition(1, 0.381674224891206f, 1.512334856720926f, 4.058937708438013f);
-		bb.setAbsolutePosition(2, 0.489571459163319f, 0.381883712654769f, 5.629734035232906f);
-		bb.setAbsolutePosition(3, 1.800657229677585f, 1.076843261031238f, 1.702743218245687f);	
+		bb.setAbsolutePosition(1, 0.381674224891206f, 1.512334856720926f, 4.058937708438013f, 0);
+		bb.setAbsolutePosition(2, 0.489571459163319f, 0.381883712654769f, 5.629734035232906f, 0);
+		bb.setAbsolutePosition(3, 1.800657229677585f, 1.076843261031238f, 1.702743218245687f, 0);	
 		float[] pos = bb.getAbsolutePositions();
-		System.out.print("x1 = " + pos[(1-1)*3+0] + ", y1 = " + pos[(1-1)*3+1] + "; x2 = " + pos[(2-1)*3+0] + ", y2 = " + pos[(2-1)*3+1]);
+		System.out.print("x1 = " + pos[(1-1)*4+0] + ", y1 = " + pos[(1-1)*4+1] + "; x2 = " + pos[(2-1)*4+0] + ", y2 = " + pos[(2-1)*4+1]);
 		
 		double[][] temp_xm = {{ -0.898673537632615   },
 							  { 0.530788546001928  },
