@@ -37,12 +37,12 @@ public class Guide {
 		int j = 0;
 		for (int i = 1; i <= billboard.getNoCats(); i++) {
 			if (i == id) {
-				myPos[0] = sightings[(i - 1) * 3];
-				myPos[1] = sightings[(i - 1) * 3 + 1];
+				myPos[0] = sightings[(i - 1) * 4];
+				myPos[1] = sightings[(i - 1) * 4 + 1];
 
 			} else {
-				otherCats[j][0] = sightings[(i - 1) * 3];
-				otherCats[j][1] = sightings[(i - 1) * 3 + 1];
+				otherCats[j][0] = sightings[(i - 1) * 4];
+				otherCats[j][1] = sightings[(i - 1) * 4 + 1];
 				j++;
 			}
 
