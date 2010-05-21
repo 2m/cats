@@ -25,17 +25,15 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	 * 
 	 * @param T
 	 *            Period time
-	 * @param sensorData
-	 *            Buffer with sensor readings
-	 * @param movementData
+	 * @param dataBuffer
 	 *            Buffer with movement data
 	 * @param rttime
 	 *            RealTimeClock
 	 */
-	public AbsolutePositioningNaiveFilter(int id, float T, Buffer sensorData,
-			Buffer movementData, BillBoard billboard) {
+	public AbsolutePositioningNaiveFilter(int id, float T,
+			Buffer unifiedBuffer, BillBoard billboard) {
 		// Call constructor of super class
-		super(id, T, sensorData, movementData, billboard);
+		super(id, T, unifiedBuffer, billboard);
 	}
 
 	/**
@@ -138,27 +136,32 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		// Get time reference
 		currentTime = Clock.timestamp();
 
-		SightingData sdata = (SightingData) sensorData.pop();
-		while (sdata != null) {
-			if (sdata.getComparable() > currentTime) {
-				sensorData.push(sdata);
-				sdata = null;
-			}
-		}
-		MovementData mdata = (MovementData) movementData.pop();
-		while (mdata != null) {
-			if (mdata.getComparable() <= currentTime) {
-				// Update mean
-				mean_x += Math.cos(mean_angle) * mdata.dr;
-				mean_y += Math.sin(mean_angle) * mdata.dr;
-				mean_angle += mdata.dangle;
-				mdata = (MovementData) movementData.pop();
+		ComparableData data = unifiedBuffer.pop();
+		while (data != null) {
+			// Use data if it is older than currentTime
+			if (data.getComparable() <= currentTime) {
+				if (data.isMovementData()) {
+					// Update mean
+					MovementData mdata = (MovementData) data;
+					mean_x += Math.cos(mean_angle) * mdata.dr;
+					mean_y += Math.sin(mean_angle) * mdata.dr;
+					mean_angle += mdata.dangle;
+					lastCurrentTime = mdata.comparable;
+				} else if (data.isSightingData()) {
+					SightingData sdata = (SightingData) data;
+					if (sdata.type == LandmarkList.MOUSE) {
+						billboard.setLatestSighting(id, getX(), getY(),
+								getAngle() + sdata.angle, sdata.comparable);
+					}
+				}
+				data = unifiedBuffer.pop();
 			} else {
-				movementData.push(mdata);
-				mdata = null;
+				unifiedBuffer.push(data);
+				data = null;
 			}
-			billboard.setAbsolutePosition(id, getX(), getY(), getAngle(), Clock.timestamp());
 		}
+		billboard.setAbsolutePosition(id, getX(), getY(), getAngle(), Clock
+				.timestamp());
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
