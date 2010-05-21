@@ -1,7 +1,8 @@
 package se.uu.it.cats.brick.filter;
 
 public class LandmarkList {
-
+	// FIXME: Check types in sensor handler
+	public static final int MOUSE = 0;
 	public static final int GREEN = 1;
 	public static final int RED = 2;
 

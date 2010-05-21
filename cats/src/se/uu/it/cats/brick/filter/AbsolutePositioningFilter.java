@@ -7,10 +7,8 @@ import se.uu.it.cats.brick.storage.BillBoard;
  * out before use on the NXT)
  */
 public abstract class AbsolutePositioningFilter extends Thread {
-	/** Buffers with data on movement and landmark sightings */
-	/** Sorded buffer with sensor readings and data on movement*/
-	/** Every child filter should ensure to create this buffer by its needs*/
-	public Buffer unifiedBuffer;
+	/** Buffer with data on movement and landmark sightings */
+	protected final Buffer unifiedBuffer;
 	/** Period of filter in seconds */
 	protected final float T;
 	/** Period of filter in milliseconds */
@@ -18,11 +16,13 @@ public abstract class AbsolutePositioningFilter extends Thread {
 	protected BillBoard billboard;
 	protected int id;
 
-	public AbsolutePositioningFilter(int id, float T, BillBoard billboard) {
+	public AbsolutePositioningFilter(int id, float T, Buffer unifiedBuffer,
+			BillBoard billboard) {
 		/** Period of filter */
 		this.T = T;
 		this.Tint = (int) (T * 1000);
-
+		/** Sorted buffer with readings */
+		this.unifiedBuffer = unifiedBuffer;
 		this.billboard = billboard;
 		this.id = id;
 		// Set priority for thread
@@ -44,11 +44,11 @@ public abstract class AbsolutePositioningFilter extends Thread {
 	public float getAngle() {
 		return (float) 0.0;
 	}
-	
+
 	public Buffer getUnifiedBuffer() {
 		return unifiedBuffer;
 	}
-	
+
 	/**
 	 * Runs one update of the filter then exits
 	 */
@@ -60,10 +60,10 @@ public abstract class AbsolutePositioningFilter extends Thread {
 	}
 
 	/**
-	 * Pause the excution this many milliseconds
+	 * Pause the execution this many milliseconds
 	 * 
 	 * @param millis
-	 *            to pause as a long int
+	 *            to pause as a long
 	 * @return Result as boolean
 	 */
 	public boolean pause(long millis) {
@@ -76,5 +76,4 @@ public abstract class AbsolutePositioningFilter extends Thread {
 		}
 		return true;
 	}
-
 }
