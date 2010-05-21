@@ -66,7 +66,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	public TrackingParticleFilter(int id, int N, float T, Buffer sensorData,
 			BillBoard billboard) {
 		// Call constructor of super class
-		super(id, T, sensorData, billboard);
+		super(id, T, billboard);
 		this.N = N;
 		// Pre-calculate particle weight
 		Nnorm = Fixed.floatToFixed(1 / ((float) N));
@@ -181,7 +181,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 				// After this rotation the landmark vector should point
 				// to
 				// (1, 0) if the particle has the correct values.
-				int v1 = Fixed.mul(toMouse_x_norm, cos)
+				z = Fixed.mul(toMouse_x_norm, cos)
 						+ Fixed.mul(toMouse_y_norm, -sin);
 				// Inner product between vectors u and v =>
 				// cos(angle_diff)
@@ -189,25 +189,23 @@ public class TrackingParticleFilter extends TrackingFilter {
 				// u = (1, 0)
 				// int u1 = Fixed.ONE;
 				// int u2 = 0;
-				z = v1;
-
+				// z = v1;
 			}
 			// Run penalty function
 			int w = ParticleFilter.penalty(z);
 			if (w < 0) {
 				// Check for negative values (for debugging).
 				w = 0;
-				System.out.println("Weight smaller than zero!");
+				Logger.println("Weight smaller than zero!");
 			}
 			if (w > Fixed.ONE) {
 				// Check for large values (for debugging).
 				w = Fixed.ONE;
-				System.out.println("Weight larger than one!");
+				Logger.println("Weight larger than one!");
 			}
-			// TODO: Add logger
 			// Multiply weight from this iteration with particle weight
 			part.comparable = Fixed.mul(part.comparable, w);
-			// System.out.println("Weight: " + Fixed.fixedToFloat(part.w));
+			// Logger.println("Weight: " + Fixed.fixedToFloat(part.w));
 			// Sum weights
 			sum_w_tmp += part.comparable;
 			// Insert particle into new list
@@ -227,7 +225,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 			Logger.println(div_by_zero
 					+ " instances of division by zero in compareParticles()");
 		}
-		// System.out.println("sum_w=" + Fixed.fixedToFloat(sum_w));
+		// Logger.println("sum_w=" + Fixed.fixedToFloat(sum_w));
 		if (data.getLength() != N) {
 			Logger.println("Tracking particles lost! (count:"
 					+ data.getLength() + ")");
@@ -251,32 +249,19 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 * Re-sample particles
 	 */
 	private void reSample() {
-		// TODO: Move all networking to update()
-		float[] net = billboard.getMeanAndCovariance();
-		// FIXME: Check for zerosum
 		// ret = {m_x, m_y, m'_x, m'_y, xx, xy, yy, x'x', x'y', y'y'}
 		int[][] C1 = new int[2][2];
 		int[][] C2 = new int[2][2];
-		if (net[10] == 0) {
-			C1[0][0] = Fixed.ONE;
-			C1[0][1] = 0;
-			C1[1][0] = 0;
-			C1[1][1] = Fixed.ONE;
-		} else {
-			mean_x = Fixed.floatToFixed(net[0]);
-			mean_y = Fixed.floatToFixed(net[1]);
-			mean_xv = Fixed.floatToFixed(net[2]);
-			mean_yv = Fixed.floatToFixed(net[3]);
-			// Set up co-variance matrices
-			C1[0][0] = Fixed.floatToFixed(net[4]);
-			C1[0][1] = Fixed.floatToFixed(net[5]);
-			C1[1][0] = Fixed.floatToFixed(net[5]);
-			C1[1][1] = Fixed.floatToFixed(net[6]);
-		}
-		C2[0][0] = Fixed.floatToFixed(net[7]);
-		C2[0][1] = Fixed.floatToFixed(net[8]);
-		C2[1][0] = Fixed.floatToFixed(net[8]);
-		C2[1][1] = Fixed.floatToFixed(net[9]);
+
+		// Set up co-variance matrices
+		C1[0][0] = varXX;
+		C1[0][1] = varXY;
+		C1[1][0] = varXY;
+		C1[1][1] = varYY;
+		C2[0][0] = varXvXv;
+		C2[0][1] = varXvYv;
+		C2[1][0] = varXvYv;
+		C2[1][1] = varYvYv;
 
 		// Get transform matrices for new sampling
 		int[][] V1 = ParticleFilter.getTransformFromCovariance(C1);
@@ -323,12 +308,12 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 * they are within limits.
 	 */
 	public void calcMean() {
-		// System.out.print(id + ": Calculating mean ");
+		// Logger.print(id + ": Calculating mean ");
 		// Create local vaiables
 		int tmean_x = 0, tmean_y = 0, tmean_xv = 0, tmean_yv = 0, norm;
 		int mx = 0, my = 0; // Unweighted means
 		if (zerosum) {
-			// System.out.println("(ordinary)");
+			// Logger.println(id + ": Calculating mean (ordinary)");
 			// Calculate an ordinary mean
 			Link link = data.first;
 			// Loop through all particle
@@ -346,7 +331,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 			mx = tmean_x;
 			my = tmean_y;
 		} else {
-			// System.out.println("(weighted) sum_w: " +
+			// Logger.println(id + ": Calculating mean (weighted) sum_w: " +
 			// Fixed.fixedToFloat(sum_w));
 			// Calculate a weighted mean
 			Link link = data.first;
@@ -433,9 +418,8 @@ public class TrackingParticleFilter extends TrackingFilter {
 		if (mean_y > Fixed.floatToFixed(Arena.max_y)) {
 			mean_y = Fixed.floatToFixed(Arena.max_y);
 		}
-		// Check x and y velocities (always lower than 10 cm/s)
-		// TODO: Add limits to velocity
-		int vc = Fixed.floatToFixed(0.1);
+		// Check x and y velocities (always lower than 20 cm/s)
+		int vc = Fixed.floatToFixed(0.2);
 		if (mean_xv > vc) {
 			mean_xv = vc;
 		}
@@ -450,7 +434,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		}
 		// Check for min variance
 		if (varXX < Fixed.floatToFixed(0.0025)) {
-			// 0.0001 => std=1cm
+			// 0.0001 => std=5cm
 			varXX = Fixed.floatToFixed(0.0025);
 		}
 		if (varYY < Fixed.floatToFixed(0.0025)) {
@@ -540,17 +524,13 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 * Draw particles (NOT brick material)
 	 */
 	public void draw(Graphics g) {
-		// TODO: Remove graphics code from filter
 		final int size = 4; // Diameter
-		int linelength;
+		int linelength = 5;
 
 		Graphics2D g2 = (Graphics2D) g;
 
 		// Save the current transform
 		AffineTransform oldTransform = g2.getTransform();
-
-		// Rotate and translate the actor
-		// g2.rotate(iangle, ix, iy);
 
 		g2.setColor(Color.green);
 		// Plot particles
@@ -587,19 +567,6 @@ public class TrackingParticleFilter extends TrackingFilter {
 	}
 
 	public void update() {
-		// TODO: Remove pushing sightings to billboard
-		// Get latest sighting
-		SightingData sens = null;
-		SightingData sens2 = (SightingData) sensorData.pop();
-		while (sens2 != null) {
-			sens = sens2;
-			sens2 = (SightingData) sensorData.pop();
-		}
-		// Push latest sighting to billboard
-		if (sens != null) {
-			billboard.setLatestSighting(id, sens.x, sens.y, sens.angle, sens.comparable);
-		}
-
 		// Download mean and co-variance data
 		float[] net = billboard.getMeanAndCovariance();
 		// Update the local mean and co-variance
