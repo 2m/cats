@@ -16,7 +16,7 @@ public class MovementPilot extends TachoPilot {
 	private float ang;
 	private boolean addedMovementSinceLastPush = false;
 	private int lastTime;
-	private BufferSorted unifiedBuffer;
+	
 	public static float lastR;
 	public static float lastAngle;
 	
@@ -27,18 +27,11 @@ public class MovementPilot extends TachoPilot {
 		return _instanceHolder;
 	} 
 	
-	/**
-	 * Constructor to be used
-	 * @param unifiedBuffer
-	 */
-	public MovementPilot(BufferSorted unifiedBuffer){
-		this();
-		lastTime = Clock.timestamp();
-	}
-	
-	public MovementPilot()
+	private MovementPilot()
 	{	
-		super(Settings.WHEEL_DIAMATER - Settings.DRIFT_BALANCE,Settings.WHEEL_DIAMATER + Settings.DRIFT_BALANCE, Settings.TRACK_WIDTH, Motor.C, Motor.A, false);			
+		super(Settings.WHEEL_DIAMATER - Settings.DRIFT_BALANCE,Settings.WHEEL_DIAMATER + Settings.DRIFT_BALANCE, Settings.TRACK_WIDTH, Motor.C, Motor.A, false);
+		
+		lastTime = Clock.timestamp();
 	}	
 	
 	public void travel(float x, float y){
@@ -104,22 +97,28 @@ public class MovementPilot extends TachoPilot {
 			_left.backward();
 			travelAcceleration(-r);
 		}
-		update();;
+		update();
 		
 	}
 	
+	//old version
 	private void update() {
-		if (Main.useUnscentedKalmanPositioningFilter)
-			addMovementSinceLastPush();
-		else if (Main.useParticlePositioningFilter)
+		CatPosCalc.update();
+	}
+	
+	//new version
+	/*private void update() {
+	 	if (Settings.POSITIONING_FILTER_UNSCENTED_KALMAN)
+		    addMovementSinceLastPush();
+		else if (Settings.POSITIONING_FILTER_PARTICLE)
 			;
 			//push to particle filter
-		else if (Main.useBasicPositioningFilter)
+		else if (Settings.POSITIONING_FILTER_BASIC)
 			//push to basic filter	
 			;
 		else
 			System.out.println("No positioning filter selected");
-	}
+	}*/
 	
 	public void addMovementSinceLastPush() {
 
@@ -141,8 +140,13 @@ public class MovementPilot extends TachoPilot {
 	 * @return MovementData currentTime,vx,vy
 	 */
 	public MovementData getVelocity() {
-		if (!addedMovementSinceLastPush)
-			addMovementSinceLastPush();		
+		
+		//shouldn't be needed, we always need to update
+		//if no new motor command was issued
+		
+		//if (!addedMovementSinceLastPush)
+		addMovementSinceLastPush();	
+			
 		int currentTime = Clock.timestamp();
 		double dt = (currentTime - lastTime)*1000; //elapsed time in seconds
 		double vx=dx/dt;
@@ -165,9 +169,17 @@ public class MovementPilot extends TachoPilot {
 		float newR = getTravelDistance();
 		float newAngle = (float) (getAngle() * Math.PI/180f);
 		MovementData MD = new MovementData(Clock.timestamp(), newR - lastR, newAngle - lastAngle);
-		unifiedBuffer.push(MD);
+		Main.positioningFilter.getUnifiedBuffer().push(MD);
 		lastR = newR;
-		lastAngle = newAngle;;
+		lastAngle = newAngle;
+	}
+	
+	public float getdX() {
+		return dx;
+	}
+	
+	public float getdY() {
+		return dy;
 	}
 	
 	private void angularAcceleration(float turnAngle) {
@@ -178,7 +190,7 @@ public class MovementPilot extends TachoPilot {
 		float deltaAngle;
 		float angleEpsilon = 5*.75f;
 		float normalizeAngle = 22.5f;
-		float maxPower = this.getTurnMaxSpeed()/6f;
+		float maxPower = this.getTurnMaxSpeed()/3f;
 		float minPower = maxPower/3f;
 		float currentPower = minPower;
 		int angCount = 0;

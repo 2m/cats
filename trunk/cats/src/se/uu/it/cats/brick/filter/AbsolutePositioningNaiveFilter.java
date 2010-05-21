@@ -30,10 +30,11 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	 * @param rttime
 	 *            RealTimeClock
 	 */
-	public AbsolutePositioningNaiveFilter(int id, float T, Buffer sensorData,
-			Buffer movementData, BillBoard billboard) {
+	public AbsolutePositioningNaiveFilter(int id, float T, BillBoard billboard) {
 		// Call constructor of super class
-		super(id, T, sensorData, movementData, billboard);
+		super(id, T, billboard);
+		
+		unifiedBuffer = new BufferSorted();
 	}
 
 	/**
@@ -104,23 +105,23 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		// Get time reference
 		currentTime = Clock.timestamp();
 
-		SightingData sdata = (SightingData) sensorData.pop();
+		SightingData sdata = (SightingData) unifiedBuffer.pop();
 		while (sdata != null) {
 			if (sdata.getComparable() > currentTime) {
-				sensorData.push(sdata);
+				unifiedBuffer.push(sdata);
 				sdata = null;
 			}
 		}
-		MovementData mdata = (MovementData) movementData.pop();
+		MovementData mdata = (MovementData) unifiedBuffer.pop();
 		while (mdata != null) {
 			if (mdata.getComparable() <= currentTime) {
 				// Update mean
 				mean_x += Math.cos(mean_angle) * mdata.dr;
 				mean_y += Math.sin(mean_angle) * mdata.dr;
 				mean_angle += mdata.dangle;
-				mdata = (MovementData) movementData.pop();
+				mdata = (MovementData) unifiedBuffer.pop();
 			} else {
-				movementData.push(mdata);
+				unifiedBuffer.push(mdata);
 				mdata = null;
 			}
 			// FIXME: Remove commented line
