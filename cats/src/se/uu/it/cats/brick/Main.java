@@ -12,6 +12,7 @@ import lejos.util.Timer;
 import lejos.util.TimerListener;
 import se.uu.it.cats.brick.filter.AbsolutePositioningFilter;
 import se.uu.it.cats.brick.filter.AbsolutePositioningNaiveFilter;
+import se.uu.it.cats.brick.filter.Buffer;
 import se.uu.it.cats.brick.filter.BufferSorted;
 import se.uu.it.cats.brick.filter.Camera;
 import se.uu.it.cats.brick.network.ConnectionListener;
@@ -29,7 +30,10 @@ import se.uu.it.cats.brick.storage.StorageManager;
  */
 public class Main
 {	
-	public static AbsolutePositioningFilter positioningFilter;	
+	private static Buffer unifiedBuffer;
+	private static MovementPilot movementPilot;
+	private static AbsolutePositioningFilter positioningFilter;
+	
 	
 	public static void main(String[] args) throws InterruptedException
 	{
@@ -37,11 +41,23 @@ public class Main
 		Logger.init();
 		Clock.init();		
 		
-		positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(), 1, BillBoard.getInstance());
+		unifiedBuffer = new BufferSorted();
 		
-		float[] sCat = {0, 0, (float) (Math.PI/2f)};
+		// run camera thread
+		//Thread cameraThread = new Thread(new Camera(unifiedBuffer));
+		//cameraThread.start();
+		
+		movementPilot = new MovementPilot(unifiedBuffer);
+		Thread movementThread = new Thread(movementPilot);
+		movementThread.start();
+		
+		positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(), 1, unifiedBuffer, BillBoard.getInstance());
+		Thread positioningFilterThread = new Thread(positioningFilter);
+		positioningFilterThread.start();
+		
+		//float[] sCat = {0, 0, (float) (Math.PI/2f)};
 		//MovementPilot mPilot = new MovementPilot();
-		CatPosCalc.setCatState(sCat);
+		//CatPosCalc.setCatState(sCat);
 		
 		//ColorSensorTest cst = new ColorSensorTest();
 		//cst.run();
@@ -58,15 +74,11 @@ public class Main
 		Thread listenerThread = new Thread(new ConnectionListener());
 		listenerThread.start();
 		
-		//Run SimpleFilter:
-		//Thread filterThread = new Thread(new Camera());
-		//filterThread.start();
-		
 		//Run MovementPilot:
 		
 		//try{Thread.sleep(1000);}catch(Exception ex){}
 		
-		//mPilot.travel(0.3f, 0);
+		//movementPilot.travel(0.3f, 0, 0, 0, 0);
 		//mPilot.travel(0, 3.0f); //straight going test
 		//System.out.println(pilotPoll.x);
 		//System.out.println(pilotPoll.y);
@@ -75,7 +87,8 @@ public class Main
 		Button.waitForPress();
 		Thread.sleep(2000);
 		
-		//MovementPilot.getInstance().travel(0f,3f);
+		//movementPilot.travel(	0, 	3f, 	0, 		0f,	 	(float)Math.PI/2f);
+		//while (movementPilot.isProcessing()) { Thread.yield(); }
 		
 		/*mPilot.travel(0f,.2f);
 		mPilot.travel(0f,.4f);
@@ -104,11 +117,22 @@ public class Main
 		mPilot.travel(-1f,4.5f);
 		mPilot.travel(-1f,5f);*/
 		
+		// the current hardcoded positions have to be changed with the approximated
+		// positions from the positioning filter
+		// vertical axis is inverted for some reason in the motor control
 		for (int i=0; i<4; i++){ //turn in square
-			MovementPilot.getInstance().travel(0.75f, 0f);
-			MovementPilot.getInstance().travel(0.75f, 0.75f);
-			MovementPilot.getInstance().travel(0f,   0.75f);
-			MovementPilot.getInstance().travel(0f,     0f);
+			movementPilot.travel(	0.75f, 	0f, 	0, 		0f,	 	(float)Math.PI/2f*3);
+			while (movementPilot.isProcessing()) { Thread.yield(); }
+				
+			movementPilot.travel(	0.75f, 	0.75f, 	0.75f, 	0, 		0);
+			while (movementPilot.isProcessing()) { Thread.yield(); }
+			
+			movementPilot.travel(	0f,   	0.75f, 	0.75f, 	0.75f, 	(float)Math.PI/2f);
+			while (movementPilot.isProcessing()) { Thread.yield(); }
+			
+			movementPilot.travel(	0f,     0f, 	0, 		0.75f, 	(float)Math.PI);
+			while (movementPilot.isProcessing()) { Thread.yield(); }
+			
 			System.out.println("SQUARE FINISHED!");
 		}
 		/*for (int i=0; i<3; i++){ //turn in square

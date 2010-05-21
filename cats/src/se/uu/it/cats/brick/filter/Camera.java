@@ -21,10 +21,12 @@ import lejos.nxt.addon.NXTCam;
 public class Camera implements Runnable {
 	
 	final static int dt = 10; // milliseconds
-	private float lastCatAngle;
+	Buffer unifiedBuffer;
+	//private float lastCatAngle;
 	
-	public Camera() {
-		lastCatAngle = MovementPilot.getInstance().getAngle();
+	public Camera(Buffer unifiedBuffer) {
+		this.unifiedBuffer = unifiedBuffer;
+		//lastCatAngle = MovementPilot.getInstance().getAngle();
 	}
 	
 	public void run() {
@@ -114,24 +116,22 @@ public class Camera implements Runnable {
 				xAvg = xSum / numObjects;
 				err = xAvg - 176/2 + offset; //0-88-19=-107 worst case
 				angToTarget = err*radPerPix;
-				angToTargetRelCat = motorAngRad + angToTarget;				
+				angToTargetRelCat = motorAngRad + angToTarget;
 				
 				// Correct the latest approximated values with 
 				// the latest data from the motor control				
-				lastCatAngle = Main.positioningFilter.getAngle() + (MovementPilot.getInstance().getAngle() - lastCatAngle);
-				float lastCatX = Main.positioningFilter.getX() + MovementPilot.getInstance().getdX();
-				float lastCatY = Main.positioningFilter.getY() + MovementPilot.getInstance().getdY();
+				//lastCatAngle = Main.positioningFilter.getAngle() + (MovementPilot.getInstance().getAngle() - lastCatAngle);				
 				
 				// kalman and particle filter will use different reference
 				// points for angular measurements
-				angToTargetAbs = lastCatAngle + angToTargetRelCat;
+				//angToTargetAbs = lastCatAngle + angToTargetRelCat;
 				
-				if (Settings.POSITIONING_FILTER_UNSCENTED_KALMAN) {
+				/*if (Settings.POSITIONING_FILTER_UNSCENTED_KALMAN) {
 					//Push absolute angle to UKF positioning filter
 					//no point of pushing the position, since UKF uses velocity
 					// UKF will take velocity just before the iteration
 					Main.positioningFilter.getUnifiedBuffer().push(
-							new SightingData(Clock.timestamp(), angToTargetAbs, type));
+							new SightingData(Clock.timestamp(), angToTargetRelCat, type));
 				}				
 				else if (Settings.POSITIONING_FILTER_PARTICLE) {
 					//Push relative(?) angle to particle filter
@@ -142,17 +142,19 @@ public class Camera implements Runnable {
 					// Now these actions are being done only when 
 					// using UKF
 					Main.positioningFilter.getUnifiedBuffer().push(
-							new SightingData(Clock.timestamp(), lastCatX, lastCatY, angToTargetRelCat, type));
+							new SightingData(Clock.timestamp(), angToTargetRelCat, type));
 					
-					MovementPilot.getInstance().pushParticleMovementData();	
-				}					
+					MovementPilot.getInstance().pushMovementData();
+				}
 				else if (Settings.POSITIONING_FILTER_BASIC)
 					//push to basic filter	
 					Main.positioningFilter.getUnifiedBuffer().push(
-							new SightingData(Clock.timestamp(), lastCatX, lastCatY, angToTargetRelCat, type));
+							new SightingData(Clock.timestamp(), angToTargetRelCat, type));
 				else
-					System.out.println("No positioning filter selected");
-			
+					System.out.println("No positioning filter selected");*/
+				
+				unifiedBuffer.push(new SightingData(Clock.timestamp(), angToTargetRelCat, type));
+				// TODO nudge the movement pilot to push measurements 
 				
 				System.out.println("CamMotor:" + motorAng);
 				
