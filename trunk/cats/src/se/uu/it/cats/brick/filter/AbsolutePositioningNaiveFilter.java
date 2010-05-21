@@ -1,6 +1,7 @@
 package se.uu.it.cats.brick.filter;
 
 import se.uu.it.cats.brick.Clock;
+import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.storage.BillBoard;
 
 /** Naive filter for absolute positioning of one cat using landmarks. */
@@ -101,7 +102,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	public void update() {
 		// Get time reference
 		currentTime = Clock.timestamp();
-
+		
 		ComparableData data = unifiedBuffer.pop();
 		while (data != null) {
 			// Use data if it is older than currentTime
@@ -138,7 +139,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 
 	public void run() {
 		while (true) {
-			// update();
+			update();
 			pause((long) (Clock.timestamp() % Tint));
 		}
 

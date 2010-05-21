@@ -182,7 +182,7 @@ public class MovementPilot extends TachoPilot implements Runnable {
 		getTravelDistance();
 		getAngle();
 		
-		MovementData MD = new MovementData(Clock.timestamp(), distanceTraveled, angleRotated * Math.PI/180f);
+		MovementData MD = new MovementData(Clock.timestamp(), distanceTraveled, (float)(angleRotated * Math.PI/180f));
 		unifiedBuffer.push(MD);
 		
 		distanceTraveled = 0;

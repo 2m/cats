@@ -34,7 +34,7 @@ public class BillBoard {
 		positions = new float[NUMBER_OF_CATS * 4];
 
 		for (int i = 0; i < NUMBER_OF_CATS * 4; i++) {
-			sightings[i] = -1;			
+			sightings[i] = -1;
 		}
 
 		// TODO: is the initialization of variable "positions" needed? 
@@ -49,7 +49,7 @@ public class BillBoard {
 	public void setLatestSighting(int id, float x, float y, float theta, int timestamp) {
 		// id in range [1:n]
 		// set the latest sighting and send update to other devices
-		setLatestSighting(id - 1, x, y, theta, timestamp, true);
+		setLatestSighting(id, x, y, theta, timestamp, true);
 	}
 
 	public void setLatestSighting(LatestSightingUpdate p) {
@@ -84,7 +84,7 @@ public class BillBoard {
 	public void setAbsolutePosition(int id, float x, float y, float theta, int timestamp) {
 		// id in range [1:n]
 		// set the absolute position and send update to other devices
-		setLatestSighting(id - 1, x, y, theta, timestamp, true);
+		setAbsolutePosition(id, x, y, theta, timestamp, true);
 	}
 
 	public void setAbsolutePosition(AbsolutePositionUpdate p) {
@@ -93,7 +93,7 @@ public class BillBoard {
 		// check if it is new
 		if (p.getTimestamp() > latestSightingUpdate) {
 			// save data and do not send an update
-			setLatestSighting(p.getSource(), p.getX(), p.getY(), p.getTheta(), p.getTimestamp(),
+			setAbsolutePosition(p.getSource(), p.getX(), p.getY(), p.getTheta(), p.getTimestamp(),
 					false);
 			latestDataUpdate = p.getTimestamp();
 		}
@@ -124,7 +124,7 @@ public class BillBoard {
 			float var_yy, float var_xvxv, float var_xvyv, float var_yvyv,
 			float weight) {
 		// id in range [1:n]
-		setMeanAndCovariance(id - 1, mean_x, mean_y, mean_xv, mean_yv, var_xx,
+		setMeanAndCovariance(id, mean_x, mean_y, mean_xv, mean_yv, var_xx,
 				var_xy, var_yy, var_xvxv, var_xvyv, var_yvyv, weight, true);
 	}
 
