@@ -63,8 +63,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 * @param billboard
 	 *            Shared network data object
 	 */
-	public TrackingParticleFilter(int id, int N, float T, Buffer sensorData,
-			BillBoard billboard) {
+	public TrackingParticleFilter(int id, int N, float T, BillBoard billboard) {
 		// Call constructor of super class
 		super(id, T, billboard);
 		this.N = N;
