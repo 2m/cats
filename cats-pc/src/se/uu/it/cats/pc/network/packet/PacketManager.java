@@ -3,11 +3,7 @@ package se.uu.it.cats.pc.network.packet;
 import se.uu.it.cats.pc.Logger;
 import se.uu.it.cats.pc.gui.Area;
 
-import se.uu.it.cats.brick.network.packet.LatestSightingUpdate;
-import se.uu.it.cats.brick.network.packet.PFMeasurement;
-import se.uu.it.cats.brick.network.packet.Packet;
-import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
-import se.uu.it.cats.brick.network.packet.Timestamp;
+import se.uu.it.cats.brick.network.packet.*;
 
 public class PacketManager
 {
@@ -83,14 +79,28 @@ public class PacketManager
 					int catId = p.getSource();
 					float x = ((LatestSightingUpdate)p).getX();
 					float y = ((LatestSightingUpdate)p).getY();
-					float angle_c = ((LatestSightingUpdate)p).getTheta();;
-					float angle_cam = 0;
+					float angle_c = ((LatestSightingUpdate)p).getTheta();
+					float angle_cam = 0;					
 					
+					Area.getInstance().getCat(catId).updateXYAngles((int) (x*10), (int) (y*10), angle_c, angle_cam); //Values from network in meters, values in Area in cm.
+				}
+				break;
+			}
+			case 0x05:
+			{
+				if (arrayEndIndex >= AbsolutePositionUpdate.LENGTH)
+				{
+					p = new AbsolutePositionUpdate();
+					p.readImpl(bArr);
+					
+					int catId = p.getSource();
+					float x = ((AbsolutePositionUpdate)p).getX();
+					float y = ((AbsolutePositionUpdate)p).getY();
+					float angle_c = ((AbsolutePositionUpdate)p).getTheta();
+					float angle_cam = 0;					
 					
 					Area.getInstance().getCat(catId).updateXYAngles((int) (x*10), (int) (y*10), angle_c, angle_cam); //Values from network in meters, values in Area in cm.
 					
-					
-					//Mouse._angles[p.getSource()] = ((SimpleMeasurement)p).getAngle();
 				}
 				break;
 			}
