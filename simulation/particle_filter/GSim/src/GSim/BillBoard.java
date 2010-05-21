@@ -24,10 +24,11 @@ public class BillBoard {
 		NUMBER_OF_CATS = noOfCats;
 		data = new float[NUMBER_OF_CATS][DATA_PER_CAT];
 		sightings = new float[NUMBER_OF_CATS * 4];
+		position = new float[NUMBER_OF_CATS * 4];
 		for (int i = 0; i < NUMBER_OF_CATS * 4; i++) {
 			sightings[i] = -1;
+			position[i] = -1;
 		}
-		position = new float[NUMBER_OF_CATS * 4];
 	}
 
 	public void setLatestSighting(int id, float x, float y, float theta, int timestamp) {
