@@ -10,7 +10,7 @@ import java.awt.Graphics;
  * 
  */
 public class Cat extends Actor {
-	protected Buffer positioningBuffer, trackerBuffer;
+	protected Buffer positioningBuffer, trackerBuffer, unifiedBuffer;
 	protected AbsolutePositioningFilter positioningFilter;
 	protected TrackingFilter trackingFilter;
 	private Guide guide;
@@ -30,26 +30,25 @@ public class Cat extends Actor {
 		sensors.register(this);
 		positioningBuffer = sensors.regPositioner();
 		trackerBuffer = sensors.regTracker();
+		unifiedBuffer = new BufferSorted();
 		int N = 150;
 		float T = (float) GSim.timestep * timestepsBetweenFilterUpdates / 1000; // 5;//0.5;
 
 		if (usePositioningParticleFilter) {
 			positioningFilter = new AbsolutePositioningParticleFilter(id, N, T,
-					positioningBuffer, motorBuffer, billboard);
+					unifiedBuffer, billboard);
 		} else if (usePositioningUnscentedKalmanFilter) {
 			positioningFilter = new AbsolutePositioningUKF(id, T,
-					positioningBuffer, motorBuffer, billboard);
+					unifiedBuffer, billboard);
 		} else {
 			positioningFilter = new AbsolutePositioningNaiveFilter(id, T,
-					positioningBuffer, motorBuffer, billboard);
+					unifiedBuffer, billboard);
 		}
 
 		if (useTrackingParticleFilter) {
-			trackingFilter = new TrackingParticleFilter(id, N, T,
-					trackerBuffer, billboard);
+			trackingFilter = new TrackingParticleFilter(id, N, T, billboard);
 		} else if (useTrackingUnscentedKalmanFilter) {
-			trackingFilter = new TrackingUnscentedKalmanFilter(id, T,
-					trackerBuffer, billboard);
+			trackingFilter = new TrackingUnscentedKalmanFilter(id, T, billboard);
 		}
 
 		if (usePositioningParticleFilter || usePositioningUnscentedKalmanFilter) {
@@ -63,6 +62,27 @@ public class Cat extends Actor {
 	}
 
 	public void update() {
+		// Move motor data to the unified buffer
+		ComparableData d = motorBuffer.pop();
+		while (d != null) {
+			unifiedBuffer.push(d);
+			d = motorBuffer.pop();
+		}
+		// Move mouse sightings to the unified buffer
+		d = trackerBuffer.pop();
+		while (d != null) {
+			unifiedBuffer.push(d);
+			SightingData sd=(SightingData) d;
+			sd.type=LandmarkList.MOUSE;
+			d = trackerBuffer.pop();
+		}
+		// Move landmark sightings to the unified buffer
+		d = positioningBuffer.pop();
+		while (d != null) {
+			unifiedBuffer.push(d);
+			d = positioningBuffer.pop();
+		}
+
 		motor.goTo(gotox, gotoy);
 		if (useGuide) {
 			/*
