@@ -16,7 +16,7 @@ public class CatPosCalc {
 	
 	public static Buffer movementData = new BufferSorted();
 	
-	public static void setCatState(float[] sCat)
+	/*public static void setCatState(float[] sCat)
 	{
 		x = sCat[0];
 		y = sCat[1];
@@ -61,9 +61,9 @@ public class CatPosCalc {
 		
 		distLast = distNew;
 
-		/*Logger.println("x: " + (int)(x*100));
-		Logger.println("y: " + (int)(y*100));
-		Logger.println("ang: " + (int)(ang*180/(float)Math.PI));
-		Logger.println("----------");*/
-	}
+		//Logger.println("x: " + (int)(x*100));
+		//Logger.println("y: " + (int)(y*100));
+		//Logger.println("ang: " + (int)(ang*180/(float)Math.PI));
+		//Logger.println("----------");
+	}*/
 }
