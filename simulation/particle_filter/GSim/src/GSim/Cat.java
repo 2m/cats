@@ -17,7 +17,7 @@ public class Cat extends Actor {
 
 	private boolean usePositioningParticleFilter = false;
 	private boolean usePositioningUnscentedKalmanFilter = false;
-	private boolean useTrackingParticleFilter = true;
+	private boolean useTrackingParticleFilter = false;
 	private boolean useTrackingUnscentedKalmanFilter = false;
 	private boolean useGuide = true;
 
@@ -35,11 +35,15 @@ public class Cat extends Actor {
 		float T = (float) GSim.timestep * timestepsBetweenFilterUpdates / 1000; // 5;//0.5;
 
 		if (usePositioningParticleFilter) {
-			/*positioningFilter = new AbsolutePositioningParticleFilter(id, N, T,
-					unifiedBuffer, billboard);*/
+			/*
+			 * positioningFilter = new AbsolutePositioningParticleFilter(id, N,
+			 * T, unifiedBuffer, billboard);
+			 */
 		} else if (usePositioningUnscentedKalmanFilter) {
-			/*positioningFilter = new AbsolutePositioningUKF(id, T,
-					unifiedBuffer, billboard);*/
+			/*
+			 * positioningFilter = new AbsolutePositioningUKF(id, T,
+			 * unifiedBuffer, billboard);
+			 */
 		} else {
 			positioningFilter = new AbsolutePositioningNaiveFilter(id, T,
 					unifiedBuffer, billboard);
@@ -48,13 +52,14 @@ public class Cat extends Actor {
 		if (useTrackingParticleFilter) {
 			trackingFilter = new TrackingParticleFilter(id, N, T, billboard);
 		} else if (useTrackingUnscentedKalmanFilter) {
-			/*trackingFilter = new TrackingUnscentedKalmanFilter(id, T, billboard);*/
+			/*
+			 * trackingFilter = new TrackingUnscentedKalmanFilter(id, T,
+			 * billboard);
+			 */
 		}
 
-		if (usePositioningParticleFilter || usePositioningUnscentedKalmanFilter) {
-			positioningFilter.initData((float) motor.getX(), (float) motor
+		positioningFilter.initData((float) motor.getX(), (float) motor
 					.getY(), (float) motor.getAngle());
-		}
 		if (useGuide) {
 			guide = new Guide(id, billboard);
 		}
@@ -72,8 +77,8 @@ public class Cat extends Actor {
 		d = trackerBuffer.pop();
 		while (d != null) {
 			unifiedBuffer.push(d);
-			SightingData sd=(SightingData) d;
-			sd.type=LandmarkList.MOUSE;
+			SightingData sd = (SightingData) d;
+			sd.type = LandmarkList.MOUSE;
 			d = trackerBuffer.pop();
 		}
 		// Move landmark sightings to the unified buffer
@@ -110,10 +115,7 @@ public class Cat extends Actor {
 		}
 		if ((iter % timestepsBetweenFilterUpdates) == 0) {
 			sensors.update();
-			if (usePositioningParticleFilter
-					|| usePositioningUnscentedKalmanFilter) {
-				positioningFilter.update();
-			}
+			positioningFilter.update();
 			if (useTrackingParticleFilter || useTrackingUnscentedKalmanFilter) {
 				trackingFilter.update();
 			}
