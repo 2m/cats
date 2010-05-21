@@ -9,8 +9,6 @@ import se.uu.it.cats.brick.storage.BillBoard;
 public abstract class TrackingFilter extends Thread {
 	/** Id number */
 	protected int id;
-	/** Buffers with data on mouse sightings */
-	protected final Buffer sensorData;
 	/** Period of filter */
 	protected final float T;
 	/** Period of filter in milliseconds */
@@ -18,15 +16,12 @@ public abstract class TrackingFilter extends Thread {
 	/** Shared data object */
 	protected BillBoard billboard;
 
-	public TrackingFilter(int id, float T, Buffer sensorData,
-			BillBoard billboard) {
+	public TrackingFilter(int id, float T, BillBoard billboard) {
 		/** Save id number */
 		this.id = id;
 		/** Period of filter */
 		this.T = T;
 		this.Tint = (int) (T * 1000);
-		/** Sorded buffer with sensor readings */
-		this.sensorData = sensorData;
 		/** Shared data */
 		this.billboard = billboard;
 		// Set priority for thread
