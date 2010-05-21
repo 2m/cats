@@ -1,7 +1,9 @@
 package se.uu.it.cats.brick.storage;
 
 import se.uu.it.cats.brick.Clock;
+import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.network.ConnectionManager;
+import se.uu.it.cats.brick.network.packet.AbsolutePositionUpdate;
 import se.uu.it.cats.brick.network.packet.LatestSightingUpdate;
 import se.uu.it.cats.brick.network.packet.MeanAndCovarianceUpdate;
 
@@ -9,6 +11,7 @@ public class BillBoard {
 	/** Data to be synced */
 	private float[][] data;
 	private float[] sightings;
+	private float[] positions;
 
 	private int latestDataUpdate = 0;
 	private int latestSightingUpdate = 0;
@@ -17,7 +20,7 @@ public class BillBoard {
 	private final int DATA_PER_CAT = 11;
 
 	/** Number of cats (set in constructor) */
-	private final int NUMBER_OF_CATS = 3;
+	private final int NUMBER_OF_CATS = Identity.CAT_COUNT;
 
 	public static final BillBoard instanceHolder = new BillBoard();
 
@@ -27,26 +30,26 @@ public class BillBoard {
 
 	private BillBoard() {
 		data = new float[NUMBER_OF_CATS][DATA_PER_CAT];
-		sightings = new float[NUMBER_OF_CATS * 3];
+		sightings = new float[NUMBER_OF_CATS * 4];
+		positions = new float[NUMBER_OF_CATS * 4];
 
-		for (int i = 0; i < NUMBER_OF_CATS * 3; i++) {
-			sightings[i] = -1;
+		for (int i = 0; i < NUMBER_OF_CATS * 4; i++) {
+			sightings[i] = -1;			
 		}
 
-		// TODO: is initialization to some value of variable "data" needed?
+		// TODO: is the initialization of variable "positions" needed? 
+		// TODO: is the initialization of variable "data" needed?
+
 	}
 
 	public int getNoCats() {
 		return NUMBER_OF_CATS;
 	}
 
-	// TODO: Implement getAbsolutePositions
-	// TODO: Implement setAboslutePosition
-
-	public void setLatestSighting(int id, float x, float y, float theta) {
+	public void setLatestSighting(int id, float x, float y, float theta, int timestamp) {
 		// id in range [1:n]
 		// set the latest sighting and send update to other devices
-		setLatestSighting(id - 1, x, y, theta, true);
+		setLatestSighting(id - 1, x, y, theta, timestamp, true);
 	}
 
 	public void setLatestSighting(LatestSightingUpdate p) {
@@ -55,17 +58,18 @@ public class BillBoard {
 		// check if it is new
 		if (p.getTimestamp() > latestSightingUpdate) {
 			// save data and do not send an update
-			setLatestSighting(p.getSource(), p.getX(), p.getY(), p.getTheta(),
+			setLatestSighting(p.getSource(), p.getX(), p.getY(), p.getTheta(), p.getTimestamp(),
 					false);
 			latestDataUpdate = p.getTimestamp();
 		}
 	}
 
-	public void setLatestSighting(int id, float x, float y, float theta,
+	public void setLatestSighting(int id, float x, float y, float theta, int timestamp,
 			boolean sendUpdate) {
-		sightings[id * 3 + 0] = x;
-		sightings[id * 3 + 1] = y;
-		sightings[id * 3 + 2] = theta;
+		sightings[id * 4 + 0] = x;
+		sightings[id * 4 + 1] = y;
+		sightings[id * 4 + 2] = theta;
+		sightings[id * 4 + 3] = timestamp;
 
 		if (sendUpdate)
 			// send the update to all
@@ -75,6 +79,41 @@ public class BillBoard {
 
 	public float[] getLatestSightings() {
 		return sightings;
+	}
+	
+	public void setAbsolutePosition(int id, float x, float y, float theta, int timestamp) {
+		// id in range [1:n]
+		// set the absolute position and send update to other devices
+		setLatestSighting(id - 1, x, y, theta, timestamp, true);
+	}
+
+	public void setAbsolutePosition(AbsolutePositionUpdate p) {
+		// id in range [0:n-1]
+		// got data from other device,
+		// check if it is new
+		if (p.getTimestamp() > latestSightingUpdate) {
+			// save data and do not send an update
+			setLatestSighting(p.getSource(), p.getX(), p.getY(), p.getTheta(), p.getTimestamp(),
+					false);
+			latestDataUpdate = p.getTimestamp();
+		}
+	}
+
+	public void setAbsolutePosition(int id, float x, float y, float theta, int timestamp,
+			boolean sendUpdate) {
+		positions[id * 4 + 0] = x;
+		positions[id * 4 + 1] = y;
+		positions[id * 4 + 2] = theta;
+		positions[id * 4 + 3] = timestamp;
+
+		if (sendUpdate)
+			// send the update to all
+			ConnectionManager.getInstance().sendPacketToAll(
+					new AbsolutePositionUpdate(x, y, theta, Clock.timestamp()));
+	}
+
+	public float[] getAbsolutePositions() {
+		return positions;
 	}
 
 	// TODO: For UKF, add getter for tachometer positioning and landmark
