@@ -179,6 +179,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			
 			if(_cats[i].isManualOrder()) {
 				g2d.setColor(Color.red); 
+				g2d.setStroke(dashedBackground);
 				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (centFix_X+_cats[i].getGoToX()*zk/50), (int) (centFix_Y+_cats[i].getGoToY()*zk/50));
 			}
 			
