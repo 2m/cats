@@ -21,16 +21,10 @@ import lejos.nxt.addon.NXTCam;
 public class Camera implements Runnable {
 	
 	final static int dt = 10; // milliseconds
-	private MovementPilot movementPilot;
-	private AbsolutePositioningFilter positioning;
-	private BufferSorted unifiedBuffer;
 	private float lastCatAngle;
 	
-	public Camera(MovementPilot movementPilot, BufferSorted unifiedBuffer, AbsolutePositioningFilter positioning){
-		this.movementPilot = movementPilot;
-		this.unifiedBuffer = unifiedBuffer;
-		this.positioning = positioning;
-		lastCatAngle = movementPilot.getAngle();
+	public Camera() {
+		lastCatAngle = MovementPilot.getInstance().getAngle();
 	}
 	
 	public void run() {
@@ -113,35 +107,49 @@ public class Camera implements Runnable {
 					
 				}
 				
+				// TODO add conditions for determining witch landmarks and/or mouse
+				// is in the sight
 				int type = 1; //TODO: Set according to observed landmark or mouse
+				
 				xAvg = xSum / numObjects;
 				err = xAvg - 176/2 + offset; //0-88-19=-107 worst case
 				angToTarget = err*radPerPix;
-				angToTargetRelCat = motorAngRad + angToTarget;
+				angToTargetRelCat = motorAngRad + angToTarget;				
 				
-				//FIXME:
-				float currentCatAngle = positioning.getAngle();// + (movementPilot.getAngle() - lastCatAngle);
-				angToTargetAbs = angToTargetRelCat;
-				//lastCatAngle = currentCatAngle;
+				// Correct the latest approximated values with 
+				// the latest data from the motor control				
+				lastCatAngle = Main.positioningFilter.getAngle() + (MovementPilot.getInstance().getAngle() - lastCatAngle);
+				float lastCatX = Main.positioningFilter.getX() + MovementPilot.getInstance().getdX();
+				float lastCatY = Main.positioningFilter.getY() + MovementPilot.getInstance().getdY();
 				
-				if (Main.useUnscentedKalmanTrackingFilter || Main.useParticleTrackingFilter)
-					//Update billboard
-					;
+				// kalman and particle filter will use different reference
+				// points for angular measurements
+				angToTargetAbs = lastCatAngle + angToTargetRelCat;
 				
-				if (Main.useUnscentedKalmanPositioningFilter) {
+				if (Settings.POSITIONING_FILTER_UNSCENTED_KALMAN) {
 					//Push absolute angle to UKF positioning filter
-					unifiedBuffer.push(new SightingData(Clock.timestamp(), positioning.getX(), positioning.getY(), angToTargetAbs, type));
-				}
-					
-				else if (Main.useParticlePositioningFilter) {
+					//no point of pushing the position, since UKF uses velocity
+					// UKF will take velocity just before the iteration
+					Main.positioningFilter.getUnifiedBuffer().push(
+							new SightingData(Clock.timestamp(), angToTargetAbs, type));
+				}				
+				else if (Settings.POSITIONING_FILTER_PARTICLE) {
 					//Push relative(?) angle to particle filter
-					unifiedBuffer.push(new SightingData(Clock.timestamp(), positioning.getX(), positioning.getY(), angToTargetRelCat, type));
-					movementPilot.pushParticleMovementData();	
-				}
+					// TODO if particle filter also uses approximated position
+					// corrected with dx and dy since the last interation
+					// these values should also be updated and reseted in 
+					// MotorControl when using particle filter.
+					// Now these actions are being done only when 
+					// using UKF
+					Main.positioningFilter.getUnifiedBuffer().push(
+							new SightingData(Clock.timestamp(), lastCatX, lastCatY, angToTargetRelCat, type));
 					
-				else if (Main.useBasicPositioningFilter)
+					MovementPilot.getInstance().pushParticleMovementData();	
+				}					
+				else if (Settings.POSITIONING_FILTER_BASIC)
 					//push to basic filter	
-					;
+					Main.positioningFilter.getUnifiedBuffer().push(
+							new SightingData(Clock.timestamp(), lastCatX, lastCatY, angToTargetRelCat, type));
 				else
 					System.out.println("No positioning filter selected");
 			

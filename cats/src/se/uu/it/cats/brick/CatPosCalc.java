@@ -59,18 +59,8 @@ public class CatPosCalc {
 		x = x + deltaDist * (float) Math.cos(ang);
 		y = y + deltaDist * (float) Math.sin(ang);
 		
-		//for UKF:
-		/*
-		vx = deltaDist * (float) Math.cos(ang)/dt;
-		vy = deltaDist * (float) Math.sin(ang)/dt;
-		unifiedBuffer.push(UKFMovementData(timestamp,vx,vy));
-		 */
-		
 		distLast = distNew;
-		
-		//MovementData md = new MovementData(Clock.timestamp(), deltaDist, ang);
-		//movementData.push(md);
-		
+
 		/*Logger.println("x: " + (int)(x*100));
 		Logger.println("y: " + (int)(y*100));
 		Logger.println("ang: " + (int)(ang*180/(float)Math.PI));

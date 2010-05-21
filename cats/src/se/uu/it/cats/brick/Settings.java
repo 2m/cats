@@ -13,6 +13,18 @@ public class Settings
 	// camera offset, measured in pixels
 	public static int CAMERA_OFFSET;
 	
+	// positioning filters (only one should be selected)
+	public static boolean POSITIONING_FILTER_PARTICLE 			= false;
+	public static boolean POSITIONING_FILTER_UNSCENTED_KALMAN	= false;
+	public static boolean POSITIONING_FILTER_BASIC				= true;
+	
+	// tracking filters (only one should be selected)
+	public static boolean TRACKING_FILTER_PARTICLE				= true;
+	public static boolean TRACKING_FILTER_UNSCENTED_KALMAN		= false;
+	
+	// guide
+	public static boolean USE_GUIDE = false;
+	
 	public static void init()
 	{
 		switch (Identity.getId())
@@ -37,8 +49,8 @@ public class Settings
 			}
 			case 2:
 			{
-				WHEEL_DIAMATER = 0;				
-				TRACK_WIDTH = 0;
+				WHEEL_DIAMATER = 0.0561170982f;				
+				TRACK_WIDTH = 0.16f;
 				DRIFT_BALANCE = 0;
 				
 				CAMERA_OFFSET = -19;

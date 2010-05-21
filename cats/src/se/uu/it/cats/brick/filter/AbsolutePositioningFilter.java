@@ -8,8 +8,9 @@ import se.uu.it.cats.brick.storage.BillBoard;
  */
 public abstract class AbsolutePositioningFilter extends Thread {
 	/** Buffers with data on movement and landmark sightings */
-	protected final Buffer sensorData;
-	protected final Buffer movementData;
+	/** Sorded buffer with sensor readings and data on movement*/
+	/** Every child filter should ensure to create this buffer by its needs*/
+	public Buffer unifiedBuffer;
 	/** Period of filter in seconds */
 	protected final float T;
 	/** Period of filter in milliseconds */
@@ -17,15 +18,11 @@ public abstract class AbsolutePositioningFilter extends Thread {
 	protected BillBoard billboard;
 	protected int id;
 
-	public AbsolutePositioningFilter(int id, float T, Buffer sensorData,
-			Buffer movementData, BillBoard billboard) {
+	public AbsolutePositioningFilter(int id, float T, BillBoard billboard) {
 		/** Period of filter */
 		this.T = T;
 		this.Tint = (int) (T * 1000);
-		/** Sorded buffer with sensor readings */
-		this.sensorData = sensorData;
-		/** Sorted buffer wi th data on movement */
-		this.movementData = movementData;
+
 		this.billboard = billboard;
 		this.id = id;
 		// Set priority for thread
@@ -47,7 +44,11 @@ public abstract class AbsolutePositioningFilter extends Thread {
 	public float getAngle() {
 		return (float) 0.0;
 	}
-
+	
+	public Buffer getUnifiedBuffer() {
+		return unifiedBuffer;
+	}
+	
 	/**
 	 * Runs one update of the filter then exits
 	 */
