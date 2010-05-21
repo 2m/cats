@@ -105,8 +105,8 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	 */
 	public void draw(Graphics g) {
 		// TODO: Remove graphics code from filter
-		final int size = 4; // Diameter
-		final int linelength = 8;
+		final int size = 10; // Diameter
+		final int linelength = 20;
 
 		Graphics2D g2 = (Graphics2D) g;
 
@@ -117,7 +117,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		// g2.rotate(iangle, ix, iy);
 
 		// Plot mean
-		g2.setColor(Color.LIGHT_GRAY);
+		g2.setColor(Color.PINK);
 		float[] position = billboard.getAbsolutePositions();
 
 		int ix = Actor.e2gX(position[(id - 1) * 4 + 0]);

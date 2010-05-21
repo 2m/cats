@@ -3,9 +3,11 @@ package GSim;
 /**
  * Skeleton for the networking interface as seen by the filters
  * 
- * @author Fredrik Wahlberg
- * Edited 2010-05-20 by Edvard Zak
- * IMPORTANT: The accuracy of the timestamps on sightings/positions are currently reduced from a thousand of second (millisecond) to roughly a hundred of a second due to using a float to store the int value, this might turn out being ok though.
+ * @author Fredrik Wahlberg Edited 2010-05-20 by Edvard Zak IMPORTANT: The
+ *         accuracy of the timestamps on sightings/positions are currently
+ *         reduced from a thousand of second (millisecond) to roughly a hundred
+ *         of a second due to using a float to store the int value, this might
+ *         turn out being ok though.
  */
 public class BillBoard {
 	// FIXME: See how much needs to be synced for ukf
@@ -31,23 +33,27 @@ public class BillBoard {
 		}
 	}
 
-	public void setLatestSighting(int id, float x, float y, float theta, int timestamp) {
+	public void setLatestSighting(int id, float x, float y, float theta,
+			int timestamp) {
 		// id in range [1:n]
 		sightings[(id - 1) * 4 + 0] = x;
 		sightings[(id - 1) * 4 + 1] = y;
 		sightings[(id - 1) * 4 + 2] = theta;
 		sightings[(id - 1) * 4 + 3] = timestamp;
-		/*if ( (int)((float)timestamp) != timestamp)
-			System.out.println("CONVERSION ERROR IN setLatestSighting!!!!! ( " + timestamp + " != " + (float)timestamp +" )");
-		else
-			System.out.println("ok conversion in setLatestSighting ( " + timestamp + " != " + (float)timestamp +" )");
-		*/
+		/*
+		 * if ( (int)((float)timestamp) != timestamp)
+		 * System.out.println("CONVERSION ERROR IN setLatestSighting!!!!! ( " +
+		 * timestamp + " != " + (float)timestamp +" )"); else
+		 * System.out.println("ok conversion in setLatestSighting ( " +
+		 * timestamp + " != " + (float)timestamp +" )");
+		 */
 	}
 
 	// TODO: For UKF, add getter for tachometer positioning and landmark
 	// sighting
 
-	public void setAbsolutePosition(int id, float x, float y, float angle, int timestamp) {
+	public void setAbsolutePosition(int id, float x, float y, float angle,
+			int timestamp) {
 		position[(id - 1) * 4 + 0] = x;
 		position[(id - 1) * 4 + 1] = y;
 		position[(id - 1) * 4 + 2] = angle;
