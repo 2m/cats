@@ -546,7 +546,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		}
 		// Push latest sighting to billboard
 		if (sens != null) {
-			billboard.setLatestSighting(id, sens.x, sens.y, sens.angle);
+			billboard.setLatestSighting(id, sens.x, sens.y, sens.angle, Clock.timestamp());
 		}
 
 		// Download mean and co-variance data
