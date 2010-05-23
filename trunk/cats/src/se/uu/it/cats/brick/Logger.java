@@ -39,4 +39,14 @@ public class Logger
 	{
 		print(String.valueOf(i)+"\n");
 	}
+	
+	public static void print(float f)
+	{
+		print(String.valueOf(f));
+	}
+	
+	public static void println(float f)
+	{
+		print(String.valueOf(f)+"\n");
+	}
 }

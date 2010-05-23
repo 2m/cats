@@ -15,6 +15,6 @@ public class MovementData extends ComparableData {
 	}
 
 	public String toString() {
-		return "[" + comparable + ",dr= " + dr + ",dangle= " + dangle + "]";
+		return "MovementData[" + comparable + ",dr= " + dr + ",dangle= " + dangle + "]";
 	}
 }
