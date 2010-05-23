@@ -3,10 +3,14 @@ package se.uu.it.cats.pc.gui;
 import java.util.Hashtable;
 
 public class Area { // implements ActionListener
+	
+	public static int CAT_COUNT = 3;
+	public static int LIGHTHOUSE_COUNT = 4;
+	
 	// Array of cats
-	private Cat[] _cats = new Cat[3];
+	private Cat[] _cats = new Cat[CAT_COUNT];
 	private Mouse _mouse = new Mouse();
-	private Lighthouse[] _lighthouse = new Lighthouse[4];
+	private Lighthouse[] _lighthouse = new Lighthouse[LIGHTHOUSE_COUNT];
 	// The absolute time
 	private int time = 0;
 

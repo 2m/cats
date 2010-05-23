@@ -87,7 +87,7 @@ public class DataPanel extends JPanel{ // implements ActionListener
 		}
 		
 		public void repaint() {
-			setText("Angle: "+world.getCat(id).getAngle_c()+", Angle cam: "+world.getCat(id).getAngle_cam());
+			setText("Angle: "+Math.toDegrees(world.getCat(id).getAngle_c())+", Angle cam: "+Math.toDegrees(world.getCat(id).getAngle_cam()));
 		}
 	}
 };

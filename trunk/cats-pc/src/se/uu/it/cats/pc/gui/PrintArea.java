@@ -161,19 +161,14 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 		if (_cats[i] != null) {
 			// Print cat as a black oval
 			//g2d.fillOval( (int) cats[i].getX(), (int) cats[i].getY(), 2, 2);
-			g2d.setColor(Color.black);
-			//Draw cat-direction
-			linelength = 20;
-			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_c()))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_c()))*linelength));
-			//Draw camera.direction
-			linelength = 90;
-			g2d.setColor(Color.blue);
 			
-			//Draw the cats
+			//calculate cats positions to be drawn
 			entityPosX = centFix_X+_cats[i].getX()*zk/50;
 			entityPosY = centFix_Y-_cats[i].getY()*zk/50;
-
+			
 			//Draw camera angles
+			linelength = 90;
+			g2d.setColor(Color.blue);
 			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength));
 			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength));
 			
@@ -193,7 +188,6 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 				oldEntityPosY = centFix_Y-bufferY[(posBuffer+j) % bufferLength]*zk/50;
 				g2d.setColor(new Color((int) (bufferLength-j)*255/bufferLength, (int) (bufferLength-j)*255/bufferLength,(int) (bufferLength-j)*255/bufferLength));
 				g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
-
 			}
 			
 			g2d.setColor(Color.black); // Black cats
@@ -201,7 +195,29 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			if(_cats[i].isMarked()) {
 				g2d.setColor(Color.yellow); // Black cats
 			}
+			
+			// print sightings as long lines of different colors
+			g2d.setStroke(new BasicStroke(3)); // width of the lines
+			for (int j = 0; j < _cats[i].getSightingCount(); j++) {
+				float angle = _cats[i].getSighting(j);
+				linelength = 100;
+				
+				Color[] colors = new Color[] {Color.red, Color.magenta, Color.blue, Color.green, Color.yellow};				
+				g2d.setColor(colors[j]);
+				
+				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(angle))*linelength), (int) (entityPosY + Math.sin(-(angle))*linelength));
+			}
+			
+			//Draw cat-direction
+			linelength = 20;
+			g2d.setColor(Color.black);
+			g2d.setStroke(new BasicStroke(1));
+			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_c()))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_c()))*linelength));
+			
+			// draw the cat
+			g2d.setColor(Color.black);
 			g2d.fillOval( (int) entityPosX-5, (int) entityPosY-5, 10, 10);
+			
 			//Streckat test
 			g2d.setStroke(dashedBackground);
 			//g2d.draw(new Rectangle((int) entityPosX-5,(int) entityPosY-5,20,20));
