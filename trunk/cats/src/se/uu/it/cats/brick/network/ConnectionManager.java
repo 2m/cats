@@ -198,7 +198,7 @@ public class ConnectionManager
 		Logger.println("Can't send packet, no open connection to: "+i);
 	}
 	
-	public void sendPacketToAll(Packet p)
+	public synchronized void sendPacketToAll(Packet p)
 	{
 		sendPacketToAllExcept(p, null);
 	}
