@@ -120,9 +120,10 @@ public class Main
 		// the current hardcoded positions have to be changed with the approximated
 		// positions from the positioning filter
 		// vertical axis is inverted for some reason in the motor control
-		for (int i=0; i<4; i++){ //turn in square
+		for (int i=0; i<1; i++){ //turn in square
 			movementPilot.travel(	0.75f, 	0f, 	0, 		0f,	 	(float)Math.PI/2f*3);
 			while (movementPilot.isProcessing()) { Thread.yield(); }
+			Button.waitForPress();
 				
 			movementPilot.travel(	0.75f, 	0.75f, 	0.75f, 	0, 		0);
 			while (movementPilot.isProcessing()) { Thread.yield(); }

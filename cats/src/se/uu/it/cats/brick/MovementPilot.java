@@ -25,9 +25,9 @@ public class MovementPilot extends TachoPilot implements Runnable {
 	// unified buffer for data
 	Buffer unifiedBuffer;
 	
-	// relative values from sensors since the last puch to the buffer
-	public float angleRotated;
-	public float distanceTraveled;
+	// last pushed values from sensors
+	public float lastPushedDistance = 0;
+	public float lastPushedAngle = 0;	
 	
 	private float targetX;
 	private float targetY;
@@ -162,15 +162,11 @@ public class MovementPilot extends TachoPilot implements Runnable {
 	}*/
 	
 	public float getTravelDistance() {
-		float travelDistance = super.getTravelDistance();		
-		distanceTraveled += travelDistance;		
-		return travelDistance;
+		return super.getTravelDistance();
 	}
 	
 	public float getAngle() {
-		float angle = super.getAngle();		
-		angleRotated += angle;		
-		return angle;
+		return super.getAngle();
 	}
 	
 	/**
@@ -178,15 +174,15 @@ public class MovementPilot extends TachoPilot implements Runnable {
 	 */
 	public void pushMovementData() {
 
-		// to update the distanceTraveled and angleRotate to the latest value
-		getTravelDistance();
-		getAngle();
+		// get current distance traveled and degrees turned
+		float currentDistance = getTravelDistance();
+		float currentAngle = getAngle();
 		
-		MovementData MD = new MovementData(Clock.timestamp(), distanceTraveled, (float)(angleRotated * Math.PI/180f));
+		MovementData MD = new MovementData(Clock.timestamp(), currentDistance - lastPushedDistance, (float)((currentAngle - lastPushedAngle) * Math.PI/180f));
 		unifiedBuffer.push(MD);
 		
-		distanceTraveled = 0;
-		angleRotated = 0;
+		lastPushedDistance = currentDistance;
+		lastPushedAngle = currentAngle;
 	}
 	
 	private void angularAcceleration(float turnAngle) {
