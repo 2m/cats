@@ -315,16 +315,18 @@ public class PanelBluetooth extends JPanel{
 			{
 				if (e.getSource() instanceof JComboBox)
 				{
-					_param1.setText("angle");
-					_param2.setText("");
-					_param3.setText("");
+					_param1.setText("id");
+					_param2.setText("angle");
+					_param3.setText("camAngle");
 					_param4.setText("");
 					_param5.setText("");
 				}
 				else if (e.getSource() instanceof JButton)
 				{
 					ConnectionManager.getInstance().sendPacketTo(receiver, new SimpleMeasurement(
-							Integer.valueOf(_param1.getText())
+							Integer.valueOf(_param1.getText()),
+							Float.valueOf(_param2.getText()),
+							Float.valueOf(_param3.getText())							
 					));
 				}
 			}

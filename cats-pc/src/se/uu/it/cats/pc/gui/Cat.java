@@ -16,6 +16,12 @@ public class Cat {
 	private int[] bufferY = new int[bufferLength];
 	private int posBuffer = 0;
 	
+	// angles for every sightings in angles
+	// id - 0 is angle to mouse relative to cat
+	// id - 1 is angle to lighthouse1 relative to cat
+	// and so on...
+	private float[] sightings = new float[Area.LIGHTHOUSE_COUNT + 1];
+	
 	public Cat(String name) {
 		catName = name;
 	}
@@ -72,8 +78,13 @@ public class Cat {
 	public float getAngle_c() {
 		return angle_c;
 	}
+	
 	public float getAngle_cam() {
 		return angle_cam;
+	}
+	
+	public void setAngle_cam(float angle) {
+		angle_cam = angle;
 	}
 	
 	public void updateXYAngles(int newX, int newY, float newAngle_c, float newAngle_cam) {
@@ -106,5 +117,17 @@ public class Cat {
 	
 	public float getCam_angle_width() {
 		return cam_angle_width;
+	}
+	
+	public void setSighting(int sightingId, float angle) {
+		sightings[sightingId] = angle;
+	}
+	
+	public float getSighting(int sightingId) {
+		return sightings[sightingId];
+	}
+	
+	public float getSightingCount() {
+		return sightings.length;
 	}
 }
