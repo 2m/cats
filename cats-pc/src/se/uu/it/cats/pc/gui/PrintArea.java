@@ -191,7 +191,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			for(int j = 0; j<bufferLength;j++) {
 				oldEntityPosX = centFix_X+bufferX[(posBuffer+j) % bufferLength]*zk/50;
 				oldEntityPosY = centFix_Y-bufferY[(posBuffer+j) % bufferLength]*zk/50;
-				g2d.setColor(new Color((int) j*255/bufferLength, (int) j*255/bufferLength,(int) j*255/bufferLength));
+				g2d.setColor(new Color((int) (bufferLength-j)*255/bufferLength, (int) (bufferLength-j)*255/bufferLength,(int) (bufferLength-j)*255/bufferLength));
 				g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
 
 			}
