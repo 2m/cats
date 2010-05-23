@@ -51,7 +51,7 @@ public class Main
 		Thread movementThread = new Thread(movementPilot);
 		movementThread.start();
 		
-		positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(), 1, unifiedBuffer, BillBoard.getInstance());
+		positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(), 0.2f, unifiedBuffer, BillBoard.getInstance());
 		Thread positioningFilterThread = new Thread(positioningFilter);
 		positioningFilterThread.start();
 		
@@ -117,13 +117,35 @@ public class Main
 		mPilot.travel(-1f,4.5f);
 		mPilot.travel(-1f,5f);*/
 		
+		for (int i=0; i<4; i++){ //turn in square
+			movementPilot.travel(	0.05f, 	0f, 	0, 		0f,	 	0);
+			while (movementPilot.isProcessing()) { Thread.yield(); }
+			//Button.waitForPress();
+				
+			movementPilot.travel(	0.05f, 	0.05f, 	0.05f, 	0, 		0);
+			while (movementPilot.isProcessing()) { Thread.yield(); }
+			//Button.waitForPress();
+			
+			movementPilot.travel(  -0.05f, 	0.05f, 	0.05f, 	0.05f, 	(float)Math.PI/2f);
+			while (movementPilot.isProcessing()) { Thread.yield(); }
+			//Button.waitForPress();
+			
+			movementPilot.travel(  -0.05f,     0f, -0.05f, 	0.05f, 	(float)Math.PI);
+			while (movementPilot.isProcessing()) { Thread.yield(); }
+			//Button.waitForPress();
+			
+			movementPilot.travel( 		0,     0f, -0.05f, 	   0f, 	(float)Math.PI/2f*3);
+			while (movementPilot.isProcessing()) { Thread.yield(); }
+			//Button.waitForPress();
+			
+			System.out.println("BIG SQUARE FINISHED!");
+		}		
+		
 		// the current hardcoded positions have to be changed with the approximated
 		// positions from the positioning filter
-		// vertical axis is inverted for some reason in the motor control
-		for (int i=0; i<1; i++){ //turn in square
+		for (int i=0; i<4; i++){ //turn in square
 			movementPilot.travel(	0.75f, 	0f, 	0, 		0f,	 	(float)Math.PI/2f*3);
-			while (movementPilot.isProcessing()) { Thread.yield(); }
-			Button.waitForPress();
+			while (movementPilot.isProcessing()) { Thread.yield(); }			
 				
 			movementPilot.travel(	0.75f, 	0.75f, 	0.75f, 	0, 		0);
 			while (movementPilot.isProcessing()) { Thread.yield(); }

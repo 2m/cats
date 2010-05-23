@@ -46,10 +46,7 @@ public class Camera implements Runnable {
 		
 		//one sum for each color and dimension
 		int xColor = 0; //x-coordinate of the possible color groups
-		boolean[] foundColor = {false,false,false,false,false,false,false,false};
-		int colorsFound = 0;
-		int currentColor; //calibrated color group, 0 up to 7
-		int oldColor; //color of the object last processed
+		
 		float err = 0; //error in pixels to the mouse
 		float angToTarget = 0;
 		//PID-controller: tunable parameters
@@ -91,13 +88,20 @@ public class Camera implements Runnable {
 			LCD.drawString(NXTcamera.getVersion(), 9, 1);
 			LCD.drawString(objects, 0, 2);
 			LCD.drawInt(numObjects,1,9,2);*/
+
+			//Logger.println("numObjects"+numObjects);
 			
+			boolean mouseFound = false;
 
 			if (numObjects >= 1) {// && numObjects <= 8) {				
 				
+				boolean[] foundColor = {false,false,false,false,false,false,false,false};				
+				
 				for (int i=0;i<numObjects;i++) {
 					Rectangle r = NXTcamera.getRectangle(i);
-					currentColor = NXTcamera.getObjectColor(i);
+					
+					//calibrated color group, 0 up to 7
+					int currentColor = NXTcamera.getObjectColor(i);
 					
 					if (foundColor[currentColor])
 						continue;
@@ -111,11 +115,14 @@ public class Camera implements Runnable {
 					angToTarget = (xColor - 176f/2f + offset)*radPerPix;
 					angToTargetRelCat = angToTarget + motorAngRad;
 					
-					if (currentColor == 0)
+					if (currentColor == 0) {
 						// set the error in pixels to the mouse
 						err = xColor - 176f/2f + offset; //0-88-19=-107 worst case
+						mouseFound = true;
+					}
+					//Logger.println("currentColor: "+currentColor+", i: " + i + ", err: "+ err);
 					
-					unifiedBuffer.push(new SightingData(Clock.timestamp(), angToTargetRelCat, currentColor));
+					//unifiedBuffer.push(new SightingData(Clock.timestamp(), angToTargetRelCat, currentColor));
 					// TODO poke the movement pilot to push measurements 
 					
 					// send some measurements to the GUI
@@ -132,8 +139,6 @@ public class Camera implements Runnable {
 					}*/					
 				}
 				
-				System.out.println("CamMotor:" + motorAng);
-				
 				// send measurements to everyone
 				/*try
 				{
@@ -149,8 +154,11 @@ public class Camera implements Runnable {
 				
 				//Logger.println("Found at:" + (int) (angToTargetAbs*180/Math.PI));
 				//Logger.println("Rel cat:" + (int) (angToTargetRelCat*180/Math.PI));
-				Logger.println("CamMotor:" + motorAng);
-				
+				//Logger.println("CamMotor:" + motorAng);
+			}
+			
+			if (mouseFound)
+			{
 				if (Math.abs(err) < 0) //P: 10
 				{
 					Motor.B.stop();
