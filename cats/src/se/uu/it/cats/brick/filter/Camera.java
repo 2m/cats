@@ -44,18 +44,21 @@ public class Camera implements Runnable {
 		NXTcamera.sortBy(NXTCam.SIZE);
 		NXTcamera.enableTracking(true);
 		
-		int xSum;
-		int ySum ;
-		int xAvg;
-		int err;
-		float angToTarget;
+		//one sum for each color and dimension
+		int [] xColor = {0,0,0,0,0,0,0,0}; //x-coordinate of the possible color groups
+		boolean [] foundColor = {false,false,false,false,false,false,false,false};
+		int colorsFound = 0;
+		int currentColor; //calibrated color group, 0 up to 7
+		int oldColor; //color of the object last processed
+		float err; //error in pixels to the mouse
+		float [] angToTarget = new float [8];
 		//PID-controller: tunable parameters
 		//Tuned using manual tuning method:
 		float Kp = 8.42f; //start osc. at 4
 		float Ki = 0f;
 		float Kd = 3f;
-		int previous_error = 0;
-		int integral = 0;
+		float previous_error = 0;
+		float integral = 0;
 		float derivative;
 		
 		//int iterCounter = 0;
@@ -64,8 +67,8 @@ public class Camera implements Runnable {
 		int dir = 1; //Specifies which direction to turn, if the mouse is lost. Default is clockwise.
 		int motorAng; //Motor angle relative to starting position
 		float motorAngRad;
-		float angToTargetRelCat;
-		float angToTargetAbs;
+		float [] angToTargetRelCat = new float [8];
+		float [] angToTargetAbs = new float [8];
 		float motorCal = 0.978f;//1.19f; //linear calibration
 		float gearRatio = -0.2f*motorCal; //1:5 gear down (smallest gear to biggest)
 		int maxAngAbs = 180;
@@ -89,15 +92,20 @@ public class Camera implements Runnable {
 			LCD.drawString(objects, 0, 2);
 			LCD.drawInt(numObjects,1,9,2);*/
 			
-			xSum = 0;
-			ySum = 0;
-			
+
 			if (numObjects >= 1) {// && numObjects <= 8) {
 				for (int i=0;i<numObjects;i++) {
 					Rectangle r = NXTcamera.getRectangle(i);
+					currentColor = NXTcamera.getObjectColor(i);
 					
-					xSum += r.x + r.width / 2;
-					ySum += r.y - r.height / 2;
+					if (!foundColor[currentColor]) {
+						xColor[currentColor] += r.x + r.width / 2;
+						colorsFound += 1;
+					}
+					
+					//color has been found,
+					//discard all forthcoming smaller objects
+					foundColor[currentColor] = true;
 					
 					/*if (r.height > 30 && r.width > 30) {
 						LCD.drawInt(NXTcamera.getObjectColor(i), 2, 0, 3+i);
@@ -111,12 +119,20 @@ public class Camera implements Runnable {
 				
 				// TODO add conditions for determining witch landmarks and/or mouse
 				// is in the sight
-				int type = 1; //TODO: Set according to observed landmark or mouse
+
+				//mouse color marker is in the first color group
+				err = xColor[0] - 176f/2f + offset; //0-88-19=-107 worst case
 				
-				xAvg = xSum / numObjects;
-				err = xAvg - 176/2 + offset; //0-88-19=-107 worst case
-				angToTarget = err*radPerPix;
-				angToTargetRelCat = motorAngRad + angToTarget;
+				
+				for (int i=0; i<colorsFound-1; i++) {
+					angToTarget[i] = (xColor[i] - 176f/2f + offset)*radPerPix;
+					angToTargetRelCat[i] = angToTarget[i] + motorAngRad;
+				}
+				
+				//To push:
+				/*for (int i=0; i<colorsFound-1; i++) {
+					new SightingData(Clock.timestamp(), angToTargetRelCat[i], i));
+				}*/
 				
 				// Correct the latest approximated values with 
 				// the latest data from the motor control				
