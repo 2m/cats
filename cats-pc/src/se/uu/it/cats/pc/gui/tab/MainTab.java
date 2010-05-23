@@ -45,4 +45,17 @@ public class MainTab extends JPanel
 	{
 		return _printArea;
 	}
+	
+	public void repaint()
+	{
+		super.repaint();
+		
+		try {
+			_printArea.repaint();
+			_dataPanel.repaint();
+		}
+		catch (NullPointerException ex) {
+			
+		}
+	}
 }

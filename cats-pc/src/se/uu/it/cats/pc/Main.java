@@ -104,7 +104,7 @@ public class Main
 
 		while(true) {
 			Area.getInstance().tick();
-			_mainTab.getPrintArea().repaint();
+			_mainTab.repaint();
 			//System.out.println("tick");
 			try {
 				Thread.sleep(20);

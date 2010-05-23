@@ -85,7 +85,7 @@ public class Area { // implements ActionListener
   public String[] getCatNames() {
 	  String[] names = new String[_cats.length];
 	  for (int i = 0; i < _cats.length; i++)
-		  names[i] = _cats[i].getCatName();
+		  names[i] = _cats[i].getName();
 	  return names; 
   }
   public Mouse getMouse() {

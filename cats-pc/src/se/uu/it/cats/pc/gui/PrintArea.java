@@ -207,7 +207,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			//g2d.draw(new Rectangle((int) entityPosX-5,(int) entityPosY-5,20,20));
 			g2d.setStroke(solid);
 			//Draw cat ids
-			g2d.drawString(_cats[i].getCatName(), entityPosX-10f, entityPosY-10f);
+			g2d.drawString(_cats[i].getName(), entityPosX-10f, entityPosY-10f);
 		}
     }
 	
