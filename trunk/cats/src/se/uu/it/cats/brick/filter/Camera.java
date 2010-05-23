@@ -45,13 +45,13 @@ public class Camera implements Runnable {
 		NXTcamera.enableTracking(true);
 		
 		//one sum for each color and dimension
-		int [] xColor = {0,0,0,0,0,0,0,0}; //x-coordinate of the possible color groups
-		boolean [] foundColor = {false,false,false,false,false,false,false,false};
+		int xColor = 0; //x-coordinate of the possible color groups
+		boolean[] foundColor = {false,false,false,false,false,false,false,false};
 		int colorsFound = 0;
 		int currentColor; //calibrated color group, 0 up to 7
 		int oldColor; //color of the object last processed
-		float err; //error in pixels to the mouse
-		float [] angToTarget = new float [8];
+		float err = 0; //error in pixels to the mouse
+		float angToTarget = 0;
 		//PID-controller: tunable parameters
 		//Tuned using manual tuning method:
 		float Kp = 8.42f; //start osc. at 4
@@ -67,8 +67,8 @@ public class Camera implements Runnable {
 		int dir = 1; //Specifies which direction to turn, if the mouse is lost. Default is clockwise.
 		int motorAng; //Motor angle relative to starting position
 		float motorAngRad;
-		float [] angToTargetRelCat = new float [8];
-		float [] angToTargetAbs = new float [8];
+		float angToTargetRelCat = 0;
+		float angToTargetAbs = 0;
 		float motorCal = 0.978f;//1.19f; //linear calibration
 		float gearRatio = -0.2f*motorCal; //1:5 gear down (smallest gear to biggest)
 		int maxAngAbs = 180;
@@ -93,19 +93,35 @@ public class Camera implements Runnable {
 			LCD.drawInt(numObjects,1,9,2);*/
 			
 
-			if (numObjects >= 1) {// && numObjects <= 8) {
+			if (numObjects >= 1) {// && numObjects <= 8) {				
+				
 				for (int i=0;i<numObjects;i++) {
 					Rectangle r = NXTcamera.getRectangle(i);
 					currentColor = NXTcamera.getObjectColor(i);
 					
-					if (!foundColor[currentColor]) {
-						xColor[currentColor] += r.x + r.width / 2;
-						colorsFound += 1;
-					}
+					if (foundColor[currentColor])
+						continue;
+					
+					xColor = r.x + r.width / 2;
 					
 					//color has been found,
 					//discard all forthcoming smaller objects
 					foundColor[currentColor] = true;
+					
+					angToTarget = (xColor - 176f/2f + offset)*radPerPix;
+					angToTargetRelCat = angToTarget + motorAngRad;
+					
+					if (currentColor == 0)
+						// set the error in pixels to the mouse
+						err = xColor - 176f/2f + offset; //0-88-19=-107 worst case
+					
+					unifiedBuffer.push(new SightingData(Clock.timestamp(), angToTargetRelCat, currentColor));
+					// TODO poke the movement pilot to push measurements 
+					
+					// send some measurements to the GUI
+					ConnectionManager.getInstance().sendPacketToAll(
+							new SimpleMeasurement(currentColor, angToTargetRelCat, motorAngRad)
+					);
 					
 					/*if (r.height > 30 && r.width > 30) {
 						LCD.drawInt(NXTcamera.getObjectColor(i), 2, 0, 3+i);
@@ -113,64 +129,8 @@ public class Camera implements Runnable {
 						LCD.drawInt(r.height, 3, 7, 3+i);
 						LCD.drawInt(r.y, 3, 11, 3+i);
 						LCD.drawInt(r.x, 3, 15, 3+i);
-					}*/
-					
+					}*/					
 				}
-				
-				// TODO add conditions for determining witch landmarks and/or mouse
-				// is in the sight
-
-				//mouse color marker is in the first color group
-				err = xColor[0] - 176f/2f + offset; //0-88-19=-107 worst case
-				
-				
-				for (int i=0; i<colorsFound-1; i++) {
-					angToTarget[i] = (xColor[i] - 176f/2f + offset)*radPerPix;
-					angToTargetRelCat[i] = angToTarget[i] + motorAngRad;
-				}
-				
-				//To push:
-				/*for (int i=0; i<colorsFound-1; i++) {
-					new SightingData(Clock.timestamp(), angToTargetRelCat[i], i));
-				}*/
-				
-				// Correct the latest approximated values with 
-				// the latest data from the motor control				
-				//lastCatAngle = Main.positioningFilter.getAngle() + (MovementPilot.getInstance().getAngle() - lastCatAngle);				
-				
-				// kalman and particle filter will use different reference
-				// points for angular measurements
-				//angToTargetAbs = lastCatAngle + angToTargetRelCat;
-				
-				/*if (Settings.POSITIONING_FILTER_UNSCENTED_KALMAN) {
-					//Push absolute angle to UKF positioning filter
-					//no point of pushing the position, since UKF uses velocity
-					// UKF will take velocity just before the iteration
-					Main.positioningFilter.getUnifiedBuffer().push(
-							new SightingData(Clock.timestamp(), angToTargetRelCat, type));
-				}				
-				else if (Settings.POSITIONING_FILTER_PARTICLE) {
-					//Push relative(?) angle to particle filter
-					// TODO if particle filter also uses approximated position
-					// corrected with dx and dy since the last interation
-					// these values should also be updated and reseted in 
-					// MotorControl when using particle filter.
-					// Now these actions are being done only when 
-					// using UKF
-					Main.positioningFilter.getUnifiedBuffer().push(
-							new SightingData(Clock.timestamp(), angToTargetRelCat, type));
-					
-					MovementPilot.getInstance().pushMovementData();
-				}
-				else if (Settings.POSITIONING_FILTER_BASIC)
-					//push to basic filter	
-					Main.positioningFilter.getUnifiedBuffer().push(
-							new SightingData(Clock.timestamp(), angToTargetRelCat, type));
-				else
-					System.out.println("No positioning filter selected");*/
-				
-				unifiedBuffer.push(new SightingData(Clock.timestamp(), angToTargetRelCat, type));
-				// TODO nudge the movement pilot to push measurements 
 				
 				System.out.println("CamMotor:" + motorAng);
 				
@@ -184,7 +144,7 @@ public class Camera implements Runnable {
 					
 				}*/
 				/*ConnectionManager.getInstance().sendPacketToAll(
-						new SimpleMeasurement(angToTargetRelCat)
+						new SimpleMeasurement(id, angToTargetRelCat, motorAngRad)
 				);*/
 				
 				//Logger.println("Found at:" + (int) (angToTargetAbs*180/Math.PI));

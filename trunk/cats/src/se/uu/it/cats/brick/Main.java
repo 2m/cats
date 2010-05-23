@@ -44,8 +44,8 @@ public class Main
 		unifiedBuffer = new BufferSorted();
 		
 		// run camera thread
-		//Thread cameraThread = new Thread(new Camera(unifiedBuffer));
-		//cameraThread.start();
+		Thread cameraThread = new Thread(new Camera(unifiedBuffer));
+		cameraThread.start();
 		
 		movementPilot = new MovementPilot(unifiedBuffer);
 		Thread movementThread = new Thread(movementPilot);
@@ -175,10 +175,7 @@ public class Main
 					//ConnectionManager.getInstance().sendPacketToAll(p);
 					for (int i = 0; i < 100; i++)
 					{
-						Random r = new Random();			
-						ConnectionManager.getInstance().sendPacketToAll(
-								new SimpleMeasurement((float)r.nextDouble())
-						);
+						Random r = new Random();
 						
 						try {Thread.sleep(100);}catch(Exception ex){}
 					}

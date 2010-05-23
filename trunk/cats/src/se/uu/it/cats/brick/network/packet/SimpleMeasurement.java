@@ -3,25 +3,42 @@ package se.uu.it.cats.brick.network.packet;
 public class SimpleMeasurement extends Packet {
 	
 	public byte _type = 0x02;
+	
+	private byte _id;
 	private float _angle;
+	private float _camAngle;
 	
 	public static int LENGTH =
 		1		// type - 1byte
 		+ 1		// src  - 1byte
-		+ 4;	// angle - 1float - 4bytes
+		+ 1		// id - 1byte
+		+ 4		// angle - 1float - 4bytes
+		+ 4;	// camAngle - 1float - 4bytes
 	
 	public SimpleMeasurement()
 	{		
 	}
 	
-	public SimpleMeasurement(float angle)
+	public SimpleMeasurement(int id, float angle, float camAngle)
 	{
+		_id = (byte)id;
 		_angle = angle;
+		_camAngle = camAngle;
+	}
+	
+	public int getId()
+	{
+		return (int)_id;
 	}
 	
 	public float getAngle()
 	{
 		return _angle;
+	}
+	
+	public float getCamAngle()
+	{
+		return _camAngle;
 	}
 
 	public void readImpl(byte[] bArr)
@@ -32,8 +49,14 @@ public class SimpleMeasurement extends Packet {
 		// read byte
 		_src = readByte(bArr, 1);
 		
-		// read int
-		_angle = readFloat(bArr, 2);
+		// read byte
+		_id = readByte(bArr, 2);
+		
+		// read float
+		_angle = readFloat(bArr, 3);
+		
+		// read float
+		_camAngle = readFloat(bArr, 7);
 	}
 
 	public byte[] writeImpl()
@@ -46,8 +69,14 @@ public class SimpleMeasurement extends Packet {
 		// write byte
 		writeByte(_src, output, 1);
 		
-		// write integer
-		writeFloat(_angle, output, 2);
+		// write byte
+		writeByte(_id, output, 2);
+		
+		// write float
+		writeFloat(_angle, output, 3);
+		
+		// write float
+		writeFloat(_camAngle, output, 7);
 		
 		return output;
 	}
@@ -59,6 +88,6 @@ public class SimpleMeasurement extends Packet {
 	
 	public String toString()
 	{
-		return "SimpleMeasurement[_type:"+_type+", _src:"+_src+", _angle:"+_angle+"]";
+		return "SimpleMeasurement[_type:"+_type+", _src:"+_src+", _id:"+_id+" _angle:"+_angle+" _camAngle:"+_camAngle+"]";
 	}
 }
