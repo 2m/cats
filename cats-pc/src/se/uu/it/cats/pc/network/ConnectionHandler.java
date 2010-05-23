@@ -94,10 +94,10 @@ public class ConnectionHandler implements Runnable
 				
 				index = index + received;
 				
-				/*Logger.print("Rcvd:"+received+" input buffer:");
+				Logger.print("Rcvd:"+received+" input buffer:");
 				for (int i = 0; i < index; i++)
 					Logger.print(bArr[i]+", ");
-				Logger.println("of length"+index);*/
+				Logger.println("of length"+index);
 				
 				Packet p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				
@@ -112,8 +112,9 @@ public class ConnectionHandler implements Runnable
 					// add info to log panel
 					PanelBluetooth.updatePacket(p.toString());
 					
-					// forward packet to other cats
-					ConnectionManager.getInstance().relayPacketToAllExcept(p, getRemoteName());
+					// forward packet to other cats, some packets do not need to be forwarded
+					if (!(p instanceof SimpleMeasurement))
+						ConnectionManager.getInstance().relayPacketToAllExcept(p, getRemoteName());
 					
 					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				}
