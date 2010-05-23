@@ -51,9 +51,10 @@ public class HmeasMouse implements IFunction{
 			}
 		}	
 		
-		System.out.println("Debug, in HmeasCat: x1 = " + positions[(1-1)*4+0] + ", y1 = " + positions[(1-1)*4+1] + "; x2 = " + positions[(2-1)*4+0] + ", y2 = " + positions[(2-1)*4+1]);
+		/*System.out.println("Debug, in HmeasCat: x1 = " + positions[(1-1)*4+0] + ", y1 = " + positions[(1-1)*4+1] + "; x2 = " + positions[(2-1)*4+0] + ", y2 = " + positions[(2-1)*4+1]);
 		System.out.println("Debug, in HmeasCat: output (zm) = ");
 		printM(zm);	
+		*/
 		
 		return zm;
 		
