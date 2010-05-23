@@ -169,8 +169,9 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			//Draw camera angles
 			linelength = 90;
 			g2d.setColor(Color.blue);
-			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()+43f/360*Math.PI))*linelength));
-			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_cam()-43f/360*Math.PI))*linelength));
+			float camAngle = _cats[i].getAngle_cam() + _cats[i].getAngle_c();
+			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(camAngle+43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(camAngle+43f/360*Math.PI))*linelength));
+			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(camAngle-43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(camAngle-43f/360*Math.PI))*linelength));
 			
 			if(_cats[i].isManualOrder()) {
 				g2d.setColor(Color.red); 
@@ -199,13 +200,19 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			// print sightings as long lines of different colors
 			g2d.setStroke(new BasicStroke(3)); // width of the lines
 			for (int j = 0; j < _cats[i].getSightingCount(); j++) {
-				float angle = _cats[i].getSighting(j);
+				
+				if (_cats[i].getSightingDrawCount(j) <= 0)
+					continue;
+				
+				float angle = _cats[i].getSighting(j) + _cats[i].getAngle_c();
 				linelength = 100;
 				
 				Color[] colors = new Color[] {Color.red, Color.magenta, Color.blue, Color.green, Color.yellow};				
 				g2d.setColor(colors[j]);
 				
 				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(angle))*linelength), (int) (entityPosY + Math.sin(-(angle))*linelength));
+				
+				_cats[i].decreaseSightingDrawnCount(j);
 			}
 			
 			//Draw cat-direction

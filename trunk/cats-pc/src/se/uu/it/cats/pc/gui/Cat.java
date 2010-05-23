@@ -20,7 +20,9 @@ public class Cat {
 	// id - 0 is angle to mouse relative to cat
 	// id - 1 is angle to lighthouse1 relative to cat
 	// and so on...
-	private float[] sightings = new float[Area.LIGHTHOUSE_COUNT + 1];
+	// first index in the array holds the actuall angle,
+	// second - the number of times it has been drawn
+	private float[][] sightings = new float[Area.LIGHTHOUSE_COUNT + 1][2];
 	
 	public Cat(String name) {
 		catName = name;
@@ -120,14 +122,23 @@ public class Cat {
 	}
 	
 	public void setSighting(int sightingId, float angle) {
-		sightings[sightingId] = angle;
+		sightings[sightingId][0] = angle;
+		sightings[sightingId][1] = 20;
 	}
 	
 	public float getSighting(int sightingId) {
-		return sightings[sightingId];
+		return sightings[sightingId][0];
 	}
 	
 	public float getSightingCount() {
 		return sightings.length;
+	}
+	
+	public float getSightingDrawCount(int sightingId) {
+		return sightings[sightingId][1];
+	}
+	
+	public void decreaseSightingDrawnCount(int sightingId) {
+		sightings[sightingId][1]--;
 	}
 }
