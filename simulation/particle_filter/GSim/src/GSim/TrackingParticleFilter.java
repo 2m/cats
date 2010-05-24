@@ -33,11 +33,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 	private int varYvYv;
 	private int varXvYv;
 
-	/** Sum of weights and flag to tell if it is zero. */
+	/** Sum of weights */
 	private int sum_w;
-	private boolean zerosum;
 
-	/** Varible for time */
+	/** Variable for time */
 	private int lastCurrentTime, currentTime;// , lastIntegration;
 
 	/** Random number lookup table */
@@ -114,9 +113,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// No co-variance
 		varXY = Fixed.floatToFixed(0.0);
 		varXvYv = Fixed.floatToFixed(0.0);
-		// Set this to true so filter assumes all old particle data can be
+		// Set this to 0 so filter assumes all old particle data can be
 		// overwritten.
-		zerosum = true;
+		sum_w = 0;
 		// Re-sample so particles get the new data
 		reSample();
 	}
@@ -217,14 +216,11 @@ public class TrackingParticleFilter extends TrackingFilter {
 		data = newlist;
 		// Save weight sum
 		sum_w = sum_w_tmp;
-		// Check if the sum of weights are zero
-		zerosum = (sum_w_tmp == 0);
 		// Print to logger if there was a division by zero
 		if (div_by_zero != 0) {
-			Logger.println(div_by_zero
-					+ " instances of division by zero in compareParticles()");
+			Logger.println(div_by_zero + " instances of division by zero in "
+					+ "TrackingParticleFilter.compareParticles()");
 		}
-		// Logger.println("sum_w=" + Fixed.fixedToFloat(sum_w));
 		if (data.getLength() != N) {
 			Logger.println("Tracking particles lost! (count:"
 					+ data.getLength() + ")");
@@ -270,7 +266,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		Link link = data.first;
 
 		// Decide on cut off
-		if (!zerosum) {
+		if (sum_w != 0) {
 			// Only the worst particles needs to be re-sampled, so some
 			// particles can be skipped.
 
@@ -308,10 +304,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 */
 	public void calcMean() {
 		// Logger.print(id + ": Calculating mean ");
-		// Create local vaiables
+		// Create local variables
 		int tmean_x = 0, tmean_y = 0, tmean_xv = 0, tmean_yv = 0, norm;
-		int mx = 0, my = 0; // Unweighted means
-		if (zerosum) {
+		int mx = 0, my = 0; // Unweighed means
+		if (sum_w == 0) {
 			// Logger.println(id + ": Calculating mean (ordinary)");
 			// Calculate an ordinary mean
 			Link link = data.first;
@@ -361,7 +357,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		mx = Fixed.mul(mx, Nnorm);
 		my = Fixed.mul(my, Nnorm);
 		// Calculate (co-)variances
-		if (zerosum) {
+		if (sum_w==0) {
 			// No old data should be saved and filter knows nothing about the
 			// current tracked states. Uncertainty increases with time (standard
 			// deviation increases by 20%).
@@ -534,24 +530,28 @@ public class TrackingParticleFilter extends TrackingFilter {
 		g2.setColor(Color.green);
 		// Plot particles
 
-		Link link = data.first;
-		while (link != null) {
-			TrackingParticle part = (TrackingParticle) link.data;
-			int ix = Actor.e2gX(Fixed.fixedToFloat(part.x));
-			int iy = Actor.e2gY(Fixed.fixedToFloat(part.y));
-			float xv = Fixed.fixedToFloat(part.xv);
-			float yv = Fixed.fixedToFloat(part.yv);
-			linelength = (int) Fixed.fixedToFloat(Fixed.norm(part.xv, part.yv));
-			double iangle = -Math.atan2(yv, xv);
-			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
-					(int) size, (int) size);
-			g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
-					* linelength), (int) (iy + Math.sin(iangle) * linelength));
-			link = link.next;
-		}
-
+		/*
+		 * Link link = data.first;while (link != null) {TrackingParticle part =
+		 * (TrackingParticle) link.data;
+		 * 
+		 * int ix = Actor.e2gX(Fixed.fixedToFloat(part.x)); int iy =
+		 * Actor.e2gY(Fixed.fixedToFloat(part.y)); float xv =
+		 * Fixed.fixedToFloat(part.xv); float yv = Fixed.fixedToFloat(part.yv);
+		 * linelength = (int) Fixed.fixedToFloat(Fixed.norm(part.xv, part.yv));
+		 * double iangle = -Math.atan2(yv, xv);
+		 * 
+		 * g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
+		 * (int) size);
+		 * 
+		 * 
+		 * g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
+		 * linelength), (int) (iy + Math.sin(iangle) * linelength));
+		 * 
+		 * link = link.next;}
+		 */
+		
 		// Plot mean
-		g2.setColor(Color.pink);
+		g2.setColor(Color.CYAN);
 		int ix = Actor.e2gX(getX());
 		int iy = Actor.e2gY(getY());
 		double iangle = -Math.atan2(getYv(), getXv());
@@ -569,7 +569,8 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Download mean and co-variance data
 		float[] net = billboard.getMeanAndCovariance();
 		// Update the local mean and co-variance
-		if (net[10] == 0) {
+		sum_w = Fixed.floatToFixed(net[10]);
+		if (sum_w == 0) {
 			varXX = Fixed.ONE;
 			varXY = 0;
 			varYY = Fixed.ONE;
@@ -587,7 +588,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		varXvYv = Fixed.floatToFixed(net[8]);
 		varYvYv = Fixed.floatToFixed(net[9]);
 
-		// Re-sample (loads values from billboard)
+		// Re-sample
 		reSample();
 
 		// Get time reference
@@ -601,11 +602,11 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Compare sensor data to particles
 		float[] sightings = billboard.getLatestSightings();
 		// Loop through cats in billboard
-		for (int i = 1; i <= billboard.getNoCats(); i++) {
-			int x = Fixed.floatToFixed(sightings[(i - 1) * 4]);
-			int y = Fixed.floatToFixed(sightings[(i - 1) * 4 + 1]);
-			int angle = Fixed.floatToFixed(sightings[(i - 1) * 4 + 2]);
-			if (x >= 0) {
+		for (int i = 0; i < billboard.getNoCats(); i++) {
+			int x = Fixed.floatToFixed(sightings[i * 4]);
+			int y = Fixed.floatToFixed(sightings[i * 4 + 1]);
+			int angle = Fixed.floatToFixed(sightings[i * 4 + 2]);
+			if (sightings[i * 4] >= 0) {
 				compareParticles(x, y, angle);
 			}
 		}

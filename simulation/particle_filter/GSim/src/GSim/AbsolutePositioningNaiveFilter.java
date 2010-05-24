@@ -13,7 +13,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	private float mean_y;
 	private float mean_angle;
 
-	/** Varible for time */
+	/** Variable for time */
 	private int lastCurrentTime, currentTime;
 
 	/** Counter and timer too keep track of mean iteration execution time */
@@ -52,6 +52,9 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		mean_x = x;
 		mean_y = y;
 		mean_angle = angle;
+		lastCurrentTime = Clock.timestamp();
+		billboard
+				.setAbsolutePosition(id, getX(), getY(), getAngle(), getTime());
 	}
 
 	/**
@@ -104,7 +107,6 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	 * Draw particles (NOT brick material)
 	 */
 	public void draw(Graphics g) {
-		// TODO: Remove graphics code from filter
 		final int size = 10; // Diameter
 		final int linelength = 20;
 
@@ -113,16 +115,20 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		// Save the current transform
 		AffineTransform oldTransform = g2.getTransform();
 
-		// Rotate and translate the actor
-		// g2.rotate(iangle, ix, iy);
-
 		// Plot mean
 		g2.setColor(Color.PINK);
-		float[] position = billboard.getAbsolutePositions();
 
-		int ix = Actor.e2gX(position[(id - 1) * 4 + 0]);
-		int iy = Actor.e2gY(position[(id - 1) * 4 + 1]);
-		double iangle = -position[(id - 1) * 4 + 2];
+		int ix, iy;
+		double iangle;
+		/*
+		 * float[] position = billboard.getAbsolutePositions(); * ix =
+		 * Actor.e2gX(position[id * 4 + 0]); iy = Actor.e2gY(position[id * 4 +
+		 * 1]); iangle = -position[id * 4 + 2];
+		 */
+		ix = Actor.e2gX(getX());
+		iy = Actor.e2gY(getY());
+		iangle = -getAngle();
+
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
 				(int) size);
 		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
@@ -147,11 +153,15 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 					mean_y += Math.sin(mean_angle) * mdata.dr;
 					mean_angle += mdata.dangle;
 					lastCurrentTime = mdata.comparable;
+					billboard.setAbsolutePosition(id, getX(), getY(),
+							getAngle(), getTime());
 				} else if (data.isSightingData()) {
 					SightingData sdata = (SightingData) data;
 					if (sdata.type == LandmarkList.MOUSE) {
+
 						billboard.setLatestSighting(id, getX(), getY(),
-								getAngle() + sdata.angle, sdata.comparable);
+								sdata.angle + getAngle(), sdata.comparable);
+
 					}
 				}
 				data = unifiedBuffer.pop();
@@ -160,14 +170,10 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 				data = null;
 			}
 		}
-		billboard.setAbsolutePosition(id, getX(), getY(), getAngle(), Clock
-				.timestamp());
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
 		iterationTime += Clock.timestamp() - currentTime;
-		// Update public time
-		lastCurrentTime = currentTime;
 	}
 
 	public void run() {
