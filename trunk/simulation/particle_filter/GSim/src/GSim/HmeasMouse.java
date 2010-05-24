@@ -36,7 +36,8 @@ public class HmeasMouse implements IFunction{
 		//xm is where the cats think the mouse is
 		//positions are where the cats thinks they are
 		//NB: All -1 in the indices are used to indicate the shift form the first array index in matlab = 1 to java's = 0.
-		float[] positions = billboard.getAbsolutePositions();
+		//float[] positions = billboard.getAbsolutePositions();
+		float[] positions = billboard.getLatestSightings();
 		Matrix zm = Matlab.zeros(nm, 1);
 		for (int i = 1; i<=nm; i++)
 		{
