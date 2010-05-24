@@ -84,8 +84,8 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		
 		ufk_filter = new UnscentedKalmanFilter(nx,nz); 
 		float dt = T; //1.0f;  //sampling period
-		float q = 0.005f;  //std of expected process noise for the mouse
-		float stddegrees = 2.0f; //0.1f;
+		float q = 0.5f;//0.005f;  //std of expected process noise for the mouse
+		float stddegrees = 1f;//2.0f; //0.1f;
 		std_array = new double[]{stddegrees*(PI/180)};
 		double[][] r_temp = {std_array};
 		r = new Matrix(r_temp);  //std of expected measurement noise for the mouse
