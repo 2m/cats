@@ -37,8 +37,8 @@ public class MotorControl {
 	}
 
 	public void turn(double turnangle) {
-		// +-4% noise
-		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() * 0.08 + 0.04)); 
+		// +-2% noise
+		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() * 0.04 + 0.02)); 
 		updateBuffer.push(new MovementData(Clock.timestamp(), (float) 0.0,
 				(float) turnangle));
 	}
