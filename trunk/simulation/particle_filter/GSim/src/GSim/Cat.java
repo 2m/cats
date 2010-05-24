@@ -17,9 +17,9 @@ public class Cat extends Actor {
 
 	private boolean usePositioningParticleFilter = false;
 	private boolean usePositioningUnscentedKalmanFilter = false;
-	private boolean useTrackingParticleFilter = true;
-	private boolean useTrackingUnscentedKalmanFilter = false;
-	private boolean useGuide = true;
+	private boolean useTrackingParticleFilter = false;
+	private boolean useTrackingUnscentedKalmanFilter = true;
+	private boolean useGuide = false;
 
 	private int timestepsBetweenFilterUpdates = 5;
 
@@ -49,10 +49,10 @@ public class Cat extends Actor {
 		if (useTrackingParticleFilter) {
 			trackingFilter = new TrackingParticleFilter(id, N, T, billboard);
 		} else if (useTrackingUnscentedKalmanFilter) {
-			/*
-			 * trackingFilter = new TrackingUnscentedKalmanFilter(id, T,
-			 * billboard);
-			 */
+
+			trackingFilter = new TrackingUnscentedKalmanFilter(id, T,
+					billboard);
+
 		}
 
 		positioningFilter.initData((float) motor.getX(), (float) motor.getY(),
