@@ -23,7 +23,8 @@ public class TrackingUnscentedKalmanFilterTest {
 		
 		
 		//states 1 (x1), k = 13 in the Matlab sim of mainUKFmerge with 0 camera offset
-		trackingFilter.initData(1.335855428082178f, 1.203333865549188f, -0.014289338603084f, 0.008865245949793f, Clock.timestamp() );  //x, y, xv, xy, NB: sets lastCurrentTime to Clock()  
+		int time = Clock.timestamp();
+		trackingFilter.initData(1.335855428082178f, 1.203333865549188f, -0.014289338603084f, 0.008865245949793f, time);  //x, y, xv, xy, NB: sets lastCurrentTime to Clock()  
 		
 		//state covariance 1 (P1)
 		double[][] temp_P1_correct = {{0.091976381876777,  -0.008867901387261,   0.146025265002760,  -0.003003741071050},
@@ -34,15 +35,15 @@ public class TrackingUnscentedKalmanFilterTest {
 		P1_correct.timesEquals(0.0001);
 		trackingFilter.setStateCovariance(P1_correct);
 				
-		billboard.setAbsolutePosition(1, 0.363795125006558f, 0.216067986651408f, -0.124804764073335f, Clock.timestamp()+100);
-		billboard.setAbsolutePosition(2, 1.638056992700254f, 1.789290480544979f, -3.095256852035598f, Clock.timestamp()+100);
-		billboard.setAbsolutePosition(3, 1.802691755315792f, 0.349717175671003f, 1.603020253504810f, Clock.timestamp()+100);		      
+		billboard.setAbsolutePosition(1, 0.363795125006558f, 0.216067986651408f, -0.124804764073335f, time +100);
+		billboard.setAbsolutePosition(2, 1.638056992700254f, 1.789290480544979f, -3.095256852035598f, time +100);
+		billboard.setAbsolutePosition(3, 1.802691755315792f, 0.349717175671003f,  1.603020253504810f, time +100);		      
 		//other angle (cam?) 0.765110147757594   2.199999999999884   2.049976488387934
 		
 		//NB: x and y are set to the same as in above
-		billboard.setLatestSighting(1, 0.363795125006558f, 0.216067986651408f, 0.808272447212222f, Clock.timestamp()+100);  //Sees the mouse
-		billboard.setLatestSighting(2, 1.638056992700254f, 1.789290480544979f, 3.141592653589793f, Clock.timestamp()-100);  //Doesn't see the mouse
-		billboard.setLatestSighting(3, 1.802691755315792f, 0.349717175671003f, 2.072717556964165f, Clock.timestamp()+100);	//Sees the mouse
+		billboard.setLatestSighting(1, 0.363795125006558f, 0.216067986651408f, 0.808272447212222f, time +100);  //Sees the mouse
+		billboard.setLatestSighting(2, 1.638056992700254f, 1.789290480544979f, 3.141592653589793f, time -100);  //Doesn't see the mouse
+		billboard.setLatestSighting(3, 1.802691755315792f, 0.349717175671003f, 2.072717556964165f, time +100);	//Sees the mouse
 		
 		//Check that the initial values where set correctcly
 		System.out.println("Inputs");
