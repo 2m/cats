@@ -80,9 +80,9 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		int nx = 4;  //number of variables in the mouse's state vector
 		
 		ufk_filter = new UnscentedKalmanFilter(nx,nz); 
-		float dt = T;//1f;  //sampling period
+		float dt = T; //1.0f;  //sampling period
 		float q = 0.005f;  //std of expected process noise for the mouse
-		float stddegrees = 2;
+		float stddegrees = 2.0f; //0.1f;
 		std_array = new double[]{stddegrees*(PI/180)};
 		double[][] r_temp = {std_array};
 		r = new Matrix(r_temp);  //std of expected measurement noise for the mouse
@@ -98,13 +98,13 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		states = zeros(nx,1);  //initial estimated state
 		measurments = zeros(nz,1);  //initial estimated state
 		
-		f = new FstateMouse(T);  //nonlinear state equations
+		f = new FstateMouse(dt);  //nonlinear state equations
 		h = new HmeasMouse(billboard);  //measurement equation  
 		
 		P = eye(nx).timesEquals( pow(10,-3) );  //initial state covariance
 
 		//Initialize some data just to be sure that it gets done
-		initData(1f, 1f, 0.00001f, 0.00001f);
+		initData(1f, 1f, 0.00001f, 0.00001f, Clock.timestamp());
 		billboard.setLatestSighting(id, 0, 0, 0, lastCurrentTime-1000);
 		
 		if (DEBUG){
@@ -137,12 +137,45 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	 */
 	public void initData(float x, float y, float xv, float yv) 
 	{	
-		lastCurrentTime = Clock.timestamp();
 		states.set(0, 0, x);
 		states.set(1, 0, y);	
 		states.set(2, 0, xv);
 		states.set(3, 0, yv);			
 	}
+	
+	public void initData(float x, float y, float xv, float yv, int lastCurrentTime) 
+	{	
+		initData(x, y, xv, yv);
+		this.lastCurrentTime = lastCurrentTime;	
+	}
+	
+	/**
+	 * This method is only intended for testing
+	 * @param P  New state covariance
+	 * 			
+	 */
+	public void setStateCovariance(Matrix P)
+	{
+		this.P = P;
+	}
+	/**
+	 * This method is only intended for testing
+	 * @return  Current state covariance
+	 */
+	public Matrix getStateCovariance()
+	{
+		return P;
+	}
+	/**
+	 * This method is only intended for testing
+	 * @return
+	 */
+	public Matrix getStates()
+	{
+		return states;
+	}
+	
+	
 
 	/**
 	 * Returns time of the last update of the filter 
