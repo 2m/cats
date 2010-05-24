@@ -12,15 +12,15 @@ public class Guide {
 	private float[] mousePos;
 	private float[][] otherCats;
 	private boolean haveMousePosition = false;
-	public float D1 = (float) 1.0; // Opitmal distance from mouse
-	public float D2 = (float) 0.30; // Min distance to cats
-	public float D3 = (float) 0.30; // Min distance from line of sight
-	public float D4 = (float) 0.10; // Min distance from arena edges
+	public float D1 = (float) 1.0; // Optimal distance from mouse
+	public float D2 = (float) 0.30; // Minimal distance to cats
+	public float D3 = (float) 0.30; // Minimal distance from line of sight
+	public float D4 = (float) 0.10; // Minimal distance from arena edges
 	// Weights on the different parts of the criterion function
-	public float W1 = (float) 0.5;
-	public float W2 = (float) 1.0;
-	public float W3 = (float) 0.8;
-	public float W4 = (float) 1.0;
+	public float W1 = (float) 0.0;
+	public float W2 = (float) 0.0;
+	public float W3 = (float) 1.0; // Importance of distance from edges
+	public float W4 = (float) 0.0;
 
 	public Guide(int id, BillBoard billboard) {
 		this.billboard = billboard;
@@ -28,30 +28,56 @@ public class Guide {
 		myPos = new float[2];
 		mousePos = new float[2];
 		otherCats = new float[billboard.getNoCats() - 1][2];
-		System.out.println("Guide with id " + id + " initialised");
+	}
+
+	public float[] getAdvice() {
+		float[] advice = new float[2];
+		float[] go = new float[2];
+		go[0] = myPos[0];
+		go[1] = myPos[1];
+		if (go[0] >= 0) {
+			int i = 0;
+			while ((i < 10)
+					&& (Math.sqrt(Math.pow(myPos[0] - go[0], 2)
+							+ Math.pow(myPos[1] - go[1], 2)) < 0.10f)) {
+				float[] grad = getGradient((float) go[0], (float) go[1]);
+				go[0] += 0.01 * Math.signum(grad[0]);
+				go[1] += 0.01 * Math.signum(grad[1]);
+				i++;
+			}
+
+			/*
+			 * if (Math.sqrt(Math.pow(myPos[0] - go[0], 2) + Math.pow(myPos[1] -
+			 * go[1], 2)) > 0.1f) { advice[0] = go[0]; advice[1] = go[1]; } else
+			 * { advice[0] = myPos[0]; advice[1] = myPos[1]; }
+			 */}
+		advice[0] = go[0];
+		advice[1] = go[1];
+		return advice;
 	}
 
 	private void getDataFromNetwork() {
 		// Get the position of all cats
-		float[] sightings = billboard.getLatestSightings();
+		float[] positions = billboard.getAbsolutePositions();
 		int j = 0;
-		for (int i = 1; i <= billboard.getNoCats(); i++) {
+		for (int i = 0; i < billboard.getNoCats(); i++) {
 			if (i == id) {
-				myPos[0] = sightings[(i - 1) * 4];
-				myPos[1] = sightings[(i - 1) * 4 + 1];
+				myPos[0] = positions[i * 4];
+				myPos[1] = positions[i * 4 + 1];
 
 			} else {
-				otherCats[j][0] = sightings[(i - 1) * 4];
-				otherCats[j][1] = sightings[(i - 1) * 4 + 1];
+				otherCats[j][0] = positions[i * 4];
+				otherCats[j][1] = positions[i * 4 + 1];
 				j++;
 			}
 
 		}
-		// Get mouse position if variance is small enough
+		// Get mouse position if variance is small enough and weight>0
 		float[] meanAndCoVariance = billboard.getMeanAndCovariance();
 		float maxVariance = 1;
 		if ((meanAndCoVariance[4] < maxVariance)
-				&& (meanAndCoVariance[6] < maxVariance)) {
+				&& (meanAndCoVariance[6] < maxVariance)
+				&& (meanAndCoVariance[10] > 0)) {
 			mousePos[0] = meanAndCoVariance[0];
 			mousePos[1] = meanAndCoVariance[1];
 			haveMousePosition = true;
@@ -61,23 +87,21 @@ public class Guide {
 	}
 
 	public float[] getGradient(float x, float y) {
+		// Finite difference approximation of the gradient and (x, y)
 		float[] ret = new float[2];
-		float[][] list = new float[5][2];
+		float[][] list = new float[4][2];
 		float d = (float) 0.1;
-		/*
-		 * list[0][0] = (float) x; list[0][1] = (float) y;
-		 */
-		list[1][0] = (float) x + d;
+		list[0][0] = (float) x + d;
+		list[0][1] = (float) y;
+		list[1][0] = (float) x - d;
 		list[1][1] = (float) y;
-		list[2][0] = (float) x - d;
-		list[2][1] = (float) y;
+		list[2][0] = (float) x;
+		list[2][1] = (float) y + d;
 		list[3][0] = (float) x;
-		list[3][1] = (float) y + d;
-		list[4][0] = (float) x;
-		list[4][1] = (float) y - d;
+		list[3][1] = (float) y - d;
 		float[] f = sampleList(list);
-		ret[0] = f[1] - f[2];
-		ret[1] = f[3] - f[4];
+		ret[0] = (f[0] - f[1]);
+		ret[1] = (f[2] - f[3]);
 		return ret;
 	}
 
@@ -245,7 +269,7 @@ public class Guide {
 
 		Graphics2D g2 = (Graphics2D) g;
 
-		// Save the current tranform
+		// Save the current transform
 		AffineTransform oldTransform = g2.getTransform();
 
 		// Rotate and translate the actor
@@ -258,7 +282,7 @@ public class Guide {
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
 				(int) size);
 
-		// TODO: Find a better way to give feedback here
+		// TODO: Find a better way to give feedback in Guide
 		g2.setColor(Color.magenta);
 		for (int i = 0; i < billboard.getNoCats() - 1; i++) {
 			ix = Actor.e2gX(otherCats[i][0]);
@@ -280,10 +304,10 @@ public class Guide {
 					s = 1.0f;
 				}
 				g2.setColor(new Color(s, (float) 0.0, (float) 0.0));
-				/*
-				 * g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
-				 * (int) size, (int) size);
-				 */
+
+				g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
+						(int) size, (int) size);
+
 			}
 		}
 		// Reset the transformation matrix
