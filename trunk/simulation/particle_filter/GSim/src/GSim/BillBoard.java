@@ -36,10 +36,10 @@ public class BillBoard {
 	public void setLatestSighting(int id, float x, float y, float theta,
 			int timestamp) {
 		// id in range [1:n]
-		sightings[(id - 1) * 4 + 0] = x;
-		sightings[(id - 1) * 4 + 1] = y;
-		sightings[(id - 1) * 4 + 2] = theta;
-		sightings[(id - 1) * 4 + 3] = timestamp;
+		sightings[id * 4 + 0] = x;
+		sightings[id * 4 + 1] = y;
+		sightings[id * 4 + 2] = theta;
+		sightings[id * 4 + 3] = timestamp;
 		/*
 		 * if ( (int)((float)timestamp) != timestamp)
 		 * System.out.println("CONVERSION ERROR IN setLatestSighting!!!!! ( " +
@@ -54,10 +54,10 @@ public class BillBoard {
 
 	public void setAbsolutePosition(int id, float x, float y, float angle,
 			int timestamp) {
-		position[(id - 1) * 4 + 0] = x;
-		position[(id - 1) * 4 + 1] = y;
-		position[(id - 1) * 4 + 2] = angle;
-		position[(id - 1) * 4 + 3] = timestamp;
+		position[id * 4 + 0] = x;
+		position[id * 4 + 1] = y;
+		position[id * 4 + 2] = angle;
+		position[id * 4 + 3] = timestamp;
 	}
 
 	public float[] getAbsolutePositions() {
@@ -77,7 +77,7 @@ public class BillBoard {
 			float mean_xv, float mean_yv, float var_xx, float var_xy,
 			float var_yy, float var_xvxv, float var_xvyv, float var_yvyv,
 			float weight) {
-		int i = id - 1;
+		int i = id;
 		data[i][0] = mean_x;
 		data[i][1] = mean_y;
 		data[i][2] = mean_xv;
@@ -96,18 +96,18 @@ public class BillBoard {
 	 * @return ret {m_x, m_y, m'_x, m'_y, xx, xy, yy, x'x', x'y', y'y', weight}
 	 */
 	public float[] getMeanAndCovariance() {
-		// ret = {m_x, m_y, m'_x, m'_y, xx, xy, yy, x'x', x'y', y'y'}
+		// ret = {m_x, m_y, m'_x, m'_y, xx, xy, yy, x'x', x'y', y'y', weight}
 		float[] ret = new float[DATA_PER_CAT];
 		float total_weight = 0;
 		for (int j = 0; j < NUMBER_OF_CATS; j++) {
-			total_weight += data[j][10];
+			total_weight += data[j][DATA_PER_CAT - 1];
 		}
-		ret[10] = total_weight;
-		for (int i = 0; i < DATA_PER_CAT - 1; i++) {
+		ret[DATA_PER_CAT - 1] = total_weight;
+		for (int i = 0; i < (DATA_PER_CAT - 1); i++) {
 			ret[i] = 0;
 			for (int j = 0; j < NUMBER_OF_CATS; j++) {
 				// Add weighted data
-				ret[i] += data[j][10] * data[j][i];
+				ret[i] += data[j][DATA_PER_CAT - 1] * data[j][i];
 			}
 			// Normalise weights
 			if (total_weight == 0) {
@@ -116,6 +116,7 @@ public class BillBoard {
 				ret[i] /= total_weight;
 			}
 		}
+		ret[DATA_PER_CAT - 1] = total_weight;
 		return ret;
 	}
 }

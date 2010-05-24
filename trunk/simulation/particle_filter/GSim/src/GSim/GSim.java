@@ -49,10 +49,10 @@ public class GSim extends JFrame implements MouseListener {
 		 * billboard, 1);
 		 */
 
-		actors[0] = new Mouse(null, 1.5, 1.5, 0.0, billboard, 0);
-		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, billboard, 1);
-		actors[2] = new Cat(actors[0], 1.0, 1.0, 0, billboard, 2);
-		actors[3] = new Cat(actors[0], 1.5, 0.1, 0, billboard, 3);
+		actors[0] = new Mouse(null, 1.5, 1.5, 0.0, billboard, 3);
+		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, billboard, 0);
+		actors[2] = new Cat(actors[0], 1.0, 1.0, 0, billboard, 1);
+		actors[3] = new Cat(actors[0], 1.5, 0.1, 0, billboard, 2);
 
 	}
 
@@ -83,7 +83,7 @@ public class GSim extends JFrame implements MouseListener {
 			int iy = Actor.e2gY((double) LandmarkList.landmarkY[i]);
 			Graphics2D g2 = (Graphics2D) g;
 
-			// Save the current tranform
+			// Save the current transform
 			AffineTransform oldTransform = g2.getTransform();
 
 			// Rotate and translate the actor
@@ -97,7 +97,7 @@ public class GSim extends JFrame implements MouseListener {
 			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
 					(int) size, (int) size);
 
-			// Reset the tranformation matrix
+			// Reset the transformation matrix
 			g2.setTransform(oldTransform);
 		}
 	}
@@ -155,7 +155,6 @@ public class GSim extends JFrame implements MouseListener {
 	public void mouseClicked(MouseEvent e) {
 		double x = Actor.g2eX(e.getX());
 		double y = Actor.g2eY(e.getY());
-		// System.out.println(x +", "+ y);
 		if (marked) {
 			for (int i = 0; i < actors.length; i++) {
 				if (actors[i].marked()) {
@@ -169,8 +168,8 @@ public class GSim extends JFrame implements MouseListener {
 					* ARENA_HEIGHT;
 			int j = 0;
 			for (int i = 0; i < actors.length; i++) {
-				dist = Math.pow(actors[i].getX() - x, 2)
-						+ Math.pow(actors[i].getY() - y, 2);
+				dist = Math.pow(actors[i].getObjectiveX() - x, 2)
+						+ Math.pow(actors[i].getObjectiveY() - y, 2);
 				if (dist < mindist) {
 					mindist = dist;
 					j = i;
