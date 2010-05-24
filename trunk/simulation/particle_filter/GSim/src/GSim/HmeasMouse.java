@@ -36,7 +36,7 @@ public class HmeasMouse implements IFunction{
 		//xm is where the cats think the mouse is
 		//positions are where the cats thinks they are
 		//NB: All -1 in the indices are used to indicate the shift form the first array index in matlab = 1 to java's = 0.
-		//float[] positions = billboard.getAbsolutePositions();
+		//float[] positions = billboard.getAbsolutePositions();  //Gives incorrect/not relevant positions
 		float[] positions = billboard.getLatestSightings();
 		Matrix zm = Matlab.zeros(nm, 1);
 		for (int i = 1; i<=nm; i++)
@@ -51,15 +51,16 @@ public class HmeasMouse implements IFunction{
 				zm.set(   i-1,1-1, 2*PI-acos(  ( xm.get(1-1,1-1) - positions[(i-1)*4+0] ) / sqrt( Math.pow(xm.get(1-1,1-1) - positions[(i-1)*4+0], 2) + Math.pow(xm.get(2-1,1-1) - positions[(i-1)*4+1], 2) )  )   );
 			}
 		}	
-		
-		/*System.out.println("Debug, in HmeasCat: x1 = " + positions[(1-1)*4+0] + ", y1 = " + positions[(1-1)*4+1] + "; x2 = " + positions[(2-1)*4+0] + ", y2 = " + positions[(2-1)*4+1]);
+
+		/*System.out.println("Debug, in HmeasCat: input (xm) = ");
+		printM(xm);	
+		System.out.println("Debug, in HmeasCat: x1 = " + positions[(1-1)*4+0] + ", y1 = " + positions[(1-1)*4+1] + "; x2 = " + positions[(2-1)*4+0] + ", y2 = " + positions[(2-1)*4+1]);
 		System.out.println("Debug, in HmeasCat: output (zm) = ");
 		printM(zm);	
 		*/
 		
 		return zm;
-		
-		
+	
 		/*Original matlab code::
 		function zm = measurem(xm)
 		%calculates the bearings from the cats to the mouse
@@ -83,8 +84,7 @@ public class HmeasMouse implements IFunction{
 		    %z(i,1)=atan2(x(2,1)-cats(i,2),x(1,1)-cats(i,1));
 		end
 		*/
-	}
-	
+	}	
 	
 	//Only for testing
 	public static void main(String[] arg) {
@@ -94,6 +94,9 @@ public class HmeasMouse implements IFunction{
 		bb.setAbsolutePosition(1, 0.381674224891206f, 1.512334856720926f, 4.058937708438013f, 0);
 		bb.setAbsolutePosition(2, 0.489571459163319f, 0.381883712654769f, 5.629734035232906f, 0);
 		bb.setAbsolutePosition(3, 1.800657229677585f, 1.076843261031238f, 1.702743218245687f, 0);	
+		bb.setLatestSighting(1, 0.381674224891206f, 1.512334856720926f, 0f, 0);
+		bb.setLatestSighting(2, 0.489571459163319f, 0.381883712654769f, 0f, 0);
+		bb.setLatestSighting(3, 1.800657229677585f, 1.076843261031238f, 0f, 0);	
 		float[] pos = bb.getAbsolutePositions();
 		System.out.print("x1 = " + pos[(1-1)*4+0] + ", y1 = " + pos[(1-1)*4+1] + "; x2 = " + pos[(2-1)*4+0] + ", y2 = " + pos[(2-1)*4+1]);
 		

@@ -9,6 +9,9 @@ import lejos.util.Matrix;
 import static java.lang.Math.*;
 import static GSim.Matlab.*;
 
+
+//FIXME: Find a bug where the mouse position estimate from one of the cats starts to quickly move around all over the map until that cat moves away from that position.
+
 /** Unscented Kalman filter for tracking (a mouse). */
 public class TrackingUnscentedKalmanFilter extends TrackingFilter
 {
@@ -311,7 +314,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			{
 				//System.out.println("Cat " + id + " setting measurement for cat" + (i));
 				R.set(i-1, i-1, pow(std_array[0],2) );
-				measurments.set(i-1, 0, sightings[(i - 1) * 4 + 2] );
+				measurments.set(i-1, 0, (sightings[(i - 1) * 4 + 2] + 2.0*PI) % (2.0*PI) );
 				
 			}
 		}
