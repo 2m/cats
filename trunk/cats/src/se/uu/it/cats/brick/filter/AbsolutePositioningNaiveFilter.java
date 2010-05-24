@@ -1,7 +1,6 @@
 package se.uu.it.cats.brick.filter;
 
 import se.uu.it.cats.brick.Clock;
-import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.storage.BillBoard;
 
 /** Naive filter for absolute positioning of one cat using landmarks. */
@@ -51,6 +50,9 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		mean_x = x;
 		mean_y = y;
 		mean_angle = angle;
+		lastCurrentTime = Clock.timestamp();
+		billboard
+				.setAbsolutePosition(id, getX(), getY(), getAngle(), getTime());
 	}
 
 	/**
@@ -102,7 +104,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	public void update() {
 		// Get time reference
 		currentTime = Clock.timestamp();
-		
+
 		ComparableData data = unifiedBuffer.pop();
 		while (data != null) {
 			// Use data if it is older than currentTime
@@ -114,11 +116,14 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 					mean_y += Math.sin(mean_angle) * mdata.dr;
 					mean_angle += mdata.dangle;
 					lastCurrentTime = mdata.comparable;
+					billboard.setAbsolutePosition(id, getX(), getY(),
+							getAngle(), getTime());
 				} else if (data.isSightingData()) {
 					SightingData sdata = (SightingData) data;
 					if (sdata.type == LandmarkList.MOUSE) {
 						billboard.setLatestSighting(id, getX(), getY(),
-								getAngle() + sdata.angle, sdata.comparable);
+								sdata.angle + getAngle(), sdata.comparable);
+
 					}
 				}
 				data = unifiedBuffer.pop();
@@ -133,8 +138,6 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
 		iterationTime += Clock.timestamp() - currentTime;
-		// Update public time
-		lastCurrentTime = currentTime;
 	}
 
 	public void run() {
