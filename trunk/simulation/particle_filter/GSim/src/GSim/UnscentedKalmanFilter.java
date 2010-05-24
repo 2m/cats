@@ -47,6 +47,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	private final boolean DEBUG = false;
 	private final boolean DEBUG_LIGHT = false;
 	private final boolean DEBUG2 = false; //ukf.ut()
+	private final boolean DEBUG3 = false;  //ukf.sigmas()
 
 	/**Constructor
 	 * @param L  number of states
@@ -107,7 +108,7 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		Matrix X = sigmas(x,P,c);  //sigma points around x, NB: c has been set in the constructor
 		if (DEBUG)
 		{
-			System.out.println("Debug: ukf, X dim= " + X.getRowDimension() + " x " + X.getColumnDimension() + ", X= ");
+			System.out.println("Debug: ukf, X dim= " + X.getRowDimension() + " x " + X.getColumnDimension() + ", X (after sigmas() )= ");
 			printM(X);
 		}
 
@@ -289,10 +290,21 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	 */
 	private Matrix sigmas(Matrix x, Matrix P, double c)
 	{
+		if (DEBUG3)
+		{
+			System.out.println("Debug: ukf.sigmas, c = " + c);
+		}
+		
 		Matrix A = new Matrix( Cholesky.cholesky( P.getArray() ) );
-		A = (A.times(c)).transpose();
-		//System.out.println("Debug: sigmas, A:");
-		//printM(A);
+		//A = (A.times(c)).transpose();  //Incorrect, not transposed...
+		A = A.times(c);
+		A.transpose();
+		if (DEBUG3)
+		{
+			System.out.println("Debug: ukf.sigmas, A:");
+			printM(A);
+		}
+
 		
 		int n = x.getRowDimension();
 		//System.out.println("Debug: sigmas, x:");
@@ -304,8 +316,11 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		{
 			Y.setMatrix(0, n-1, j, j, x);
 		}
-		//System.out.println("Debug: sigmas, Y:");
-		//printM(Y);
+		if (DEBUG3)
+		{
+			System.out.println("Debug: ukf.sigmas, Y:");
+			printM(Y);
+		}
 
 		//Create X
 		Matrix X = new Matrix(n,(1+n+n));
