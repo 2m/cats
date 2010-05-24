@@ -17,7 +17,7 @@ public class Cat extends Actor {
 
 	private boolean usePositioningParticleFilter = false;
 	private boolean usePositioningUnscentedKalmanFilter = false;
-	private boolean useTrackingParticleFilter = false;
+	private boolean useTrackingParticleFilter = true;
 	private boolean useTrackingUnscentedKalmanFilter = false;
 	private boolean useGuide = true;
 
@@ -27,10 +27,7 @@ public class Cat extends Actor {
 			BillBoard billboard, int id) {
 		super(mouse, x, y, angle, CAT, billboard, id);
 		sensors = new SensorHandler(mouse);
-		sensors.register(this);
-		positioningBuffer = sensors.regPositioner();
-		trackerBuffer = sensors.regTracker();
-		unifiedBuffer = new BufferSorted();
+		unifiedBuffer = sensors.register(this);
 		int N = 150;
 		float T = (float) GSim.timestep * timestepsBetweenFilterUpdates / 1000; // 5;//0.5;
 
@@ -58,59 +55,40 @@ public class Cat extends Actor {
 			 */
 		}
 
-		positioningFilter.initData((float) motor.getX(), (float) motor
-					.getY(), (float) motor.getAngle());
+		positioningFilter.initData((float) motor.getX(), (float) motor.getY(),
+				(float) motor.getAngle());
 		if (useGuide) {
 			guide = new Guide(id, billboard);
 		}
 
 	}
 
-	public void update() {
-		// Move motor data to the unified buffer
-		ComparableData d = motorBuffer.pop();
-		while (d != null) {
-			unifiedBuffer.push(d);
-			d = motorBuffer.pop();
-		}
-		// Move mouse sightings to the unified buffer
-		d = trackerBuffer.pop();
-		while (d != null) {
-			unifiedBuffer.push(d);
-			SightingData sd = (SightingData) d;
-			sd.type = LandmarkList.MOUSE;
-			d = trackerBuffer.pop();
-		}
-		// Move landmark sightings to the unified buffer
-		d = positioningBuffer.pop();
-		while (d != null) {
-			unifiedBuffer.push(d);
-			d = positioningBuffer.pop();
-		}
+	public double getX() {
+		return positioningFilter.getX();
+	}
 
+	public double getY() {
+		return positioningFilter.getY();
+	}
+
+	public double getAngle() {
+		return positioningFilter.getAngle();
+	}
+
+	public void update() {
+		ComparableData data = motorBuffer.pop();
+		while (data != null) {
+			unifiedBuffer.push(data);
+			data = motorBuffer.pop();
+		}
 		motor.goTo(gotox, gotoy);
-		if (useGuide) {
-			/*
-			 * if (id == 1) { System.out.println("Distance: " +
-			 * Math.max(Math.abs(getX() - gotox), Math.abs(getY() - gotoy))); }
-			 */
-			if (Math.max(Math.abs(getX() - gotox), Math.abs(getY() - gotoy)) < 0.05f) {
-				int i = 0;
-				float gx = (float) gotox, gy = (float) gotoy;
-				while (i < 10) {
-					float[] g = guide.getGradient((float) gx, (float) gy);
-					gx += 0.01 * Math.signum(g[0]);
-					gy += 0.01 * Math.signum(g[1]);
-					i++;
-				}
-				/*
-				 * if (Math .max(Math.abs(getX() - gotox), Math.abs(getY() -
-				 * gotoy)) > 0.05f) { System.out.println("(gx, gy): " + gx + " "
-				 * + gy);
-				 */
-				gotox = gx;
-				gotoy = gy;
-				// }
+		if ((useGuide)
+				&& (Math.sqrt(Math.pow(getX() - gotox, 2)
+						+ Math.pow(getY() - gotoy, 2)) < 0.05f) && (iter > 10)) {
+			float[] adv = guide.getAdvice();
+			if (adv[0] >= 0) {
+				gotox = adv[0];
+				gotoy = adv[1];
 			}
 		}
 		if ((iter % timestepsBetweenFilterUpdates) == 0) {

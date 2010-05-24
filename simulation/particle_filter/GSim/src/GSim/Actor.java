@@ -27,29 +27,44 @@ public class Actor {
 	protected SensorHandler sensors;
 	protected int iter;
 	protected BillBoard billboard;
-	
+
 	protected int id;
 
 	public Actor(Actor mouse, double tx, double ty, double tangle, int ttype,
-			 BillBoard billboard, int id) {
+			BillBoard billboard, int id) {
 		motor = new MotorControl(tx, ty, tangle, motorBuffer);
-		this.id=id;
+		this.id = id;
 		type = ttype;
 		gotox = tx;
 		gotoy = ty;
 		this.billboard = billboard;
 	}
 
-	public double getX() {
+	public double getObjectiveX() {
 		return motor.getX();
 	}
 
-	public double getY() {
+	public double getObjectiveY() {
 		return motor.getY();
 	}
 
-	public double getAngle() {
+	public double getObjectiveAngle() {
 		return motor.getAngle();
+	}
+
+	public double getX() {
+		System.out.println("Bad use of getX()");
+		return 0.0;
+	}
+
+	public double getY() {
+		System.out.println("Bad use of getY()");
+		return 0.0;
+	}
+
+	public double getAngle() {
+		System.out.println("Bad use of getAngle()");
+		return 0.0;
 	}
 
 	public void goTo(double x, double y) {
@@ -124,7 +139,7 @@ public class Actor {
 	public void draw(Graphics g) {
 		// Hook for filter graphics code
 		drawMore(g);
-		
+
 		final int size = 5; // Diameter
 		final int linelength = 12;
 		int ix = e2gX(motor.getX());
