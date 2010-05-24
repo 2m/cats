@@ -39,16 +39,16 @@ public class HmeasMouse implements IFunction{
 		//float[] positions = billboard.getAbsolutePositions();  //Gives incorrect/not relevant positions
 		float[] positions = billboard.getLatestSightings();
 		Matrix zm = Matlab.zeros(nm, 1);
-		for (int i = 1; i<=nm; i++)
+		for (int i = 0; i<nm; i++)
 		{
 			//use either acos or asin
-			if (xm.get(2-1,1-1) - positions[(i-1)*4+1] >=0) //needed because of ambiguity in acos (and asin)
+			if (xm.get(1,0) - positions[i*4+1] >=0) //needed because of ambiguity in acos (and asin)
 			{
-				zm.set(   i-1,1-1, acos(  ( xm.get(1-1,1-1) - positions[(i-1)*4+0] ) / sqrt( Math.pow(xm.get(1-1,1-1) - positions[(i-1)*4+0], 2) + Math.pow(xm.get(2-1,1-1) - positions[(i-1)*4+1], 2) )  )   );
+				zm.set(   i, 0, acos(  ( xm.get(0,0) - positions[i*4+0] ) / sqrt( Math.pow(xm.get(0,0) - positions[i*4+0], 2) + Math.pow(xm.get(1,0) - positions[i*4+1], 2) )  )   );
 			}
 			else
 			{
-				zm.set(   i-1,1-1, 2*PI-acos(  ( xm.get(1-1,1-1) - positions[(i-1)*4+0] ) / sqrt( Math.pow(xm.get(1-1,1-1) - positions[(i-1)*4+0], 2) + Math.pow(xm.get(2-1,1-1) - positions[(i-1)*4+1], 2) )  )   );
+				zm.set(   i, 0, 2*PI-acos(  ( xm.get(0,0) - positions[i*4+0] ) / sqrt( Math.pow(xm.get(0,0) - positions[i*4+0], 2) + Math.pow(xm.get(1,0) - positions[i*4+1], 2) )  )   );
 			}
 		}	
 
