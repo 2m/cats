@@ -32,7 +32,7 @@ public class GSim extends JFrame implements MouseListener {
 	public static final double ARENA_HEIGHT = 3;
 
 	// Time between updates in milliseconds
-	public static final int timestep = 100;
+	public static final int timestep = 10;
 
 	// Array with all the actors
 	private Actor[] actors = new Actor[1 + 3];// [1 + 3];

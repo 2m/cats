@@ -58,7 +58,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	private float large = (float)pow(10,10);
 	
 	/**Toggle debug info*/
-	private final boolean DEBUG = true;
+	private final boolean DEBUG = false;
 
 
 	/**
@@ -73,11 +73,10 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	 * @param billboard
 	 *            Shared network data object
 	 */
-	public TrackingUnscentedKalmanFilter(int id, float T, Buffer sensorData,
-			 BillBoard billboard) 
+	public TrackingUnscentedKalmanFilter(int id, float T, BillBoard billboard) 
 	{
 		// Call constructor of super class
-		super(id, T, sensorData, billboard);
+		super(id, T, billboard);
 		
 		int nz = billboard.NUMBER_OF_CATS;  //number of cats
 		int nx = 4;  //number of variables in the mouse's state vector
@@ -276,7 +275,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	public void update() 
 	{
 		// Get latest sighting
-		SightingData sens = null;
+		/*SightingData sens = null;
 		SightingData sens2 = (SightingData) sensorData.pop();
 		while (sens2 != null) {
 			sens = sens2;
@@ -290,7 +289,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			{
 				debug("Debug: tracking.ukf cat " +id + ", setLatestSighting: x = " + sens.x + ", y = " + sens.y + ", abs angle = " + Math.toDegrees(sens.angle+billboard.getAbsolutePositions()[(id - 1) * 4 + 2]) + ", timestamp = " + sens.comparable + "(rounded " + (float)sens.comparable + ")");
 			}
-		}
+		}*/
 		
 		// Get time reference
 		currentTime = Clock.timestamp();

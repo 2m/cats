@@ -58,11 +58,18 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	
 	/**Toggle debug info*/
 	private final boolean DEBUG = true;
+	
+	private Buffer sensorData = new Buffer();
+	private Buffer movementData = new Buffer();
+	
+	private Buffer sdataBuffer = new Buffer();
+	private Buffer mdataBuffer = new Buffer();
+	
 
 	
-	public AbsolutePositioningUKF(int id,float T, Buffer sensorData, Buffer movementData,BillBoard billboard)		
+	public AbsolutePositioningUKF(int id, float T, Buffer unifiedBuffer, BillBoard billboard)		
 	{	
-		super(id,T, sensorData, movementData, billboard);
+		super(id,T, unifiedBuffer, billboard);
 
 		//LandmarkList, true positions of the landmarks are in this static class. HmeasCat accesses the landmark list directly
 		numberOfLandmarks = LandmarkList.landmarkX.length;  //number of landmarks
@@ -106,7 +113,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 
 		//sc = zeros(nx,1);  //initial true state of the cat (basic simulation only)
 		xc = zeros(nx,1);  //initial estimated state
-		z = zeros(nz,1);  //initial estimated state
+		z = zeros(nz,1);  //initial estimated measurements
 		
 		if (DEBUG){
 			debug("Creating AbsolutePositioningUKF object");
@@ -186,8 +193,41 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		// Get time reference
 		currentTime = Clock.timestamp();
 
-		// Update landmark angle in the measurement matrix	
+		// Update landmark angle in the measurement matrix
+
+		while(unifiedBuffer.top() != null)
+		{
+			ComparableData bufferEntry = unifiedBuffer.pop();
+			if (bufferEntry.isSightingData()) 
+			{
+				debug("");
+				debug("sighting data:" + bufferEntry.toString());
+				debug("");
+				sdataBuffer.push(bufferEntry);
+			}
+			else
+			{
+				debug("");
+				debug("movement data:" + bufferEntry.toString());
+				debug("");
+				mdataBuffer.push(bufferEntry);
+			}
+		}
+		while(sdataBuffer.top() != null)
+		{
+			sensorData.push(sdataBuffer.pop());
+		}
+		while(mdataBuffer.top() != null)
+		{
+			movementData.push(mdataBuffer.pop());
+		}
+		
 		SightingData sdata = (SightingData) sensorData.pop();
+		MovementData mdata = (MovementData) movementData.pop();
+		
+		//SightingData sdata = (SightingData) sensorData.pop(); old
+		
+		
 		boolean[] landmarksSighted = new boolean[numberOfLandmarks];
 		debug("Debug, entering update: current time= " + currentTime + ", number of landmarks= " +landmarksSighted.length);
 		for (boolean landmark: landmarksSighted)
@@ -211,7 +251,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 					
 					//Determine which landmark it is
 					double absLandmarkAngle = (sdata.angle + xc.get(4, 0) +4.0*PI) % (2.0*PI); 
-					if (absLandmarkAngle>=0 && absLandmarkAngle<PI/2.0) //pper right corner
+					if (absLandmarkAngle>=0 && absLandmarkAngle<PI/2.0) //upper right corner
 					{
 						z.set(3,0,absLandmarkAngle);
 						landmarksSighted[3] = true;
@@ -253,7 +293,6 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		R.set(1,1, large);
 		R.set(2,2, large);
 		R.set(3,3, large);
-		
 		for (int i = 0; i < numberOfLandmarks; i++ )
 		{
 			if (landmarksSighted[i])
@@ -263,7 +302,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		}	
 		
 		// Update cat velocity and orientation in the measurement matrix
-		MovementData mdata = (MovementData) movementData.pop();	
+		//MovementData mdata = (MovementData) movementData.pop(); old
 		double xMovementFromTachometer = 0.0;//xc.get(0, 0);
 		double yMovementFromTachometer = 0.0;//xc.get(1, 0);
 		double orientationFromTachometer = xc.get(4, 0);
@@ -283,8 +322,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 				mdata = null;
 			}
 		}
-		double xVelocityFromTachometer = (xMovementFromTachometer) / T; // ((lastCurrentTime - currentTime)*1000);  // T;
-		double yVelocityFromTachometer = (yMovementFromTachometer) / T; // ((lastCurrentTime - currentTime)*1000);  // T;
+		double xVelocityFromTachometer = xMovementFromTachometer / T; // ((lastCurrentTime - currentTime)*1000);  // T;
+		double yVelocityFromTachometer = yMovementFromTachometer / T; // ((lastCurrentTime - currentTime)*1000);  // T;
 		z.set(numberOfLandmarks-1 +1, 0, xVelocityFromTachometer);
 		z.set(numberOfLandmarks-1 +2, 0, yVelocityFromTachometer);	
 		z.set(numberOfLandmarks-1 +3, 0, orientationFromTachometer);	

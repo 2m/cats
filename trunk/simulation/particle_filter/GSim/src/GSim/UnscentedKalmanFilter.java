@@ -159,7 +159,11 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		//Matrix K = P2.solve(P12);
 		//Matrix K = P12.arrayLeftDivide(P2);
 		
-		Matrix K = P12.times(P2.inverse());
+		//Before: P12.times(P2.inverse());
+		//This should be faster (matrix inverse is slow and numerically less stable):
+		Matrix K = P2.transpose().solve(P12.transpose()).transpose();
+		//can be used since: A/B is equivalent to (B'\A')'
+		
 		if (DEBUG)
 		{
 			System.out.println("Debug: ukf, K dim= " + K.getRowDimension() + " x " + K.getColumnDimension() + ", K= ");
