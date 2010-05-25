@@ -14,9 +14,8 @@ public class Cat extends Actor {
 	protected AbsolutePositioningFilter positioningFilter;
 	protected TrackingFilter trackingFilter;
 	private Guide guide;
-
 	private boolean usePositioningParticleFilter = false;
-	private boolean usePositioningUnscentedKalmanFilter = false;
+	private boolean usePositioningUnscentedKalmanFilter = true;
 	private boolean useTrackingParticleFilter = false;
 	private boolean useTrackingUnscentedKalmanFilter = true;
 	private boolean useGuide = false;
@@ -37,10 +36,9 @@ public class Cat extends Actor {
 			 * T, unifiedBuffer, billboard);
 			 */
 		} else if (usePositioningUnscentedKalmanFilter) {
-			/*
-			 * positioningFilter = new AbsolutePositioningUKF(id, T,
-			 * unifiedBuffer, billboard);
-			 */
+			 positioningFilter = new AbsolutePositioningUKF(id, T,
+			 unifiedBuffer, billboard);
+
 		} else {
 			positioningFilter = new AbsolutePositioningNaiveFilter(id, T,
 					unifiedBuffer, billboard);
