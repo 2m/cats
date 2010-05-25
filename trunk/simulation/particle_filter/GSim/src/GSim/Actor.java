@@ -144,16 +144,12 @@ public class Actor {
 		final int linelength = 12;
 		int ix = e2gX(motor.getX());
 		int iy = e2gY(motor.getY());
-		// TODO: Why does this need to be divided by 2?
-		double iangle = -motor.getAngle() / 2;
+		double iangle = -motor.getAngle();
 
 		Graphics2D g2 = (Graphics2D) g;
 
-		// Save the current tranform
+		// Save the current transform
 		AffineTransform oldTransform = g2.getTransform();
-
-		// Rotate and translate the actor
-		g2.rotate(iangle, ix, iy);
 
 		if (marked) {
 			g2.setColor(Color.green);
@@ -175,7 +171,7 @@ public class Actor {
 					* linelength), (int) (iy + Math.sin(iangle) * linelength));
 		}
 
-		// Reset the tranformation matrix
+		// Reset the transformation matrix
 		g2.setTransform(oldTransform);
 	}
 
