@@ -3,7 +3,6 @@ package GSim;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 
 /**
  * Base class for all actors on the arena (cats, mice and landmarks)
@@ -140,39 +139,26 @@ public class Actor {
 		// Hook for filter graphics code
 		drawMore(g);
 
-		final int size = 5; // Diameter
-		final int linelength = 12;
+		int size = 5; // Diameter
+		int linelength = 12;
 		int ix = e2gX(motor.getX());
 		int iy = e2gY(motor.getY());
 		double iangle = -motor.getAngle();
 
 		Graphics2D g2 = (Graphics2D) g;
 
-		// Save the current transform
-		AffineTransform oldTransform = g2.getTransform();
-
 		if (marked) {
 			g2.setColor(Color.green);
-		} else {
-			if (type == CAT) {
-				g2.setColor(Color.red);
-			} else if (type == MOUSE) {
-				g2.setColor(Color.blue);
-			} else if (type == LANDMARK) {
-				g2.setColor(Color.gray);
-			}
+		} else if (type == CAT) {
+			g2.setColor(Color.red);
+		} else if (type == MOUSE) {
+			g2.setColor(Color.blue);
 		}
 
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
 				(int) size);
-
-		if (type != LANDMARK) {
-			g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
-					* linelength), (int) (iy + Math.sin(iangle) * linelength));
-		}
-
-		// Reset the transformation matrix
-		g2.setTransform(oldTransform);
+		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
+				* linelength), (int) (iy + Math.sin(iangle) * linelength));
 	}
 
 	public void drawMore(Graphics g) {

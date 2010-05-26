@@ -9,7 +9,7 @@ package GSim;
 public class Clock {
 	private static long startTime = 0;
 
-	public void init() {
+	public static void init() {
 		startTime = System.currentTimeMillis();
 	}
 	
