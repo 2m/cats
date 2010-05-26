@@ -30,9 +30,9 @@ public class SensorHandler {
 		float cy = (float) cat.getObjectiveY();
 		float x1 = (float) mouse.getObjectiveX() - cx;
 		float y1 = (float) mouse.getObjectiveY() - cy;
-		float angle = (float) Math.atan2(y1, x1);
+		float angle_to_mouse = (float) Math.atan2(y1, x1);
 		int t = Clock.timestamp();
-		SightingData d = new SightingData(t, cx, cy, (float) (angle
+		SightingData d = new SightingData(t, cx, cy, (float) (angle_to_mouse
 				- cat.getObjectiveAngle() + rnd.nextGaussian() * 1
 				* (Math.PI / 180)), LandmarkList.MOUSE);
 		unifiedBuffer.push(d);
@@ -40,16 +40,16 @@ public class SensorHandler {
 		for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
 			float x2 = LandmarkList.landmarkX[i] - cx;
 			float y2 = LandmarkList.landmarkY[i] - cy;
-			angle = (float) Math.atan2(y2, x2);
+			float angle_to_landmark = (float) Math.atan2(y2, x2);
 			if (LandmarkList.landmarkC[i]) {
 				type = LandmarkList.GREEN;
 			} else {
 				type = LandmarkList.RED;
 			}
 			float angle_diff = (float) Math
-					.abs(angle - cat.getObjectiveAngle());
+					.abs(angle_to_landmark - angle_to_mouse);
 			if ((initialPhase) || (angle_diff < (field_of_view / 2))) {
-				d = new SightingData(t, cx, cy, (float) (angle
+				d = new SightingData(t, cx, cy, (float) (angle_to_landmark
 						- cat.getObjectiveAngle() + rnd.nextGaussian() * 1
 						* (Math.PI / 180)), type);
 				unifiedBuffer.push(d);
