@@ -7,7 +7,7 @@ public class MotorControl {
 	public double y;
 	public double angle;
 	public Buffer updateBuffer;
-	public final double MAX_SPEED = 0.01;
+	public final double MAX_SPEED = 0.2 * ((double)GSim.timestep / 1000d); // [m/s]*conversion_factor
 	private Random rng = new Random();
 
 	public MotorControl() {
@@ -29,7 +29,7 @@ public class MotorControl {
 		}
 		// +-2% noise
 		setX(getX() + Math.cos(angle) * distance
-				* (1 + rng.nextDouble() * 0.04 + 0.02)); 
+				* (1 + rng.nextDouble() * 0.04 + 0.02));
 		setY(getY() + Math.sin(angle) * distance
 				* (1 + rng.nextDouble() * 0.04 + 0.02));
 		updateBuffer.push(new MovementData(Clock.timestamp(), (float) distance,
@@ -38,7 +38,7 @@ public class MotorControl {
 
 	public void turn(double turnangle) {
 		// +-2% noise
-		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() * 0.04 + 0.02)); 
+		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() * 0.04 + 0.02));
 		updateBuffer.push(new MovementData(Clock.timestamp(), (float) 0.0,
 				(float) turnangle));
 	}

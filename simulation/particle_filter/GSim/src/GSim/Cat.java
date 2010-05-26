@@ -10,7 +10,7 @@ import java.awt.Graphics;
  * 
  */
 public class Cat extends Actor {
-	protected Buffer positioningBuffer, trackerBuffer, unifiedBuffer;
+	protected Buffer unifiedBuffer;
 	protected AbsolutePositioningFilter positioningFilter;
 	protected TrackingFilter trackingFilter;
 	private Guide guide;
@@ -74,12 +74,12 @@ public class Cat extends Actor {
 	}
 
 	public void update() {
+		motor.goTo(gotox, gotoy);
 		ComparableData data = motorBuffer.pop();
 		while (data != null) {
 			unifiedBuffer.push(data);
 			data = motorBuffer.pop();
 		}
-		motor.goTo(gotox, gotoy);
 		if ((useGuide)
 				&& (Math.sqrt(Math.pow(getX() - gotox, 2)
 						+ Math.pow(getY() - gotoy, 2)) < 0.05f) && (iter > 10)) {
