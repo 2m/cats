@@ -122,8 +122,8 @@ public class Camera implements Runnable {
 					}
 					//Logger.println("currentColor: "+currentColor+", i: " + i + ", err: "+ err);
 					
-					//unifiedBuffer.push(new SightingData(Clock.timestamp(), angToTargetRelCat, currentColor));
-					// TODO poke the movement pilot to push measurements 
+					unifiedBuffer.push(new SightingData(Clock.timestamp(), angToTargetRelCat, currentColor));
+					MovementPilot.recentSighting = true;
 					
 					// send some measurements to the GUI
 					ConnectionManager.getInstance().sendPacketToAll(
@@ -205,7 +205,7 @@ public class Camera implements Runnable {
 			}
 			else {
 				//Logger.println("No found!");
-				Sound.beep(); //Beep if no target is found
+				//Sound.beep(); //Beep if no target is found
 				Motor.B.setSpeed(maxSpeed); //Search for mouse with maximum speed
 				
 				//Reverse motor direction if at maximum turning angle

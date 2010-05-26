@@ -37,6 +37,7 @@ public class MovementPilot extends TachoPilot implements Runnable {
 	
 	private boolean needToMove = false;
 	private boolean moving = false;
+	public static boolean recentSighting = false;
 	
 	public MovementPilot(Buffer unifiedBuffer)
 	{	
@@ -314,6 +315,10 @@ public class MovementPilot extends TachoPilot implements Runnable {
 			// check for new commands
 			if (needToMove)
 				move();
+			if (recentSighting) {
+				pushMovementData();
+				recentSighting = false;
+			}
 			
 			try{Thread.sleep(WAKE_UP_PERIOD);}catch(Exception ex){}
 		}
