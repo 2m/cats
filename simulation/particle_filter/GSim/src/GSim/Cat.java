@@ -19,7 +19,7 @@ public class Cat extends Actor {
 	private boolean usePositioningUnscentedKalmanFilter = false;
 	private boolean useTrackingParticleFilter = true;
 	private boolean useTrackingUnscentedKalmanFilter = false;
-	private boolean useGuide = false;
+	private boolean useGuide = true;
 
 	/* Periods in ms */
 	private int trackingKalmanPeriod = 50;
@@ -98,6 +98,8 @@ public class Cat extends Actor {
 				if (adv[0] >= 0) {
 					gotox = adv[0];
 					gotoy = adv[1];
+					System.out.println("Advice: (" + adv[0] + ", " + adv[1]
+							+ ")");
 				}
 			}
 		}
@@ -111,10 +113,11 @@ public class Cat extends Actor {
 			}
 		}
 		if (nexttrack < Clock.timestamp()) {
-			trackingFilter.update();
 			if (useTrackingParticleFilter) {
+				trackingFilter.update();
 				nexttrack += trackingParticlePeriod;
 			} else if (useTrackingUnscentedKalmanFilter) {
+				trackingFilter.update();
 				nexttrack += trackingKalmanPeriod;
 			}
 		}

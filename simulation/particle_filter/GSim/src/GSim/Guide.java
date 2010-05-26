@@ -17,8 +17,8 @@ public class Guide {
 	public float D3 = (float) 0.30; // Minimal distance from line of sight
 	public float D4 = (float) 0.10; // Minimal distance from arena edges
 	// Weights on the different parts of the criterion function
-	public float W1 = (float) 0.0;
-	public float W2 = (float) 0.0;
+	public float W1 = (float) 1.0;// Importance of distance from cats
+	public float W2 = (float) 1.0;// Importance of distance from mouse
 	public float W3 = (float) 1.0; // Importance of distance from edges
 	public float W4 = (float) 0.0;
 
@@ -133,13 +133,13 @@ public class Guide {
 	public float sample(float x, float y) {
 		getDataFromNetwork();
 		float a = (1 - W1) + W1 * keepDistanceFromCats(x, y);
-		float b = (1 - W2) + W2 * keepDistanceFromMouse(x, y);
 		float c = (1 - W3) + W3 * keepDistanceFromEdges(x, y);
-		float d = (1 - W4) + W4 * avoidLineOfSight(x, y);
 		if (haveMousePosition) {
+			float b = (1 - W2) + W2 * keepDistanceFromMouse(x, y);
+			float d = (1 - W4) + W4 * avoidLineOfSight(x, y);
 			return a * b * c * d;
 		} else {
-			return a * b;
+			return a * c;
 		}
 	}
 
