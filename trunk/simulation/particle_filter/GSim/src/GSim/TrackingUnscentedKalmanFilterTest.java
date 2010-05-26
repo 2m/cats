@@ -19,7 +19,7 @@ public class TrackingUnscentedKalmanFilterTest {
 		Buffer buffer = new BufferSorted();
 		BillBoard billboard = new BillBoard(3);
 		
-		TrackingUnscentedKalmanFilter trackingFilter = new TrackingUnscentedKalmanFilter(id, T,	buffer, billboard);
+		TrackingUnscentedKalmanFilter trackingFilter = new TrackingUnscentedKalmanFilter(id, T, billboard);
 		
 		
 		//states 1 (x1), k = 13 in the Matlab sim of mainUKFmerge with 0 camera offset
