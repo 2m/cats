@@ -11,17 +11,15 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.AffineTransform;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-@SuppressWarnings("serial")
 /** Main class of simulation. Initialises graphics and objects then runs
  * a main loop.
  * @version 0.1
  * @author 	Fredrik Wahlberg
  */
+@SuppressWarnings("serial")
 public class GSim extends JFrame implements MouseListener {
 	// Size of window
 	public static final int WINDOW_WIDTH = 400;
@@ -42,18 +40,16 @@ public class GSim extends JFrame implements MouseListener {
 
 	public GSim() {
 		addMouseListener(this);
-
+		Clock.init();
 		/*
-		 * actors[0] = new Mouse(null, 1.5, 1.5, 0.0, billboard, 0);
-		 * actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6,
-		 * billboard, 1);
+		 * actors[0] = new Mouse(null, 1.5, 1.5, 0.0, billboard, 0); actors[1] =
+		 * new Cat(actors[0], 0.1, 0.1, Math.PI / 6, billboard, 1);
 		 */
 
 		actors[0] = new Mouse(null, 1.5, 1.5, 0.0, billboard, 3);
 		actors[1] = new Cat(actors[0], 0.1, 0.1, Math.PI / 6, billboard, 0);
 		actors[2] = new Cat(actors[0], 1.0, 1.0, 0, billboard, 1);
 		actors[3] = new Cat(actors[0], 1.5, 0.1, 0, billboard, 2);
-
 	}
 
 	/**
@@ -76,18 +72,12 @@ public class GSim extends JFrame implements MouseListener {
 		for (int i = 0; i < actors.length; i++) {
 			actors[i].draw(g);
 		}
+		Graphics2D g2 = (Graphics2D) g;
 		// Draw landmarks
 		for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
-			final int size = 5; // Diameter
+			int size = 5; // Diameter
 			int ix = Actor.e2gX((double) LandmarkList.landmarkX[i]);
 			int iy = Actor.e2gY((double) LandmarkList.landmarkY[i]);
-			Graphics2D g2 = (Graphics2D) g;
-
-			// Save the current transform
-			AffineTransform oldTransform = g2.getTransform();
-
-			// Rotate and translate the actor
-			g2.rotate(0.0, ix, iy);
 
 			if (LandmarkList.landmarkC[i]) {
 				g2.setColor(Color.green);
@@ -96,14 +86,12 @@ public class GSim extends JFrame implements MouseListener {
 			}
 			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
 					(int) size, (int) size);
-
-			// Reset the transformation matrix
-			g2.setTransform(oldTransform);
 		}
+
 	}
 
 	/**
-	 * Pause the excution this many milliseconds
+	 * Pause the execution this many milliseconds
 	 * 
 	 * @param millis
 	 *            to pause as a long int
@@ -125,14 +113,17 @@ public class GSim extends JFrame implements MouseListener {
 	 */
 	public void run() {
 		openWindow(); // Open window
+		int i = 0;
 		while (true) { // Main loop
 			// Update all actors
-			for (int i = 0; i < actors.length; i++) {
-				actors[i].update();
+			for (int j = 0; j < actors.length; j++) {
+				actors[j].update();
 			}
-
-			repaint(); // Redraw all objects
+			if ((i % 10) == 0) {
+				repaint(); // Redraw all objects
+			}
 			sleep(timestep); // Wait before new update
+			i++;
 		}
 	}
 

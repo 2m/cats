@@ -14,43 +14,51 @@ public class Cat extends Actor {
 	protected AbsolutePositioningFilter positioningFilter;
 	protected TrackingFilter trackingFilter;
 	private Guide guide;
-	private boolean usePositioningParticleFilter = false;
-	private boolean usePositioningUnscentedKalmanFilter = true;
-	private boolean useTrackingParticleFilter = false;
-	private boolean useTrackingUnscentedKalmanFilter = true;
+
+	private boolean usePositioningParticleFilter = true;
+	private boolean usePositioningUnscentedKalmanFilter = false;
+	private boolean useTrackingParticleFilter = true;
+	private boolean useTrackingUnscentedKalmanFilter = false;
 	private boolean useGuide = false;
 
-	private int timestepsBetweenFilterUpdates = 5;
+	/* Periods in ms */
+	private int trackingKalmanPeriod = 50;
+	private int positioningKalmanPeriod = 50;
+	private int trackingParticlePeriod = 200;
+	private int positioningParticlePeriod = 200;
+
+	private int nexttrack, nextpos;
+	private int Ntracking = 100;
+	private int Npositioning = 200;
 
 	public Cat(Actor mouse, double x, double y, double angle,
 			BillBoard billboard, int id) {
 		super(mouse, x, y, angle, CAT, billboard, id);
 		sensors = new SensorHandler(mouse);
 		unifiedBuffer = sensors.register(this);
-		int N = 150;
-		float T = (float) GSim.timestep * timestepsBetweenFilterUpdates / 1000; // 5;//0.5;
-
+		nexttrack = Clock.timestamp();
+		nextpos = Clock.timestamp();
 		if (usePositioningParticleFilter) {
-			/*
-			 * positioningFilter = new AbsolutePositioningParticleFilter(id, N,
-			 * T, unifiedBuffer, billboard);
-			 */
+			positioningFilter = new AbsolutePositioningParticleFilter(id,
+					Npositioning, (float) positioningParticlePeriod / 1000f,
+					unifiedBuffer, billboard);
 		} else if (usePositioningUnscentedKalmanFilter) {
-			 positioningFilter = new AbsolutePositioningUKF(id, T,
-			 unifiedBuffer, billboard);
+			positioningFilter = new AbsolutePositioningUKF(id,
+					(float) positioningKalmanPeriod / 1000f, unifiedBuffer,
+					billboard);
 
 		} else {
-			positioningFilter = new AbsolutePositioningNaiveFilter(id, T,
-					unifiedBuffer, billboard);
+			positioningFilter = new AbsolutePositioningNaiveFilter(id,
+					(float) positioningKalmanPeriod / 1000f, unifiedBuffer,
+					billboard);
 		}
 
 		if (useTrackingParticleFilter) {
-			trackingFilter = new TrackingParticleFilter(id, N, T, billboard);
+			trackingFilter = new TrackingParticleFilter(id, Ntracking,
+					(float) trackingParticlePeriod / 1000f, billboard);
 		} else if (useTrackingUnscentedKalmanFilter) {
-
-			trackingFilter = new TrackingUnscentedKalmanFilter(id, T,
-					billboard);
-
+			trackingFilter = new TrackingUnscentedKalmanFilter(id,
+					(float) trackingKalmanPeriod / 1000f, billboard);
 		}
 
 		positioningFilter.initData((float) motor.getX(), (float) motor.getY(),
@@ -80,20 +88,34 @@ public class Cat extends Actor {
 			unifiedBuffer.push(data);
 			data = motorBuffer.pop();
 		}
-		if ((useGuide)
-				&& (Math.sqrt(Math.pow(getX() - gotox, 2)
-						+ Math.pow(getY() - gotoy, 2)) < 0.05f) && (iter > 10)) {
-			float[] adv = guide.getAdvice();
-			if (adv[0] >= 0) {
-				gotox = adv[0];
-				gotoy = adv[1];
+		if ((iter % 10) == 0) {
+			sensors.update();
+			if ((useGuide)
+					&& (Math.sqrt(Math.pow(getX() - gotox, 2)
+							+ Math.pow(getY() - gotoy, 2)) < 0.05f)
+					&& (iter > 10)) {
+				float[] adv = guide.getAdvice();
+				if (adv[0] >= 0) {
+					gotox = adv[0];
+					gotoy = adv[1];
+				}
 			}
 		}
-		if ((iter % timestepsBetweenFilterUpdates) == 0) {
-			sensors.update();
+
+		if (nextpos < Clock.timestamp()) {
 			positioningFilter.update();
-			if (useTrackingParticleFilter || useTrackingUnscentedKalmanFilter) {
-				trackingFilter.update();
+			if (useTrackingParticleFilter) {
+				nextpos += positioningParticlePeriod;
+			} else {
+				nextpos += positioningKalmanPeriod;
+			}
+		}
+		if (nexttrack < Clock.timestamp()) {
+			trackingFilter.update();
+			if (useTrackingParticleFilter) {
+				nexttrack += trackingParticlePeriod;
+			} else if (useTrackingUnscentedKalmanFilter) {
+				nexttrack += trackingKalmanPeriod;
 			}
 		}
 		iter++;
