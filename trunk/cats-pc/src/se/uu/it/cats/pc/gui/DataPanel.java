@@ -21,8 +21,8 @@ public class DataPanel extends JPanel{ // implements ActionListener
 		world = Area.getInstance();
 		_areaHeight = areaHeight;
 		// Size of window
-		//setPreferredSize(new Dimension(200,_areaHeight));
-
+		setPreferredSize(new Dimension(200,_areaHeight));
+		
 		// Bakgrundsfärgen
 		setBackground(Color.white);
 		setBorder(new TitledBorder(
