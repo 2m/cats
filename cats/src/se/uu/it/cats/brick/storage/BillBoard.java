@@ -20,7 +20,7 @@ public class BillBoard {
 	private final int DATA_PER_CAT = 11;
 
 	/** Number of cats (set in constructor) */
-	private final int NUMBER_OF_CATS = Identity.CAT_COUNT;
+	public final int NUMBER_OF_CATS = Identity.CAT_COUNT;
 
 	public static final BillBoard instanceHolder = new BillBoard();
 
@@ -28,7 +28,7 @@ public class BillBoard {
 		return instanceHolder;
 	}
 
-	private BillBoard() {
+	public BillBoard() {
 		data = new float[NUMBER_OF_CATS][DATA_PER_CAT];
 		sightings = new float[NUMBER_OF_CATS * 4];
 		positions = new float[NUMBER_OF_CATS * 4];
@@ -59,7 +59,7 @@ public class BillBoard {
 		if (p.getTimestamp() > latestSightingUpdate) {
 			// save data and do not send an update
 			setLatestSighting(p.getSource(), p.getX(), p.getY(), p.getTheta(), p.getTimestamp(),
-					false);
+					true);
 			latestDataUpdate = p.getTimestamp();
 		}
 	}
@@ -70,6 +70,7 @@ public class BillBoard {
 		sightings[id * 4 + 1] = y;
 		sightings[id * 4 + 2] = theta;
 		sightings[id * 4 + 3] = timestamp;
+		//System.out.println("timestamp latest s. "+timestamp);
 
 		if (sendUpdate)
 			// send the update to all

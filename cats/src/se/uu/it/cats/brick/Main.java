@@ -2,7 +2,6 @@ package se.uu.it.cats.brick;
 
 import java.io.File;
 import java.util.Random;
-
 import lejos.nxt.Button;
 import lejos.nxt.ButtonListener;
 import lejos.nxt.LCD;
@@ -10,17 +9,8 @@ import lejos.nxt.Sound;
 import lejos.nxt.comm.RConsole;
 import lejos.util.Timer;
 import lejos.util.TimerListener;
-import se.uu.it.cats.brick.filter.AbsolutePositioningFilter;
-import se.uu.it.cats.brick.filter.AbsolutePositioningNaiveFilter;
-import se.uu.it.cats.brick.filter.Buffer;
-import se.uu.it.cats.brick.filter.BufferSorted;
-import se.uu.it.cats.brick.filter.Camera;
-import se.uu.it.cats.brick.network.ConnectionListener;
-import se.uu.it.cats.brick.network.ConnectionManager;
-import se.uu.it.cats.brick.network.packet.PFMeasurement;
-import se.uu.it.cats.brick.network.packet.Packet;
-import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
-import se.uu.it.cats.brick.network.packet.Timestamp;
+import se.uu.it.cats.brick.filter.*;
+import se.uu.it.cats.brick.network.*;
 import se.uu.it.cats.brick.storage.BillBoard;
 import se.uu.it.cats.brick.storage.StorageManager;
 
@@ -33,6 +23,8 @@ public class Main
 	private static Buffer unifiedBuffer;
 	private static MovementPilot movementPilot;
 	private static AbsolutePositioningFilter positioningFilter;
+	private static TrackingUnscentedKalmanFilter trackingFilter;
+	private static boolean useTrackingUnscentedKalmanFilter = true;
 	
 	
 	public static void main(String[] args) throws InterruptedException
@@ -51,9 +43,18 @@ public class Main
 		Thread movementThread = new Thread(movementPilot);
 		movementThread.start();
 		
-		positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(), 0.2f, unifiedBuffer, BillBoard.getInstance());
+		positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(), .1f, unifiedBuffer, BillBoard.getInstance());
 		Thread positioningFilterThread = new Thread(positioningFilter);
 		positioningFilterThread.start();
+		
+		if (useTrackingUnscentedKalmanFilter) {
+			float T =1f; //period in seconds?
+			System.out.println("Creating TrackingUKF for cat" + Identity.getId());
+			trackingFilter = new TrackingUnscentedKalmanFilter(Identity.getId(), T,
+					BillBoard.getInstance());
+			Thread trackingFilterThread = new Thread(trackingFilter);
+			trackingFilterThread.start();
+		}
 		
 		//float[] sCat = {0, 0, (float) (Math.PI/2f)};
 		//MovementPilot mPilot = new MovementPilot();
@@ -251,9 +252,9 @@ public class Main
 					//StorageManager.getInstance().setData(data);
 					//Clock.syncWith(2);
 					Random r = new Random(Clock.timestamp());
-					PFMeasurement p = new PFMeasurement(r.nextInt(), r.nextInt(), (float)r.nextDouble(), (float)r.nextDouble(), (float)r.nextDouble());
+					/*PFMeasurement p = new PFMeasurement(r.nextInt(), r.nextInt(), (float)r.nextDouble(), (float)r.nextDouble(), (float)r.nextDouble());
 					Logger.println("Sending:"+p);
-					ConnectionManager.getInstance().sendPacketToAll(p);
+					ConnectionManager.getInstance().sendPacketToAll(p);*/
 				}
 				else
 					ConnectionManager.getInstance().openConnection(2);
