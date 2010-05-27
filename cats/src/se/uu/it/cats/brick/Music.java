@@ -224,13 +224,20 @@ public class Music {
 	public Music(int id, int noplayers) {
 		this.id = id;
 		this.noplayers = noplayers;
-		nexttime = Clock.timestamp() + 1000;
+		
+		//nexttime = Clock.timestamp() + 1000;
+		int timeNow = Clock.timestamp();
+		nexttime = timeNow - (timeNow % 2000) + 7000;
 	}
 
 	public Music() {
 		id = -1;
 		noplayers = 1;
-		nexttime = Clock.timestamp() + 1000;
+		
+		// start on the second start
+		// after 5 seconds
+		int timeNow = Clock.timestamp();
+		nexttime = timeNow - (timeNow % 2000) + 7000;
 	}
 
 	/**

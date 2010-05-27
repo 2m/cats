@@ -40,9 +40,10 @@ public class KeepAlive extends LowLevelHandler
 			if (received > 0)
 			{
 				// forward received data to other devices
-				byte[] receivedBytes = new byte[received];
-				System.arraycopy(bArr, index, receivedBytes, 0, received);
-				ConnectionManager.getInstance().sendBytesToAllExcept(receivedBytes, getRemoteName());
+				// this is not needed now since we communicate using the PC
+				//byte[] receivedBytes = new byte[received];
+				//System.arraycopy(bArr, index, receivedBytes, 0, received);
+				//ConnectionManager.getInstance().sendBytesToAllExcept(receivedBytes, getRemoteName());
 				
 				index = index + received;
 				
@@ -70,8 +71,15 @@ public class KeepAlive extends LowLevelHandler
 					System.arraycopy(bArr, bytesRead, bArr, 0, index - bytesRead);
 					index -= bytesRead;
 					
-					packetCounter[p.getSource()]++;
-					byteCounter[p.getSource()] += bytesRead;
+					try
+					{
+						packetCounter[p.getSource()]++;
+						byteCounter[p.getSource()] += bytesRead;
+					}
+					catch (Exception ex)
+					{
+						Logger.println("Wrong source for packet and bandwidth counters.");
+					}
 					
 					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				}

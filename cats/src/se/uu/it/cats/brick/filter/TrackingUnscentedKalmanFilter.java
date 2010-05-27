@@ -111,7 +111,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 
 		//Initialize some data just to be sure that it gets done
 		initData(1f, 1f, 0.00001f, 0.00001f, Clock.timestamp());
-		billboard.setLatestSighting(id, 0, 0, 0, lastCurrentTime-1000);
+		//billboard.setLatestSighting(id, 0, 0, 0, lastCurrentTime-1000);
 		
 		if (DEBUG){
 			debug("Creating TrackingUnscentedKalmanFilter object for cat " + id);
@@ -387,7 +387,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		while (true) 
 		{
 			update();
-			pause((long) (Clock.timestamp() % Tint));
+			pause((long) (Tint - (Clock.timestamp() % Tint)));
 			//System.out.println("X: " + getX());
 			//System.out.println("Y: " + getY());
 			//Logger.println("X: " + getX());
