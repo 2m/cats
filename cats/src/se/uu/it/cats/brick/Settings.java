@@ -25,6 +25,11 @@ public class Settings
 	// guide
 	public static boolean USE_GUIDE = false;
 	
+	// starting position and angle
+	public static float START_X;
+	public static float START_Y;
+	public static float START_ANGLE;
+	
 	public static void init()
 	{
 		switch (Identity.getId())
@@ -36,6 +41,10 @@ public class Settings
 				DRIFT_BALANCE = -0.00012f;
 				
 				CAMERA_OFFSET = -8;
+				
+				START_X = 0;
+				START_Y = 0;
+				START_ANGLE = 0;
 				break;
 			}
 			case 1:
@@ -45,6 +54,10 @@ public class Settings
 				DRIFT_BALANCE = 0.0004444f;
 				
 				CAMERA_OFFSET = -7;
+				
+				START_X = 0.5f;
+				START_Y = 0;
+				START_ANGLE = 0;
 				break;
 			}
 			case 2:
@@ -54,6 +67,10 @@ public class Settings
 				DRIFT_BALANCE = 0;
 				
 				CAMERA_OFFSET = -19;
+				
+				START_X = 0;
+				START_Y = 0.5f;
+				START_ANGLE = 0;
 				break;
 			}
 		}		
