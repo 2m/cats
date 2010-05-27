@@ -16,7 +16,9 @@ public class DataPanel extends JPanel{ // implements ActionListener
 	
 	private PositionLabel[] positionLabels;
 	private AngleLabel[] angleLabels;
-
+	
+	private MouseLabel mouseLabel;
+	
 	public DataPanel(int areaHeight) {
 		world = Area.getInstance();
 		_areaHeight = areaHeight;
@@ -51,7 +53,8 @@ public class DataPanel extends JPanel{ // implements ActionListener
 		JLabel idLabel = new JLabel("Mouse");
 		idLabel.setFont(new Font("Monotype Corsiva",1,17));
 		add(idLabel);
-		add(new JLabel("Est. Position: ("+world.getMouse().getX()+","+world.getMouse().getY()+")"));
+		
+		mouseLabel = new MouseLabel();
 	}
 	
 	public void repaint() {
@@ -61,6 +64,8 @@ public class DataPanel extends JPanel{ // implements ActionListener
 			
 			for (AngleLabel al: angleLabels)
 				al.repaint();
+			
+			mouseLabel.repaint();
 		}
 		catch (NullPointerException ex) {
 			
@@ -88,6 +93,12 @@ public class DataPanel extends JPanel{ // implements ActionListener
 		
 		public void repaint() {
 			setText("Angle: "+(int)Math.toDegrees(world.getCat(id).getAngle_c())+", Angle cam: "+(int)Math.toDegrees(world.getCat(id).getAngle_cam()));
+		}
+	}
+	
+	private class MouseLabel extends JLabel {
+		public void repaint() {
+			setText("Est. Position: ("+world.getMouse().getX()+","+world.getMouse().getY()+")");
 		}
 	}
 };

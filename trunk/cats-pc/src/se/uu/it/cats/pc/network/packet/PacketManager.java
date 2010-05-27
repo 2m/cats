@@ -81,12 +81,27 @@ public class PacketManager
 					p.readImpl(bArr);
 					
 					int catId = p.getSource();
-					float x = ((LatestSightingUpdate)p).getX();
-					float y = ((LatestSightingUpdate)p).getY();
-					float angle_c = ((LatestSightingUpdate)p).getTheta();
-					float angle_cam = 0;					
+					float x = ((LatestSightingUpdate)p).getX(); // cat x
+					float y = ((LatestSightingUpdate)p).getY(); // cat y
+					//float angle_c = ((LatestSightingUpdate)p).getTheta(); // absolute angle to mouse
+					//float angle_cam = 0;					
 					
-					Area.getInstance().getCat(catId).updateXYAngles((int) (x*10), (int) (y*10), angle_c, angle_cam); //Values from network in meters, values in Area in cm.
+					Area.getInstance().getCat(catId).updateXY((int) (x*100), (int) (y*100)); //Values from network in meters, values in Area in cm.
+				}
+				break;
+			}
+			case 0x04: //MeanAndCovarianceUpdate
+			{
+				if (arrayEndIndex >= MeanAndCovarianceUpdate.LENGTH)
+				{
+					p = new MeanAndCovarianceUpdate();
+					p.readImpl(bArr);
+					//TODO: MARTIN help.
+					float x = ((MeanAndCovarianceUpdate)p).getMeanX();
+					float y = ((MeanAndCovarianceUpdate)p).getMeanY();
+					
+					Area.getInstance().getMouse().newPosition((int) (x*100), (int) (y*100)); //Values from network in meters, values in Area in cm.
+					System.out.println("X: " + x + " Y: " + y);
 				}
 				break;
 			}

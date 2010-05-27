@@ -1,6 +1,6 @@
 package se.uu.it.cats.pc.gui;
 
-class Mouse {
+public class Mouse {
 	private int _x; // Absolute position horizontal axis
 	private int _y; // Absolute position vertical axis
 	
