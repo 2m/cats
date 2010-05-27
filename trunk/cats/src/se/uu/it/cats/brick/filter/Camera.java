@@ -126,9 +126,9 @@ public class Camera implements Runnable {
 					MovementPilot.recentSighting = true;
 					
 					// send some measurements to the GUI
-					ConnectionManager.getInstance().sendPacketToAll(
+					/*ConnectionManager.getInstance().sendPacketToAll(
 							new SimpleMeasurement(currentColor, angToTargetRelCat, motorAngRad)
-					);
+					);*/
 					
 					/*if (r.height > 30 && r.width > 30) {
 						LCD.drawInt(NXTcamera.getObjectColor(i), 2, 0, 3+i);

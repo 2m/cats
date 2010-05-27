@@ -578,7 +578,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	public void run() {
 		while (true) {
 			update();
-			pause((long) (Clock.timestamp() % Tint));
+			pause((long) (Tint - (Clock.timestamp() % Tint)));
 		}
 
 	}

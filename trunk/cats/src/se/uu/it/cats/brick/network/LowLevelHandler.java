@@ -34,8 +34,8 @@ public abstract class LowLevelHandler extends ConnectionHandler
 		_inputBuffer = new byte[256];
 	}
 	
-	protected void write(byte b)
-	{		
+	protected void write(byte b) throws Exception
+	{
 		if (_outBufSize == _outputBuffer.length)
 		{
     		flush();
@@ -44,7 +44,7 @@ public abstract class LowLevelHandler extends ConnectionHandler
 		_outBufSize++;
 	}
 	
-	protected void write(byte[] bArray)
+	protected void write(byte[] bArray) throws Exception
 	{
 		for (int i = 0; i < bArray.length; i++)
 			write(bArray[i]);
@@ -123,7 +123,15 @@ public abstract class LowLevelHandler extends ConnectionHandler
 	public void sendByte(byte b)
 	{
 		//Logger.println("S 66 to "+getPeerName());
-		write(new byte[] {b});
+		try
+		{
+			write(new byte[] {b});
+		}
+		catch (Exception ex)
+		{
+			Logger.println("Error while writing byte: "+ex.toString());
+			setAlive(false);
+		}
 		
 		int result = flush();		
 		if (result < 0)
@@ -135,7 +143,15 @@ public abstract class LowLevelHandler extends ConnectionHandler
 	
 	public void sendBytes(byte[] bArr)
 	{
-		write(bArr);
+		try
+		{
+			write(bArr);
+		}
+		catch (Exception ex)
+		{
+			Logger.println("Error while writing bytes: "+ex.toString());
+			setAlive(false);
+		}
 		
 		/*Logger.print("Sending bytes to "+getRemoteName()+":");		
 		for (int i = 0; i < bArr.length; i++)
@@ -160,7 +176,15 @@ public abstract class LowLevelHandler extends ConnectionHandler
 			Logger.print(output[i]+", ");
 		Logger.println("of length"+output.length);*/
 		
-		write(p.writeImpl());
+		try
+		{
+			write(p.writeImpl());
+		}
+		catch (Exception ex)
+		{
+			Logger.println("Error while writing packetbytes: "+ex.toString());
+			setAlive(false);
+		}
 		
 		int result = flush();		
 		if (result < 0)

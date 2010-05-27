@@ -51,7 +51,7 @@ public class SendData extends LowLevelHandler
 		{
 			for (int j = 1; j <= PACKET_LENGTH; j++)
 			{
-				write(output);
+				//write(output);
 				for (int k = 0; k < output.length; k++)
 					checksum += output[k];
 				

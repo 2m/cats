@@ -12,7 +12,9 @@ public class Clock
 	private static Stopwatch _sw = null;
 	private static int _offset = 0;
 	
-	private static boolean _server = false;	
+	private static boolean _server = false;
+	
+	private static byte _receivedPackets = 0;
 	
 	public static void init()
 	{
@@ -45,6 +47,8 @@ public class Clock
 			p.setDestination(p.getSource());
 			p.setServerTime(Clock.timestamp());			
 			ConnectionManager.getInstance().sendPacketTo(p.getSource(), p);
+			
+			_receivedPackets++;
 		}
 		else if (p.getSource() == SERVER_ID && p.getDestination() == Identity.getId())
 		{
@@ -55,5 +59,10 @@ public class Clock
 			_offset += offsetDelta;
 			//Logger.println("Lag:"+lag+" offsetDelta:"+offsetDelta+" _offset:"+_offset+" p.getClientTime()"+p.getClientTime()+" p.getServerTime()"+p.getServerTime());
 		}
+	}
+	
+	public static int getReceivedPackets()
+	{
+		return _receivedPackets;
 	}
 }

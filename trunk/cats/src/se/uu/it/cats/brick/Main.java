@@ -11,6 +11,8 @@ import lejos.util.Timer;
 import lejos.util.TimerListener;
 import se.uu.it.cats.brick.filter.*;
 import se.uu.it.cats.brick.network.*;
+import se.uu.it.cats.brick.network.packet.AbsolutePositionUpdate;
+import se.uu.it.cats.brick.network.packet.LatestSightingUpdate;
 import se.uu.it.cats.brick.storage.BillBoard;
 import se.uu.it.cats.brick.storage.StorageManager;
 
@@ -23,100 +25,143 @@ public class Main
 	private static Buffer unifiedBuffer;
 	private static MovementPilot movementPilot;
 	private static AbsolutePositioningFilter positioningFilter;
-	private static TrackingUnscentedKalmanFilter trackingFilter;
-	private static boolean useTrackingUnscentedKalmanFilter = true;
+	private static TrackingFilter trackingFilter;
 	
+	// beep every two seconds
+	private static boolean doBeep = true;
 	
 	public static void main(String[] args) throws InterruptedException
 	{
 		Settings.init();
 		Logger.init();
-		Clock.init();		
+		Clock.init();
 		
-		unifiedBuffer = new BufferSorted();
+		// connection listener thread
+		Thread listenerThread = new Thread(new ConnectionListener());
+		listenerThread.start();
 		
-		// run camera thread
-		Thread cameraThread = new Thread(new Camera(unifiedBuffer));
-		cameraThread.start();
+		// wait until connection from the GUI is established
+		while (!ConnectionManager.getInstance().isAlive(ConnectionManager.INBOUND_CONN_ID)) {
+			try {Thread.sleep(100);} catch(Exception ex) {}
+		}
 		
-		movementPilot = new MovementPilot(unifiedBuffer);
-		Thread movementThread = new Thread(movementPilot);
-		movementThread.start();
+		// sync with cat0
+		if (Identity.getId() != 0) {
+			Clock.syncTime();			
+		}
+		else {
+			// if we are cat0 wait until some ammount of cats sync
+			while (Clock.getReceivedPackets() < 1) {
+				try {Thread.sleep(100);} catch(Exception ex) {}
+			}
+		}
 		
-		positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(), .1f, unifiedBuffer, BillBoard.getInstance());
-		Thread positioningFilterThread = new Thread(positioningFilter);
-		positioningFilterThread.start();
+		// wait for one second until sync packets get through
+		try {Thread.sleep(1000);} catch(Exception ex) {}
 		
-		if (useTrackingUnscentedKalmanFilter) {
-			float T =1f; //period in seconds?
-			System.out.println("Creating TrackingUKF for cat" + Identity.getId());
-			trackingFilter = new TrackingUnscentedKalmanFilter(Identity.getId(), T,
-					BillBoard.getInstance());
+		boolean startYourEngines = true;
+		if (startYourEngines) {
+			
+			unifiedBuffer = new BufferSorted();
+			
+			// run camera thread
+			Thread cameraThread = new Thread(new Camera(unifiedBuffer));
+			cameraThread.start();
+			
+			movementPilot = new MovementPilot(unifiedBuffer);
+			Thread movementThread = new Thread(movementPilot);
+			movementThread.start();
+			
+			positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(), .33f, unifiedBuffer, BillBoard.getInstance());
+			Thread positioningFilterThread = new Thread(positioningFilter);
+			positioningFilterThread.start();
+			
+			//trackingFilter = new TrackingUnscentedKalmanFilter(Identity.getId(), 0.25f,	BillBoard.getInstance());
+			trackingFilter = new TrackingParticleFilter(Identity.getId(), 50, 1f,	BillBoard.getInstance());
 			Thread trackingFilterThread = new Thread(trackingFilter);
 			trackingFilterThread.start();
 		}
 		
-		//float[] sCat = {0, 0, (float) (Math.PI/2f)};
-		//MovementPilot mPilot = new MovementPilot();
-		//CatPosCalc.setCatState(sCat);
+		/*while (!startYourEngines) {
+			ConnectionManager.getInstance().sendPacketToAll(new LatestSightingUpdate(0f, 0f, 0f, Clock.timestamp()));
+			//ConnectionManager.getInstance().sendPacketToAll(new AbsolutePositionUpdate(0f, 0f, 0f, Clock.timestamp()));
+			try {Thread.sleep(100);} catch(Exception ex) {}
+		}*/
 		
-		//ColorSensorTest cst = new ColorSensorTest();
-		//cst.run();
+		Button.LEFT.addButtonListener(new ButtonListener() {
+			public void buttonPressed(Button b) {}
+			
+			public void buttonReleased(Button b)
+			{				
+				Sound.playSample(new File("phaser.wav"), 100);
+			}
+		});
 		
-		//PilotTest pt = new PilotTest();
-		//pt.run();
+		Button.ENTER.addButtonListener(new ButtonListener() {
+			public void buttonPressed(Button b) {}
+			
+			public void buttonReleased(Button b)
+			{
+				travelTest();
+			}
+		});
 		
-		//NetworkTest nt = new NetworkTest();
-		//nt.run();
+		Button.RIGHT.addButtonListener(new ButtonListener() {
+			public void buttonPressed(Button b) {}
+			
+			public void buttonReleased(Button b)
+			{
+				doBeep = false;
+				Music m = new Music(Identity.getId(), 3);
+				m.play();
+				
+				doBeep = true;
+			}
+		});
 		
-		//ColorSensorTest2 cst2 = new ColorSensorTest2();
-		//cst2.run();
+		Button.ESCAPE.addButtonListener(new ButtonListener() {
+			public void buttonPressed(Button b) {}
+			
+			public void buttonReleased(Button b)
+			{
+				Clock.syncTime();
+			}
+		});
 		
-		Thread listenerThread = new Thread(new ConnectionListener());
-		listenerThread.start();
+		System.out.println("Buttons:");
+		System.out.println("L - phaser");
+		System.out.println("C - travelTest");
+		System.out.println("R - music.play()");
+		System.out.println("D - sync time");
+		//Button.waitForPress();
+		//Thread.sleep(2000);
 		
-		//Run MovementPilot:
+		int test = 0;
+		while (test == 0)
+		{
+			/*Random r = new Random();			
+			ConnectionManager.getInstance().sendPacketToAll(
+					new SimpleMeasurement((float)r.nextDouble())
+			);*/
+			
+			//LCD.drawInt((byte)StorageManager.getInstance().getData(), 2, 2);
+			int milisUntilNextSec = 2000 - (Clock.timestamp() % 2000);
+			Thread.sleep(milisUntilNextSec);
+						
+			//Thread.sleep(100);
+			//Thread.yield();
+			if (doBeep)
+				Sound.beep();
+		}
 		
-		//try{Thread.sleep(1000);}catch(Exception ex){}
-		
-		//movementPilot.travel(0.3f, 0, 0, 0, 0);
-		//mPilot.travel(0, 3.0f); //straight going test
-		//System.out.println(pilotPoll.x);
-		//System.out.println(pilotPoll.y);
-		//System.out.println();
-		System.out.println("Press button");
-		Button.waitForPress();
-		Thread.sleep(2000);
+		if (RConsole.isOpen())
+			RConsole.close();
+	}
+	
+	public static void travelTest() {
 		
 		//movementPilot.travel(	0, 	3f, 	0, 		0f,	 	(float)Math.PI/2f);
 		//while (movementPilot.isProcessing()) { Thread.yield(); }
-		
-		/*mPilot.travel(0f,.2f);
-		mPilot.travel(0f,.4f);
-		mPilot.travel(0f,.6f);
-		mPilot.travel(0f,.8f);
-		mPilot.travel(0f,1f);
-		mPilot.travel(0f,1.2f);
-		mPilot.travel(0f,1.4f);
-		mPilot.travel(0f,1.6f);
-		mPilot.travel(0f,1.8f);
-		mPilot.travel(0f,2f);
-		mPilot.travel(0f,2.2f);
-		mPilot.travel(0f,2.4f);
-		mPilot.travel(0f,2.6f);
-		mPilot.travel(0f,2.8f);
-		mPilot.travel(0f,3f);*/
-		
-		//drive from (0,0) to (0,3) to (-1,4) to (-1,5) i steps
-		/*mPilot.travel(0f,.5f);
-		mPilot.travel(0f,1f);
-		mPilot.travel(0f,1.5f);
-		mPilot.travel(0f,2.5f);
-		mPilot.travel(0f,3f);
-		mPilot.travel(-.5f,3.5f);
-		mPilot.travel(-1f,4f);
-		mPilot.travel(-1f,4.5f);
-		mPilot.travel(-1f,5f);*/
 		
 		for (int i=0; i<4; i++){ //turn in square
 			movementPilot.travel(	0.05f, 	0f, 	0, 		0f,	 	0);
@@ -159,152 +204,32 @@ public class Main
 			
 			System.out.println("SQUARE FINISHED!");
 		}
-		/*for (int i=0; i<3; i++){ //turn in square
-			mPilot.travel(0.6f, 0.6f);
-			mPilot.travel(  0f, 1.2f);
-			mPilot.travel(0.6f, 1.2f);
-			mPilot.travel(0.6f,   0f);
-			mPilot.travel(-0.6f,  0f);
-			mPilot.travel(  0f, 1.2f);
-			mPilot.travel(  0f,   0f);
-			System.out.println("COMMAND FINISHED!");
-		}*/
 		
-		Button.LEFT.addButtonListener(new ButtonListener() {
-			public void buttonPressed(Button b) {}
-			
-			public void buttonReleased(Button b)
-			{				
-				Sound.playSample(new File("phaser.wav"), 100);
-				
-				if (1 == 1)
-					return;
-				
-				if (ConnectionManager.getInstance().isAlive(0))
-				{
-					/*Timer t = new Timer(50, new TimerListener() {
-						public void timedOut()
-						{
-							if (ConnectionManager.getInstance().isAlive(1))
-								ConnectionManager.getInstance().getConnection(1).sendByte((byte)0x66);
-						}
-					});
-					t.start();*/
-					//byte data = (byte)(StorageManager.getInstance().getData() + 1);
-					//StorageManager.getInstance().setData(data);
-					//Random r = new Random(Clock.timestamp());
-					//PFMeasurement p = new PFMeasurement(r.nextInt(), r.nextInt(), (float)r.nextDouble(), (float)r.nextDouble(), (float)r.nextDouble());
-					//Logger.println("Sending:"+p);
-					//ConnectionManager.getInstance().sendPacketToAll(p);
-					for (int i = 0; i < 100; i++)
-					{
-						Random r = new Random();
-						
-						try {Thread.sleep(100);}catch(Exception ex){}
-					}
-					
-					//Clock.syncWith(0);
-				}
-				else
-					ConnectionManager.getInstance().openConnection(0);
-			}
-		});
+		/*mPilot.travel(0f,.2f);
+		mPilot.travel(0f,.4f);
+		mPilot.travel(0f,.6f);
+		mPilot.travel(0f,.8f);
+		mPilot.travel(0f,1f);
+		mPilot.travel(0f,1.2f);
+		mPilot.travel(0f,1.4f);
+		mPilot.travel(0f,1.6f);
+		mPilot.travel(0f,1.8f);
+		mPilot.travel(0f,2f);
+		mPilot.travel(0f,2.2f);
+		mPilot.travel(0f,2.4f);
+		mPilot.travel(0f,2.6f);
+		mPilot.travel(0f,2.8f);
+		mPilot.travel(0f,3f);*/
 		
-		Button.ENTER.addButtonListener(new ButtonListener() {
-			public void buttonPressed(Button b) {}
-			
-			public void buttonReleased(Button b)
-			{
-				if (ConnectionManager.getInstance().isAlive(1))
-				{
-					/*Timer t = new Timer(50, new TimerListener() {
-						public void timedOut()
-						{
-							if (ConnectionManager.getInstance().isAlive(2))
-								ConnectionManager.getInstance().getConnection(2).sendByte((byte)0x66);
-						}
-					});
-					t.start();*/
-					//byte data = (byte)(StorageManager.getInstance().getData() + 1);					
-					//StorageManager.getInstance().setData(data);					
-				}
-				else
-					ConnectionManager.getInstance().openConnection(1);
-			}
-		});
-		
-		Button.RIGHT.addButtonListener(new ButtonListener() {
-			public void buttonPressed(Button b) {}
-			
-			public void buttonReleased(Button b)
-			{
-				if (ConnectionManager.getInstance().isAlive(2))
-				{
-					/*Timer t = new Timer(100, new TimerListener() {
-						public void timedOut()
-						{
-							if (ConnectionManager.getInstance().isAlive(3))
-								ConnectionManager.getInstance().getConnection(3).sendByte((byte)0x66);
-						}
-					});
-					t.start();*/
-					//byte data = (byte)(StorageManager.getInstance().getData() + 1);					
-					//StorageManager.getInstance().setData(data);
-					//Clock.syncWith(2);
-					Random r = new Random(Clock.timestamp());
-					/*PFMeasurement p = new PFMeasurement(r.nextInt(), r.nextInt(), (float)r.nextDouble(), (float)r.nextDouble(), (float)r.nextDouble());
-					Logger.println("Sending:"+p);
-					ConnectionManager.getInstance().sendPacketToAll(p);*/
-				}
-				else
-					ConnectionManager.getInstance().openConnection(2);
-			}
-		});
-		
-		Button.ESCAPE.addButtonListener(new ButtonListener() {
-			public void buttonPressed(Button b) {}
-			
-			public void buttonReleased(Button b)
-			{
-				/*if (ConnectionManager.getInstance().isAlive(3))
-				{
-					//ConnectionManager.getInstance().sendByteTo(4, (byte)0x66);
-					//byte data = (byte)(StorageManager.getInstance().getData() + 1);					
-					//StorageManager.getInstance().setData(data);
-					//ConnectionManager.getInstance().sendPacketToAll(new Timestamp(Clock.timestamp()));
-					Clock.syncWith(-1);					
-				}*/
-				/*for (int i = 0; i < 100; i++)
-				{
-					Random r = new Random();			
-					ConnectionManager.getInstance().sendPacketToAll(
-							new SimpleMeasurement((float)r.nextDouble())
-					);
-					
-					try {Thread.sleep(100);}catch(Exception ex){}
-				}*/
-				Clock.syncTime();
-			}
-		});
-		
-		int test = 0;
-		while (test == 0)
-		{
-			/*Random r = new Random();			
-			ConnectionManager.getInstance().sendPacketToAll(
-					new SimpleMeasurement((float)r.nextDouble())
-			);*/
-			
-			//LCD.drawInt((byte)StorageManager.getInstance().getData(), 2, 2);
-			int milisUntilNextSec = 2000 - (Clock.timestamp() % 2000);
-			Thread.sleep(milisUntilNextSec);
-						
-			//Thread.sleep(100);
-			//Thread.yield();
-			Sound.beep();
-		}
-		
-		if (RConsole.isOpen())
-			RConsole.close();
+		//drive from (0,0) to (0,3) to (-1,4) to (-1,5) i steps
+		/*mPilot.travel(0f,.5f);
+		mPilot.travel(0f,1f);
+		mPilot.travel(0f,1.5f);
+		mPilot.travel(0f,2.5f);
+		mPilot.travel(0f,3f);
+		mPilot.travel(-.5f,3.5f);
+		mPilot.travel(-1f,4f);
+		mPilot.travel(-1f,4.5f);
+		mPilot.travel(-1f,5f);*/
 	}
 }
