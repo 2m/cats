@@ -1,5 +1,6 @@
 package se.uu.it.cats.brick.filter;
 
+import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.storage.BillBoard;
 
 /**
@@ -57,6 +58,14 @@ public abstract class AbsolutePositioningFilter extends Thread {
 
 	/** Reset filter with some initial data */
 	public void initData(float x, float y, float angle) {
+	}
+
+	public void run() {
+		while (true) {
+			update();
+			pause((long) (Tint - (Clock.timestamp() % Tint)));
+		}
+
 	}
 
 	/**
