@@ -94,10 +94,10 @@ public class ConnectionHandler implements Runnable
 				
 				index = index + received;
 				
-				Logger.print("Rcvd:"+received+" input buffer:");
+				/*Logger.print("Rcvd:"+received+" input buffer:");
 				for (int i = 0; i < index; i++)
 					Logger.print(bArr[i]+", ");
-				Logger.println("of length"+index);
+				Logger.println("of length"+index);*/
 				
 				Packet p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				

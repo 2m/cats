@@ -90,10 +90,17 @@ public class Cat {
 	}
 	
 	public void updateXYAngles(int newX, int newY, float newAngle_c, float newAngle_cam) {
+		
+		angle_c = newAngle_c;
+		angle_cam = newAngle_cam;	
+		
+		updateXY(newX, newY);
+	}
+	
+	public void updateXY(int newX, int newY) {
 		x = newX;
 		y = newY;
-		angle_c = newAngle_c;
-		angle_cam = newAngle_cam;
+		
 		//Position buffer
 		if(posBuffer == bufferLength-1) 
 			posBuffer = 0;
@@ -110,12 +117,7 @@ public class Cat {
 	
 	public void updateAngleCam(float newAngle_cam) {
 		angle_cam = newAngle_cam;
-	}
-	
-	public void newPosition(int newX, int newY) {
-		x=newX;
-		y=newY;
-	}
+	}	
 	
 	public float getCam_angle_width() {
 		return cam_angle_width;
