@@ -1,5 +1,6 @@
 package se.uu.it.cats.pc.gui;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.awt.*;
@@ -14,6 +15,12 @@ import javax.swing.event.*;
 import java.util.Hashtable;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
+//Images
+import java.awt.image.BufferedImage;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 
 public class PrintArea extends JPanel implements ChangeListener, MouseWheelListener, MouseListener{ // implements ActionListener
   
@@ -63,6 +70,9 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	static final int SCALE_INIT = 50;
 	private int SCALE_CURRENT = SCALE_INIT;
 	
+	//Load image
+	BufferedImage image = null;  //Toolkit.getDefaultToolkit().getImage("robot2.png");
+	
 	private boolean marked = false;
   
   public PrintArea(int areaHeight, int areaWidth) {
@@ -107,11 +117,17 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
     labelTable.put( new Integer( SCALE_MAX ), zin );
 
     scaleSlider.setLabelTable( labelTable );
-
     add(scaleSlider);
-
-    // Initialt osynlig
+    // Slider initialt osynlig
     scaleSlider.setVisible(false);
+    
+    //Add image
+    try {
+    	image = ImageIO.read(new File("robot2.png"));
+    } catch (IOException e) {
+    }
+    
+    
   }
 
   // Ritar ut allt.
@@ -250,6 +266,10 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	//Print mouse
 	g2d.setColor(Color.red);
 	g2d.fillOval( (int) centFix_X+_mouse.getX()*zk/50-8, (int) centFix_Y-_mouse.getY()*zk/50-8, 16, 16);
+  
+	//Print cat-image
+	//g2d.rotate(Math.PI);  // Rotate the image by 1 radian.
+    //g2d.drawImage(image, 30, 30, ImageObserver observer);
   }
   
   public void showGrid(boolean showgrid){
@@ -279,7 +299,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	  {
 		  SCALE_CURRENT = newScale;
 		  zk = newScale;
-		  System.out.println(newScale);
+		  //System.out.println(newScale);
 	  }	  
   }
   

@@ -55,6 +55,7 @@ public class DataPanel extends JPanel{ // implements ActionListener
 		add(idLabel);
 		
 		mouseLabel = new MouseLabel();
+		add(mouseLabel);
 	}
 	
 	public void repaint() {
