@@ -1,5 +1,6 @@
 package se.uu.it.cats.brick.filter;
 
+import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.storage.BillBoard;
 
 /**
@@ -53,6 +54,13 @@ public abstract class TrackingFilter extends Thread {
 	 * Runs one update of the filter then exits
 	 */
 	public void update() {
+	}
+
+	public void run() {
+		while (true) {
+			update();
+			pause((long) (Tint - (Clock.timestamp() % Tint)));
+		}
 	}
 
 	/** Reset filter with some initial data */
