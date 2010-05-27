@@ -2,6 +2,8 @@ package GSim;
 
 import java.awt.Graphics;
 
+/*import se.uu.it.cats.brick.Clock;*/
+
 /**
  * Base class for the absolute positioning filter (graphics code should be taken
  * out before use on the NXT)
@@ -61,6 +63,13 @@ public abstract class TrackingFilter extends Thread {
 
 	/** Reset filter with some initial data */
 	public void initData(float x, float y, float xv, float yv) {
+	}
+
+	public void run() {
+		while (true) {
+			// update();
+			pause((long) (Tint - (Clock.timestamp() % Tint)));
+		}
 	}
 
 	/**
