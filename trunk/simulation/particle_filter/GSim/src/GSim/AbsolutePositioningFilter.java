@@ -59,6 +59,13 @@ public abstract class AbsolutePositioningFilter extends Thread {
 	public void initData(float x, float y, float angle) {
 	}
 
+	public void run() {
+		while (true) {
+			// update();
+			pause((long) (Tint - (Clock.timestamp() % Tint)));
+		}
+	}
+
 	/**
 	 * Pause the execution this many milliseconds
 	 * 
