@@ -356,7 +356,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		mx = Fixed.mul(mx, Nnorm);
 		my = Fixed.mul(my, Nnorm);
 		// Calculate (co-)variances
-		if (sum_w==0) {
+		if (sum_w == 0) {
 			// No old data should be saved and filter knows nothing about the
 			// current tracked states. Uncertainty increases with time (standard
 			// deviation increases by 20%).
@@ -573,14 +573,6 @@ public class TrackingParticleFilter extends TrackingFilter {
 		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
-	}
-
-	public void run() {
-		while (true) {
-			update();
-			pause((long) (Tint - (Clock.timestamp() % Tint)));
-		}
-
 	}
 
 	/**
