@@ -13,6 +13,7 @@ import se.uu.it.cats.brick.filter.*;
 import se.uu.it.cats.brick.network.*;
 import se.uu.it.cats.brick.network.packet.AbsolutePositionUpdate;
 import se.uu.it.cats.brick.network.packet.LatestSightingUpdate;
+import se.uu.it.cats.brick.network.packet.MeanAndCovarianceUpdate;
 import se.uu.it.cats.brick.storage.BillBoard;
 import se.uu.it.cats.brick.storage.StorageManager;
 
@@ -59,7 +60,7 @@ public class Main
 		// wait for one second until sync packets get through
 		try {Thread.sleep(1000);} catch(Exception ex) {}
 		
-		boolean startYourEngines = true;
+		boolean startYourEngines = false;
 		if (startYourEngines) {
 			
 			unifiedBuffer = new BufferSorted();
@@ -102,7 +103,8 @@ public class Main
 			
 			public void buttonReleased(Button b)
 			{
-				travelTest();
+				billboardTest();
+				//travelTest();
 			}
 		});
 		
@@ -231,5 +233,21 @@ public class Main
 		mPilot.travel(-1f,4f);
 		mPilot.travel(-1f,4.5f);
 		mPilot.travel(-1f,5f);*/
+	}
+	
+	public static void billboardTest() {
+		
+		if (Identity.getId() == 2) {
+			BillBoard.getInstance().setMeanAndCovariance(Identity.getId(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp());
+			//MeanAndCovarianceUpdate macu = new MeanAndCovarianceUpdate(Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp());
+			//ConnectionManager.getInstance().sendPacketToAll(macu);			
+		}
+		
+		float[] meanAndCo = BillBoard.getInstance().getMeanAndCovariance();
+		for (int i = 0; i < meanAndCo.length; i++) {
+			Logger.print(meanAndCo[i]+", ");
+		}
+		
+		Logger.println("");
 	}
 }
