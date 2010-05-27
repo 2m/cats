@@ -2,6 +2,7 @@ package se.uu.it.cats.brick.filter;
 
 import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.Identity;
+import se.uu.it.cats.brick.Settings;
 import se.uu.it.cats.brick.storage.BillBoard;
 
 /** Naive filter for absolute positioning of one cat using landmarks. */
@@ -33,10 +34,7 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 			Buffer unifiedBuffer, BillBoard billboard) {
 		// Call constructor of super class
 		super(id, T, unifiedBuffer, billboard);
-		if (Identity.getId() == 1)
-			initData(0f, 0f, 0f);
-		else if (Identity.getId() == 2)
-			initData(0.5f, 0f, 0f);
+		initData(Settings.START_X, Settings.START_Y, Settings.START_ANGLE);
 	}
 
 	/**
