@@ -101,7 +101,7 @@ public class PacketManager
 					float y = ((MeanAndCovarianceUpdate)p).getMeanY();
 					
 					Area.getInstance().getMouse().newPosition((int) (x*100), (int) (y*100)); //Values from network in meters, values in Area in cm.
-					System.out.println("X: " + x + " Y: " + y);
+					System.out.println("from cat"+p.getSource()+"X: " + x + " Y: " + y);
 				}
 				break;
 			}
