@@ -5,6 +5,12 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+/*import se.uu.it.cats.brick.Clock;
+ import se.uu.it.cats.brick.filter.ComparableData;
+ import se.uu.it.cats.brick.filter.LandmarkList;
+ import se.uu.it.cats.brick.filter.MovementData;
+ import se.uu.it.cats.brick.filter.SightingData;*/
+
 /** Naive filter for absolute positioning of one cat using landmarks. */
 public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 
@@ -139,6 +145,10 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 	}
 
 	public void update() {
+
+		float latestSighting[] = new float[4];
+		boolean needToSendSighting = false;
+
 		// Get time reference
 		currentTime = Clock.timestamp();
 
@@ -147,21 +157,27 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 			// Use data if it is older than currentTime
 			if (data.getComparable() <= currentTime) {
 				if (data.isMovementData()) {
+					// System.out.println("isMovementData");
 					// Update mean
 					MovementData mdata = (MovementData) data;
 					mean_x += Math.cos(mean_angle) * mdata.dr;
 					mean_y += Math.sin(mean_angle) * mdata.dr;
 					mean_angle += mdata.dangle;
 					lastCurrentTime = mdata.comparable;
-					billboard.setAbsolutePosition(id, getX(), getY(),
-							getAngle(), getTime());
+					/*
+					 * billboard.setAbsolutePosition(id, getX(), getY(),
+					 * getAngle(), getTime());
+					 */
 				} else if (data.isSightingData()) {
+					// System.out.println("isSightingData");
 					SightingData sdata = (SightingData) data;
 					if (sdata.type == LandmarkList.MOUSE) {
-
-						billboard.setLatestSighting(id, getX(), getY(),
-								sdata.angle + getAngle(), sdata.comparable);
-
+						// System.out.println("isMouse");
+						latestSighting[0] = getX();
+						latestSighting[1] = getY();
+						latestSighting[2] = sdata.angle + getAngle();
+						latestSighting[3] = sdata.comparable;
+						needToSendSighting = true;
 					}
 				}
 				data = unifiedBuffer.pop();
@@ -171,17 +187,17 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 			}
 		}
 
+		billboard.setAbsolutePosition(id, getX(), getY(), getAngle(), Clock
+				.timestamp());
+
+		if (needToSendSighting)
+			billboard.setLatestSighting(id, latestSighting[0],
+					latestSighting[1], latestSighting[2],
+					(int) latestSighting[3]);
+
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
 		iterationTime += Clock.timestamp() - currentTime;
-	}
-
-	public void run() {
-		while (true) {
-			// update();
-			pause((long) (Clock.timestamp() % Tint));
-		}
-
 	}
 
 	/**
