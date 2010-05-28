@@ -83,7 +83,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		
 		ufk_filter = new UnscentedKalmanFilter(nx,nz); 
 		float dt = T; //1.0f;  //sampling period
-		float q = 0.5f;//0.005f;  //std of expected process noise for the mouse
+		float q = 0.1f;//0.005f;  //std of expected process noise for the mouse
 		float stddegrees = 1f;//2.0f; //0.1f;
 		std_array = new double[]{stddegrees*(PI/180)};
 		double[][] r_temp = {std_array};
@@ -247,6 +247,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		// TODO: Remove graphics code from filter
 		final int size = 4; // Diameter
 		int linelength;
+		int raylength = 1000;
 
 		Graphics2D g2 = (Graphics2D) g;
 
@@ -266,6 +267,15 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 				(int) size);
 		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
 				* linelength), (int) (iy + Math.sin(iangle) * linelength));
+		
+		//Draw measurements to mouse as lines
+		float[] positions = billboard.getLatestSightings();
+		int catXpos = (int) positions[id * 4 + 0];
+		int catYpos = (int) positions[id * 4 + 1];
+		System.out.println("Cat: " + id + ", catXpos: " + catXpos + ", catYpos: " + catYpos);
+		g2.setColor(Color.black);
+			g2.drawLine(catXpos, catYpos, (int) (catXpos + Math.cos(measurments.get(id, 0))
+					* raylength), (int) (catYpos + Math.sin(measurments.get(id, 0)) * raylength));
 
 		// Reset the transformation matrix
 		g2.setTransform(oldTransform);

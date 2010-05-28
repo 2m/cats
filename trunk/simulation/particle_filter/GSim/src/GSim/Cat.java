@@ -15,15 +15,15 @@ public class Cat extends Actor {
 	protected TrackingFilter trackingFilter;
 	private Guide guide;
 
-	private boolean usePositioningParticleFilter = true;
+	private boolean usePositioningParticleFilter = false;
 	private boolean usePositioningUnscentedKalmanFilter = false;
-	private boolean useTrackingParticleFilter = true;
-	private boolean useTrackingUnscentedKalmanFilter = false;
-	private boolean useGuide = true;
+	private boolean useTrackingParticleFilter = false;
+	private boolean useTrackingUnscentedKalmanFilter = true;
+	private boolean useGuide = false;
 
 	/* Periods in ms */
 	private int trackingKalmanPeriod = 50;
-	private int positioningKalmanPeriod = 50;
+	private int positioningKalmanPeriod = 200;
 	private int trackingParticlePeriod = 200;
 	private int positioningParticlePeriod = 200;
 
