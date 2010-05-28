@@ -58,15 +58,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	
 	/**Toggle debug info*/
 	private final boolean DEBUG = false;
-	
-	private Buffer sensorData = new Buffer();
-	private Buffer movementData = new Buffer();
-	
-	private Buffer sdataBuffer = new Buffer();
-	private Buffer mdataBuffer = new Buffer();
-	
 
-	
 	public AbsolutePositioningUKF(int id, float T, Buffer unifiedBuffer, BillBoard billboard)		
 	{	
 		super(id,T, unifiedBuffer, billboard);
@@ -79,8 +71,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		float dt = T;//1f;  //sampling period in seconds
 		//T = 1;
 		float q = 0.5f;  //std of expected process noise for the cat
-		float stddegrees = 1f;
-		std_array = new double[]{stddegrees*(PI/180), pow(10, -7), pow(10, -7), pow(10, -7)};//, pow(10, -20)};
+		float stddegrees = .1f;
+		std_array = new double[]{stddegrees*(PI/180), pow(10, -2), pow(10, -2), pow(10, -7)};//, pow(10, -20)};
 		double[][] r_temp = {std_array};
 		r = new Matrix(r_temp);  //std of expected measurement noise for the cat (for bearing angle, x, y, orient., cam.ang respectivly)
 		float k1 = 1;  //how much the noise in the wheel tachometers is amplified
@@ -192,41 +184,6 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	public void update() {
 		// Get time reference
 		currentTime = Clock.timestamp();
-
-		// Update landmark angle in the measurement matrix
-
-		/*while(unifiedBuffer.top() != null)
-		{
-			ComparableData bufferEntry = unifiedBuffer.pop();
-			if (bufferEntry.isSightingData()) 
-			{
-				debug("");
-				debug("sighting data:" + bufferEntry.toString());
-				debug("");
-				sdataBuffer.push(bufferEntry);
-			}
-			else
-			{
-				debug("");
-				debug("movement data:" + bufferEntry.toString());
-				debug("");
-				mdataBuffer.push(bufferEntry);
-			}
-		}
-		while(sdataBuffer.top() != null)
-		{
-			sensorData.push(sdataBuffer.pop());
-		}
-		while(mdataBuffer.top() != null)
-		{
-			movementData.push(mdataBuffer.pop());
-		}
-		
-		SightingData sdata = (SightingData) sensorData.pop();
-		MovementData mdata = (MovementData) movementData.pop();
-		
-		//SightingData sdata = (SightingData) sensorData.pop(); old
-		*/
 		
 		boolean[] landmarksSighted = new boolean[numberOfLandmarks];
 		debug("Debug, entering update: current time= " + currentTime + ", number of landmarks= " + landmarksSighted.length);
@@ -260,10 +217,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 					} 
 					else 
 					{
-						debug("Current length of buffer = " + sensorData.getLength());
-						
 						//Determine which landmark it is
-						double absLandmarkAngle = (sdata.angle + 2.0*PI) % (2.0*PI); //+4.0*PI old
+						double absLandmarkAngle = (sdata.angle + getAngle() + 2.0*PI) % (2.0*PI); //+4.0*PI old
 						if (absLandmarkAngle>=0 && absLandmarkAngle<PI/2.0) //upper right corner
 						{
 							z.set(3,0,absLandmarkAngle);
@@ -291,8 +246,9 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 						else System.out.println("ERROR in update! absLandmarkAngle in radians = " + absLandmarkAngle + " and in degrees = "+ toDegrees(absLandmarkAngle) );
 						
 						//sdata = null; //leave loop
-						System.out.println("Cat: " + id + " z:...");
-						printM(z);
+						//System.out.println("Cat: " + id + " z:...");
+						//printM(z);
+						//System.out.println("absLandmarkAngle: "+absLandmarkAngle);
 					}
 				}
 				else if (data.isMovementData()) {
@@ -300,8 +256,9 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 					// Update cat velocity and orientation in the measurement matrix
 					orientationFromTachometer += mdata.dangle;	
 					
-					xMovementFromTachometer += mdata.dr*cos(orientationFromTachometer);
-					yMovementFromTachometer += mdata.dr*sin(orientationFromTachometer);
+					//static error added for testing:
+					xMovementFromTachometer += mdata.dr*cos(orientationFromTachometer)+0.01;
+					yMovementFromTachometer += mdata.dr*sin(orientationFromTachometer)+0.01;
 				}
 				// Pops new data
 				data = unifiedBuffer.pop();
@@ -410,7 +367,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		//Draw landmark sightings as rays from the estimated cat position
 		switch (id){
 		case 0:
-			g2.setColor(Color.black);
+			g2.setColor(Color.magenta);
 			break;
 		case 1:
 			g2.setColor(Color.green);
@@ -421,8 +378,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		}
 		for (int i = 0; i < numberOfLandmarks; i++ )
 		{
-		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(z.get(i, 0))
-				* raylength), (int) (iy + Math.sin(z.get(i, 0)) * raylength));
+		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(-z.get(i, 0))
+				* raylength), (int) (iy + Math.sin(-z.get(i, 0)) * raylength));
 		}
 		
 		// Reset the transformation matrix

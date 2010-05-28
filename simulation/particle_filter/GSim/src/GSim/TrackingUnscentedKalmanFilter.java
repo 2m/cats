@@ -270,12 +270,13 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		
 		//Draw measurements to mouse as lines
 		float[] positions = billboard.getLatestSightings();
-		int catXpos = (int) positions[id * 4 + 0];
-		int catYpos = (int) positions[id * 4 + 1];
-		System.out.println("Cat: " + id + ", catXpos: " + catXpos + ", catYpos: " + catYpos);
+		int catXpos = Actor.e2gX( positions[id * 4 + 0] );
+		int catYpos = Actor.e2gY( positions[id * 4 + 1] );
+		System.out.println("Cat: " + id + ", catX: " + positions[id * 4 + 0] + ", catY: " + positions[id * 4 + 1]
+		            + ", zMouse: " + Math.toDegrees(measurments.get(id, 0)));
 		g2.setColor(Color.black);
-			g2.drawLine(catXpos, catYpos, (int) (catXpos + Math.cos(measurments.get(id, 0))
-					* raylength), (int) (catYpos + Math.sin(measurments.get(id, 0)) * raylength));
+			g2.drawLine(catXpos, catYpos, (int) (catXpos + Math.cos(-measurments.get(id, 0))
+					* raylength), (int) (catYpos + Math.sin(-measurments.get(id, 0)) * raylength));
 
 		// Reset the transformation matrix
 		g2.setTransform(oldTransform);
@@ -319,13 +320,15 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			//System.out.println("Cat" + id + " checking billboard for cat " + (i) + ": sighting timestamp = " + sightings[(i - 1) * 4 + 3] + ", lastCurrentTime = " + (float)lastCurrentTime);
 			
 			//use a mouse sighting if it's newer then lastCurrentTime (and older then currentTime?)
-			if (sightings[(i - 1) * 4 + 3] >= (float)lastCurrentTime)
-			{
+			//System.out.println("SightingTS: "+sightings[(i - 1) * 4 + 3]+"lastCurrentTime: "+lastCurrentTime);
+						
+			//if (sightings[(i - 1) * 4 + 3] >= (float)lastCurrentTime)
+			//{
 				//System.out.println("Cat " + id + " setting measurement for cat" + (i));
 				R.set(i-1, i-1, pow(std_array[0],2) );
 				measurments.set(i-1, 0, (sightings[(i - 1) * 4 + 2] + 2.0*PI) % (2.0*PI) );
 				
-			}
+			//}
 		}
 		if (DEBUG)
 		{

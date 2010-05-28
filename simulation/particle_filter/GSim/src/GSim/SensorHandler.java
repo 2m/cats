@@ -48,12 +48,12 @@ public class SensorHandler {
 			}
 			float angle_diff = (float) Math
 					.abs(angle_to_landmark - angle_to_mouse);
-			if ((initialPhase) || (angle_diff < (field_of_view / 2))) {
+			//if ((initialPhase) || (angle_diff < (field_of_view / 2))) {
 				d = new SightingData(t, cx, cy, (float) (angle_to_landmark
-						- cat.getObjectiveAngle() + rnd.nextGaussian() * 1
+						- cat.getObjectiveAngle() + rnd.nextGaussian() * 0
 						* (Math.PI / 180)), type);
 				unifiedBuffer.push(d);
-			}
+			//}
 		}
 
 		// Needs to leave initial phase to make the field of view check work
