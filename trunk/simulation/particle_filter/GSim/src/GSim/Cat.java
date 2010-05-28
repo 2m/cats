@@ -16,7 +16,7 @@ public class Cat extends Actor {
 	private Guide guide;
 
 	private boolean usePositioningParticleFilter = false;
-	private boolean usePositioningUnscentedKalmanFilter = false;
+	private boolean usePositioningUnscentedKalmanFilter = true;
 	private boolean useTrackingParticleFilter = false;
 	private boolean useTrackingUnscentedKalmanFilter = true;
 	private boolean useGuide = false;

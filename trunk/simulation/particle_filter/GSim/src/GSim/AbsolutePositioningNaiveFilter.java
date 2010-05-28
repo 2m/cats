@@ -190,10 +190,12 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		billboard.setAbsolutePosition(id, getX(), getY(), getAngle(), Clock
 				.timestamp());
 
-		if (needToSendSighting)
+		if (needToSendSighting) {
 			billboard.setLatestSighting(id, latestSighting[0],
 					latestSighting[1], latestSighting[2],
 					(int) latestSighting[3]);
+		//System.out.println("Cat: "+id+", zMouse: "+Math.toDegrees(latestSighting[2])+" updated to billboard");	
+		}
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;

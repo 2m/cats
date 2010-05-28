@@ -28,17 +28,17 @@ public class MotorControl {
 			distance = MAX_SPEED;
 		}
 		// +-2% noise
-		setX(getX() + Math.cos(angle) * distance
-				* (1 + rng.nextDouble() * 0.04 + 0.02));
-		setY(getY() + Math.sin(angle) * distance
-				* (1 + rng.nextDouble() * 0.04 + 0.02));
+		setX(getX() + Math.cos(angle) * distance        );
+				//* (1 + rng.nextDouble() * 0.04 + 0.02));
+		setY(getY() + Math.sin(angle) * distance        );
+				//* (1 + rng.nextDouble() * 0.04 + 0.02));
 		updateBuffer.push(new MovementData(Clock.timestamp(), (float) distance,
 				(float) 0.0));
 	}
 
 	public void turn(double turnangle) {
 		// +-2% noise
-		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() * 0.04 + 0.02));
+		setAngle(getAngle() + turnangle);// * (1 + rng.nextDouble() * 0.04 + 0.02));
 		updateBuffer.push(new MovementData(Clock.timestamp(), (float) 0.0,
 				(float) turnangle));
 	}
