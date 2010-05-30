@@ -222,27 +222,39 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 						double absLandmarkAngle = (sdata.angle + getAngle() + 2.0*PI) % (2.0*PI); //+4.0*PI old
 						if (absLandmarkAngle>=0 && absLandmarkAngle<PI/2.0) //upper right corner
 						{
-							z.set(3,0,absLandmarkAngle);
-							landmarksSighted[3] = true;
-							debug("Cat " +id + " sighting landmark 3 (upper right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + " sighting landmark 3 (upper right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)) + ", timestamp = " + sdata.comparable );
+							if (landmarksSighted[3] == false)
+							{
+								z.set(3,0,absLandmarkAngle);
+								landmarksSighted[3] = true;
+							}
 						}
 						else if (absLandmarkAngle>=PI/2.0 && absLandmarkAngle<PI) //upper left corner
 						{
-							z.set(1,0,absLandmarkAngle);
-							landmarksSighted[1] = true;
-							debug("Cat " +id + " sighting landmark 1 (upper left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + " sighting landmark 1 (upper left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)) + ", timestamp = " + sdata.comparable );
+							if (landmarksSighted[1] == false)
+							{
+								z.set(1,0,absLandmarkAngle);
+								landmarksSighted[1] = true;
+							}
 						}
 						else if (absLandmarkAngle>=PI && absLandmarkAngle<3.0*PI/2.0) //lower left corner
 						{
-							z.set(0,0,absLandmarkAngle);
-							landmarksSighted[0] = true;
-							debug("Cat " +id + " sighting landmark 0 (lower left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + " sighting landmark 0 (lower left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)) + ", timestamp = " + sdata.comparable );
+							if (landmarksSighted[0] == false)
+							{
+								z.set(0,0,absLandmarkAngle);
+								landmarksSighted[0] = true;
+							}
 						}
 						else if (absLandmarkAngle>=3.0*PI/2.0 && absLandmarkAngle<2*PI)  //lower right corner
 						{
-							z.set(2,0,absLandmarkAngle);
-							landmarksSighted[2] = true;
-							debug("Cat " +id + " sighting landmark 2 (lower right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + " sighting landmark 2 (lower right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)) + ", timestamp = " + sdata.comparable );
+							if (landmarksSighted[2] == false)
+							{
+								z.set(2,0,absLandmarkAngle);
+								landmarksSighted[2] = true;
+							}
 						}
 						else System.out.println("CAT " +id + "ERROR in update! absLandmarkAngle in radians = " + absLandmarkAngle + " and in degrees = "+ toDegrees(absLandmarkAngle) );
 						

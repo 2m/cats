@@ -18,12 +18,13 @@ public class Cat extends Actor {
 	private boolean usePositioningParticleFilter = false;
 	private boolean usePositioningUnscentedKalmanFilter = true;
 	private boolean useTrackingParticleFilter = false;
-	private boolean useTrackingUnscentedKalmanFilter = true;
+	private boolean useTrackingUnscentedKalmanFilter = false;
 	private boolean useGuide = false;
 
 	/* Periods in ms */
-	private int trackingKalmanPeriod = 50;
-	private int positioningKalmanPeriod = 200;
+	private int positioningNaivePeriod = 200;//200;
+	private int trackingKalmanPeriod = 200;//50;
+	private int positioningKalmanPeriod = 200;//200;
 	private int trackingParticlePeriod = 200;
 	private int positioningParticlePeriod = 200;
 
@@ -49,7 +50,7 @@ public class Cat extends Actor {
 
 		} else {
 			positioningFilter = new AbsolutePositioningNaiveFilter(id,
-					(float) positioningKalmanPeriod / 1000f, unifiedBuffer,
+					(float) positioningNaivePeriod / 1000f, unifiedBuffer,
 					billboard);
 		}
 
@@ -106,10 +107,12 @@ public class Cat extends Actor {
 
 		if (nextpos < Clock.timestamp()) {
 			positioningFilter.update();
-			if (useTrackingParticleFilter) {
+			if (usePositioningParticleFilter) {
 				nextpos += positioningParticlePeriod;
-			} else {
+			} else if (usePositioningUnscentedKalmanFilter) {
 				nextpos += positioningKalmanPeriod;
+			} else {
+				nextpos += positioningNaivePeriod;
 			}
 		}
 		if (nexttrack < Clock.timestamp()) {
