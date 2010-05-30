@@ -1,4 +1,4 @@
-package GSim;
+package se.uu.it.cats.brick.filter;
 
 import lejos.util.Matrix;
 
