@@ -22,7 +22,7 @@ public class HmeasMouse implements IFunction{
 	 */
 	public HmeasMouse(BillBoard billboard){
 		this.billboard = billboard;
-		nm = billboard.NUMBER_OF_CATS;
+		nm = billboard.getNoCats();
 	}
 
 	public Matrix eval(Matrix xm){

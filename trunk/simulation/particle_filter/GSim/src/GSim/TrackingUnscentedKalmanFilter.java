@@ -74,7 +74,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		// Call constructor of super class
 		super(id, T, billboard);
 		
-		int nz = billboard.NUMBER_OF_CATS;  //number of cats
+		int nz = billboard.getNoCats();  //number of cats
 		int nx = 4;  //number of variables in the mouse's state vector
 		
 		ufk_filter = new UnscentedKalmanFilter(nx,nz); 
