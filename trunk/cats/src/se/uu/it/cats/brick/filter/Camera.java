@@ -123,7 +123,7 @@ public class Camera implements Runnable {
 					//Logger.println("currentColor: "+currentColor+", i: " + i + ", err: "+ err);
 					
 					unifiedBuffer.push(new SightingData(Clock.timestamp(), angToTargetRelCat, currentColor));
-					MovementPilot.recentSighting = true;
+					MovementPilot.newSighting = true;
 					
 					// send some measurements to the GUI
 					/*ConnectionManager.getInstance().sendPacketToAll(
