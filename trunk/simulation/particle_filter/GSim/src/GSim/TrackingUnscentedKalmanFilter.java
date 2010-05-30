@@ -43,17 +43,13 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	
 	/** std of expected measurement noise for the mouse TODO: update comment(for bearing angle, x, y, orient., cam.ang respectivly)*/
 	private double[] std_array;
-	private Matrix r; //TODO never used ? remove ?
 	
 	/** Varible for time */
-	private int currentTime, lastCurrentTime, secondLastCurrentTime;
+	private int currentTime, lastCurrentTime;
 	
 	/** Counter and timer too keep track of mean iteration execution time */
 	private int iterationCounter = 0;
 	private int iterationTime = 0;
-	
-	/** number of landmarks */
-	private int numberOfLandmarks;
 	
 	private float large = (float)pow(10,10);
 	
@@ -85,9 +81,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		float dt = T; //1.0f;  //sampling period
 		float q = 0.1f;//0.005f;  //std of expected process noise for the mouse
 		float stddegrees = 1f;//2.0f; //0.1f;
-		std_array = new double[]{stddegrees*(PI/180)};
-		double[][] r_temp = {std_array};
-		r = new Matrix(r_temp);  //std of expected measurement noise for the mouse
+		std_array = new double[]{stddegrees*(PI/180)};  //std of expected measurement noise for the mouse
 		double[][] temp_Q = {{pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0            },
 							{0.0,             pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0 },
 							{pow(dt, 3)/2.0,  0.0,            pow(dt, 2),     0.0            },
@@ -373,7 +367,6 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		iterationCounter++;
 		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
-		secondLastCurrentTime = lastCurrentTime;
 		lastCurrentTime = currentTime;
 	}
 
