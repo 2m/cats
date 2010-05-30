@@ -17,16 +17,16 @@ public class Cat extends Actor {
 
 	private boolean usePositioningParticleFilter = false;
 	private boolean usePositioningUnscentedKalmanFilter = true;
-	private boolean useTrackingParticleFilter = false;
+	private boolean useTrackingParticleFilter = true;
 	private boolean useTrackingUnscentedKalmanFilter = false;
 	private boolean useGuide = false;
 
 	/* Periods in ms */
-	private int positioningNaivePeriod = 200;//200;
+	private int positioningNaivePeriod = 500;//200;
 	private int trackingKalmanPeriod = 200;//50;
-	private int positioningKalmanPeriod = 200;//200;
+	private int positioningKalmanPeriod = 400;//500; //NB: working ok @500ms with q = 0.5f and stddegrees = 1f, working somewhat ok @750ms with q = 0.005f and stddegrees = 1f
 	private int trackingParticlePeriod = 200;
-	private int positioningParticlePeriod = 200;
+	private int positioningParticlePeriod = 400;
 
 	private int nexttrack, nextpos;
 	private int Ntracking = 100;
