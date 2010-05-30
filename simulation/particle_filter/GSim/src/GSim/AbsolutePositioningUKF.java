@@ -42,7 +42,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	
 	/** std of expected measurement noise for the cat (for bearing angle, x, y, orient., cam.ang respectivly)*/
 	private double[] std_array;
-	private Matrix r; //TODO never used ? remove ?
+	private Matrix r; //TODO remove and use std_array instead?
 	
 	/** Varible for time */
 	private int lastCurrentTime, currentTime;
@@ -65,8 +65,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 
 		//LandmarkList, true positions of the landmarks are in this static class. HmeasCat accesses the landmark list directly
 		numberOfLandmarks = LandmarkList.landmarkX.length;  //number of landmarks
-		int nz = numberOfLandmarks+3;  //TODO: change back to nz=n+4  //number of elements in the measurement vector of the cats = number of landmarks + 4
-		int nx = 5;  //TODO: change back to nx=6 //number of variables in the cats' state vector
+		int nz = numberOfLandmarks+3;  //number of elements in the measurement vector of the cats
+		int nx = 5;  //number of variables in the cats' state vector
 		ufk_filter = new UnscentedKalmanFilter(nx,nz);
 		float dt = T;//1f;  //sampling period in seconds
 		//T = 1;
@@ -153,7 +153,6 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		return (float)xc.get(1, 0);
 	}
 
-	//TODO Rename to getOrientation ??
 	/** Poll estimated direction angle value from filter */
 	public float getAngle() {
 		return (float)xc.get(4, 0);
@@ -270,6 +269,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 			}
 		} //end while
 		
+		// Update cat velocity and orientation in the measurement matrix
 		double xVelocityFromTachometer = xMovementFromTachometer / T; // ((lastCurrentTime - currentTime)*1000);  // T;
 		double yVelocityFromTachometer = yMovementFromTachometer / T; // ((lastCurrentTime - currentTime)*1000);  // T;
 		z.set(numberOfLandmarks-1 +1, 0, xVelocityFromTachometer);
