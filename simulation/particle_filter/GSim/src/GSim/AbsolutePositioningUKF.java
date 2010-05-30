@@ -57,7 +57,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	private float large = (float)pow(10,10);
 	
 	/**Toggle debug info*/
-	private final boolean DEBUG = false;
+	private final boolean DEBUG = true;
 
 	public AbsolutePositioningUKF(int id, float T, Buffer unifiedBuffer, BillBoard billboard)		
 	{	
@@ -108,19 +108,19 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		z = zeros(nz,1);  //initial estimated measurements
 		
 		if (DEBUG){
-			debug("Creating AbsolutePositioningUKF object");
-			debug("Debug: pos.ukf, Q dim: " + Q.getRowDimension() + " x " + Q.getColumnDimension() + ", Q:");
+			debug("Creating AbsolutePositioningUKF object for cat " +id);
+			debug("Debug: pos.ukf cat " +id + ", Q dim: " + Q.getRowDimension() + " x " + Q.getColumnDimension() + ", Q:");
 			printM(Q);
-			debug("Debug: pos.ukf, R dim: " + R.getRowDimension() + " x " + R.getColumnDimension() + ", R:");
+			debug("Debug: pos.ukf cat " +id + ", R dim: " + R.getRowDimension() + " x " + R.getColumnDimension() + ", R:");
 			printM(R);
-			debug("Debug: pos.ukf, P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", P:");
+			debug("Debug: pos.ukf cat " +id + ", P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", P:");
 			printM(P);
-			debug("Debug: pos.ukf, xc dim: " + xc.getRowDimension() + " x " + xc.getColumnDimension() + ", xc:");
+			debug("Debug: pos.ukf cat " +id + ", xc dim: " + xc.getRowDimension() + " x " + xc.getColumnDimension() + ", xc:");
 			printM(xc);
-			debug("Debug: pos.ukf, z dim: " + z.getRowDimension() + " x " + z.getColumnDimension() + ", z:");
+			debug("Debug: pos.ukf cat " +id + ", z dim: " + z.getRowDimension() + " x " + z.getColumnDimension() + ", z:");
 			printM(z);
-			debug("Debug: pos.ukf, number of landmarks= " + numberOfLandmarks);
-			debug("Array of std of expected measurement= " + std_array[0] +", " + std_array[1] +", " + std_array[2] +", " + std_array[3]);
+			debug("Debug: pos.ukf cat " +id + ", number of landmarks= " + numberOfLandmarks);
+			debug("Debug: pos.ukf cat " +id + ",array of std of expected measurement= " + std_array[0] +", " + std_array[1] +", " + std_array[2] +", " + std_array[3]);
 		}
 	}//End of constructor
 	
@@ -185,7 +185,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		currentTime = Clock.timestamp();
 		
 		boolean[] landmarksSighted = new boolean[numberOfLandmarks];
-		debug("Debug, entering update: current time= " + currentTime + ", number of landmarks= " + landmarksSighted.length);
+		debug("Debug cat " +id + ", entering update: current time= " + currentTime + ", number of landmarks= " + landmarksSighted.length);
 		for (int i = 0; i<numberOfLandmarks-1; i++)
 		{
 			landmarksSighted[i] = false; //default, no sighting
@@ -222,27 +222,27 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 						{
 							z.set(3,0,absLandmarkAngle);
 							landmarksSighted[3] = true;
-							debug("Sighting landmark 3 (upper right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , relative = " + toDegrees(sdata.angle) + " , orientation = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + "Sighting landmark 3 (upper right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
 						}
 						else if (absLandmarkAngle>=PI/2.0 && absLandmarkAngle<PI) //upper left corner
 						{
 							z.set(1,0,absLandmarkAngle);
 							landmarksSighted[1] = true;
-							debug("Sighting landmark 1 (upper left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , relative = " + toDegrees(sdata.angle) + " , orientation = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + "Sighting landmark 1 (upper left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
 						}
 						else if (absLandmarkAngle>=PI && absLandmarkAngle<3.0*PI/2.0) //lower left corner
 						{
 							z.set(0,0,absLandmarkAngle);
 							landmarksSighted[0] = true;
-							debug("Sighting landmark 0 (lower left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , relative = " + toDegrees(sdata.angle) + " , orientation = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + "Sighting landmark 0 (lower left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
 						}
 						else if (absLandmarkAngle>=3.0*PI/2.0 && absLandmarkAngle<2*PI)  //lower right corner
 						{
 							z.set(2,0,absLandmarkAngle);
 							landmarksSighted[2] = true;
-							debug("Sighting landmark 2 (lower right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , relative = " + toDegrees(sdata.angle) + " , orientation = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + "Sighting landmark 2 (lower right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
 						}
-						else System.out.println("ERROR in update! absLandmarkAngle in radians = " + absLandmarkAngle + " and in degrees = "+ toDegrees(absLandmarkAngle) );
+						else System.out.println("CAT " +id + "ERROR in update! absLandmarkAngle in radians = " + absLandmarkAngle + " and in degrees = "+ toDegrees(absLandmarkAngle) );
 						
 						//sdata = null; //leave loop
 						//System.out.println("Cat: " + id + " z:...");
@@ -300,9 +300,9 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		
 		if (DEBUG)
 		{
-			debug("Debug: pos.ukf, P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", P:");
+			debug("Debug cat " +id + ": pos.ukf, P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", P:");
 			printM(P);
-			debug("Debug: pos.ukf, xc dim: " + xc.getRowDimension() + " x " + xc.getColumnDimension() + ", xc:");
+			debug("Debug cat " +id + ": pos.ukf, xc dim: " + xc.getRowDimension() + " x " + xc.getColumnDimension() + ", xc:");
 			printM(xc);
 		}
 		
@@ -333,7 +333,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		// Update public time
 		lastCurrentTime = currentTime;
 		
-		debug("Debug, leaving update at iteration " + iterationCounter + ", current iterationTime= " + (Clock.timestamp() - currentTime) );
+		debug("Debug cat " +id + ", leaving update at iteration " + iterationCounter + ", current iterationTime= " + (Clock.timestamp() - currentTime) );
 	}//end of update
 	
 	/**
