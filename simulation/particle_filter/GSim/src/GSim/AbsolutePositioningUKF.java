@@ -183,9 +183,11 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	public void update() {
 		// Get time reference
 		currentTime = Clock.timestamp();
+
+		iterationCounter++;
 		
 		boolean[] landmarksSighted = new boolean[numberOfLandmarks];
-		debug("Debug cat " +id + ", entering update: current time= " + currentTime + ", number of landmarks= " + landmarksSighted.length);
+		debug("Debug cat " +id + ", entering update at iteration" + iterationCounter +", current time= " + currentTime + ", number of landmarks= " + landmarksSighted.length);
 		for (int i = 0; i<numberOfLandmarks-1; i++)
 		{
 			landmarksSighted[i] = false; //default, no sighting
@@ -222,25 +224,25 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 						{
 							z.set(3,0,absLandmarkAngle);
 							landmarksSighted[3] = true;
-							debug("Cat " +id + "Sighting landmark 3 (upper right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + " sighting landmark 3 (upper right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
 						}
 						else if (absLandmarkAngle>=PI/2.0 && absLandmarkAngle<PI) //upper left corner
 						{
 							z.set(1,0,absLandmarkAngle);
 							landmarksSighted[1] = true;
-							debug("Cat " +id + "Sighting landmark 1 (upper left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + " sighting landmark 1 (upper left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
 						}
 						else if (absLandmarkAngle>=PI && absLandmarkAngle<3.0*PI/2.0) //lower left corner
 						{
 							z.set(0,0,absLandmarkAngle);
 							landmarksSighted[0] = true;
-							debug("Cat " +id + "Sighting landmark 0 (lower left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + " sighting landmark 0 (lower left corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
 						}
 						else if (absLandmarkAngle>=3.0*PI/2.0 && absLandmarkAngle<2*PI)  //lower right corner
 						{
 							z.set(2,0,absLandmarkAngle);
 							landmarksSighted[2] = true;
-							debug("Cat " +id + "Sighting landmark 2 (lower right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
+							debug("Cat " +id + " sighting landmark 2 (lower right corner) with absLandmarkAngle = " + toDegrees(absLandmarkAngle) + " , rel. = " + toDegrees(sdata.angle) + " , orient. = " + toDegrees(xc.get(4, 0)));
 						}
 						else System.out.println("CAT " +id + "ERROR in update! absLandmarkAngle in radians = " + absLandmarkAngle + " and in degrees = "+ toDegrees(absLandmarkAngle) );
 						
@@ -288,6 +290,11 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 				R.set(i, i, pow(std_array[0],2) );
 			}		
 		}
+		if (DEBUG)
+		{
+			debug("Debug cat " +id + ": pos.ukf, z dim: " + z.getRowDimension() + " x " + z.getColumnDimension() + ", z:");
+			printM(z);
+		}
 
 		//One iteration with UKF
 		Matrix[] result = ufk_filter.ukf(f, xc, P, h, z, Q, R);
@@ -327,8 +334,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 			//xc.set(4, 0, 0);
 		}
 		
-		// Increase iteration counter and timer (with full execution time)
-		iterationCounter++;
+		// Increase iteration timer (with full execution time)
+		
 		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
