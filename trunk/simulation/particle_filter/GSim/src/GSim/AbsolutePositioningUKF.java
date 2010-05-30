@@ -57,7 +57,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	private float large = (float)pow(10,10);
 	
 	/**Toggle debug info*/
-	private final boolean DEBUG = true;
+	private final boolean DEBUG = false;
 
 	public AbsolutePositioningUKF(int id, float T, Buffer unifiedBuffer, BillBoard billboard)		
 	{	
@@ -70,8 +70,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		ufk_filter = new UnscentedKalmanFilter(nx,nz);
 		float dt = T;// sampling period in seconds, NB: change T, not dt as T is used elsewhere in the code!
 
-		float q = 0.5f;  //std of expected process noise for the cat
-		float stddegrees = .1f;
+		float q = 0.5f;  //std of expected process noise for the cat, NB 0.5 is a ok value @ T = 200-500ms
+		float stddegrees = 1f;  //a higher value gives smaller errors but slower conversion, NB 1 is a ok value @ T = 200-500ms
 		std_array = new double[]{stddegrees*(PI/180), pow(10, -2), pow(10, -2), pow(10, -7)};//, pow(10, -20)};
 		double[][] r_temp = {std_array};
 		r = new Matrix(r_temp);  //std of expected measurement noise for the cat (for bearing angle, x, y, orient., cam.ang respectivly)
@@ -261,7 +261,6 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 					}
 				}
 				else if (data.isMovementData()) {
-					//FIXME: the data from the buffer should be processed in the opposite direction but it doesn't appear to give big errors (ie wrong orientation data is used)
 					MovementData mdata = (MovementData) data;
 					// Update cat velocity and orientation in the measurement matrix
 					orientationFromTachometer += mdata.dangle;	
