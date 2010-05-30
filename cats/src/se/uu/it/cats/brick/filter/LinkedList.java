@@ -98,14 +98,15 @@ public class LinkedList {
 	 * @param data ComparableData
 	 */
 	public void insertSorted(ComparableData data) {
+		//FIXME Check the iequalities, all inequalities changed 2010-05-30 by Edvard
 		if (isEmpty()) {
 			Link newLink = new Link(data);
 			first = newLink;
 			last = newLink;
 		} else {
-			if (first.data.comparable <= data.comparable) {
+			if (first.data.comparable >= data.comparable) {
 				insertFirst(data);
-			} else if (last.data.comparable > data.comparable) {
+			} else if (last.data.comparable < data.comparable) {
 				insertLast(data);
 			} else {
 				// Link should be inserted inside list
@@ -114,7 +115,7 @@ public class LinkedList {
 				while (current != null) {
 					// Check if current weight is smaller than the particle
 					// weight.
-					if (data.comparable >= current.data.comparable) {
+					if (data.comparable <= current.data.comparable) {
 						break;
 					}
 					// Step forward in list
@@ -126,7 +127,6 @@ public class LinkedList {
 				trail.next = newLink;
 			}
 		}
-
 	}
 
 	public String toString() {
