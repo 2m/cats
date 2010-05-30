@@ -75,7 +75,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		std_array = new double[]{stddegrees*(PI/180), pow(10, -2), pow(10, -2), pow(10, -7)};//, pow(10, -20)};
 		double[][] r_temp = {std_array};
 		r = new Matrix(r_temp);  //std of expected measurement noise for the cat (for bearing angle, x, y, orient., cam.ang respectivly)
-		float k1 = 1;  //how much the noise in the wheel tachometers is amplified
+		float k1 = 1f;  //how much the noise in the wheel tachometers is amplified
 		/*float k2 = dt;  //how much the noise in the camera motor tachometers is amplified
 		double[][] temp_Q = {{pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0,            0.0,            0.0},
 							{0.0,             pow(dt, 4)/4.0, 0.0,            pow(dt, 3)/2.0, 0.0,            0.0},
@@ -266,8 +266,8 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 					orientationFromTachometer += mdata.dangle;	
 					
 					//static error added for testing:
-					xMovementFromTachometer += mdata.dr*cos(orientationFromTachometer);//+0.01;
-					yMovementFromTachometer += mdata.dr*sin(orientationFromTachometer);//+0.01;
+					xMovementFromTachometer += mdata.dr*cos(orientationFromTachometer);
+					yMovementFromTachometer += mdata.dr*sin(orientationFromTachometer);
 				}
 				// Pops new data
 				data = unifiedBuffer.pop();

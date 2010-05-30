@@ -18,7 +18,7 @@ public class BillBoard {
 	/** Floats to sync per cat */
 	private final int DATA_PER_CAT = 11;
 	/** Number of cats (set in constructor) */
-	public final int NUMBER_OF_CATS;
+	private final int NUMBER_OF_CATS;
 
 	public float[] position;
 
