@@ -267,33 +267,36 @@ public class TrackingParticleFilter extends TrackingFilter {
 
 		// Decide on cut off
 		if (sum_w != 0) {
-			// Only the worst particles needs to be re-sampled, so some
-			// particles can be skipped.
-
+			// Only the worst particles needs to be re-sampled
 			for (int i = 0; (i < Ncut) && (link != null); i++) {
-				link.data.comparable = Fixed.ONE;
+				TrackingParticle part = (TrackingParticle) link.data;
+				// Get new random space vector (a, b), sample from 2d Gaussian
+				// distribution.
+				int a = nextRandn();
+				int b = nextRandn();
+				int c = nextRandn();
+				int d = nextRandn();
+				// Add mean and transform the vectors (a, b) and (c, d) into the
+				// new
+				// sample space.
+				part.x = mean_x + Fixed.mul(V1[0][0], a)
+						+ Fixed.mul(V1[0][1], b);
+				part.y = mean_y + Fixed.mul(V1[1][0], a)
+						+ Fixed.mul(V1[1][1], b);
+				part.xv = mean_xv + Fixed.mul(V2[0][0], c)
+						+ Fixed.mul(V2[0][1], d);
+				part.yv = mean_yv + Fixed.mul(V2[1][0], c)
+						+ Fixed.mul(V2[1][1], d);
+				// Set norm to standard (all are equal) norm.
+				part.comparable = Fixed.ONE;
 				link = link.next;
 			}
 
 		}
 
-		// Loop through all particles
+		// All remaining particles (if any) have their weights reset
 		while (link != null) {
-			TrackingParticle part = (TrackingParticle) link.data;
-			// Get new random space vector (a, b), sample from 2d Gaussian
-			// distribution.
-			int a = nextRandn();
-			int b = nextRandn();
-			int c = nextRandn();
-			int d = nextRandn();
-			// Add mean and transform the vectors (a, b) and (c, d) into the new
-			// sample space.
-			part.x = mean_x + Fixed.mul(V1[0][0], a) + Fixed.mul(V1[0][1], b);
-			part.y = mean_y + Fixed.mul(V1[1][0], a) + Fixed.mul(V1[1][1], b);
-			part.xv = mean_xv + Fixed.mul(V2[0][0], c) + Fixed.mul(V2[0][1], d);
-			part.yv = mean_yv + Fixed.mul(V2[1][0], c) + Fixed.mul(V2[1][1], d);
-			// Set norm to standard (all are equal) norm.
-			part.comparable = Fixed.ONE;
+			link.data.comparable = Fixed.ONE;
 			link = link.next;
 		}
 	}
@@ -530,25 +533,25 @@ public class TrackingParticleFilter extends TrackingFilter {
 		g2.setColor(Color.green);
 		// Plot particles
 
-		/*
-		 * Link link = data.first;while (link != null) {TrackingParticle part =
-		 * (TrackingParticle) link.data;
-		 * 
-		 * int ix = Actor.e2gX(Fixed.fixedToFloat(part.x)); int iy =
-		 * Actor.e2gY(Fixed.fixedToFloat(part.y)); float xv =
-		 * Fixed.fixedToFloat(part.xv); float yv = Fixed.fixedToFloat(part.yv);
-		 * linelength = (int) Fixed.fixedToFloat(Fixed.norm(part.xv, part.yv));
-		 * double iangle = -Math.atan2(yv, xv);
-		 * 
-		 * g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
-		 * (int) size);
-		 * 
-		 * 
-		 * g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
-		 * linelength), (int) (iy + Math.sin(iangle) * linelength));
-		 * 
-		 * link = link.next;}
-		 */
+		Link link = data.first;
+		while (link != null) {
+			TrackingParticle part = (TrackingParticle) link.data;
+
+			int ix = Actor.e2gX(Fixed.fixedToFloat(part.x));
+			int iy = Actor.e2gY(Fixed.fixedToFloat(part.y));
+			float xv = Fixed.fixedToFloat(part.xv);
+			float yv = Fixed.fixedToFloat(part.yv);
+			linelength = (int) Fixed.fixedToFloat(Fixed.norm(part.xv, part.yv));
+			double iangle = -Math.atan2(yv, xv);
+
+			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
+					(int) size, (int) size);
+
+			g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
+					* linelength), (int) (iy + Math.sin(iangle) * linelength));
+
+			link = link.next;
+		}
 
 		// Plot mean
 		g2.setColor(Color.CYAN);
