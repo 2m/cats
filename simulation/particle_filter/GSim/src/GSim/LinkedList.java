@@ -98,7 +98,6 @@ public class LinkedList {
 	 * @param data ComparableData
 	 */
 	public void insertSorted(ComparableData data) {
-		//FIXME Check the iequalities, all inequalities changed 2010-05-30 by Edvard
 		if (isEmpty()) {
 			Link newLink = new Link(data);
 			first = newLink;
@@ -106,7 +105,7 @@ public class LinkedList {
 		} else {
 			if (first.data.comparable >= data.comparable) {
 				insertFirst(data);
-			} else if (last.data.comparable < data.comparable) {
+			} else if (last.data.comparable <= data.comparable) {
 				insertLast(data);
 			} else {
 				// Link should be inserted inside list
