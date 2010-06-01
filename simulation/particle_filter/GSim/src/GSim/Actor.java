@@ -28,6 +28,8 @@ public class Actor {
 	protected BillBoard billboard;
 
 	protected int id;
+	
+	public boolean turnMode = true;
 
 	public Actor(Actor mouse, double tx, double ty, double tangle, int ttype,
 			BillBoard billboard, int id) {

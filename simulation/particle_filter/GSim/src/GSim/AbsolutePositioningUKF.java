@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+import lejos.util.KalmanFilter;
 import lejos.util.Matrix;
 import static java.lang.Math.*;
 import static GSim.Matlab.*;
@@ -22,6 +23,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	 * x, y, vx, vy, orientation in radians, (absCamAngle)*/
 	private Matrix xc;
 	private double catAngle;
+	private boolean turnMode = false; //true if turning, false if traveling
 	
 	///** true state of the cat (basic simulation only)*/
 	//private Matrix sc;
@@ -142,7 +144,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		xc.set(1, 0, y);	
 		xc.set(2, 0, 0);
 		xc.set(3, 0, 0);	
-		xc.set(4, 0, angle);	
+		catAngle = angle;	
 	}
 	
 	/** Poll estimated x position value from filter */
@@ -199,8 +201,9 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	public void update() {
 		// Get time reference
 		currentTime = Clock.timestamp();
-
 		iterationCounter++;
+		float turnEpsilon = 0.00001f;
+		float travelEpsilon = 0.0000001f;
 		
 		boolean[] landmarksSighted = new boolean[numberOfLandmarks];
 		debug("Debug cat " +id + ", entering update at iteration" + iterationCounter +", current time= " + currentTime + ", number of landmarks= " + landmarksSighted.length);
@@ -278,12 +281,41 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 				}
 				else if (data.isMovementData()) {
 					MovementData mdata = (MovementData) data;
+					System.out.println("Cat: "+id+", dr: "+mdata.dr+", angle: "+mdata.dangle);
 					// Update cat velocity and orientation in the measurement matrix
-					catAngle += mdata.dangle;	
-					
-					//static error added for testing:
+					/*if (turnMode && mdata.dangle > turnEpsilon)
+						catAngle += mdata.dangle;
+					else if (turnMode && mdata.dangle <= turnEpsilon)
+					{
+						unifiedBuffer.push(data);
+						data = null;
+						turnMode = false;
+					}
+					else if(!turnMode && mdata.dangle < turnEpsilon)
+					{
+						xMovementFromTachometer += mdata.dr*cos(catAngle);
+						yMovementFromTachometer += mdata.dr*sin(catAngle);
+					}
+					else if(!turnMode && mdata.dr < travelEpsilon)
+					{
+						unifiedBuffer.push(data);
+						data = null;
+						turnMode = true;
+					}
+					else if(!turnMode && mdata.dangle > turnEpsilon)
+					{
+						unifiedBuffer.push(data);
+						data = null;
+						turnMode = true;
+					}
+					else
+						System.out.println("Error in turn mode!");
+					 */		
+					catAngle += mdata.dangle;
 					xMovementFromTachometer += mdata.dr*cos(catAngle);
 					yMovementFromTachometer += mdata.dr*sin(catAngle);
+					
+					System.out.println("					Cat: "+id+", turnMode: "+turnMode);
 				}
 				// Pops new data
 				data = unifiedBuffer.pop();
@@ -322,23 +354,27 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		
 		//Calculate the difference between the cat current cat orinetation 
 		//and the one calculated from the cat position
-		double[] landmarkAngles = new double[numberOfLandmarks-1];
+		double[] landmarkAngles = new double[numberOfLandmarks];
 		landmarkAngles = landmarkAngleEval(xc);
-		double[] orinetError = new double[numberOfLandmarks-1];
+		double[] orinetError = new double[numberOfLandmarks];
 		double orinetErrorSum = 0;
 		int landmarksSeen = 0;
+		boolean seesLandmark = false;
 		
 		//System.out.println("z rows: " + z.getRowDimension());
-		for (int i = 0; i < numberOfLandmarks-1; i++)
+		for (int i = 0; i < numberOfLandmarks; i++)
 		{
 			if (landmarksSighted[i])
 			{
 				orinetError[i] = z.get(i, 0) - landmarkAngles[i];
 				orinetErrorSum += orinetError[i];
 				landmarksSeen++;
+				seesLandmark = true;
 			}
 		}
-		double orinetErrorMean = orinetErrorSum/landmarksSeen;
+		double orinetErrorMean = 0;
+		if (seesLandmark)
+			orinetErrorMean  = orinetErrorSum/landmarksSeen;
 		
 		z.set(numberOfLandmarks-1+3, 0, orinetErrorMean);
 		
@@ -349,6 +385,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		
 		//Correct the cat orientation
 		catAngle -= orinetErrorMean;
+		catAngle = (catAngle+2*Math.PI)%(2*Math.PI);
 		
 		//Send updated position and orientation to billboard so the tracking filter can use it
 		billboard.setAbsolutePosition(id, getX(), getY(),
@@ -434,8 +471,11 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		}
 		for (int i = 0; i < numberOfLandmarks; i++ )
 		{
-		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(-z.get(i, 0))
-				* raylength), (int) (iy + Math.sin(-z.get(i, 0)) * raylength));
+			//if(landmarksSighted[i])
+			//{
+				g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(-z.get(i, 0))
+						* raylength), (int) (iy + Math.sin(-z.get(i, 0)) * raylength));
+			//}
 		}
 		
 		// Reset the transformation matrix

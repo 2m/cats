@@ -18,7 +18,7 @@ public class Cat extends Actor {
 	private boolean usePositioningParticleFilter = false;
 	private boolean usePositioningUnscentedKalmanFilter = true;
 	private boolean useTrackingParticleFilter = false;
-	private boolean useTrackingUnscentedKalmanFilter = false;
+	private boolean useTrackingUnscentedKalmanFilter = true;
 	private boolean useGuide = false;
 
 	/* Periods in ms */
@@ -34,6 +34,7 @@ public class Cat extends Actor {
 	private int nexttrack, nextpos;
 	private int Ntracking = 100;
 	private int Npositioning = 200;
+	
 
 	public Cat(Actor mouse, double x, double y, double angle,
 			BillBoard billboard, int id) {
