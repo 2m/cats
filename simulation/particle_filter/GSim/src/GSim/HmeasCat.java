@@ -23,6 +23,6 @@ public class HmeasCat implements IFunction{
 		zc.set(n+3-1,1-1, xc.get(5-1,1-1));  //measure cat orientation
 		
 		return zc;
-	}	
+	}
 }
 

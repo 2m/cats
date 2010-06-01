@@ -21,6 +21,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 	/** estimated state vector, (n)x(1) Matrix, of the cat 
 	 * x, y, vx, vy, orientation in radians, (absCamAngle)*/
 	private Matrix xc;
+	private double catAngle;
 	
 	///** true state of the cat (basic simulation only)*/
 	//private Matrix sc;
@@ -105,6 +106,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 
 		//sc = zeros(nx,1);  //initial true state of the cat (basic simulation only)
 		xc = zeros(nx,1);  //initial estimated state
+		catAngle = 0;
 		z = zeros(nz,1);  //initial estimated measurements
 		
 		if (DEBUG){
@@ -155,7 +157,21 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 
 	/** Poll estimated direction angle value from filter */
 	public float getAngle() {
-		return (float)xc.get(4, 0);
+		return (float) ((float)(catAngle+2*Math.PI) % (2*Math.PI));//xc.get(4, 0);
+	}
+	
+	/** Only calculate angles to landmarks*/
+	public double[] landmarkAngleEval(Matrix xc){		
+		//NB: All -1 in the indices are used to indicate the shift form the first array index in matlab = 1 to java's = 0.
+		double[] angles = new double[numberOfLandmarks];
+		//System.out.println("Debug, HmeasCat: n = " + n);
+		for (int i = 0; i < numberOfLandmarks; i++)
+		{
+			angles[i] = Math.atan2(LandmarkList.landmarkY[i] - xc.get(1,0), LandmarkList.landmarkX[i] - xc.get(0,0));
+			angles[i] = (angles[i]+2*Math.PI)%(2*Math.PI);
+		}
+		//System.out.println("angles: " + angles.toString());
+		return angles;
 	}
 	
 	/**
@@ -194,7 +210,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		}
 		double xMovementFromTachometer = 0.0;//xc.get(0, 0);
 		double yMovementFromTachometer = 0.0;//xc.get(1, 0);
-		double orientationFromTachometer = xc.get(4, 0);
+		//double orientationFromTachometer = xc.get(4, 0);
 		
 		ComparableData data = unifiedBuffer.pop();
 		while(data != null)
@@ -263,11 +279,11 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 				else if (data.isMovementData()) {
 					MovementData mdata = (MovementData) data;
 					// Update cat velocity and orientation in the measurement matrix
-					orientationFromTachometer += mdata.dangle;	
+					catAngle += mdata.dangle;	
 					
 					//static error added for testing:
-					xMovementFromTachometer += mdata.dr*cos(orientationFromTachometer);
-					yMovementFromTachometer += mdata.dr*sin(orientationFromTachometer);
+					xMovementFromTachometer += mdata.dr*cos(catAngle);
+					yMovementFromTachometer += mdata.dr*sin(catAngle);
 				}
 				// Pops new data
 				data = unifiedBuffer.pop();
@@ -284,7 +300,7 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 		double yVelocityFromTachometer = yMovementFromTachometer / T; // ((lastCurrentTime - currentTime)*1000);  // T;
 		z.set(numberOfLandmarks-1 +1, 0, xVelocityFromTachometer);
 		z.set(numberOfLandmarks-1 +2, 0, yVelocityFromTachometer);	
-		z.set(numberOfLandmarks-1 +3, 0, orientationFromTachometer);
+		//z.set(numberOfLandmarks-1 +3, 0, orientationFromTachometer);
 		
 		//Default if no sighting
 		R.set(0,0, large);
@@ -303,11 +319,36 @@ public class AbsolutePositioningUKF extends AbsolutePositioningFilter
 			debug("Debug cat " +id + ": pos.ukf, z dim: " + z.getRowDimension() + " x " + z.getColumnDimension() + ", z:");
 			printM(z);
 		}
-
+		
+		//Calculate the difference between the cat current cat orinetation 
+		//and the one calculated from the cat position
+		double[] landmarkAngles = new double[numberOfLandmarks-1];
+		landmarkAngles = landmarkAngleEval(xc);
+		double[] orinetError = new double[numberOfLandmarks-1];
+		double orinetErrorSum = 0;
+		int landmarksSeen = 0;
+		
+		//System.out.println("z rows: " + z.getRowDimension());
+		for (int i = 0; i < numberOfLandmarks-1; i++)
+		{
+			if (landmarksSighted[i])
+			{
+				orinetError[i] = z.get(i, 0) - landmarkAngles[i];
+				orinetErrorSum += orinetError[i];
+				landmarksSeen++;
+			}
+		}
+		double orinetErrorMean = orinetErrorSum/landmarksSeen;
+		
+		z.set(numberOfLandmarks-1+3, 0, orinetErrorMean);
+		
 		//One iteration with UKF
 		Matrix[] result = ufk_filter.ukf(f, xc, P, h, z, Q, R);
 		xc = result[0]; 
 		P = result[1];
+		
+		//Correct the cat orientation
+		catAngle -= orinetErrorMean;
 		
 		//Send updated position and orientation to billboard so the tracking filter can use it
 		billboard.setAbsolutePosition(id, getX(), getY(),
