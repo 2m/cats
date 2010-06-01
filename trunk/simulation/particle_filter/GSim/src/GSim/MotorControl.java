@@ -10,6 +10,7 @@ public class MotorControl {
 	public final double MAX_SPEED = 0.2 * ((double)GSim.timestep / 1000d); // [m/s]*conversion_factor
 	private Random rng = new Random();
 
+
 	public MotorControl() {
 		this.x = 10;
 		this.y = 10;
@@ -28,10 +29,12 @@ public class MotorControl {
 			distance = MAX_SPEED;
 		}
 		// +-2% noise
+		float noiseAmp = 0.5f;//0.04f;
+		float staticNoise = 0.02f;
 		setX(getX() + Math.cos(angle) * distance        
-				* (1 + rng.nextDouble() * 0.04 + 0.02));
+				* (1 + rng.nextDouble() * noiseAmp + staticNoise));
 		setY(getY() + Math.sin(angle) * distance        
-				* (1 + rng.nextDouble() * 0.04 + 0.02));
+				* (1 + rng.nextDouble() * noiseAmp + staticNoise));
 		updateBuffer.push(new MovementData(Clock.timestamp(), (float) distance,
 				(float) 0.0));
 	}
@@ -68,7 +71,11 @@ public class MotorControl {
 				+ Math.pow(getY() - y, 2));
 		if (distance > 0.05) {
 			turnTo(x, y);
+			//set travel mode
+			//turnMode = false;
 			drive(distance);
+			//set back to turn mode
+			//turnMode = true;
 		}
 	}
 
