@@ -33,7 +33,7 @@ public class SensorHandler {
 		float angle_to_mouse = (float) Math.atan2(y1, x1);
 		int t = Clock.timestamp();
 		SightingData d = new SightingData(t, cx, cy, (float) (angle_to_mouse
-				- cat.getObjectiveAngle() + rnd.nextGaussian() * 0
+				- cat.getObjectiveAngle() + rnd.nextGaussian() * 1
 				* (Math.PI / 180)), LandmarkList.MOUSE);
 		unifiedBuffer.push(d);
 		int type = -1;
