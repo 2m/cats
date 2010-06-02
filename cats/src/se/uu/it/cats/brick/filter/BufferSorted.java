@@ -26,7 +26,7 @@ public class BufferSorted extends Buffer {
 	public void push(ComparableData value) {
 		synchronized (lockOnLast) {
 			list.insertSorted(value);
-			Logger.println(value.toString());
+			//Logger.println(value.toString());
 		}
 	}
 

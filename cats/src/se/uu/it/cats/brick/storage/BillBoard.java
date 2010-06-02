@@ -2,6 +2,7 @@ package se.uu.it.cats.brick.storage;
 
 import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.Identity;
+import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.ConnectionManager;
 import se.uu.it.cats.brick.network.packet.AbsolutePositionUpdate;
 import se.uu.it.cats.brick.network.packet.LatestSightingUpdate;
@@ -71,7 +72,6 @@ public class BillBoard {
 		sightings[id * 4 + 2] = theta;
 		sightings[id * 4 + 3] = timestamp;
 		//System.out.println("timestamp latest s. "+timestamp);
-
 		if (sendUpdate)
 			// send the update to all
 			ConnectionManager.getInstance().sendPacketToAll(
@@ -124,7 +124,7 @@ public class BillBoard {
 			float mean_xv, float mean_yv, float var_xx, float var_xy,
 			float var_yy, float var_xvxv, float var_xvyv, float var_yvyv,
 			float weight) {
-		// id in range [1:n]
+		// id in range [0:n-1]
 		setMeanAndCovariance(id, mean_x, mean_y, mean_xv, mean_yv, var_xx,
 				var_xy, var_yy, var_xvxv, var_xvyv, var_yvyv, weight, true);
 	}

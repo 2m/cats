@@ -200,6 +200,7 @@ public class ConnectionManager
 	
 	public synchronized void sendPacketToAll(Packet p)
 	{
+		//Logger.println("Cat: "+ Identity.getId() + ", sendPacketToAll");
 		sendPacketToAllExcept(p, null);
 	}
 	
