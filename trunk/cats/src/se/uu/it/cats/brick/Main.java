@@ -237,13 +237,15 @@ public class Main
 	
 	public static void billboardTest() {
 		
-		if (Identity.getId() == 2) {
-			BillBoard.getInstance().setMeanAndCovariance(Identity.getId(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp());
+		//if (Identity.getId() == 2) {
+			//BillBoard.getInstance().setMeanAndCovariance(Identity.getId(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp());
 			//MeanAndCovarianceUpdate macu = new MeanAndCovarianceUpdate(Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp());
-			//ConnectionManager.getInstance().sendPacketToAll(macu);			
-		}
+			//ConnectionManager.getInstance().sendPacketToAll(macu);
+			
+			BillBoard.getInstance().setLatestSighting(Identity.getId(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp(), Clock.timestamp());
+		//}
 		
-		float[] meanAndCo = BillBoard.getInstance().getMeanAndCovariance();
+		float[] meanAndCo = BillBoard.getInstance().getLatestSightings();
 		for (int i = 0; i < meanAndCo.length; i++) {
 			Logger.print(meanAndCo[i]+", ");
 		}
