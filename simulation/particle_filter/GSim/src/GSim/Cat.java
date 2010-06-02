@@ -1,6 +1,8 @@
 package GSim;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 /**
  * The Cat
@@ -22,19 +24,18 @@ public class Cat extends Actor {
 	private boolean useGuide = false;
 
 	/* Periods in ms */
-	private int positioningNaivePeriod = 500;//200;
-	private int trackingKalmanPeriod = 200;//50;
-	private int positioningKalmanPeriod = 200;//500;
-	//NB: working ok @500ms with q = 0.5f and stddegrees = 1f, 
-	//working somewhat ok @750ms with q = 0.005f and stddegrees = 1f
-	
+	private int positioningNaivePeriod = 500;// 200;
+	private int trackingKalmanPeriod = 200;// 50;
+	private int positioningKalmanPeriod = 200;// 500;
+	// NB: working ok @500ms with q = 0.5f and stddegrees = 1f,
+	// working somewhat ok @750ms with q = 0.005f and stddegrees = 1f
+
 	private int trackingParticlePeriod = 200;
 	private int positioningParticlePeriod = 400;
 
 	private int nexttrack, nextpos;
 	private int Ntracking = 100;
 	private int Npositioning = 200;
-	
 
 	public Cat(Actor mouse, double x, double y, double angle,
 			BillBoard billboard, int id) {
@@ -87,24 +88,30 @@ public class Cat extends Actor {
 	}
 
 	public void update() {
-		motor.goTo(gotox, gotoy);
+		// motor.goTo(gotox, gotoy);
+		motor.goTo(gotox - (getX() - motor.getX()), gotoy
+				- (getY() - motor.getY()));
 		ComparableData data = motorBuffer.pop();
 		while (data != null) {
 			unifiedBuffer.push(data);
 			data = motorBuffer.pop();
 		}
-		if ((iter % 10) == 0) {
+		if ((iter % 5) == 0) {
 			sensors.update();
+		}
+		if ((iter % 30) == 0) {
 			if ((useGuide)
-					&& (Math.sqrt(Math.pow(getX() - gotox, 2)
-							+ Math.pow(getY() - gotoy, 2)) < 0.05f)
-					&& (iter > 10)) {
+					&& (iter > 10)
+					&& (Math.sqrt(Math.pow(gotox - getX(), 2)
+							+ Math.pow(gotoy - getY(), 2)) < 0.1f)) {
 				float[] adv = guide.getAdvice();
 				if (adv[0] >= 0) {
 					gotox = adv[0];
 					gotoy = adv[1];
-					System.out.println("Advice: (" + adv[0] + ", " + adv[1]
-							+ ")");
+					if (id == 0) {
+						System.out.println("Advice: (" + adv[0] + ", " + adv[1]
+								+ ")");
+					}
 				}
 			}
 		}
@@ -139,5 +146,13 @@ public class Cat extends Actor {
 		if (useGuide) {
 			guide.draw(g);
 		}
+
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setColor(Color.RED);
+		int ix = Actor.e2gX(gotox);
+		int iy = Actor.e2gY(gotoy);
+		int size = 3;
+		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
+				(int) size);
 	}
 }

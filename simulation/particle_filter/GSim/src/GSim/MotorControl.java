@@ -7,9 +7,8 @@ public class MotorControl {
 	public double y;
 	public double angle;
 	public Buffer updateBuffer;
-	public final double MAX_SPEED = 0.2 * ((double)GSim.timestep / 1000d); // [m/s]*conversion_factor
+	public final double MAX_SPEED = 0.2 * ((double) GSim.timestep / 1000d); // [m/s]*conversion_factor
 	private Random rng = new Random();
-
 
 	public MotorControl() {
 		this.x = 10;
@@ -28,20 +27,19 @@ public class MotorControl {
 		if (distance > MAX_SPEED) {
 			distance = MAX_SPEED;
 		}
-		// +-2% noise
-		float noiseAmp = 0.5f;//0.04f;
+		float noiseAmp = 0.5f;// 0.04f;
 		float staticNoise = 0.02f;
-		setX(getX() + Math.cos(angle) * distance        
-				* (1 + rng.nextDouble() * noiseAmp + staticNoise));
-		setY(getY() + Math.sin(angle) * distance        
-				* (1 + rng.nextDouble() * noiseAmp + staticNoise));
+		setX(getX() + Math.cos(angle) * distance
+				* (1 + (rng.nextDouble() - 0.5) * noiseAmp + staticNoise));
+		setY(getY() + Math.sin(angle) * distance
+				* (1 + (rng.nextDouble() - 0.5) * noiseAmp + staticNoise));
 		updateBuffer.push(new MovementData(Clock.timestamp(), (float) distance,
 				(float) 0.0));
 	}
 
 	public void turn(double turnangle) {
-		// +-2% noise
-		setAngle(getAngle() + turnangle * (1 + rng.nextDouble() * 0.04 + 0.02));
+		setAngle(getAngle() + turnangle + (rng.nextDouble() - 0.5) * 3
+				* (Math.PI / 180));
 		updateBuffer.push(new MovementData(Clock.timestamp(), (float) 0.0,
 				(float) turnangle));
 	}
@@ -59,7 +57,7 @@ public class MotorControl {
 	}
 
 	/**
-	 * Make the motor go to a sertain position but not faster than MAX_SPEED
+	 * Make the motor go to a certain position but not faster than MAX_SPEED
 	 * 
 	 * @param x
 	 *            X position to go to
@@ -71,11 +69,11 @@ public class MotorControl {
 				+ Math.pow(getY() - y, 2));
 		if (distance > 0.05) {
 			turnTo(x, y);
-			//set travel mode
-			//turnMode = false;
+			// set travel mode
+			// turnMode = false;
 			drive(distance);
-			//set back to turn mode
-			//turnMode = true;
+			// set back to turn mode
+			// turnMode = true;
 		}
 	}
 

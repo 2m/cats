@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.Random;
 
 /** Particle filter for tracking a mouse. */
 public class TrackingParticleFilter extends TrackingFilter {
@@ -72,11 +73,17 @@ public class TrackingParticleFilter extends TrackingFilter {
 		Ncut = (N >> 1);
 		// Create the linked list in which the particles live
 		data = new LinkedList();
-		// Create particles
+		// Create particles randomly all over the arena
+		float dr = 0.20f;
+		Random rn = new Random();
 		for (int i = 0; i < N; i++) {
-			data.insertSorted(new TrackingParticle(Fixed.floatToFixed(1.0),
-					Fixed.floatToFixed(1.0), Fixed.floatToFixed(0.0), Fixed
-							.floatToFixed(0.0), Fixed.floatToFixed(i % 10)));
+			float x = dr + rn.nextFloat()
+					* (Arena.max_x - Arena.min_x - 2 * dr);
+			float y = dr + rn.nextFloat()
+					* (Arena.max_y - Arena.min_y - 2 * dr);
+			data.insertSorted(new TrackingParticle(Fixed.floatToFixed(x), Fixed
+					.floatToFixed(y), Fixed.floatToFixed(0.0), Fixed
+					.floatToFixed(0.0), Fixed.floatToFixed(0.0)));
 		}
 		// Initialise random look up table data
 		randn_lut = new int[RANDN_MASK + 1];
@@ -171,6 +178,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 			if (norm == 0) {
 				div_by_zero++;
 			} else {
+				// Normalise vector toward the mouse
 				int toMouse_x_norm = Fixed.div(toMouse_x, norm);
 				int toMouse_y_norm = Fixed.div(toMouse_y, norm);
 				// rot_p = [cos(theta) -sin(theta); sin(theta)
@@ -196,14 +204,8 @@ public class TrackingParticleFilter extends TrackingFilter {
 				w = 0;
 				Logger.println("Weight smaller than zero!");
 			}
-			if (w > Fixed.ONE) {
-				// Check for large values (for debugging).
-				w = Fixed.ONE;
-				Logger.println("Weight larger than one!");
-			}
 			// Multiply weight from this iteration with particle weight
 			part.comparable = Fixed.mul(part.comparable, w);
-			// Logger.println("Weight: " + Fixed.fixedToFloat(part.w));
 			// Sum weights
 			sum_w_tmp += part.comparable;
 			// Insert particle into new list
@@ -220,10 +222,6 @@ public class TrackingParticleFilter extends TrackingFilter {
 		if (div_by_zero != 0) {
 			Logger.println(div_by_zero + " instances of division by zero in "
 					+ "TrackingParticleFilter.compareParticles()");
-		}
-		if (data.getLength() != N) {
-			Logger.println("Tracking particles lost! (count:"
-					+ data.getLength() + ")");
 		}
 	}
 
@@ -309,7 +307,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Logger.print(id + ": Calculating mean ");
 		// Create local variables
 		int tmean_x = 0, tmean_y = 0, tmean_xv = 0, tmean_yv = 0, norm;
-		int mx = 0, my = 0; // Unweighed means
+		int mx = 0, my = 0;
+		// Unweighed means
+		// TODO: Check if sum_w>0 is large enough
 		if (sum_w == 0) {
 			// Logger.println(id + ": Calculating mean (ordinary)");
 			// Calculate an ordinary mean
@@ -364,10 +364,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 			// No old data should be saved and filter knows nothing about the
 			// current tracked states. Uncertainty increases with time (standard
 			// deviation increases by 20%).
-			varXX *= 1.44;
-			varYY *= 1.44;
-			varXvXv *= 1.44;
-			varYvYv *= 1.44;
+			varXX *= 2;
+			varYY *= 2;
+			varXvXv *= 1.21;
+			varYvYv *= 1.21;
 			// X and Y can be considered as independent if nothing is known.
 			varXY = 0;
 			varXvYv = 0;
@@ -445,13 +445,21 @@ public class TrackingParticleFilter extends TrackingFilter {
 		if (varYY > Fixed.ONE) {
 			varYY = Fixed.ONE;
 		}
+		// Limit position co-variance
+		int maxCoVar = (int) (.5 * Fixed.min(varXX, varYY));
+		if (varXY > maxCoVar) {
+			varXY = maxCoVar;
+		}
+		if (varXY < -maxCoVar) {
+			varXY = maxCoVar;
+		}
 		// Limit velocity variance
-		int maxCoVar = (int) (.1 * Fixed.min(varXX, varYY));
+		maxCoVar = (int) (.5 * Fixed.min(varXvXv, varYvYv));
 		if (varXvYv > maxCoVar) {
-			varXvYv = (int) (0.9 * maxCoVar);
+			varXvYv = maxCoVar;
 		}
 		if (varXvYv < -maxCoVar) {
-			varXvYv = (int) (0.9 * -maxCoVar);
+			varXvYv = maxCoVar;
 		}
 		if (varXvXv < Fixed.floatToFixed(0.0001)) {
 			varXvXv = Fixed.floatToFixed(0.0001);
@@ -459,8 +467,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 		if (varYvYv < Fixed.floatToFixed(0.0001)) {
 			varYvYv = Fixed.floatToFixed(0.0001);
 		}
-		varXY = 0;
-		varXvYv = 0;
+		/*
+		 * varXY = 0; varXvYv = 0;
+		 */
 	}
 
 	/**
@@ -558,7 +567,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		int ix = Actor.e2gX(getX());
 		int iy = Actor.e2gY(getY());
 		double iangle = -Math.atan2(getYv(), getXv());
-		linelength = (int) Math.sqrt(Math.pow(getX(), 2) + Math.pow(getY(), 2));
+		linelength = (int) Math.sqrt(Math.pow(getX(), 2) + Math.pow(getY(), 2)) * 10;
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
 				(int) size);
 		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
@@ -590,6 +599,8 @@ public class TrackingParticleFilter extends TrackingFilter {
 		varXvXv = Fixed.floatToFixed(net[7]);
 		varXvYv = Fixed.floatToFixed(net[8]);
 		varYvYv = Fixed.floatToFixed(net[9]);
+
+		// TODO: Add panic mode
 
 		// Re-sample
 		reSample();
