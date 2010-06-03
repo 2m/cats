@@ -29,6 +29,7 @@ import se.uu.it.cats.pc.gui.PanelBluetooth;
 import se.uu.it.cats.pc.gui.PrintArea;
 import se.uu.it.cats.pc.gui.tab.BillBoardTab;
 import se.uu.it.cats.pc.gui.tab.MainTab;
+import se.uu.it.cats.pc.gui.tab.TimeSyncTab;
 
 public class Main
 {
@@ -93,6 +94,7 @@ public class Main
 		JTabbedPane tabbedPane = new JTabbedPane();
 		tabbedPane.addTab("Main", _mainTab);
 		tabbedPane.addTab("BillBoard", new BillBoardTab());
+		tabbedPane.addTab("TimeSync", new TimeSyncTab());
 
 		frame.getContentPane().add(tabbedPane);
 
