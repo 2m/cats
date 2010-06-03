@@ -136,7 +136,7 @@ public class ConnectionManager
 			}
 	}
 	
-	public void relayPacketToAllExcept(Packet p, String name)
+	public synchronized void relayPacketToAllExcept(Packet p, String name)
 	{
 		for (int i = 0; i < MAX_OUTBOUND_CONN; i++)
 		{
@@ -152,7 +152,7 @@ public class ConnectionManager
 		}
 	}
 	
-	public void sendPacketTo(String name, Packet p)
+	public synchronized void sendPacketTo(String name, Packet p)
 	{
 		int id = getIdByName(name);
 		
