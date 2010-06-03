@@ -198,7 +198,7 @@ public class Music {
 					{ 7040, 7458 }, // A
 					{ 7902, 0 }, // B
 			}, };
-	public int NOTE_TIME = 350; // Note duration
+	public int NOTE_TIME = 200; // Note duration
 	public int TONE_TIME = 80; // Tone duration
 
 	private long nexttime;

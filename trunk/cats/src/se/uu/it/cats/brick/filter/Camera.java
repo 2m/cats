@@ -103,14 +103,22 @@ public class Camera implements Runnable {
 					//calibrated color group, 0 up to 7
 					int currentColor = NXTcamera.getObjectColor(i);
 					
-					if (foundColor[currentColor])
+					try {					
+						if (foundColor[currentColor])
+							continue;
+						
+						//color has been found,
+						//discard all forthcoming smaller objects
+						foundColor[currentColor] = true;
+					}
+					catch (Exception ex) {
+						// there was uncought exception in this methode once
+						// the exception was ArrayIndexOutOfBoundsException
+						// I believe it was thrown here
 						continue;
+					}
 					
-					xColor = r.x + r.width / 2;
-					
-					//color has been found,
-					//discard all forthcoming smaller objects
-					foundColor[currentColor] = true;
+					xColor = r.x + r.width / 2;					
 					
 					angToTarget = (xColor - 176f/2f + offset)*radPerPix;
 					angToTargetRelCat = angToTarget + motorAngRad;

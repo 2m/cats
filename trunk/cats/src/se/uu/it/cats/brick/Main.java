@@ -27,9 +27,6 @@ public class Main {
 	private static AbsolutePositioningFilter positioningFilter;
 	private static TrackingFilter trackingFilter;
 
-	// beep every two seconds
-	private static boolean doBeep = true;
-
 	public static void main(String[] args) throws InterruptedException {
 		Settings.init();
 		Logger.init();
@@ -70,12 +67,11 @@ public class Main {
 			Thread positioningFilterThread = new Thread(positioningFilter);
 			positioningFilterThread.start();
 
-			// trackingFilter = new
-			// TrackingUnscentedKalmanFilter(Identity.getId(), 0.25f,
-			// BillBoard.getInstance());
+			trackingFilter = new TrackingUnscentedKalmanFilter(Identity.getId(), 0.25f,
+			BillBoard.getInstance());
 
-			trackingFilter = new TrackingParticleFilter(Identity.getId(), 50,
-					1f, BillBoard.getInstance());			
+			//trackingFilter = new TrackingParticleFilter(Identity.getId(), 50,
+			//		1f, BillBoard.getInstance());			
 			Thread trackingFilterThread = new Thread(trackingFilter);
 			trackingFilterThread.start();
 		}
@@ -114,11 +110,10 @@ public class Main {
 			}
 
 			public void buttonReleased(Button b) {
-				doBeep = false;
-				Music m = new Music(Identity.getId(), 3);
-				m.play();
-
-				doBeep = true;
+				
+				//Music m = new Music(Identity.getId(), 3);
+				//m.play();
+				
 			}
 		});
 
@@ -127,7 +122,7 @@ public class Main {
 			}
 
 			public void buttonReleased(Button b) {
-				Clock.syncTime();
+				//Clock.syncTime();
 			}
 		});
 
@@ -162,8 +157,7 @@ public class Main {
 			//Logger.println("Buffer size:"+unifiedBuffer.getLength());
 			// Thread.sleep(100);
 			// Thread.yield();
-			if (doBeep)
-				Sound.beep();
+			Sound.beep();
 		}
 
 		if (RConsole.isOpen())
