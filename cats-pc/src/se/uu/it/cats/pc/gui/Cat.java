@@ -123,7 +123,12 @@ public class Cat {
 		return cam_angle_width;
 	}
 	
-	public void setSighting(int sightingId, float angle) {
+	public void setAbsSighting(int sightingId, float angle) {
+		sightings[sightingId][0] = angle - angle_c;
+		sightings[sightingId][1] = 20;
+	}
+	
+	public void setRelSighting(int sightingId, float angle) {
 		sightings[sightingId][0] = angle;
 		sightings[sightingId][1] = 20;
 	}

@@ -114,7 +114,10 @@ public class ConnectionHandler implements Runnable
 					
 					// forward packet to other cats, some packets do not need to be forwarded
 					if (!(p instanceof SimpleMeasurement))
+					{
+						//relayPacket(p);
 						ConnectionManager.getInstance().relayPacketToAllExcept(p, getRemoteName());
+					}
 					
 					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
 				}

@@ -66,7 +66,7 @@ public class PacketManager
 					float angle = ((SimpleMeasurement)p).getAngle();
 					float camAngle = ((SimpleMeasurement)p).getCamAngle();
 					
-					Area.getInstance().getCat(catId).setSighting(sightId, angle);
+					Area.getInstance().getCat(catId).setRelSighting(sightId, angle);
 					Area.getInstance().getCat(catId).setAngle_cam(camAngle);
 					
 					//Mouse._angles[p.getSource()] = ((SimpleMeasurement)p).getAngle();
@@ -83,8 +83,11 @@ public class PacketManager
 					int catId = p.getSource();
 					float x = ((LatestSightingUpdate)p).getX(); // cat x
 					float y = ((LatestSightingUpdate)p).getY(); // cat y
-					//float angle_c = ((LatestSightingUpdate)p).getTheta(); // absolute angle to mouse
-					//float angle_cam = 0;					
+					float angle_c = ((LatestSightingUpdate)p).getTheta(); // absolute angle to mouse
+					//float angle_cam = 0;
+					
+					// set sighting to cat, this function accepts
+					Area.getInstance().getCat(catId).setAbsSighting(0, angle_c);
 					
 					Area.getInstance().getCat(catId).updateXY((int) (x*100), (int) (y*100)); //Values from network in meters, values in Area in cm.
 				}
