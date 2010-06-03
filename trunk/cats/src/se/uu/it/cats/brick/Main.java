@@ -48,8 +48,8 @@ public class Main {
 			}
 		}
 
-		// sync time
-		Clock.syncTime();
+		// wait until time is synced
+		Clock.blockUntilSynced();
 
 		boolean startYourEngines = true;
 		if (startYourEngines) {

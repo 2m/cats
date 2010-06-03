@@ -2,20 +2,21 @@ package se.uu.it.cats.brick;
 
 import se.uu.it.cats.brick.network.ConnectionManager;
 import se.uu.it.cats.brick.network.packet.Timestamp;
+import lejos.nxt.Sound;
 import lejos.util.Stopwatch;
 
 public class Clock
 {
 	private static final String SERVER_NAME = "cat0";
-	private static final int SERVER_ID = 0;
-	private static final int NUM_OF_CATS_TO_SYNC = 2;
+	private static final int SERVER_ID = 0;	
 	
 	private static Stopwatch _sw = null;
 	private static int _offset = 0;
 	
 	private static boolean _server = false;
 	
-	private static byte _receivedPackets = 0;
+	private static boolean _syncDone = false;
+	private static boolean _beep = true;
 	
 	public static void init()
 	{
@@ -38,24 +39,8 @@ public class Clock
 	{
 		if (!_server)
 		{
-			// wait different ammount of time according to the id
-			// so that packets do not collide. Better sync accuracy
-			try { Thread.sleep(Identity.getId() * 200); } catch (Exception ex) { }
-			
 			ConnectionManager.getInstance().sendPacketTo(SERVER_ID, new Timestamp(Clock.timestamp()));
 		}
-		else
-		{
-			// actions for server
-			// wait while specified number of cats synchronize
-			while (Clock.getReceivedPackets() < NUM_OF_CATS_TO_SYNC)
-			{
-				try { Thread.sleep(100); } catch (Exception ex) {}
-			}
-		}
-		
-		// wait for one second until sync packets get through
-		try { Thread.sleep(1000); } catch (Exception ex) { }
 	}
 	
 	public static void incommingPacket(Timestamp p)
@@ -66,8 +51,6 @@ public class Clock
 			p.setDestination(p.getSource());
 			p.setServerTime(Clock.timestamp());			
 			ConnectionManager.getInstance().sendPacketTo(p.getSource(), p);
-			
-			_receivedPackets++;
 		}
 		else if (p.getSource() == SERVER_ID && p.getDestination() == Identity.getId())
 		{
@@ -80,8 +63,25 @@ public class Clock
 		}
 	}
 	
-	public static int getReceivedPackets()
+	public static void blockUntilSynced()
 	{
-		return _receivedPackets;
+		while (!_syncDone)
+		{
+			int milisUntilNextSec = 2000 - (Clock.timestamp() % 2000);
+			try {Thread.sleep(milisUntilNextSec);} catch(Exception ex) {}
+			
+			if (_beep)
+				Sound.beep();
+		}
+	}
+	
+	public static void syncDone()
+	{
+		_syncDone = true;
+	}
+	
+	public static void setBeep(boolean beep)
+	{
+		_beep = beep;
 	}
 }
