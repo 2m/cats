@@ -8,6 +8,7 @@ public class Clock
 {
 	private static final String SERVER_NAME = "cat0";
 	private static final int SERVER_ID = 0;
+	private static final int NUM_OF_CATS_TO_SYNC = 2;
 	
 	private static Stopwatch _sw = null;
 	private static int _offset = 0;
@@ -36,7 +37,25 @@ public class Clock
 	public static void syncTime()
 	{
 		if (!_server)
+		{
+			// wait different ammount of time according to the id
+			// so that packets do not collide. Better sync accuracy
+			try { Thread.sleep(Identity.getId() * 200); } catch (Exception ex) { }
+			
 			ConnectionManager.getInstance().sendPacketTo(SERVER_ID, new Timestamp(Clock.timestamp()));
+		}
+		else
+		{
+			// actions for server
+			// wait while specified number of cats synchronize
+			while (Clock.getReceivedPackets() < NUM_OF_CATS_TO_SYNC)
+			{
+				try { Thread.sleep(100); } catch (Exception ex) {}
+			}
+		}
+		
+		// wait for one second until sync packets get through
+		try { Thread.sleep(1000); } catch (Exception ex) { }
 	}
 	
 	public static void incommingPacket(Timestamp p)
