@@ -48,24 +48,8 @@ public class Main {
 			}
 		}
 
-		// sync with cat0
-		if (Identity.getId() != 0) {
-			Clock.syncTime();
-		} else {
-			// if we are cat0 wait until some ammount of cats sync
-			while (Clock.getReceivedPackets() < 1) {
-				try {
-					Thread.sleep(100);
-				} catch (Exception ex) {
-				}
-			}
-		}
-
-		// wait for one second until sync packets get through
-		try {
-			Thread.sleep(1000);
-		} catch (Exception ex) {
-		}
+		// sync time
+		Clock.syncTime();
 
 		boolean startYourEngines = true;
 		if (startYourEngines) {
