@@ -22,6 +22,8 @@ public class BillBoard {
 
 	/** Number of cats (set in constructor) */
 	private final int NUMBER_OF_CATS = Identity.CAT_COUNT;
+	
+	private final boolean CHECK_TIMESTAMPS = false;
 
 	public static final BillBoard instanceHolder = new BillBoard();
 
@@ -57,7 +59,7 @@ public class BillBoard {
 		// id in range [0:n-1]
 		// got data from other device,
 		// check if it is new
-		if (p.getTimestamp() > latestSightingUpdate) {
+		if (!CHECK_TIMESTAMPS || p.getTimestamp() > latestSightingUpdate) {
 			// save data and do not send an update
 			setLatestSighting(p.getSource(), p.getX(), p.getY(), p.getTheta(), p.getTimestamp(),
 					false);
@@ -65,7 +67,7 @@ public class BillBoard {
 		}
 	}
 
-	public void setLatestSighting(int id, float x, float y, float theta, int timestamp,
+	private void setLatestSighting(int id, float x, float y, float theta, int timestamp,
 			boolean sendUpdate) {
 		sightings[id * 4 + 0] = x;
 		sightings[id * 4 + 1] = y;
@@ -92,7 +94,7 @@ public class BillBoard {
 		// id in range [0:n-1]
 		// got data from other device,
 		// check if it is new
-		if (p.getTimestamp() > latestSightingUpdate) {
+		if (!CHECK_TIMESTAMPS || p.getTimestamp() > latestSightingUpdate) {
 			// save data and do not send an update
 			setAbsolutePosition(p.getSource(), p.getX(), p.getY(), p.getTheta(), p.getTimestamp(),
 					false);
@@ -100,7 +102,7 @@ public class BillBoard {
 		}
 	}
 
-	public void setAbsolutePosition(int id, float x, float y, float theta, int timestamp,
+	private void setAbsolutePosition(int id, float x, float y, float theta, int timestamp,
 			boolean sendUpdate) {
 		positions[id * 4 + 0] = x;
 		positions[id * 4 + 1] = y;
@@ -131,7 +133,7 @@ public class BillBoard {
 
 	public void setMeanAndCovariance(MeanAndCovarianceUpdate p) {
 		// id in range [0:n-1]
-		if (p.getTimestamp() > latestDataUpdate) {
+		if (!CHECK_TIMESTAMPS || p.getTimestamp() > latestDataUpdate) {
 			setMeanAndCovariance(p.getSource(), p.getMeanX(), p.getMeanY(), p
 					.getMeanXv(), p.getMeanYv(), p.getVarXX(), p.getVarXY(), p
 					.getVarYY(), p.getVarXvXv(), p.getVarXvYv(),
@@ -141,7 +143,7 @@ public class BillBoard {
 	}
 
 	/** Set mean and covariance */
-	public void setMeanAndCovariance(int id, float mean_x, float mean_y,
+	private void setMeanAndCovariance(int id, float mean_x, float mean_y,
 			float mean_xv, float mean_yv, float var_xx, float var_xy,
 			float var_yy, float var_xvxv, float var_xvyv, float var_yvyv,
 			float weight, boolean sendUpdate) {
