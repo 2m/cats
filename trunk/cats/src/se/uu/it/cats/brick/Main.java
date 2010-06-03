@@ -66,7 +66,7 @@ public class Main {
 			positioningFilter = new AbsolutePositioningNaiveFilter(Identity
 					.getId(), .33f, unifiedBuffer, BillBoard.getInstance());
 			// FIXME: ERROR init data not set!
-			positioningFilter.initData(1.0f, 1.0f, 0.0f);
+			// it is. In the AbsolutePositioningNaiveFilter constructor
 			Thread positioningFilterThread = new Thread(positioningFilter);
 			positioningFilterThread.start();
 
@@ -74,21 +74,21 @@ public class Main {
 			// TrackingUnscentedKalmanFilter(Identity.getId(), 0.25f,
 			// BillBoard.getInstance());
 
-			/*
-			 * trackingFilter = new TrackingParticleFilter(Identity.getId(), 50,
-			 * 1f, BillBoard.getInstance()); Thread trackingFilterThread = new
-			 * Thread(trackingFilter); trackingFilterThread.start();
-			 */
+			trackingFilter = new TrackingParticleFilter(Identity.getId(), 50,
+					1f, BillBoard.getInstance());			
+			Thread trackingFilterThread = new Thread(trackingFilter);
+			trackingFilterThread.start();
 		}
-
-		/*
-		 * while (!startYourEngines) {
-		 * ConnectionManager.getInstance().sendPacketToAll(new
-		 * LatestSightingUpdate(0f, 0f, 0f, Clock.timestamp()));
-		 * //ConnectionManager.getInstance().sendPacketToAll(new
-		 * AbsolutePositionUpdate(0f, 0f, 0f, Clock.timestamp())); try
-		 * {Thread.sleep(100);} catch(Exception ex) {} }
-		 */
+		
+		while (!startYourEngines) {
+			ConnectionManager.getInstance().sendPacketToAll(new
+					LatestSightingUpdate(0f, 0f, 0f, Clock.timestamp()));
+			
+			//ConnectionManager.getInstance().sendPacketToAll(new
+			//		AbsolutePositionUpdate(0f, 0f, 0f, Clock.timestamp())); 
+			
+			try {Thread.sleep(20);} catch(Exception ex) {} 
+		}
 
 		Button.LEFT.addButtonListener(new ButtonListener() {
 			public void buttonPressed(Button b) {
@@ -141,20 +141,14 @@ public class Main {
 
 		int test = 0;
 		while (test == 0) {
-			/*
-			 * Random r = new Random();
-			 * ConnectionManager.getInstance().sendPacketToAll( new
-			 * SimpleMeasurement((float)r.nextDouble()) );
-			 */
-
-			// LCD.drawInt((byte)StorageManager.getInstance().getData(), 2, 2);
+			
 			int milisUntilNextSec = 2000 - (Clock.timestamp() % 2000);
 			Thread.sleep(milisUntilNextSec);
 
 			int myid = Identity.getId();
 			float[] s = BillBoard.getInstance().getLatestSightings();
 			for (int i = 0; i < BillBoard.getInstance().getNoCats(); i++) {
-				if (myid != i) {
+				//if (myid != i) {
 					Logger.println("id: " + i + ", x:" + s[i * 4 + 0] + ", y:"
 							+ s[i * 4 + 1] + ", th:" + s[i * 4 + 2]);
 					/*
@@ -162,8 +156,10 @@ public class Main {
 					 * sightings[id * 4 + 2] = theta; sightings[id * 4 + 3] =
 					 * timestamp;
 					 */
-				}
+				//}
 			}
+			
+			//Logger.println("Buffer size:"+unifiedBuffer.getLength());
 			// Thread.sleep(100);
 			// Thread.yield();
 			if (doBeep)

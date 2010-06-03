@@ -95,6 +95,17 @@ public class PacketManager
 				}
 				break;
 			}
+			case 0x05:
+			{
+				if (arrayEndIndex >= AbsolutePositionUpdate.LENGTH)
+				{
+					p = new AbsolutePositionUpdate();
+					p.readImpl(bArr);
+					
+					BillBoard.getInstance().setAbsolutePosition((AbsolutePositionUpdate)p);
+				}
+				break;
+			}
 			case -1:
 			{
 				if (arrayEndIndex >= CloseConnection.LENGTH)
@@ -111,6 +122,10 @@ public class PacketManager
 		if (p != null)
 		{
 			//Logger.println("New packet read "+p);
+		}
+		else
+		{
+			Logger.println("No code to handle packet of type: "+packetType);
 		}
 		
 		return p;
