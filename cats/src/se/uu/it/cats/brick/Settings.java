@@ -64,7 +64,7 @@ public class Settings
 			{
 				WHEEL_DIAMATER = 0.0561170982f;				
 				TRACK_WIDTH = 0.16f;
-				DRIFT_BALANCE = 0;
+				DRIFT_BALANCE = -0.0003f;
 				
 				CAMERA_OFFSET = -19;
 				
