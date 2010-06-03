@@ -1,7 +1,9 @@
 package se.uu.it.cats.brick.network.packet;
 
 import se.uu.it.cats.brick.Clock;
+import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
+import se.uu.it.cats.brick.Music;
 import se.uu.it.cats.brick.network.KeepAlive;
 import se.uu.it.cats.brick.storage.BillBoard;
 
@@ -103,6 +105,42 @@ public class PacketManager
 					p.readImpl(bArr);
 					
 					BillBoard.getInstance().setAbsolutePosition((AbsolutePositionUpdate)p);
+				}
+				break;
+			}
+			case 0x06:
+			{
+				if (arrayEndIndex >= SyncTimeOrder.LENGTH)
+				{
+					p = new SyncTimeOrder();
+					p.readImpl(bArr);
+					
+					Clock.syncTime();
+				}
+				break;
+			}
+			case 0x07:
+			{
+				if (arrayEndIndex >= StartOrder.LENGTH)
+				{
+					p = new StartOrder();
+					p.readImpl(bArr);
+					
+					Clock.syncDone();
+				}
+				break;
+			}
+			case 0x08:
+			{
+				if (arrayEndIndex >= PlayMusicOrder.LENGTH)
+				{
+					p = new PlayMusicOrder();
+					p.readImpl(bArr);
+					
+					Clock.setBeep(false);
+					Music m = new Music(Identity.getId(), 3);
+					m.play();
+					Clock.setBeep(true);
 				}
 				break;
 			}
