@@ -29,10 +29,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 */
 	private int varXX;
 	private int varYY;
-	private int varXY;
+	// private int varXY;
 	private int varXvXv;
 	private int varYvYv;
-	private int varXvYv;
+	// private int varXvYv;
 
 	/** Sum of weights */
 	private int sum_w;
@@ -48,6 +48,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 	/** Counter and timer too keep track of mean iteration execution time */
 	private int iterationCounter = 0;
 	private int iterationTime = 0;
+
+	/** Counter for how many iterations there have been no good particles */
+	private int dangerLevel = 0;
 
 	/**
 	 * Constructor of the tracking filter.
@@ -73,23 +76,35 @@ public class TrackingParticleFilter extends TrackingFilter {
 		Ncut = (N >> 1);
 		// Create the linked list in which the particles live
 		data = new LinkedList();
-		// Create particles randomly all over the arena
-		float dr = 0.20f;
-		Random rn = new Random();
+		// Create particles
 		for (int i = 0; i < N; i++) {
-			float x = dr + rn.nextFloat()
-					* (Arena.max_x - Arena.min_x - 2 * dr);
-			float y = dr + rn.nextFloat()
-					* (Arena.max_y - Arena.min_y - 2 * dr);
-			data.insertSorted(new TrackingParticle(Fixed.floatToFixed(x), Fixed
-					.floatToFixed(y), Fixed.floatToFixed(0.0), Fixed
-					.floatToFixed(0.0), Fixed.floatToFixed(0.0)));
+			data.insertSorted(new TrackingParticle(0, 0, 0, 0, 0));
 		}
+		reSampleUniformly();
 		// Initialise random look up table data
 		randn_lut = new int[RANDN_MASK + 1];
 		for (int i = 0; i <= RANDN_MASK; i++) {
 			randn_lut[i] = Fixed.randn();
 		}
+	}
+
+	private void reSampleUniformly() {
+		float dr = 0.15f;
+		Random rn = new Random();
+		Link link = data.first;
+		// Loop through all particles
+		while (link != null) {
+			TrackingParticle part = (TrackingParticle) link.data;
+			float x = dr + rn.nextFloat()
+					* (Settings.ARENA_MAX_X - Settings.ARENA_MIN_X - 2 * dr);
+			float y = dr + rn.nextFloat()
+					* (Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y - 2 * dr);
+			part.x = Fixed.floatToFixed(x);
+			part.y = Fixed.floatToFixed(y);
+			part.comparable = Fixed.ONE;
+			link = link.next;
+		}
+
 	}
 
 	/**
@@ -118,8 +133,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 		varXvXv = Fixed.floatToFixed(0.0025);
 		varYvYv = Fixed.floatToFixed(0.0025);
 		// No co-variance
-		varXY = Fixed.floatToFixed(0.0);
-		varXvYv = Fixed.floatToFixed(0.0);
+		/*
+		 * varXY = Fixed.floatToFixed(0.0); varXvYv = Fixed.floatToFixed(0.0);
+		 */
 		// Set this to 0 so filter assumes all old particle data can be
 		// overwritten.
 		sum_w = 0;
@@ -185,17 +201,12 @@ public class TrackingParticleFilter extends TrackingFilter {
 				// cos(theta)];
 				// v=rot_p*toMark
 				// After this rotation the landmark vector should point
-				// to
-				// (1, 0) if the particle has the correct values.
+				// to (1, 0) if the particle has the correct values.
 				z = Fixed.mul(toMouse_x_norm, cos)
 						+ Fixed.mul(toMouse_y_norm, -sin);
 				// Inner product between vectors u and v =>
 				// cos(angle_diff)
-				// z = Fixed.mul(v1, u1); + Fixed.mul(v2, u2);
-				// u = (1, 0)
-				// int u1 = Fixed.ONE;
-				// int u2 = 0;
-				// z = v1;
+				// z = Fixed.mul(v1, u1); + Fixed.mul(v2, u2); //u = (1, 0)
 			}
 			// Run penalty function
 			int w = ParticleFilter.penalty(z);
@@ -243,30 +254,52 @@ public class TrackingParticleFilter extends TrackingFilter {
 	 */
 	private void reSample() {
 		// ret = {m_x, m_y, m'_x, m'_y, xx, xy, yy, x'x', x'y', y'y'}
-		int[][] C1 = new int[2][2];
-		int[][] C2 = new int[2][2];
-
-		// Set up co-variance matrices
-		C1[0][0] = varXX;
-		C1[0][1] = varXY;
-		C1[1][0] = varXY;
-		C1[1][1] = varYY;
-		C2[0][0] = varXvXv;
-		C2[0][1] = varXvYv;
-		C2[1][0] = varXvYv;
-		C2[1][1] = varYvYv;
-
-		// Get transform matrices for new sampling
-		int[][] V1 = ParticleFilter.getTransformFromCovariance(C1);
-		int[][] V2 = ParticleFilter.getTransformFromCovariance(C2);
-
-		// Get pointer to first element
-		Link link = data.first;
 
 		// Decide on cut off
+		int cut;
 		if (sum_w != 0) {
 			// Only the worst particles needs to be re-sampled
-			for (int i = 0; (i < Ncut) && (link != null); i++) {
+			cut = Ncut;
+			dangerLevel = 0;
+		} else {
+			cut = N;
+			dangerLevel++;
+		}
+
+		/*
+		 * int[][] C1 = new int[2][2]; int[][] C2 = new int[2][2];
+		 */
+
+		// Set up co-variance matrices
+		/*
+		 * C1[0][0] = varXX; C1[0][1] = varXY; C1[1][0] = varXY; C1[1][1] =
+		 * varYY; C2[0][0] = varXvXv; C2[0][1] = varXvYv; C2[1][0] = varXvYv;
+		 * C2[1][1] = varYvYv;
+		 */
+
+		// Get transform matrices for new sampling
+		/*
+		 * int[][] V1 = ParticleFilter.getTransformFromCovariance(C1); int[][]
+		 * V2 = ParticleFilter.getTransformFromCovariance(C2);
+		 */
+		if (dangerLevel >= 8) {
+			this.reSampleUniformly();
+		} else {
+			int[][] V1 = new int[2][2];
+			int[][] V2 = new int[2][2];
+			V1[0][0] = Fixed.sqrt(varXX);
+			V1[0][1] = 0;
+			V1[1][0] = 0;
+			V1[1][1] = Fixed.sqrt(varYY);
+			V2[0][0] = Fixed.sqrt(varXvXv);
+			V2[0][1] = 0;
+			V2[1][0] = 0;
+			V2[1][1] = Fixed.sqrt(varYvYv);
+
+			// Get pointer to first element
+			Link link = data.first;
+
+			for (int i = 0; (i < cut) && (link != null); i++) {
 				TrackingParticle part = (TrackingParticle) link.data;
 				// Get new random space vector (a, b), sample from 2d Gaussian
 				// distribution.
@@ -277,25 +310,24 @@ public class TrackingParticleFilter extends TrackingFilter {
 				// Add mean and transform the vectors (a, b) and (c, d) into the
 				// new
 				// sample space.
-				part.x = mean_x + Fixed.mul(V1[0][0], a)
-						+ Fixed.mul(V1[0][1], b);
-				part.y = mean_y + Fixed.mul(V1[1][0], a)
+				part.x = mean_x + Fixed.mul(V1[0][0], a);
+				// + Fixed.mul(V1[0][1], b);
+				part.y = mean_y // + Fixed.mul(V1[1][0], a)
 						+ Fixed.mul(V1[1][1], b);
-				part.xv = mean_xv + Fixed.mul(V2[0][0], c)
-						+ Fixed.mul(V2[0][1], d);
-				part.yv = mean_yv + Fixed.mul(V2[1][0], c)
+				part.xv = mean_xv + Fixed.mul(V2[0][0], c);
+				// + Fixed.mul(V2[0][1], d);
+				part.yv = mean_yv // + Fixed.mul(V2[1][0], c)
 						+ Fixed.mul(V2[1][1], d);
 				// Set norm to standard (all are equal) norm.
 				part.comparable = Fixed.ONE;
 				link = link.next;
 			}
 
-		}
-
-		// All remaining particles (if any) have their weights reset
-		while (link != null) {
-			link.data.comparable = Fixed.ONE;
-			link = link.next;
+			// All remaining particles (if any) have their weights reset
+			while (link != null) {
+				link.data.comparable = Fixed.ONE;
+				link = link.next;
+			}
 		}
 	}
 
@@ -307,11 +339,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Logger.print(id + ": Calculating mean ");
 		// Create local variables
 		int tmean_x = 0, tmean_y = 0, tmean_xv = 0, tmean_yv = 0, norm;
-		int mx = 0, my = 0;
+		// int mx = 0, my = 0;
 		// Unweighed means
-		// TODO: Check if sum_w>0 is large enough
 		if (sum_w == 0) {
-			// Logger.println(id + ": Calculating mean (ordinary)");
 			// Calculate an ordinary mean
 			Link link = data.first;
 			// Loop through all particle
@@ -326,11 +356,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 			// Set normalisation constant to 1/N since all particles have the
 			// same weight.
 			norm = Nnorm;
-			mx = tmean_x;
-			my = tmean_y;
+			// mx = tmean_x;
+			// my = tmean_y;
 		} else {
-			// Logger.println(id + ": Calculating mean (weighted) sum_w: " +
-			// Fixed.fixedToFloat(sum_w));
 			// Calculate a weighted mean
 			Link link = data.first;
 			// This should be equal to tmean_x=sum(x.*w) ...
@@ -343,8 +371,8 @@ public class TrackingParticleFilter extends TrackingFilter {
 				tmean_y += Fixed.mul(part.y, part.comparable);
 				tmean_xv += Fixed.mul(part.xv, part.comparable);
 				tmean_yv += Fixed.mul(part.yv, part.comparable);
-				mx += part.x;
-				my += part.y;
+				// mx += part.x;
+				// my += part.y;
 				link = link.next;
 			}
 			// Set normalisation constant as the inverse of the sum of all
@@ -357,20 +385,21 @@ public class TrackingParticleFilter extends TrackingFilter {
 		mean_y = Fixed.mul(tmean_y, norm);
 		mean_xv = Fixed.mul(tmean_xv, norm);
 		mean_yv = Fixed.mul(tmean_yv, norm);
-		mx = Fixed.mul(mx, Nnorm);
-		my = Fixed.mul(my, Nnorm);
+		// mx = Fixed.mul(mx, Nnorm);
+		// my = Fixed.mul(my, Nnorm);
 		// Calculate (co-)variances
 		if (sum_w == 0) {
 			// No old data should be saved and filter knows nothing about the
 			// current tracked states. Uncertainty increases with time (standard
-			// deviation increases by 20%).
-			varXX *= 2;
-			varYY *= 2;
-			varXvXv *= 1.21;
-			varYvYv *= 1.21;
+			// deviation increases by 100%/40%).
+			varXX *= 4;
+			varYY *= 4;
+			varXvXv *= 2;
+			varYvYv *= 2;
 			// X and Y can be considered as independent if nothing is known.
-			varXY = 0;
-			varXvYv = 0;
+			/*
+			 * varXY = 0; varXvYv = 0;
+			 */
 		} else {
 			// Create local summation variables
 			int tvarXX = 0, tvarXY = 0, tvarYY = 0, tvarXvXv = 0, tvarXvYv = 0, tvarYvYv = 0;
@@ -379,8 +408,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 			Link link = data.first;
 			while (link != null) {
 				TrackingParticle part = (TrackingParticle) link.data;
-				int x = part.x - mx;
-				int y = part.y - my;
+				int x = part.x - mean_x;
+				int y = part.y - mean_y;
+				// int x = part.x - mx;
+				// int y = part.y - my;
 				int xv = part.xv - mean_xv;
 				int yv = part.yv - mean_yv;
 				int xw = Fixed.mul(x, part.comparable);
@@ -397,24 +428,24 @@ public class TrackingParticleFilter extends TrackingFilter {
 			}
 			// Normalise the variances
 			varXX = Fixed.mul(tvarXX, norm);
-			varXY = Fixed.mul(tvarXY, norm);
+			// varXY = Fixed.mul(tvarXY, norm);
 			varYY = Fixed.mul(tvarYY, norm);
 			varXvXv = Fixed.mul(tvarXvXv, norm);
-			varXvYv = Fixed.mul(tvarXvYv, norm);
+			// varXvYv = Fixed.mul(tvarXvYv, norm);
 			varYvYv = Fixed.mul(tvarYvYv, norm);
 		}
 		// Check x and y means so they keep inside the arena
-		if (mean_x < Fixed.floatToFixed(Arena.min_x)) {
-			mean_x = Fixed.floatToFixed(Arena.min_x);
+		if (mean_x < Fixed.floatToFixed(Settings.ARENA_MIN_X)) {
+			mean_x = Fixed.floatToFixed(Settings.ARENA_MIN_X);
 		}
-		if (mean_x > Fixed.floatToFixed(Arena.max_x)) {
-			mean_x = Fixed.floatToFixed(Arena.max_x);
+		if (mean_x > Fixed.floatToFixed(Settings.ARENA_MAX_X)) {
+			mean_x = Fixed.floatToFixed(Settings.ARENA_MAX_X);
 		}
-		if (mean_y < Fixed.floatToFixed(Arena.min_y)) {
-			mean_y = Fixed.floatToFixed(Arena.min_y);
+		if (mean_y < Fixed.floatToFixed(Settings.ARENA_MIN_Y)) {
+			mean_y = Fixed.floatToFixed(Settings.ARENA_MIN_Y);
 		}
-		if (mean_y > Fixed.floatToFixed(Arena.max_y)) {
-			mean_y = Fixed.floatToFixed(Arena.max_y);
+		if (mean_y > Fixed.floatToFixed(Settings.ARENA_MAX_Y)) {
+			mean_y = Fixed.floatToFixed(Settings.ARENA_MAX_Y);
 		}
 		// Check x and y velocities (always lower than 20 cm/s)
 		int vc = Fixed.floatToFixed(0.2);
@@ -430,9 +461,8 @@ public class TrackingParticleFilter extends TrackingFilter {
 		if (mean_yv < -vc) {
 			mean_yv = -vc;
 		}
-		// Check for min variance
+		// Check for min variance (0.0025 => std=5cm)
 		if (varXX < Fixed.floatToFixed(0.0025)) {
-			// 0.0001 => std=5cm
 			varXX = Fixed.floatToFixed(0.0025);
 		}
 		if (varYY < Fixed.floatToFixed(0.0025)) {
@@ -446,21 +476,17 @@ public class TrackingParticleFilter extends TrackingFilter {
 			varYY = Fixed.ONE;
 		}
 		// Limit position co-variance
-		int maxCoVar = (int) (.5 * Fixed.min(varXX, varYY));
-		if (varXY > maxCoVar) {
-			varXY = maxCoVar;
-		}
-		if (varXY < -maxCoVar) {
-			varXY = maxCoVar;
-		}
+		/*
+		 * int maxCoVar = (int) (.5 * Fixed.min(varXX, varYY)); if (varXY >
+		 * maxCoVar) { varXY = maxCoVar; } if (varXY < -maxCoVar) { varXY =
+		 * maxCoVar; }
+		 */
 		// Limit velocity variance
-		maxCoVar = (int) (.5 * Fixed.min(varXvXv, varYvYv));
-		if (varXvYv > maxCoVar) {
-			varXvYv = maxCoVar;
-		}
-		if (varXvYv < -maxCoVar) {
-			varXvYv = maxCoVar;
-		}
+		/*
+		 * maxCoVar = (int) (.5 * Fixed.min(varXvXv, varYvYv)); if (varXvYv >
+		 * maxCoVar) { varXvYv = maxCoVar; } if (varXvYv < -maxCoVar) { varXvYv
+		 * = maxCoVar; }
+		 */
 		if (varXvXv < Fixed.floatToFixed(0.0001)) {
 			varXvXv = Fixed.floatToFixed(0.0001);
 		}
@@ -584,7 +610,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		sum_w = Fixed.floatToFixed(net[10]);
 		if (sum_w == 0) {
 			varXX = Fixed.ONE;
-			varXY = 0;
+			// varXY = 0;
 			varYY = Fixed.ONE;
 		} else {
 			mean_x = Fixed.floatToFixed(net[0]);
@@ -593,14 +619,12 @@ public class TrackingParticleFilter extends TrackingFilter {
 			mean_yv = Fixed.floatToFixed(net[3]);
 			// Set up co-variance matrices
 			varXX = Fixed.floatToFixed(net[4]);
-			varXY = Fixed.floatToFixed(net[5]);
+			// varXY = Fixed.floatToFixed(net[5]);
 			varYY = Fixed.floatToFixed(net[6]);
 		}
 		varXvXv = Fixed.floatToFixed(net[7]);
-		varXvYv = Fixed.floatToFixed(net[8]);
+		// varXvYv = Fixed.floatToFixed(net[8]);
 		varYvYv = Fixed.floatToFixed(net[9]);
-
-		// TODO: Add panic mode
 
 		// Re-sample
 		reSample();
@@ -620,18 +644,27 @@ public class TrackingParticleFilter extends TrackingFilter {
 			int x = Fixed.floatToFixed(sightings[i * 4]);
 			int y = Fixed.floatToFixed(sightings[i * 4 + 1]);
 			int angle = Fixed.floatToFixed(sightings[i * 4 + 2]);
-			if (sightings[i * 4] >= 0) {
+			if ((sightings[i * 4] >= 0)
+					&& (sightings[i * 4 + 3] <= currentTime)) {
 				compareParticles(x, y, angle);
 			}
 		}
 
 		// Calculate mean and (co-)variance, then commit data to billboard
 		calcMean();
+		/*
+		 * billboard.setMeanAndCovariance(id, Fixed.fixedToFloat(mean_x), Fixed
+		 * .fixedToFloat(mean_y), Fixed.fixedToFloat(mean_xv), Fixed
+		 * .fixedToFloat(mean_yv), Fixed.fixedToFloat(varXX), Fixed
+		 * .fixedToFloat(varXY), Fixed.fixedToFloat(varYY), Fixed
+		 * .fixedToFloat(varXvXv), Fixed.fixedToFloat(varXvYv), Fixed
+		 * .fixedToFloat(varYvYv), Fixed.fixedToFloat(sum_w));
+		 */
 		billboard.setMeanAndCovariance(id, Fixed.fixedToFloat(mean_x), Fixed
 				.fixedToFloat(mean_y), Fixed.fixedToFloat(mean_xv), Fixed
 				.fixedToFloat(mean_yv), Fixed.fixedToFloat(varXX), Fixed
-				.fixedToFloat(varXY), Fixed.fixedToFloat(varYY), Fixed
-				.fixedToFloat(varXvXv), Fixed.fixedToFloat(varXvYv), Fixed
+				.fixedToFloat(0), Fixed.fixedToFloat(varYY), Fixed
+				.fixedToFloat(varXvXv), Fixed.fixedToFloat(0), Fixed
 				.fixedToFloat(varYvYv), Fixed.fixedToFloat(sum_w));
 
 		// Increase iteration counter and timer (with full execution time)

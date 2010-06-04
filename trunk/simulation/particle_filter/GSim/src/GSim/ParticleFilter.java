@@ -29,6 +29,9 @@ public class ParticleFilter {
 				if (CUT[1] < z) {
 					// cut(1) - cut(2)
 					w = Fixed.mul(z, COEFF[0]) + COEFF[1];
+					if (w > Fixed.ONE) {
+						w = Fixed.ONE;
+					}
 				} else {
 					// cut(2) - cut(3)
 					w = Fixed.mul(z, COEFF[2]) + COEFF[3];
@@ -42,10 +45,6 @@ public class ParticleFilter {
 					w = Fixed.mul(z, COEFF[6]) + COEFF[7];
 				}
 			}
-			if (w > Fixed.ONE) {
-				w = Fixed.ONE;
-			}
-
 		} else {
 			w = 0;
 		}

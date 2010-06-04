@@ -88,26 +88,31 @@ public class Cat extends Actor {
 	}
 
 	public void update() {
-		// motor.goTo(gotox, gotoy);
-		motor.goTo(gotox - (getX() - motor.getX()), gotoy
-				- (getY() - motor.getY()));
+		motor.goTo(gotox, gotoy);
+		// motor.goTo(gotox - (getX() - motor.getX()), gotoy - (getY() -
+		// motor.getY()));
 		ComparableData data = motorBuffer.pop();
 		while (data != null) {
 			unifiedBuffer.push(data);
 			data = motorBuffer.pop();
 		}
+		int time = Clock.timestamp()
+				% (Settings.CAMERA_TIME_SLOT_LENGTH * Settings.CAMERA_TIME_SLOTS);
+		int slot = (int) Math.floor(time / Settings.CAMERA_TIME_SLOT_LENGTH);
 		if ((iter % 5) == 0) {
+			sensors.setLookForLandmarksFlag(slot == id);
 			sensors.update();
 		}
-		if ((iter % 30) == 0) {
+		if ((iter % 10) == 0) {
 			if ((useGuide)
+					&& (slot != id)
 					&& (iter > 10)
-					&& (Math.sqrt(Math.pow(gotox - getX(), 2)
-							+ Math.pow(gotoy - getY(), 2)) < 0.1f)) {
+					&& (Math.sqrt(Math.pow(gotox - motor.getX(), 2)
+							+ Math.pow(gotoy - motor.getY(), 2)) < 0.1f)) {
 				float[] adv = guide.getAdvice();
 				if (adv[0] >= 0) {
-					gotox = adv[0];
-					gotoy = adv[1];
+					gotox = adv[0] - (getX() - motor.getX());
+					gotoy = adv[1] - (getY() - motor.getY());
 					if (id == 0) {
 						System.out.println("Advice: (" + adv[0] + ", " + adv[1]
 								+ ")");

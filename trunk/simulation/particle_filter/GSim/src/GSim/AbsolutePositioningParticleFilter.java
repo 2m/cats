@@ -28,7 +28,7 @@ public class AbsolutePositioningParticleFilter extends
 	 */
 	private int varXX;
 	private int varYY;
-	private int varXY;
+	// private int varXY;
 	private int varAngle;
 
 	/** Sum of weights */
@@ -48,6 +48,11 @@ public class AbsolutePositioningParticleFilter extends
 	/** Counter and timer too keep track of mean iteration execution time */
 	private int iterationCounter = 0;
 	private int iterationTime = 0;
+
+	private float lastLandmarkSighting;
+
+	/** Counter for number of compares since re-sample */
+	int evaluationsSinceResample = 0;
 
 	/**
 	 * Constructor of the absolute positioning particle filter.
@@ -71,7 +76,7 @@ public class AbsolutePositioningParticleFilter extends
 		// Pre-calculate particle weight
 		Nnorm = Fixed.floatToFixed(1 / ((float) N));
 		// Set up a cut off for survival of the fittest
-		Ncut = (N >> 5);
+		Ncut = (N >> 3);
 		// Make a local landmark list using fixed point integers. First dim of
 		// landmarks are the landmark number, the second dim are x, y and type.
 		landmarks = new int[4][3];
@@ -90,9 +95,7 @@ public class AbsolutePositioningParticleFilter extends
 		data = new LinkedList();
 		// Create particles
 		for (int i = 0; i < N; i++) {
-			data.insertSorted(new PositioningParticle(Fixed.floatToFixed(1.0),
-					Fixed.floatToFixed(1.0), Fixed.floatToFixed(i * 200), Fixed
-							.floatToFixed(i % 10)));
+			data.insertSorted(new PositioningParticle(0, 0, 0, 0));
 		}
 		// Initialise random look up table data
 		randn_lut = new int[RANDN_MASK + 1];
@@ -122,8 +125,8 @@ public class AbsolutePositioningParticleFilter extends
 		varXX = Fixed.floatToFixed(0.0025);
 		varYY = Fixed.floatToFixed(0.0025);
 		// No co-variance
-		varXY = Fixed.floatToFixed(0.0);
-		// std => 3 degrees
+		// varXY = Fixed.floatToFixed(0.0);
+		// Set variance of the angle (std = 3 degrees)
 		varAngle = Fixed.floatToFixed(Math.pow(3 * (Math.PI / 180), 2));
 		// Set this to 0 so filter assumes all old particle data can be
 		// overwritten.
@@ -282,6 +285,11 @@ public class AbsolutePositioningParticleFilter extends
 				// Check for negative values (for debugging).
 				w = 0;
 			}
+			if (w > Fixed.ONE) {
+				// Check for negative values (for debugging).
+				Logger.println("w > Fixed.ONE");
+				w = Fixed.ONE;
+			}
 			// Multiply weight from this iteration with particle weight
 			part.comparable = Fixed.mul(part.comparable, w);
 			// System.out.println("Weight: " + Fixed.fixedToFloat(part.w));
@@ -298,10 +306,6 @@ public class AbsolutePositioningParticleFilter extends
 		// Save weight sum
 		sum_w = sum_w_tmp;
 		// System.out.println("sum_w=" + Fixed.fixedToFloat(sum_w));
-		if (data.getLength() != N) {
-			System.out.println("Particles lost! (count:" + data.getLength()
-					+ ")");
-		}
 	}
 
 	/**
@@ -321,52 +325,54 @@ public class AbsolutePositioningParticleFilter extends
 	 * Re-sample particles
 	 */
 	private void reSample() {
-		// Set up co-variance matrix
 
-		varXX = Fixed.floatToFixed(0.0004);
-		varYY = Fixed.floatToFixed(0.0004);
-		// No co-variance
-		varXY = Fixed.floatToFixed(0.0);
-		// std => 3 degrees
+		varXX = Fixed.floatToFixed(0.0025);
+		varYY = Fixed.floatToFixed(0.0025);
 		varAngle = Fixed.floatToFixed(Math.pow(3 * (Math.PI / 180), 2));
 
-		int[][] C = new int[2][2];
-		C[0][0] = varXX;
-		C[0][1] = varXY;
-		C[1][0] = varXY;
-		C[1][1] = varYY;
+		// Set up co-variance matrix
+		/*
+		 * int[][] C = new int[2][2]; C[0][0] = varXX; C[0][1] = varXY; C[1][0]
+		 * = varXY; C[1][1] = varYY;
+		 */
 
 		// Get transform matrix for new sampling
-		int[][] V = ParticleFilter.getTransformFromCovariance(C);
+		// int[][] V = ParticleFilter.getTransformFromCovariance(C);
+
+		int[][] V = new int[2][2];
+		V[0][0] = Fixed.sqrt(varXX);
+		V[1][1] = Fixed.sqrt(varYY);
 
 		// Get pointer to first element
 		Link link = data.first;
 
 		// Decide on cut off
-		if (sum_w != 0) {
+//		if (sum_w != 0) {
 			// Only the worst particles needs to be re-sampled, so some
 			// particles can be skipped.
-			for (int i = 0; (i < Ncut) && (link != null); i++) {
-				link.data.comparable = Fixed.ONE;
-				link = link.next;
-			}
-		}
+	//	}
 
 		int stdAngle = Fixed.sqrt(varAngle);
-		// Loop through all particles
-		while (link != null) {
+		for (int i = 0; (i < Ncut) && (link != null); i++) {
 			PositioningParticle part = (PositioningParticle) link.data;
 			// Get new random space vector (a, b), sample from 2d Gaussian
 			// distribution.
 			int a = nextRandn();
 			int b = nextRandn();
 			// Add mean and transform (a, b) into the new sample space.
-			part.x = mean_x + Fixed.mul(V[0][0], a) + Fixed.mul(V[0][1], b);
-			part.y = mean_y + Fixed.mul(V[1][0], a) + Fixed.mul(V[1][1], b);
+			part.x = mean_x + Fixed.mul(V[0][0], a);// + Fixed.mul(V[0][1], b);
+			part.y = mean_y // + Fixed.mul(V[1][0], a)
+					+ Fixed.mul(V[1][1], b);
 			// Add mean and get random samples for angular values
 			part.angle = mean_angle + Fixed.mul(stdAngle, nextRandn());
 			// Set norm to standard (all are equal) norm.
 			part.comparable = Fixed.ONE;
+			link = link.next;
+		}
+		
+		// Loop through remaining particles
+		while (link != null) {
+			link.data.comparable = Fixed.ONE;
 			link = link.next;
 		}
 	}
@@ -438,10 +444,10 @@ public class AbsolutePositioningParticleFilter extends
 			varYY *= 2;
 			varAngle *= 2;
 			// X and Y can be considered as independent if nothing is known.
-			varXY = 0;
+			// varXY = 0;
 		} else {
 			// Create local summation variables
-			int tvarXX = 0, tvarXY = 0, tvarYY = 0, tvarAngle = 0;
+			int tvarXX = 0, tvarYY = 0, tvarAngle = 0;// , tvarXY = 0;
 			// Loop through particles
 			// Should something like sum(w(x-meanx)(x-meanx)) ..
 			Link link = data.first;
@@ -452,7 +458,7 @@ public class AbsolutePositioningParticleFilter extends
 				int xw = Fixed.mul(x, part.comparable);
 				int yw = Fixed.mul(y, part.comparable);
 				tvarXX += Fixed.mul(xw, x);
-				tvarXY += Fixed.mul(xw, y);
+				// tvarXY += Fixed.mul(xw, y);
 				tvarYY += Fixed.mul(yw, y);
 				tvarAngle += Fixed
 						.mul(part.angle - mean_angle, part.comparable);
@@ -460,7 +466,7 @@ public class AbsolutePositioningParticleFilter extends
 			}
 			// Normalise the variances
 			varXX = Fixed.mul(tvarXX, norm);
-			varXY = Fixed.mul(tvarXY, norm);
+			// varXY = Fixed.mul(tvarXY, norm);
 			varYY = Fixed.mul(tvarYY, norm);
 			varAngle = Fixed.mul(tvarAngle, norm);
 		}
@@ -504,8 +510,7 @@ public class AbsolutePositioningParticleFilter extends
 			// std is approx 71 degrees
 			varAngle = (Fixed.PI >> 1);
 		}
-		// FIXME: Set caps on covariance
-		varXY = 0;
+		// varXY = 0;
 	}
 
 	/**
@@ -561,8 +566,6 @@ public class AbsolutePositioningParticleFilter extends
 		final int size = 5; // Diameter
 		final int linelength = 8;
 		Graphics2D g2 = (Graphics2D) g;
-		// Save the current transform
-		AffineTransform oldTransform = g2.getTransform();
 
 		g2.setColor(Color.DARK_GRAY);
 		// Plot particles
@@ -588,16 +591,11 @@ public class AbsolutePositioningParticleFilter extends
 		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
 				* linelength), (int) (iy + Math.sin(iangle) * linelength));
 
-		// Reset the transformation matrix
-		g2.setTransform(oldTransform);
 	}
 
 	public void update() {
 		// Get time reference
 		currentTime = Clock.timestamp();
-
-		// Counter for number of compares since re-sample
-		int evaluationsSinceResample = 0;
 
 		ComparableData data = unifiedBuffer.pop();
 		while (data != null) {
@@ -605,7 +603,6 @@ public class AbsolutePositioningParticleFilter extends
 			if (data.getComparable() <= currentTime) {
 				// Read buffers for integration (angles, distance)
 				if (data.isMovementData()) {
-					// System.out.println("Integrate");
 					MovementData mdata = (MovementData) data;
 					if (Math.abs(mdata.dr) >= 0.001) {
 						// Move particles
@@ -617,6 +614,7 @@ public class AbsolutePositioningParticleFilter extends
 					if (Math.abs(mdata.dangle) > (0.1 * (Math.PI / 180f))) {
 						// Turning angle as fixed
 						turnParticles(Fixed.floatToFixed(mdata.dangle));
+						lastLandmarkSighting -= mdata.dangle;
 						lastCurrentTime = mdata.comparable;
 						billboard.setAbsolutePosition(id, getX(), getY(),
 								getAngle(), getTime());
@@ -628,11 +626,15 @@ public class AbsolutePositioningParticleFilter extends
 						billboard.setLatestSighting(id, getX(), getY(),
 								sdata.angle + getAngle(), sdata.comparable);
 					} else {
-						// Compare sensor data to particles
-						compareParticles(Fixed.floatToFixed(sdata.angle),
-								sdata.type);
-						// Increase evaluation counter
-						evaluationsSinceResample++;
+						if (Math.abs((lastLandmarkSighting - sdata.angle)
+								% Math.PI * 2) > (10 * (Math.PI / 180))) {
+							// Compare sensor data to particles
+							compareParticles(Fixed.floatToFixed(sdata.angle),
+									sdata.type);
+							lastLandmarkSighting = sdata.angle;
+							// Increase evaluation counter
+							evaluationsSinceResample++;
+						}
 					}
 				}
 
@@ -642,29 +644,25 @@ public class AbsolutePositioningParticleFilter extends
 				unifiedBuffer.push(data);
 				data = null;
 			}
+
 			// Re-sample every n:th evaluation or if there is no more data and
 			// an evaluation has been performed.
-			if ((evaluationsSinceResample >= 1)
-					|| ((data == null) && (evaluationsSinceResample > 0))) {
+			if (evaluationsSinceResample >= 2) {
 				calcMean();
 				reSample();
 				evaluationsSinceResample = 0;
 			}
 		}
+
+		if (evaluationsSinceResample > 0) {
+			calcMean();
+		}
+
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
 		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
-	}
-
-	public void run() {
-
-		while (true) {
-			// update();
-			pause((long) (Clock.timestamp() % Tint));
-		}
-
 	}
 
 	/**

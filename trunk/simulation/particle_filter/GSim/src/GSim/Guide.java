@@ -12,6 +12,8 @@ public class Guide {
 	private float[] mousePos;
 	private float[][] otherCats;
 	private boolean haveMousePosition = false;
+	private final float h = (float) 0.05;
+
 	public float D1 = (float) 1.0; // Optimal distance from mouse
 	public float D2 = (float) 0.40; // Minimal distance to cats
 	public float D3 = (float) 0.30; // Minimal distance from line of sight
@@ -39,14 +41,16 @@ public class Guide {
 		float y = myPos[1];
 		if (x >= 0) {
 			int i = 0;
-			while (i < 20) {
+			while ((i < 40)
+					&& (Math.sqrt(Math.pow(myPos[0] - x, 2)
+							+ Math.pow(myPos[1] - y, 2)) < 0.25f)) {
 				float[] grad = getGradient(x, y);
 				x += 0.01 * Math.signum(grad[0]);
 				y += 0.01 * Math.signum(grad[1]);
 				i++;
 			}
 			if (Math
-					.sqrt(Math.pow(myPos[0] - x, 2) + Math.pow(myPos[1] - y, 2)) > 0.1f) {
+					.sqrt(Math.pow(myPos[0] - x, 2) + Math.pow(myPos[1] - y, 2)) > 0.15f) {
 				advice[0] = x;
 				advice[1] = y;
 			}
@@ -87,9 +91,8 @@ public class Guide {
 	public float[] getGradient(float x, float y) {
 		// Finite difference approximation of the gradient and (x, y)
 		float[] ret = new float[2];
-		float d = (float) 0.05;
-		ret[0] = (sample(x + d, y) - sample(x - d, y)) / (2 * d);
-		ret[1] = (sample(x, y + d) - sample(x, y - d)) / (2 * d);
+		ret[0] = (sample(x + h, y) - sample(x - h, y)) / (2 * h);
+		ret[1] = (sample(x, y + h) - sample(x, y - h)) / (2 * h);
 		return ret;
 	}
 
@@ -154,12 +157,17 @@ public class Guide {
 	 *            position in y direction
 	 */
 	private float keepDistanceFromMouse(float x, float y) {
-		float maxZ1 = (float) Math.sqrt(Math.pow(Arena.max_x - Arena.min_x, 2)
-				+ Math.pow(Arena.max_y - Arena.min_y, 2));
+		float maxZ1 = (float) Math.sqrt(Math.pow(Settings.ARENA_MAX_X
+				- Settings.ARENA_MIN_X, 2)
+				+ Math.pow(Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y, 2));
 		// Z1 = abs(sqrt((m(1) - X).^2 + (m(2) - Y).^2) - d1);
 		float Z1 = (float) Math.abs(Math.sqrt(Math.pow(mousePos[0] - x, 2)
 				+ Math.pow(mousePos[1] - y, 2))
 				- D1);
+		Z1 -= (D2 / 2);
+		if (Z1 < 0) {
+			Z1 = 0;
+		}
 		// Z1 = 1 - Z1/max(max(Z1));
 		Z1 = 1 - Z1 / maxZ1;
 		return Z1;

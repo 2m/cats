@@ -15,9 +15,14 @@ public class SensorHandler {
 	private Actor cat, mouse;
 	private boolean initialPhase = true;
 	private Random rnd = new Random();
+	private boolean lookForLandmarksFlag = false;
 
 	public SensorHandler(Actor mouse) {
 		this.mouse = mouse;
+	}
+
+	public void setLookForLandmarksFlag(boolean flag) {
+		lookForLandmarksFlag = flag;
 	}
 
 	public void update() {
@@ -30,12 +35,25 @@ public class SensorHandler {
 		float cy = (float) cat.getObjectiveY();
 		float x1 = (float) mouse.getObjectiveX() - cx;
 		float y1 = (float) mouse.getObjectiveY() - cy;
+
+		float looking_angle = (float) Math.atan2(y1, x1);
+		if (lookForLandmarksFlag) {
+			looking_angle += (rnd.nextDouble() - 0.5) * Math.PI / 2;
+			looking_angle %= Math.PI * 2;
+		}
+
 		float angle_to_mouse = (float) Math.atan2(y1, x1);
+
 		int t = Clock.timestamp();
-		SightingData d = new SightingData(t, cx, cy, (float) (angle_to_mouse
-				- cat.getObjectiveAngle() + rnd.nextGaussian() * 1
-				* (Math.PI / 180)), LandmarkList.MOUSE);
-		unifiedBuffer.push(d);
+
+		float angle_diff = (float) Math.abs(angle_to_mouse - looking_angle);
+		if ((initialPhase) || (angle_diff < (field_of_view / 2))) {
+			SightingData d = new SightingData(t, cx, cy,
+					(float) (angle_to_mouse - cat.getObjectiveAngle() + rnd
+							.nextGaussian()
+							* 1 * (Math.PI / 180)), LandmarkList.MOUSE);
+			unifiedBuffer.push(d);
+		}
 		int type = -1;
 		for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
 			float x2 = LandmarkList.landmarkX[i] - cx;
@@ -46,12 +64,15 @@ public class SensorHandler {
 			} else {
 				type = LandmarkList.RED;
 			}
-			float angle_diff = (float) Math
-					.abs(angle_to_landmark - angle_to_mouse);
+			angle_diff = (float) Math.abs(angle_to_landmark - looking_angle);
 			if ((initialPhase) || (angle_diff < (field_of_view / 2))) {
-				d = new SightingData(t, cx, cy, (float) (angle_to_landmark
-						- cat.getObjectiveAngle() + rnd.nextGaussian() * 0
-						* (Math.PI / 180)), type);
+				SightingData d = new SightingData(
+						t,
+						cx,
+						cy,
+						(float) (angle_to_landmark - cat.getObjectiveAngle() + rnd
+								.nextGaussian()
+								* 0 * (Math.PI / 180)), type);
 				unifiedBuffer.push(d);
 			}
 		}
