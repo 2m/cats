@@ -207,11 +207,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 				g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
 			}
 			
-			g2d.setColor(Color.black); // Black cats
-			//Set cat yellow if marked
-			if(_cats[i].isMarked()) {
-				g2d.setColor(Color.yellow); // Black cats
-			}
+			
 			
 			// print sightings as long lines of different colors
 			g2d.setStroke(new BasicStroke(3)); // width of the lines
@@ -237,8 +233,13 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			g2d.setStroke(new BasicStroke(1));
 			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(_cats[i].getAngle_c()))*linelength), (int) (entityPosY + Math.sin(-(_cats[i].getAngle_c()))*linelength));
 			
+			
 			// draw the cat
-			g2d.setColor(Color.black);
+			g2d.setColor(Color.black); // Black cats
+			//Set cat yellow if marked
+			if(_cats[i].isMarked()) {
+				g2d.setColor(Color.yellow); // Black cats
+			}
 			g2d.fillOval( (int) entityPosX-5, (int) entityPosY-5, 10, 10);
 			
 			//Streckat test
@@ -246,6 +247,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			//g2d.draw(new Rectangle((int) entityPosX-5,(int) entityPosY-5,20,20));
 			g2d.setStroke(solid);
 			//Draw cat ids
+			g2d.setColor(Color.black);
 			g2d.drawString(_cats[i].getName(), entityPosX-10f, entityPosY-10f);
 		}
     }
