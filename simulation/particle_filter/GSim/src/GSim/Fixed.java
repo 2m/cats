@@ -169,10 +169,8 @@ public final class Fixed {
 		}
 		long sum = 0;
 		int bit = 0x40000000;
-		// TODO: Check if this gives enough accuracy
 		// lower values in while loop condition give more accurate results
-		// while (bit >= 0x100) {
-		while (bit >= 0x10) {
+		while (bit >= 0x100) {
 			long tmp = sum | bit;
 			if (n >= tmp) {
 				n -= tmp;
