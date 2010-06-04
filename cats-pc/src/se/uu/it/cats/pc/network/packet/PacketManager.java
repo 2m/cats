@@ -119,7 +119,7 @@ public class PacketManager
 					float x = ((AbsolutePositionUpdate)p).getX();
 					float y = ((AbsolutePositionUpdate)p).getY();
 					float angle_c = ((AbsolutePositionUpdate)p).getTheta();
-					float angle_cam = 0;					
+					float angle_cam = 0;	//TODO: Real camera angles - can they be acquired?				
 					
 					Area.getInstance().getCat(catId).updateXYAngles((int) (x*100), (int) (y*100), angle_c, angle_cam); //Values from network in meters, values in Area in cm.
 					
