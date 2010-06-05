@@ -28,7 +28,7 @@ public class Main {
 	private static TrackingFilter trackingFilter;
 
 	public static void main(String[] args) throws InterruptedException {
-		Settings.init();
+		Settings.init(Identity.getId());
 		Logger.init();
 		Clock.init();
 
@@ -67,11 +67,11 @@ public class Main {
 			Thread positioningFilterThread = new Thread(positioningFilter);
 			positioningFilterThread.start();
 
-			trackingFilter = new TrackingUnscentedKalmanFilter(Identity.getId(), 0.25f,
-			BillBoard.getInstance());
+			//trackingFilter = new TrackingUnscentedKalmanFilter(Identity.getId(), 0.25f,
+			//BillBoard.getInstance());
 
-			//trackingFilter = new TrackingParticleFilter(Identity.getId(), 50,
-			//		1f, BillBoard.getInstance());			
+			trackingFilter = new TrackingParticleFilter(Identity.getId(), 50,
+					1f, BillBoard.getInstance());			
 			Thread trackingFilterThread = new Thread(trackingFilter);
 			trackingFilterThread.start();
 		}
