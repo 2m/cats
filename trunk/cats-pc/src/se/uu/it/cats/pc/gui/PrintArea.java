@@ -324,16 +324,24 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	}
 	
 	public void mouseClicked(MouseEvent e) {
+		
 		centFix_X = getWidth()/2-_arenaWidth/2*zk/50;
 		centFix_Y = getHeight()/2+_arenaHeight/2*zk/50;
 		if (marked) {
 			for (int i = 0; i < _newArea.getCats().length; i++) {
 				if (_newArea.getCats()[i].isMarked()) {
-					_newArea.getCats()[i].goTo(((e.getX()-centFix_X)*50/zk), ((e.getY()-centFix_Y)*50/zk));
+					
+					if (e.getButton() == MouseEvent.BUTTON1) {
+						// only give new order if left button was pressed
+						// this gives deselection ability when other buttons are pressed
+						_newArea.getCats()[i].goTo(((e.getX()-centFix_X)*50/zk), ((e.getY()-centFix_Y)*50/zk));
+						_newArea.getCats()[i].setManualOrder(true);
+					}
+					
 					System.out.println(((e.getX()-centFix_X)*50/zk) + " "+((e.getY()-centFix_Y)*50/zk));
 					//System.out.println((e.getX()) + " "+(e.getY()));
 					_newArea.getCats()[i].setMarked(false);
-					_newArea.getCats()[i].setManualOrder(true);
+					
 				}
 			}
 			marked = false;
