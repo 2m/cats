@@ -114,7 +114,7 @@ public class ConnectionManager
 			if (_devices[i].getName().equals(name))
 				return i;
 		
-		Logger.println("Unknown name to connect to.");
+		Logger.println("Unknown name to get id by.");
 		return -1;
 	}
 	
@@ -151,7 +151,12 @@ public class ConnectionManager
 			}
 	}
 	
-	public synchronized void relayPacketToAllExcept(Packet p, String name)
+	public void relayPacketToAll(Packet p)
+	{
+		relayPacketFrom(p, null);
+	}
+	
+	public synchronized void relayPacketFrom(Packet p, String name)
 	{
 		for (int i = 0; i < MAX_OUTBOUND_CONN; i++)
 		{
@@ -162,12 +167,18 @@ public class ConnectionManager
 			String remoteName = getConnection(i).getRemoteName();
 			if (!remoteName.equals(name))
 			{
-				int id = getIdByName(name);
-				
 				boolean ignore = false;
-				for (String ignoreName: _ignoreNames[id])
-					if (remoteName.equals(ignoreName))
-						ignore = true;
+				
+				// if name is null, then packet is being sent from GUI
+				// and has to be sent to everyone connected
+				if (name != null)
+				{
+					int id = getIdByName(name);
+					
+					for (String ignoreName: _ignoreNames[id])
+						if (remoteName.equals(ignoreName))
+							ignore = true;
+				}
 				
 				if (!ignore)
 					getConnection(i).relayPacket(p);

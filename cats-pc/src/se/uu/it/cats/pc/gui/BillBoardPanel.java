@@ -4,15 +4,22 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.TextArea;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+
+import se.uu.it.cats.brick.network.packet.LatestSightingUpdate;
+import se.uu.it.cats.pc.network.ConnectionManager;
 
 public class BillBoardPanel extends JPanel
 {
@@ -46,13 +53,16 @@ public class BillBoardPanel extends JPanel
 		private int _id;
 		
 		private JLabel _x, _y, _theta, _timestamp;
+		private JTextField _xInput, _yInput, _thetaInput, _timestampInput;
 		
 		public LatestSighting(int id)
 		{
-			// GridLayout(int rows, int cols, int hgap, int vgap) 
-			super(new GridLayout(4, 2, 10, 0));
+			super(new BorderLayout());
 			
 			_id = id;
+			
+			// GridLayout(int rows, int cols, int hgap, int vgap)
+			JPanel panel = new JPanel(new GridLayout(4, 3, 10, 0));
 			
 			setBorder(new TitledBorder(
 					new LineBorder(Color.gray, 1, false),
@@ -61,21 +71,51 @@ public class BillBoardPanel extends JPanel
 					TitledBorder.DEFAULT_POSITION)
 			);
 			
-			add(new JLabel("x"));
+			panel.add(new JLabel("x"));
 			_x = new JLabel("1");
-			add(_x);
+			panel.add(_x);
+			_xInput = new JTextField("0");
+			panel.add(_xInput);
 			
-			add(new JLabel("y"));
+			panel.add(new JLabel("y"));
 			_y = new JLabel("2");
-			add(_y);
+			panel.add(_y);
+			_yInput = new JTextField("0");
+			panel.add(_yInput);
 			
-			add(new JLabel("theta"));
+			panel.add(new JLabel("theta"));
 			_theta = new JLabel("3");
-			add(_theta);
+			panel.add(_theta);
+			_thetaInput = new JTextField("0");
+			panel.add(_thetaInput);
 			
-			add(new JLabel("timestamp"));
+			panel.add(new JLabel("timestamp"));
 			_timestamp = new JLabel("4");
-			add(_timestamp);
+			panel.add(_timestamp);
+			_timestampInput = new JTextField("0");
+			panel.add(_timestampInput);
+			
+			add(panel, BorderLayout.NORTH);
+			
+			panel = new JPanel();
+			JButton sendButton = new JButton("Send to all");
+			sendButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
+				{
+					float x = Float.parseFloat(_xInput.getText());
+					float y = Float.parseFloat(_yInput.getText());
+					float theta = Float.parseFloat(_thetaInput.getText());
+					int timestamp = Integer.parseInt(_timestampInput.getText());
+					
+					LatestSightingUpdate lsu = new LatestSightingUpdate(x, y, theta, timestamp);
+					lsu.setSource(_id);
+					ConnectionManager.getInstance().relayPacketToAll(lsu);
+				}
+			});
+			panel.add(sendButton);
+			
+			add(panel, BorderLayout.SOUTH);
 		}
 		
 		public void repaint()
