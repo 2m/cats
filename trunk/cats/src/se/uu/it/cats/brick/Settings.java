@@ -30,9 +30,9 @@ public class Settings
 	public static float START_Y;
 	public static float START_ANGLE;
 	
-	public static void init()
+	public static void init(int id)
 	{
-		switch (Identity.getId())
+		switch (id)
 		{
 			case 0:
 			{
