@@ -140,18 +140,18 @@ public class Main {
 			int milisUntilNextSec = 2000 - (Clock.timestamp() % 2000);
 			Thread.sleep(milisUntilNextSec);
 
-			int myid = Identity.getId();
+			Logger.println("--- Latest sightings ---");
 			float[] s = BillBoard.getInstance().getLatestSightings();
 			for (int i = 0; i < BillBoard.getInstance().getNoCats(); i++) {
-				//if (myid != i) {
-					Logger.println("id: " + i + ", x:" + s[i * 4 + 0] + ", y:"
-							+ s[i * 4 + 1] + ", th:" + s[i * 4 + 2]);
-					/*
-					 * sightings[id * 4 + 0] = x; sightings[id * 4 + 1] = y;
-					 * sightings[id * 4 + 2] = theta; sightings[id * 4 + 3] =
-					 * timestamp;
-					 */
-				//}
+				Logger.println("id: " + i + ", x:" + s[i * 4 + 0] + ", y:"
+							+ s[i * 4 + 1] + ", th:" + s[i * 4 + 2]);				
+			}
+			
+			Logger.println("--- Absolute Positions ---");
+			float[] p = BillBoard.getInstance().getAbsolutePositions();
+			for (int i = 0; i < BillBoard.getInstance().getNoCats(); i++) {
+				Logger.println("id: " + i + ", x:" + p[i * 4 + 0] + ", y:"
+							+ p[i * 4 + 1] + ", th:" + p[i * 4 + 2]);				
 			}
 			
 			//Logger.println("Buffer size:"+unifiedBuffer.getLength());
