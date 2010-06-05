@@ -171,8 +171,23 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	centFix_X = _areaWidth/2-_arenaWidth/2*zk/50;
 	centFix_Y = _areaHeight/2+_arenaHeight/2*zk/50;
 	
-	//Print cats
-    int size = Math.min(getWidth(), getHeight());
+	//Print lighthouses
+	for (int i = 0; i < _lighthouse.length; i++) {
+		if (_lighthouse[i] != null) {
+			g2d.setColor(Color.green); 
+			if(i==3) { g2d.setColor(Color.blue); }
+			g2d.fillOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-15), (int) centFix_Y-(_lighthouse[i].getY()*zk/50+15), 30, 30);
+			g2d.setColor(Color.black); 
+			g2d.drawString(_lighthouse[i].getLighthouseName(), (int) centFix_X+(_lighthouse[i].getX()*zk/50-15)-10, (int) centFix_Y-(_lighthouse[i].getY()*zk/50+15)-10f);
+
+		}
+    } 
+	
+	//Print mouse
+	g2d.setColor(Color.red);
+	g2d.fillOval( (int) centFix_X+_mouse.getX()*zk/50-8, (int) centFix_Y-_mouse.getY()*zk/50-8, 16, 16);
+	
+	//Print cats    
 	for (int i = 0; i < _cats.length; i++) {
 		if (_cats[i] != null) {
 			// Print cat as a black oval
@@ -207,8 +222,6 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 				g2d.setColor(new Color((int) (bufferLength-j)*255/bufferLength, (int) (bufferLength-j)*255/bufferLength,(int) (bufferLength-j)*255/bufferLength));
 				g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
 			}
-			
-			
 			
 			// print sightings as long lines of different colors
 			g2d.setStroke(new BasicStroke(3)); // width of the lines
@@ -252,23 +265,6 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			g2d.drawString(_cats[i].getName(), entityPosX-10f, entityPosY-10f);
 		}
     }
-	
-	
-	//Print lighthouses
-	for (int i = 0; i < _lighthouse.length; i++) {
-		if (_lighthouse[i] != null) {
-			g2d.setColor(Color.green); 
-			if(i==3) { g2d.setColor(Color.blue); }
-			g2d.fillOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-15), (int) centFix_Y-(_lighthouse[i].getY()*zk/50+15), 30, 30);
-			g2d.setColor(Color.black); 
-			g2d.drawString(_lighthouse[i].getLighthouseName(), (int) centFix_X+(_lighthouse[i].getX()*zk/50-15)-10, (int) centFix_Y-(_lighthouse[i].getY()*zk/50+15)-10f);
-
-		}
-    } 
-	
-	//Print mouse
-	g2d.setColor(Color.red);
-	g2d.fillOval( (int) centFix_X+_mouse.getX()*zk/50-8, (int) centFix_Y-_mouse.getY()*zk/50-8, 16, 16);
   
 	//Print cat-image
 	//g2d.rotate(Math.PI);  // Rotate the image by 1 radian.
