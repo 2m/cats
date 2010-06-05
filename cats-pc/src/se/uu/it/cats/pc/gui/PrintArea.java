@@ -188,6 +188,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			float camAngle = _cats[i].getAngle_cam() + _cats[i].getAngle_c();
 			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(camAngle+43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(camAngle+43f/360*Math.PI))*linelength));
 			g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(camAngle-43f/360*Math.PI))*linelength), (int) (entityPosY + Math.sin(-(camAngle-43f/360*Math.PI))*linelength));
+			//System.out.println(_cats[i].getName()+" "+camAngle);
 			
 			if(_cats[i].isManualOrder()) {
 				g2d.setColor(Color.red); 
