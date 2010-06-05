@@ -15,6 +15,7 @@ public class BillBoard
 	}
 	
 	public float[] sightings = new float[Area.CAT_COUNT * 4];
+	public float[] positions = new float[Area.CAT_COUNT * 4];
 
 	private BillBoard() {
 		
@@ -41,5 +42,28 @@ public class BillBoard
 	
 	public float getLatestSightingTimestamp(int id) {
 		return sightings[id * 4 + 3];
+	}
+	
+	public void setAbsolutePosition(int id, float x, float y, float theta, int timestamp) {
+		positions[id * 4 + 0] = x;
+		positions[id * 4 + 1] = y;
+		positions[id * 4 + 2] = theta;
+		positions[id * 4 + 3] = timestamp;
+	}
+	
+	public float getAbsolutePositionX(int id) {
+		return positions[id * 4 + 0];
+	}
+	
+	public float getAbsolutePositionY(int id) {
+		return positions[id * 4 + 1];
+	}
+	
+	public float getAbsolutePositionTheta(int id) {
+		return positions[id * 4 + 2];
+	}
+	
+	public float getAbsolutePositionTimestamp(int id) {
+		return positions[id * 4 + 3];
 	}
 }
