@@ -1,7 +1,5 @@
 package se.uu.it.cats.brick.filter;
 
-import se.uu.it.cats.brick.Logger;
-
 /**
  * Sorted buffer implemented as a linked list
  * 
@@ -26,7 +24,6 @@ public class BufferSorted extends Buffer {
 	public void push(ComparableData value) {
 		synchronized (lockOnLast) {
 			list.insertSorted(value);
-			//Logger.println(value.toString());
 		}
 	}
 
