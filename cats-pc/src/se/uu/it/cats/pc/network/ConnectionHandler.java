@@ -7,14 +7,12 @@ import java.io.IOException;
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
 
-import se.uu.it.cats.brick.Identity;
-import se.uu.it.cats.brick.network.packet.*;
-
-import se.uu.it.cats.pc.network.packet.PacketManager;
+import lejos.pc.comm.NXTConnector;
+import se.uu.it.cats.brick.network.packet.Packet;
+import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
 import se.uu.it.cats.pc.Logger;
 import se.uu.it.cats.pc.gui.PanelBluetooth;
-
-import lejos.pc.comm.NXTConnector;
+import se.uu.it.cats.pc.network.packet.PacketManager;
 
 public class ConnectionHandler implements Runnable
 {
@@ -31,7 +29,7 @@ public class ConnectionHandler implements Runnable
 		_remoteName = remoteName;
 		
 		try {
-			_localName = LocalDevice.getLocalDevice().getFriendlyName();
+			_localName = ConnectionManager.getInstance().getNameByAddress(LocalDevice.getLocalDevice().getBluetoothAddress());
 		} catch (BluetoothStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
