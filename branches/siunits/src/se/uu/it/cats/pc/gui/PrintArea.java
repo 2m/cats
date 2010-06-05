@@ -47,8 +47,8 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	private int oldEntityPosX;
 	private int oldEntityPosY;
 	private int linelength;
-	private int[] bufferX;
-	private int[] bufferY;
+	private float[] bufferX;
+	private float[] bufferY;
 	private int posBuffer;
 	private int bufferLength;
 	
@@ -202,8 +202,8 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			posBuffer = _cats[i].getPosBuffer();
 			bufferLength = _cats[i].getBufferLength();
 			for(int j = 0; j<bufferLength;j++) {
-				oldEntityPosX = centFix_X+bufferX[(posBuffer+j) % bufferLength]*zk/50;
-				oldEntityPosY = centFix_Y-bufferY[(posBuffer+j) % bufferLength]*zk/50;
+				oldEntityPosX = centFix_X+(int)(bufferX[(posBuffer+j) % bufferLength]*100)*zk/50;
+				oldEntityPosY = centFix_Y-(int)(bufferY[(posBuffer+j) % bufferLength]*100)*zk/50;
 				g2d.setColor(new Color((int) (bufferLength-j)*255/bufferLength, (int) (bufferLength-j)*255/bufferLength,(int) (bufferLength-j)*255/bufferLength));
 				g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
 			}
