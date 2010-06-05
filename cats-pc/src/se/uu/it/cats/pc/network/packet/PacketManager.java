@@ -107,6 +107,23 @@ public class PacketManager
 					
 					Area.getInstance().getMouse().newPosition(x, y);
 					//System.out.println("from cat"+p.getSource()+"X: " + x + " Y: " + y);
+					
+					MeanAndCovarianceUpdate pck = (MeanAndCovarianceUpdate)p;				
+					BillBoard.getInstance().setMeanAndCovariance(
+							pck.getSource(),
+							pck.getMeanX(),
+							pck.getMeanY(),
+							pck.getMeanXv(),
+							pck.getMeanYv(),
+							pck.getVarXX(),
+							pck.getVarXY(),
+							pck.getVarYY(),
+							pck.getVarXvXv(),
+							pck.getVarXvYv(),
+							pck.getVarYvYv(),
+							pck.getWeight(),
+							pck.getTimestamp()
+					);
 				}
 				break;
 			}
