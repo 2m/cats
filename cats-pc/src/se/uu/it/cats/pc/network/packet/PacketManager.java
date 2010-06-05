@@ -89,7 +89,7 @@ public class PacketManager
 					// set sighting to cat, this function accepts
 					Area.getInstance().getCat(catId).setAbsSighting(0, angle_c);
 					
-					Area.getInstance().getCat(catId).updateXY((int) (x*100), (int) (y*100)); //Values from network in meters, values in Area in cm.
+					Area.getInstance().getCat(catId).updateXY(x, y);
 				}
 				break;
 			}
@@ -103,7 +103,7 @@ public class PacketManager
 					float x = ((MeanAndCovarianceUpdate)p).getMeanX();
 					float y = ((MeanAndCovarianceUpdate)p).getMeanY();
 					
-					Area.getInstance().getMouse().newPosition((int) (x*100), (int) (y*100)); //Values from network in meters, values in Area in cm.
+					Area.getInstance().getMouse().newPosition(x, y);
 					System.out.println("from cat"+p.getSource()+"X: " + x + " Y: " + y);
 				}
 				break;
@@ -121,7 +121,7 @@ public class PacketManager
 					float angle_c = ((AbsolutePositionUpdate)p).getTheta();
 					float angle_cam = 0;	//TODO: Real camera angles - can they be acquired?				
 					
-					Area.getInstance().getCat(catId).updateXYAngles((int) (x*100), (int) (y*100), angle_c, angle_cam); //Values from network in meters, values in Area in cm.
+					Area.getInstance().getCat(catId).updateXYAngles(x, y, angle_c, angle_cam); //Values from network in meters, values in Area in cm.
 					
 				}
 				break;
