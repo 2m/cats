@@ -25,6 +25,16 @@ public class Settings
 	// guide
 	public static boolean USE_GUIDE = false;
 	
+	// Settings for time slotted camera/guide settings
+	public static final int CAMERA_TIME_SLOTS = 3;
+	public static final int CAMERA_TIME_SLOT_LENGTH = 3000; // [ms]
+
+	// Arena size
+	public static final float ARENA_MIN_X = 0;
+	public static final float ARENA_MAX_X = (float) 3;
+	public static final float ARENA_MIN_Y = 0;
+	public static final float ARENA_MAX_Y = (float) 3;
+	
 	// starting position and angle
 	public static float START_X;
 	public static float START_Y;

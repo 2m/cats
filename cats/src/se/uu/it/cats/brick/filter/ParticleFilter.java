@@ -1,5 +1,7 @@
 package se.uu.it.cats.brick.filter;
 
+import se.uu.it.cats.brick.Logger;
+
 /**
  * Common functions for particle filters.
  * 
@@ -23,13 +25,15 @@ public class ParticleFilter {
 	 * @return weight as 12.20 fixed point integer
 	 */
 	public static int penalty(int z) {
-		// TODO: Plot to see if this is right
 		int w;
 		if (z >= CUT[4]) {
 			if (CUT[2] < z) {
 				if (CUT[1] < z) {
 					// cut(1) - cut(2)
 					w = Fixed.mul(z, COEFF[0]) + COEFF[1];
+					if (w > Fixed.ONE) {
+						w = Fixed.ONE;
+					}
 				} else {
 					// cut(2) - cut(3)
 					w = Fixed.mul(z, COEFF[2]) + COEFF[3];
@@ -57,16 +61,17 @@ public class ParticleFilter {
 	 * @return V The transform matrix
 	 */
 	public static int[][] getTransformFromCovariance(int[][] C) {
+		// Create return matrix
 		int[][] V = new int[2][2];
-		int a = C[0][0];
 		int b = C[0][1];
+		// If matrix is diagonal
 		if (b == 0) {
-			// Matrix is diagonal
 			V[0][0] = Fixed.sqrt(C[0][0]);
 			V[0][1] = 0;
 			V[1][0] = 0;
 			V[1][1] = Fixed.sqrt(C[1][1]);
 		} else {
+			int a = C[0][0];
 			int c = C[1][0];
 			int d = C[1][1];
 			// Calculate eigenvalues
@@ -86,26 +91,21 @@ public class ParticleFilter {
 			int v12 = Fixed.div(-(a - lambda1), b);
 			// Get eigenvector norm
 			int norm = Fixed.sqrt(Fixed.mul(v12, v12) + Fixed.ONE);
-			int norminv = 0;
 			if (norm == 0) {
-				// TODO: Div by zero
-				System.out.println("Division by zero");
-				norminv = 1 << 30;
+				// Division by zero can occur but is "handled" here
+				Logger
+						.println("Division by zero in getTransformFromCovariance()");
 			} else {
-				norminv = Fixed.div(Fixed.ONE, norm);
+				int norminv = Fixed.div(Fixed.ONE, norm);
+				int v12_norm = Fixed.mul(v12, norminv);
+				// Eigen vectors are perpendicular => rot_p == [0 -1; 1 0]
+				// Eigenvector corresponding to lambda1
+				V[0][0] = Fixed.mul(norminv, lambda1sqrt); // a
+				V[1][0] = Fixed.mul(v12_norm, lambda1sqrt); // c
+				// Eigenvector corresponding to lambda2
+				V[0][1] = Fixed.mul(-v12_norm, lambda2sqrt); // b
+				V[1][1] = Fixed.mul(norminv, lambda2sqrt); // d
 			}
-			int v12_norm = Fixed.mul(v12, norminv);
-			// v1 = [1; -(a-lambda1)/b];
-			// v1 = v1./norm(v1);
-			// Eigen vectors are perpendicular => rot_p == [0 -1; 1 0]
-			// v2 = [-v1(2); v1(1)];
-			// V = [v1 v2];
-			// Eigenvector corresponding to lambda1
-			V[0][0] = Fixed.mul(norminv, lambda1sqrt); // a
-			V[1][0] = Fixed.mul(v12_norm, lambda1sqrt); // c
-			// Eigenvector corresponding to lambda2
-			V[0][1] = Fixed.mul(-v12_norm, lambda2sqrt); // b
-			V[1][1] = Fixed.mul(norminv, lambda2sqrt); // d
 		}
 		return V;
 	}
