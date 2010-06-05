@@ -23,7 +23,7 @@ public class BillBoard {
 	/** Number of cats (set in constructor) */
 	private final int NUMBER_OF_CATS = Identity.CAT_COUNT;
 	
-	private final boolean CHECK_TIMESTAMPS = false;
+	private final boolean CHECK_TIMESTAMPS = true;
 
 	public static final BillBoard instanceHolder = new BillBoard();
 
