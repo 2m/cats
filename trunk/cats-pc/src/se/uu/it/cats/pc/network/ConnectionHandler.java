@@ -115,7 +115,7 @@ public class ConnectionHandler implements Runnable
 					{
 						//relayPacket(p);
 						// relay packet to all except the cat that the packet came from
-						ConnectionManager.getInstance().relayPacketToAllExcept(p, getRemoteName());
+						ConnectionManager.getInstance().relayPacketFrom(p, getRemoteName());
 					}
 					
 					p = PacketManager.getInstance().checkForCompletePackets(bArr, index);
