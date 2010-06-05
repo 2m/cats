@@ -25,7 +25,7 @@ public class Area { // implements ActionListener
 	}
 
 	/* Constructor */
-	public Area() {
+	private Area() {
 		// Create some stuff
 		createEntities();
 	}
