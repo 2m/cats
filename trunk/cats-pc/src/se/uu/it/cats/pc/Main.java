@@ -22,6 +22,8 @@ public class Main
 	private int windowWidth = 900;
 	private int windowHeight = 700;
 
+	JTabbedPane tabbedPane = null;
+	
 	MainTab _mainTab = null;
 
 	public Main() {
@@ -77,7 +79,7 @@ public class Main
 
 		frame.setJMenuBar(menubar);	
 
-		JTabbedPane tabbedPane = new JTabbedPane();
+		tabbedPane = new JTabbedPane();
 		tabbedPane.addTab("Main", _mainTab);
 		tabbedPane.addTab("BillBoard", new BillBoardTab());
 		tabbedPane.addTab("TimeSync", new TimeSyncTab());
@@ -92,7 +94,7 @@ public class Main
 
 		while(true) {
 			Area.getInstance().tick();
-			_mainTab.repaint();
+			tabbedPane.getSelectedComponent().repaint();
 			//System.out.println("tick");
 			try {
 				Thread.sleep(20);

@@ -64,6 +64,7 @@ public class ConnectionManager
 			if (_ignoreNames[id][i] == null)
 			{
 				_ignoreNames[id][i] = dest;
+				//printIgnores();
 				return;
 			}		
 		
@@ -77,6 +78,7 @@ public class ConnectionManager
 			if (dest.equals(_ignoreNames[id][i]))
 				_ignoreNames[id][i] = null;
 		
+		//printIgnores();
 	}
 	
 	public boolean isCreated(int i)
@@ -153,14 +155,22 @@ public class ConnectionManager
 	{
 		for (int i = 0; i < MAX_OUTBOUND_CONN; i++)
 		{
-			if (isAlive(i) && !getConnection(i).getRemoteName().equals(name))
+			// check if connection open
+			if (!isAlive(i))
+				continue;
+			
+			String remoteName = getConnection(i).getRemoteName();
+			if (!remoteName.equals(name))
 			{
 				int id = getIdByName(name);
-				for (String ignoreName: _ignoreNames[id])
-					if (name.equals(ignoreName))
-						return;
 				
-				getConnection(i).relayPacket(p);
+				boolean ignore = false;
+				for (String ignoreName: _ignoreNames[id])
+					if (remoteName.equals(ignoreName))
+						ignore = true;
+				
+				if (!ignore)
+					getConnection(i).relayPacket(p);
 			}				
 		}
 	}
@@ -183,6 +193,7 @@ public class ConnectionManager
 	
 	private void printIgnores()
 	{
+		System.out.println("--- Ignores print start ---");
 		for (int i = 0; i < _ignoreNames.length; i++)
 			for (int j = 0; j < _ignoreNames[i].length; j++)
 				System.out.println(i+": "+j+": "+_ignoreNames[i][j]);

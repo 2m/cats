@@ -2,6 +2,7 @@ package se.uu.it.cats.pc.network.packet;
 
 import se.uu.it.cats.pc.Logger;
 import se.uu.it.cats.pc.gui.Area;
+import se.uu.it.cats.pc.gui.BillBoard;
 
 import se.uu.it.cats.brick.network.packet.*;
 
@@ -87,9 +88,10 @@ public class PacketManager
 					//float angle_cam = 0;
 					
 					// set sighting to cat, this function accepts
-					Area.getInstance().getCat(catId).setAbsSighting(0, angle_c);
-					
+					Area.getInstance().getCat(catId).setAbsSighting(0, angle_c);					
 					Area.getInstance().getCat(catId).updateXY(x, y);
+					
+					BillBoard.getInstance().setLatestSighting(catId, x, y, angle_c, ((LatestSightingUpdate)p).getTimestamp());
 				}
 				break;
 			}
@@ -104,7 +106,7 @@ public class PacketManager
 					float y = ((MeanAndCovarianceUpdate)p).getMeanY();
 					
 					Area.getInstance().getMouse().newPosition(x, y);
-					System.out.println("from cat"+p.getSource()+"X: " + x + " Y: " + y);
+					//System.out.println("from cat"+p.getSource()+"X: " + x + " Y: " + y);
 				}
 				break;
 			}
