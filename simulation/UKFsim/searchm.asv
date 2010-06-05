@@ -1,4 +1,0 @@
-function camA=searchm(speed)
-%speed is the angular velocity pf the motor camera
-global camA;
-    camA=camA+speed;
