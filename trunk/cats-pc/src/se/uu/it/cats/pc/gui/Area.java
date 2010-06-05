@@ -37,13 +37,13 @@ public class Area { // implements ActionListener
 		for(int i = 0; i < 3; i++) {
 			_cats[i] = new Cat("cat"+i);
 		}
-		_cats[0].updateXYAngles(10, 100, 0, 0);
-		_cats[1].updateXYAngles(90, 170, 0, 0);
-		_cats[2].updateXYAngles(300, 100, 0, 0); // Real camera should go for cats real angle + relative camera angle.
+		_cats[0].updateXYAngles(0, 0, 0, 0);
+		_cats[1].updateXYAngles(0.5f, 0, 0, 0);
+		_cats[2].updateXYAngles(0, 0.5f, 0, 0); // Real camera should go for cats real angle + relative camera angle.
 
 
 		_mouse = new Mouse();
-		_mouse.newPosition(50, 243);
+		_mouse.newPosition(0, 0);
 
 		/* Create four lighthouses */
 		_lighthouse[0] = new Lighthouse("Beacon 1");

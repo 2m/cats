@@ -26,9 +26,9 @@ public class MainPanel extends JPanel implements ActionListener{ // implements A
 		if (ae.getSource() == buttonAreaWidthHeight) {
 			try {
 				temp = inputArenaHeight.getText();
-				world.setArenaHeight(Integer.parseInt(temp));
+				world.setArenaHeight((int)(Float.parseFloat(temp)*100));
 				temp = inputArenaWidth.getText();
-				world.setArenaWidth(Integer.parseInt(temp));
+				world.setArenaWidth((int)(Float.parseFloat(temp)*100));
 			}	
 			  	
 			catch (NullPointerException e) {
@@ -55,10 +55,10 @@ public class MainPanel extends JPanel implements ActionListener{ // implements A
     
 	setLayout(new GridLayout(12,1,0,0)); //rows, cols, hgap, vgap
 	
-	labelArenaWidth = new JLabel("Distance X [cm]");
-	labelArenaHeight = new JLabel("Distance Y [cm]");
-	inputArenaWidth = new JTextField(""+world.getArenaWidth());
-	inputArenaHeight = new JTextField(""+world.getArenaHeight());
+	labelArenaWidth = new JLabel("Distance X [m]");
+	labelArenaHeight = new JLabel("Distance Y [m]");
+	inputArenaWidth = new JTextField(""+world.getArenaWidth()/100);
+	inputArenaHeight = new JTextField(""+world.getArenaHeight()/100);
 	inputArenaWidth.setColumns(5); 
 	inputArenaHeight.setColumns(5);
 	buttonAreaWidthHeight = new JButton("Update");

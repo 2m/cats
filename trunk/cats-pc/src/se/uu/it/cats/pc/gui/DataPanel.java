@@ -81,7 +81,7 @@ public class DataPanel extends JPanel{ // implements ActionListener
 		}
 		
 		public void repaint() {
-			setText("Position: ("+world.getCat(id).getX()+","+world.getCat(id).getY()+")");
+			setText(String.format("Position: (%07.3f, %07.3f)", world.getCat(id).getFloatX(), world.getCat(id).getFloatY()));
 		}
 	}
 	
@@ -99,7 +99,7 @@ public class DataPanel extends JPanel{ // implements ActionListener
 	
 	private class MouseLabel extends JLabel {
 		public void repaint() {
-			setText("Est. Position: ("+world.getMouse().getX()+","+world.getMouse().getY()+")");
+			setText(String.format("Est. Position: (%07.3f, %07.3f)", world.getMouse().getFloatX(), world.getMouse().getFloatY()));
 		}
 	}
 };
