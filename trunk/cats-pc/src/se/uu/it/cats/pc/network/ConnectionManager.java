@@ -1,18 +1,21 @@
 package se.uu.it.cats.pc.network;
 
-import javax.bluetooth.BluetoothStateException;
-import javax.bluetooth.LocalDevice;
-
-import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.network.packet.Packet;
-import se.uu.it.cats.pc.network.ConnectionHandler;
 
 public class ConnectionManager
 {
-	public static final String[] _deviceNames = new String[] {"cat0", "cat1", "cat2", "FREDRIK-PC", "FREDRIK-PC", "FREDRIK-PC", "FREDRIK-PC"};
+	public final Device[] _devices = new Device[] {
+		new Device("cat0", "00165302CDC3"),
+		new Device("cat1", "00165302CC4E"),
+		new Device("cat2", "0016530E6938"),		
+		new Device("dongle1", "0015832A3670"),
+		new Device("dongle2", "000C783394E7"),
+		new Device("MartinPC", "002556F9072D"),
+		new Device("ChristianPC", "002243B7BDAA")
+	};
 	
-	public static final int MAX_OUTBOUND_CONN = _deviceNames.length;
+	public final int MAX_OUTBOUND_CONN = _devices.length;
 	
 	private static ConnectionManager _instanceHolder = new ConnectionManager();
 	
@@ -105,12 +108,22 @@ public class ConnectionManager
 	
 	public int getIdByName(String name)
 	{
-		for (int i = 0; i < _deviceNames.length; i++)
-			if (_deviceNames[i].equals(name))
+		for (int i = 0; i < _devices.length; i++)
+			if (_devices[i].getName().equals(name))
 				return i;
 		
 		Logger.println("Unknown name to connect to.");
 		return -1;
+	}
+	
+	public String getNameByAddress(String address)
+	{
+		for (int i = 0; i < _devices.length; i++)
+			if (_devices[i].getAddress().equals(address))
+				return _devices[i].getName();
+		
+		Logger.println("Unknown address for name search.");
+		return null;
 	}
 	
 	public void closeConnection(int i)
@@ -173,5 +186,27 @@ public class ConnectionManager
 		for (int i = 0; i < _ignoreNames.length; i++)
 			for (int j = 0; j < _ignoreNames[i].length; j++)
 				System.out.println(i+": "+j+": "+_ignoreNames[i][j]);
+	}
+	
+	private class Device
+	{
+		private String _name;
+		private String _address;
+		
+		public Device(String name, String address)
+		{
+			_name = name;
+			_address = address;
+		}
+		
+		public String getName()
+		{
+			return _name;
+		}
+		
+		public String getAddress()
+		{
+			return _address;
+		}
 	}
 }
