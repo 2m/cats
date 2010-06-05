@@ -1,6 +1,6 @@
 package se.uu.it.cats.pc.gui;
 
-import java.util.Hashtable;
+import se.uu.it.cats.brick.Settings;
 
 public class Area { // implements ActionListener
 	
@@ -35,12 +35,11 @@ public class Area { // implements ActionListener
 
 		/* Create 3 cats */
 		for(int i = 0; i < 3; i++) {
-			_cats[i] = new Cat("cat"+i);
+			Settings.init(i);
+			_cats[i] = new Cat("cat"+i, Settings.START_X, Settings.START_Y);
 		}
-		_cats[0].updateXYAngles(0, 0, 0, 0);
-		_cats[1].updateXYAngles(0.5f, 0, 0, 0);
-		_cats[2].updateXYAngles(0, 0.5f, 0, 0); // Real camera should go for cats real angle + relative camera angle.
-
+		
+		// Real camera should go for cats real angle + relative camera angle.
 
 		_mouse = new Mouse();
 		_mouse.newPosition(0, 0);

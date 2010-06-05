@@ -3,8 +3,8 @@ package se.uu.it.cats.pc.gui;
 public class Cat {
 	private float x; // Absolute position horizontal axis
 	private float y; // Absolute position vertical axis
-	private float angle_c;
-	private float angle_cam;
+	private float angle_c = 0;
+	private float angle_cam = 0;
 	private float cam_angle_width = 30;
 	private String catName;
 	
@@ -14,7 +14,7 @@ public class Cat {
 	
 	private boolean marked = false;
 	
-	private int bufferLength = 50;	
+	private int bufferLength = 50;
 	private float[] bufferX = new float[bufferLength];
 	private float[] bufferY = new float[bufferLength];
 	private int posBuffer = 0;
@@ -27,8 +27,15 @@ public class Cat {
 	// second - the number of times it has been drawn
 	private float[][] sightings = new float[Area.LIGHTHOUSE_COUNT + 1][2];
 	
-	public Cat(String name) {
+	public Cat(String name, float x, float y) {
 		catName = name;
+		this.x = x;
+		this.y = y;
+		
+		for (int i = 0; i < bufferX.length; i++) {
+			bufferX[i] = x;
+			bufferY[i] = y;
+		}
 	}
 	
 	public String getName() {
