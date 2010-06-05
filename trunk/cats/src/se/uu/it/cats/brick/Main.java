@@ -2,6 +2,7 @@ package se.uu.it.cats.brick;
 
 import java.io.File;
 import java.util.Random;
+
 import lejos.nxt.Button;
 import lejos.nxt.ButtonListener;
 import lejos.nxt.LCD;
@@ -67,23 +68,27 @@ public class Main {
 			Thread positioningFilterThread = new Thread(positioningFilter);
 			positioningFilterThread.start();
 
-			//trackingFilter = new TrackingUnscentedKalmanFilter(Identity.getId(), 0.25f,
-			//BillBoard.getInstance());
+			// trackingFilter = new
+			// TrackingUnscentedKalmanFilter(Identity.getId(), 0.25f,
+			// BillBoard.getInstance());
 
 			trackingFilter = new TrackingParticleFilter(Identity.getId(), 50,
-					1f, BillBoard.getInstance());			
+					1f, BillBoard.getInstance());
 			Thread trackingFilterThread = new Thread(trackingFilter);
 			trackingFilterThread.start();
 		}
-		
+
 		while (!startYourEngines) {
-			ConnectionManager.getInstance().sendPacketToAll(new
-					LatestSightingUpdate(0f, 0f, 0f, Clock.timestamp()));
-			
-			//ConnectionManager.getInstance().sendPacketToAll(new
-			//		AbsolutePositionUpdate(0f, 0f, 0f, Clock.timestamp())); 
-			
-			try {Thread.sleep(20);} catch(Exception ex) {} 
+			ConnectionManager.getInstance().sendPacketToAll(
+					new LatestSightingUpdate(0f, 0f, 0f, Clock.timestamp()));
+
+			// ConnectionManager.getInstance().sendPacketToAll(new
+			// AbsolutePositionUpdate(0f, 0f, 0f, Clock.timestamp()));
+
+			try {
+				Thread.sleep(20);
+			} catch (Exception ex) {
+			}
 		}
 
 		Button.LEFT.addButtonListener(new ButtonListener() {
@@ -110,10 +115,10 @@ public class Main {
 			}
 
 			public void buttonReleased(Button b) {
-				
-				//Music m = new Music(Identity.getId(), 3);
-				//m.play();
-				
+
+				// Music m = new Music(Identity.getId(), 3);
+				// m.play();
+
 			}
 		});
 
@@ -122,7 +127,7 @@ public class Main {
 			}
 
 			public void buttonReleased(Button b) {
-				//Clock.syncTime();
+				// Clock.syncTime();
 			}
 		});
 
@@ -136,7 +141,7 @@ public class Main {
 
 		int test = 0;
 		while (test == 0) {
-			
+
 			int milisUntilNextSec = 2000 - (Clock.timestamp() % 2000);
 			Thread.sleep(milisUntilNextSec);
 
@@ -144,17 +149,17 @@ public class Main {
 			float[] s = BillBoard.getInstance().getLatestSightings();
 			for (int i = 0; i < BillBoard.getInstance().getNoCats(); i++) {
 				Logger.println("id: " + i + ", x:" + s[i * 4 + 0] + ", y:"
-							+ s[i * 4 + 1] + ", th:" + s[i * 4 + 2]);				
+						+ s[i * 4 + 1] + ", th:" + s[i * 4 + 2]);
 			}
-			
+
 			Logger.println("--- Absolute Positions ---");
 			float[] p = BillBoard.getInstance().getAbsolutePositions();
 			for (int i = 0; i < BillBoard.getInstance().getNoCats(); i++) {
 				Logger.println("id: " + i + ", x:" + p[i * 4 + 0] + ", y:"
-							+ p[i * 4 + 1] + ", th:" + p[i * 4 + 2]);				
+						+ p[i * 4 + 1] + ", th:" + p[i * 4 + 2]);
 			}
-			
-			//Logger.println("Buffer size:"+unifiedBuffer.getLength());
+
+			// Logger.println("Buffer size:"+unifiedBuffer.getLength());
 			// Thread.sleep(100);
 			// Thread.yield();
 			Sound.beep();
@@ -276,5 +281,12 @@ public class Main {
 		}
 
 		Logger.println("");
+	}
+
+	/** Returns which global time slot is the current one */
+	public static int getTimeSlot() {
+		int time = Clock.timestamp()
+				% (Settings.CAMERA_TIME_SLOT_LENGTH * Settings.CAMERA_TIME_SLOTS);
+		return (int) Math.floor(time / Settings.CAMERA_TIME_SLOT_LENGTH);
 	}
 }

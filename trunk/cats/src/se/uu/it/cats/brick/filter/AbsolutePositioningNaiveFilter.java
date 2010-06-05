@@ -1,7 +1,6 @@
 package se.uu.it.cats.brick.filter;
 
 import se.uu.it.cats.brick.Clock;
-import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.Settings;
 import se.uu.it.cats.brick.storage.BillBoard;
 
