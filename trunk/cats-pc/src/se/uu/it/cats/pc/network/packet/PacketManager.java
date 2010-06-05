@@ -125,6 +125,7 @@ public class PacketManager
 					
 					Area.getInstance().getCat(catId).updateXYAngles(x, y, angle_c, angle_cam); //Values from network in meters, values in Area in cm.
 					
+					BillBoard.getInstance().setAbsolutePosition(catId, x, y, angle_c, ((AbsolutePositionUpdate)p).getTimestamp());
 				}
 				break;
 			}
