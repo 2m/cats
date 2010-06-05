@@ -18,6 +18,7 @@ public class Guide {
 	public float D2 = (float) 0.40; // Minimal distance to cats
 	public float D3 = (float) 0.30; // Minimal distance from line of sight
 	public float D4 = (float) 0.25; // Minimal distance from arena edges
+	public float D5 = (float) 0.5; // Mouse distance "plateau" size
 	// Weights on the different parts of the criterion function
 	public float W1 = (float) 1.0; // Importance of distance from cats
 	public float W2 = (float) 0.8; // Importance of distance from mouse
@@ -107,6 +108,8 @@ public class Guide {
 	public float sample(float x, float y) {
 		float a = (1 - W1) + W1 * keepDistanceFromCats(x, y);
 		float c = (1 - W3) + W3 * keepDistanceFromEdges(x, y);
+		//float c = (1 - W5) + W5 * keepDistanceFromLandmarks(x, y);
+		// FIXME: Implement keedDistanceFromLandmarks 
 		if (haveMousePosition) {
 			float b = (1 - W2) + W2 * keepDistanceFromMouse(x, y);
 			float d = (1 - W4) + W4 * avoidLineOfSight(x, y);
@@ -115,7 +118,7 @@ public class Guide {
 			return a * c;
 		}
 	}
-
+	
 	/**
 	 * Get the component of the criterion function that handles the distance
 	 * from other cats.
@@ -126,6 +129,7 @@ public class Guide {
 	 *            position in y direction
 	 */
 	private float keepDistanceFromCats(float x, float y) {
+		// TODO: Optimise this
 		float maxT = (float) Math.sqrt(Math.pow(D2, 2) + Math.pow(D2, 2));
 		float ret = (float) 1.0;
 		for (int i = 0; i < otherCats.length; i++) {
@@ -157,6 +161,7 @@ public class Guide {
 	 *            position in y direction
 	 */
 	private float keepDistanceFromMouse(float x, float y) {
+		// TODO: Optimise this
 		float maxZ1 = (float) Math.sqrt(Math.pow(Settings.ARENA_MAX_X
 				- Settings.ARENA_MIN_X, 2)
 				+ Math.pow(Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y, 2));
@@ -164,7 +169,7 @@ public class Guide {
 		float Z1 = (float) Math.abs(Math.sqrt(Math.pow(mousePos[0] - x, 2)
 				+ Math.pow(mousePos[1] - y, 2))
 				- D1);
-		Z1 -= (D2 / 2);
+		Z1 -= D5;
 		if (Z1 < 0) {
 			Z1 = 0;
 		}
@@ -183,6 +188,7 @@ public class Guide {
 	 *            position in y direction
 	 */
 	private float keepDistanceFromEdges(float x, float y) {
+		// TODO: Optimise this
 		float ret = (float) 1.0;
 		if ((x - Arena.min_x) < D4) {
 			ret *= (x - Arena.min_x) / D4;
@@ -210,6 +216,7 @@ public class Guide {
 	 *            position in y direction
 	 */
 	private float avoidLineOfSight(float x, float y) {
+		// TODO: Optimise this
 		float maxT = (float) Math.sqrt(Math.pow(D3, 2) + Math.pow(D3, 2));
 		float Z3 = (float) 1.0;
 		for (int i = 0; i < otherCats.length; i++) {
