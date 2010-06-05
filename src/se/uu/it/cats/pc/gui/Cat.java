@@ -1,19 +1,22 @@
 package se.uu.it.cats.pc.gui;
 
 public class Cat {
-	private int x; // Absolute position horizontal axis
-	private int y; // Absolute position vertical axis
+	private float x; // Absolute position horizontal axis
+	private float y; // Absolute position vertical axis
 	private float angle_c;
 	private float angle_cam;
 	private float cam_angle_width = 30;
 	private String catName;
+	
 	private boolean manualOrder = false;
-	private int goToX; //Orders for new X-position
-	private int goToY; //Orders for new X-position
+	private float goToX; //Orders for new X-position
+	private float goToY; //Orders for new X-position
+	
 	private boolean marked = false;
-	private int bufferLength = 50;
-	private int[] bufferX = new int[bufferLength];
-	private int[] bufferY = new int[bufferLength];
+	
+	private int bufferLength = 50;	
+	private float[] bufferX = new float[bufferLength];
+	private float[] bufferY = new float[bufferLength];
 	private int posBuffer = 0;
 	
 	// angles for every sightings in angles
@@ -33,27 +36,37 @@ public class Cat {
 	}
 	
 	public int getX() {
-		return x;
+		// convert meters to centimeters for the GUI
+		return (int)(x*100);
 	}
 	
 	public int getY() {
+		// convert meters to centimeters for the GUI
+		return (int)(y*100);
+	}
+	
+	public float getFloatX() {
+		return x;
+	}
+	
+	public float getFloatY() {
 		return y;
 	}
 	
-	public void goTo(int newOrderX, int newOrderY) {
+	public void goTo(float newOrderX, float newOrderY) {
 		goToX = newOrderX;
 		goToY = newOrderY;
 	}
-	public int getGoToX() {
+	public float getGoToX() {
 		return goToX;
 	}
-	public int getGoToY() {
+	public float getGoToY() {
 		return goToY;
 	}
-	public int[] getBufferX() {
+	public float[] getBufferX() {
 		return bufferX;
 	}
-	public int[] getBufferY() {
+	public float[] getBufferY() {
 		return bufferY;
 	}
 	
@@ -89,7 +102,7 @@ public class Cat {
 		angle_cam = angle;
 	}
 	
-	public void updateXYAngles(int newX, int newY, float newAngle_c, float newAngle_cam) {
+	public void updateXYAngles(float newX, float newY, float newAngle_c, float newAngle_cam) {
 		
 		angle_c = newAngle_c;
 		angle_cam = newAngle_cam;	
@@ -97,7 +110,7 @@ public class Cat {
 		updateXY(newX, newY);
 	}
 	
-	public void updateXY(int newX, int newY) {
+	public void updateXY(float newX, float newY) {
 		x = newX;
 		y = newY;
 		
