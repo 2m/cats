@@ -53,6 +53,7 @@ public class MainTab extends JPanel
 		try {
 			_printArea.repaint();
 			_dataPanel.repaint();
+			_panelBluetooth.repaint();
 		}
 		catch (NullPointerException ex) {
 			

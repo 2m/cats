@@ -23,6 +23,8 @@ import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
 public class PanelBluetooth extends JPanel{
 
 	private static JTextArea _infoBox;
+	
+	private ConnectionPanel[] _connectionPanels = new ConnectionPanel[Area.CAT_COUNT];
 
 	public PanelBluetooth() {
 		super(new BorderLayout());		
@@ -37,9 +39,12 @@ public class PanelBluetooth extends JPanel{
 
 		// connection panels
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new ConnectionPanel("cat0"), BorderLayout.NORTH);
-		panel.add(new ConnectionPanel("cat1"), BorderLayout.CENTER);
-		panel.add(new ConnectionPanel("cat2"), BorderLayout.SOUTH);
+		_connectionPanels[0] = new ConnectionPanel("cat0");
+		panel.add(_connectionPanels[0], BorderLayout.NORTH);		
+		_connectionPanels[1] = new ConnectionPanel("cat1");
+		panel.add(_connectionPanels[1], BorderLayout.CENTER);
+		_connectionPanels[2] = new ConnectionPanel("cat2");
+		panel.add(_connectionPanels[2], BorderLayout.SOUTH);
 		add(panel, BorderLayout.WEST);
 
 		panel = new JPanel(new BorderLayout());	
@@ -111,12 +116,26 @@ public class PanelBluetooth extends JPanel{
 			System.out.println(e2);
 		}
 	}
+	
+	public void repaint()
+	{
+		super.repaint();
+		
+		try
+		{
+			for (ConnectionPanel cp: _connectionPanels)
+				cp.repaint();
+		}
+		catch (NullPointerException ex) {}
+	}
 
 	private class ConnectionPanel extends JPanel implements ActionListener
 	{
 		String[] _catNames = Area.getInstance().getCatNames();
 
 		String _catName = null;
+		
+		JButton connectionButton = null;
 
 		public ConnectionPanel(String catName)
 		{
@@ -129,7 +148,7 @@ public class PanelBluetooth extends JPanel{
 					TitledBorder.DEFAULT_POSITION)
 			);
 
-			JButton connectionButton = new JButton("Connect")
+			connectionButton = new JButton("Connect")
 			{
 				public void repaint()
 				{
@@ -177,6 +196,16 @@ public class PanelBluetooth extends JPanel{
 		{
 			// if connect/disconnect button is pressed
 			ConnectionManager.getInstance().openConnection(_catName);
+		}
+		
+		public void repaint()
+		{
+			try
+			{
+				super.repaint();
+				connectionButton.repaint();
+			}
+			catch (NullPointerException ex) {}
 		}
 	}
 
