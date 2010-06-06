@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
-import se.uu.it.cats.pc.gui.Area;
+import se.uu.it.cats.pc.actor.Area;
 import se.uu.it.cats.pc.gui.DataPanel;
 import se.uu.it.cats.pc.gui.MainPanel;
 import se.uu.it.cats.pc.gui.PanelBluetooth;

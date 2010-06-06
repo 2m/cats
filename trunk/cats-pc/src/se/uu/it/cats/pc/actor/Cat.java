@@ -1,4 +1,4 @@
-package se.uu.it.cats.pc.gui;
+package se.uu.it.cats.pc.actor;
 
 public class Cat {
 	private float x; // Absolute position horizontal axis

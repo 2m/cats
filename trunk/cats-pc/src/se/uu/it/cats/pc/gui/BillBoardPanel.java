@@ -20,6 +20,8 @@ import javax.swing.border.TitledBorder;
 
 import se.uu.it.cats.brick.network.packet.AbsolutePositionUpdate;
 import se.uu.it.cats.brick.network.packet.LatestSightingUpdate;
+import se.uu.it.cats.pc.actor.Area;
+import se.uu.it.cats.pc.actor.BillBoard;
 import se.uu.it.cats.pc.network.ConnectionManager;
 
 public class BillBoardPanel extends JPanel

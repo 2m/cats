@@ -9,6 +9,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
 
+import se.uu.it.cats.pc.actor.Area;
+
 
 public class MainPanel extends JPanel implements ActionListener{ // implements ActionListener
   

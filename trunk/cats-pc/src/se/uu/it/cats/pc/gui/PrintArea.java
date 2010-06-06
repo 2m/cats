@@ -10,6 +10,11 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
 
+import se.uu.it.cats.pc.actor.Area;
+import se.uu.it.cats.pc.actor.Cat;
+import se.uu.it.cats.pc.actor.Lighthouse;
+import se.uu.it.cats.pc.actor.Mouse;
+
 //import GSim.Actor;
 
 import java.util.Hashtable;
