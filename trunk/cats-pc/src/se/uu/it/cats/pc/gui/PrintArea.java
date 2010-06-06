@@ -10,10 +10,12 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
 
+import se.uu.it.cats.brick.network.packet.MoveOrder;
 import se.uu.it.cats.pc.actor.Area;
 import se.uu.it.cats.pc.actor.Cat;
 import se.uu.it.cats.pc.actor.Lighthouse;
 import se.uu.it.cats.pc.actor.Mouse;
+import se.uu.it.cats.pc.network.ConnectionManager;
 
 //import GSim.Actor;
 
@@ -211,9 +213,14 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			//System.out.println(_cats[i].getName()+" "+camAngle);
 			
 			if(_cats[i].isManualOrder()) {
-				g2d.setColor(Color.red); 
+				
+				if (_cats[i].getManualOrder() == Cat.ORDER_GUI)
+					g2d.setColor(Color.red);
+				else if (_cats[i].getManualOrder() == Cat.ORDER_GUIDE)
+					g2d.setColor(Color.magenta);
+				
 				g2d.setStroke(dashedBackground);
-				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (centFix_X+_cats[i].getGoToX()*zk/50), (int) (centFix_Y+_cats[i].getGoToY()*zk/50));
+				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (centFix_X+_cats[i].getGoToX()*zk/50), (int) (centFix_Y-_cats[i].getGoToY()*zk/50));
 			}
 			
 			// Print the position buffer (fading old positions)
@@ -336,14 +343,19 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			for (int i = 0; i < _newArea.getCats().length; i++) {
 				if (_newArea.getCats()[i].isMarked()) {
 					
+					// convert to meters
+					float x = (float)((e.getX()-centFix_X)*50/zk) / 100;
+					float y = (float)((centFix_Y-e.getY())*50/zk) / 100;
+					
 					if (e.getButton() == MouseEvent.BUTTON1) {
 						// only give new order if left button was pressed
 						// this gives deselection ability when other buttons are pressed
-						_newArea.getCats()[i].goTo(((e.getX()-centFix_X)*50/zk), ((e.getY()-centFix_Y)*50/zk));
-						_newArea.getCats()[i].setManualOrder(true);
+						_newArea.getCats()[i].goTo(x, y);
+						_newArea.getCats()[i].setManualOrder(Cat.ORDER_GUI);
+						ConnectionManager.getInstance().sendPacketTo(i, new MoveOrder(x, y));
 					}
 					
-					System.out.println(((e.getX()-centFix_X)*50/zk) + " "+((e.getY()-centFix_Y)*50/zk));
+					System.out.println(x + " "+y);
 					//System.out.println((e.getX()) + " "+(e.getY()));
 					_newArea.getCats()[i].setMarked(false);
 					

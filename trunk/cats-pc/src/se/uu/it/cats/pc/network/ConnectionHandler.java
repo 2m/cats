@@ -8,6 +8,7 @@ import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
 
 import lejos.pc.comm.NXTConnector;
+import se.uu.it.cats.brick.network.packet.MoveOrder;
 import se.uu.it.cats.brick.network.packet.Packet;
 import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
 import se.uu.it.cats.pc.Logger;
@@ -111,7 +112,7 @@ public class ConnectionHandler implements Runnable
 					PanelBluetooth.updatePacket(p.toString());
 					
 					// forward packet to other cats, some packets do not need to be forwarded
-					if (!(p instanceof SimpleMeasurement))
+					if (!(p instanceof SimpleMeasurement) && !(p instanceof MoveOrder))
 					{
 						//relayPacket(p);
 						// relay packet to all except the cat that the packet came from

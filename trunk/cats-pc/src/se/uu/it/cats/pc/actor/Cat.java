@@ -1,6 +1,11 @@
 package se.uu.it.cats.pc.actor;
 
 public class Cat {
+	
+	public static final int ORDER_NONE = 0;
+	public static final int ORDER_GUI = 1;
+	public static final int ORDER_GUIDE = 2;
+	
 	private float x; // Absolute position horizontal axis
 	private float y; // Absolute position vertical axis
 	private float angle_c = 0;
@@ -8,7 +13,7 @@ public class Cat {
 	private float cam_angle_width = 30;
 	private String catName;
 	
-	private boolean manualOrder = false;
+	private int manualOrder = ORDER_NONE;
 	private float goToX; //Orders for new X-position
 	private float goToY; //Orders for new X-position
 	
@@ -31,11 +36,6 @@ public class Cat {
 		catName = name;
 		this.x = x;
 		this.y = y;
-		
-		for (int i = 0; i < bufferX.length; i++) {
-			bufferX[i] = x;
-			bufferY[i] = y;
-		}
 	}
 	
 	public String getName() {
@@ -65,10 +65,10 @@ public class Cat {
 		goToY = newOrderY;
 	}
 	public float getGoToX() {
-		return goToX;
+		return (int)(goToX*100);
 	}
 	public float getGoToY() {
-		return goToY;
+		return (int)(goToY*100);
 	}
 	public float[] getBufferX() {
 		return bufferX;
@@ -85,10 +85,13 @@ public class Cat {
 	}
 	
 	public boolean isManualOrder() {
-		return manualOrder;
+		return manualOrder != ORDER_NONE;
 	}
-	public void setManualOrder(boolean manual) {
-		manualOrder = manual;
+	public void setManualOrder(int order) {
+		manualOrder = order;
+	}
+	public int getManualOrder() {
+		return manualOrder;
 	}
 	public boolean isMarked() {
 		return marked;
@@ -129,8 +132,8 @@ public class Cat {
 		posBuffer++;
 		
 		//Remove order if closer than 5x5 cm square
-		if (Math.abs(x-goToX) < 5 && Math.abs(y-goToY) < 5) {
-			manualOrder = false;
+		if (Math.abs(x-goToX) < 0.01 && Math.abs(y-goToY) < 0.01) {
+			manualOrder = ORDER_NONE;
 		}
 	}
 	

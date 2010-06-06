@@ -7,6 +7,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 
+import se.uu.it.cats.brick.network.packet.SettingUpdate;
 import se.uu.it.cats.pc.actor.Area;
 import se.uu.it.cats.pc.network.ConnectionManager;
 
@@ -15,8 +16,7 @@ public class DataPanel extends JPanel{ // implements ActionListener
 	private Area world;
 	private int _areaHeight;
 	
-	private PositionLabel[] positionLabels;
-	private AngleLabel[] angleLabels;
+	private CatInfo[] catInfos = new CatInfo[Area.CAT_COUNT];
 	
 	private MouseLabel mouseLabel;
 	
@@ -35,37 +35,29 @@ public class DataPanel extends JPanel{ // implements ActionListener
 				TitledBorder.DEFAULT_POSITION)
 		);
 
-		setLayout(new GridLayout(12,1,0,0)); //rows, cols, hgap, vgap
+		setLayout(new GridLayout(4,1,0,5)); //rows, cols, hgap, vgap
 		
-		positionLabels = new PositionLabel[world.getCats().length];
-		angleLabels = new AngleLabel[world.getCats().length];
-		
-		for(int i=0;i < world.getCats().length;i++) {
-			JLabel idLabel = new JLabel("ID: "+world.getCat(i).getName());
-			idLabel.setFont(new Font("Monotype Corsiva",1,17));
-			add(idLabel);
-			
-			positionLabels[i] = new PositionLabel(i);
-			add(positionLabels[i]);
-			
-			angleLabels[i] = new AngleLabel(i);
-			add(angleLabels[i]);
+		for(int i=0;i < world.getCats().length;i++) {			
+			catInfos[i] = new CatInfo(i);
+			add(catInfos[i]);
 		}
+		
+		JPanel panel = new JPanel();
+		panel.setBackground(Color.white);
 		JLabel idLabel = new JLabel("Mouse");
 		idLabel.setFont(new Font("Monotype Corsiva",1,17));
-		add(idLabel);
+		panel.add(idLabel);
 		
 		mouseLabel = new MouseLabel();
-		add(mouseLabel);
+		panel.add(mouseLabel);
+		
+		add(panel);
 	}
 	
 	public void repaint() {
 		try {
-			for (PositionLabel pl: positionLabels)
-				pl.repaint();
-			
-			for (AngleLabel al: angleLabels)
-				al.repaint();
+			for (CatInfo ci: catInfos)
+				ci.repaint();
 			
 			mouseLabel.repaint();
 		}
@@ -74,8 +66,66 @@ public class DataPanel extends JPanel{ // implements ActionListener
 		}
 	}
 	
+	private class CatInfo extends JPanel {
+		
+		private int id;
+		
+		PositionLabel _positionLabel;
+		AngleLabel _angleLabel;
+		
+		public CatInfo(final int id) {
+			this.id = id;
+			
+			setLayout(new GridLayout(4,1,0,0)); //rows, cols, hgap, vgap
+			setBackground(Color.white);
+			
+			JLabel idLabel = new JLabel("ID: "+world.getCat(id).getName());
+			idLabel.setFont(new Font("Monotype Corsiva",1,17));
+			add(idLabel);
+			
+			_positionLabel = new PositionLabel(id);
+			add(_positionLabel);
+			
+			_angleLabel = new AngleLabel(id);
+			add(_angleLabel);
+			
+			ActionListener ae = new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
+				{
+					JCheckBox checkBox = (JCheckBox)ae.getSource();
+					
+					SettingUpdate su = null;
+					if (checkBox.isSelected())
+						su = new SettingUpdate(SettingUpdate.USE_GUIDE, 1);
+					else
+						su = new SettingUpdate(SettingUpdate.USE_GUIDE, 0);
+					
+					ConnectionManager.getInstance().sendPacketTo(id, su);
+				}
+			};
+			
+			JCheckBox checkBox = new JCheckBox("Use guide");
+			checkBox.setSelected(false);
+			checkBox.setBackground(Color.white);
+			checkBox.addActionListener(ae);
+			add(checkBox);
+		}
+		
+		public void repaint() {
+			try {
+				_positionLabel.repaint();
+				
+				_angleLabel.repaint();
+			}
+			catch (NullPointerException ex) {
+				
+			}
+		}
+	}
+	
 	private class PositionLabel extends JLabel {
-		private int id = 0;
+		private int id;
 		
 		public PositionLabel(int id) {
 			this.id = id;

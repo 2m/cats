@@ -4,14 +4,15 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
+import se.uu.it.cats.pc.gui.GuidePanel;
 import se.uu.it.cats.pc.gui.TimeSyncPanel;
 
-public class TimeSyncTab extends JPanel
+public class GuideTab extends JPanel
 {
-	public TimeSyncTab()
+	public GuideTab()
 	{
 		super(new BorderLayout());
 		
-		add(new TimeSyncPanel(), BorderLayout.CENTER);
+		add(new GuidePanel(), BorderLayout.CENTER);
 	}
 }
