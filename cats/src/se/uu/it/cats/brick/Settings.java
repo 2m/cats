@@ -13,15 +13,6 @@ public class Settings
 	// camera offset, measured in pixels
 	public static int CAMERA_OFFSET;
 	
-	// positioning filters (only one should be selected)
-	public static boolean POSITIONING_FILTER_PARTICLE 			= false;
-	public static boolean POSITIONING_FILTER_UNSCENTED_KALMAN	= false;
-	public static boolean POSITIONING_FILTER_BASIC				= true;
-	
-	// tracking filters (only one should be selected)
-	public static boolean TRACKING_FILTER_PARTICLE				= true;
-	public static boolean TRACKING_FILTER_UNSCENTED_KALMAN		= false;
-	
 	// guide
 	public static boolean USE_GUIDE = false;
 	
@@ -31,9 +22,9 @@ public class Settings
 
 	// Arena size
 	public static final float ARENA_MIN_X = 0;
-	public static final float ARENA_MAX_X = (float) 3;
+	public static final float ARENA_MAX_X = 3f;
 	public static final float ARENA_MIN_Y = 0;
-	public static final float ARENA_MAX_Y = (float) 3;
+	public static final float ARENA_MAX_Y = 3f;
 	
 	// starting position and angle
 	public static float START_X;
