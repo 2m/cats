@@ -20,7 +20,12 @@ public class MovementPilot extends TachoPilot implements Runnable {
 	
 	// periods in ms
 	public static int WAKE_UP_PERIOD = 50;
-	public static int PUSH_DATA_PERIOD = 50;
+	
+	// the movement data will be pushed to the buffer 
+	// every nth movement pilot iteration
+	// so the push period is:
+	// WAKE_UP_PERIOD * PUSH_DATA_LUCKY_ITERATION
+	public static int PUSH_DATA_LUCKY_ITERATION = 4;
 	
 	// unified buffer for data
 	Buffer unifiedBuffer;
@@ -213,6 +218,18 @@ public class MovementPilot extends TachoPilot implements Runnable {
 			else if (currentPower<minPower)
 				currentPower = minPower;
 			this.setTurnSpeed(currentPower); //0-100 input argument interval
+			
+			// if Camera saw a sighting, push the movement data
+			if (newSighting) {
+				pushMovementData();
+				newSighting = false;
+			}
+			else {
+				// check for lucky iteration to push the data
+				//if (angCount % PUSH_DATA_LUCKY_ITERATION == 0)
+				//	pushMovementData();
+			}
+			
 			try{Thread.sleep(WAKE_UP_PERIOD);}catch(Exception ex){}
 		}
 		while (Math.abs(targetAngle - currentAngle) > angleEpsilon );
@@ -262,6 +279,17 @@ public class MovementPilot extends TachoPilot implements Runnable {
 				this.setMoveSpeed(currentPower); //0-900 input argument interval
 			}
 			
+			// if Camera saw a sighting, push the movement data
+			if (newSighting) {
+				pushMovementData();
+				newSighting = false;
+			}
+			else {
+				// check for lucky iteration to push the data
+				//if (angCount % PUSH_DATA_LUCKY_ITERATION == 0)
+				//	pushMovementData();
+			}
+			
 			try{Thread.sleep(WAKE_UP_PERIOD);}catch(Exception ex){}
 		}
 		while (Math.abs(targetDist - currentDist) > distEpsilon );
@@ -309,16 +337,12 @@ public class MovementPilot extends TachoPilot implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+
 		while (true) {
 			
 			// check for new commands
 			if (needToMove)
 				move();
-			if (newSighting) {
-				pushMovementData();
-				newSighting = false;
-			}
 			
 			try{Thread.sleep(WAKE_UP_PERIOD);}catch(Exception ex){}
 		}
