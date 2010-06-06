@@ -14,8 +14,8 @@ public class Area { // implements ActionListener
 	// The absolute time
 	private int time = 0;
 
-	private int arenaWidth = 200;
-	private int arenaHeight = 200;
+	private int arenaWidth = (int)((Settings.ARENA_MAX_X - Settings.ARENA_MIN_X) * 100);
+	private int arenaHeight = (int)((Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y) * 100);
 
 	private static Area instanceHolder = new Area(); 
 
