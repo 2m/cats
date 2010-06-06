@@ -16,6 +16,11 @@ public class Settings
 	// guide
 	public static boolean USE_GUIDE = false;
 	
+	// orders from GUI
+	public static float GUI_ORDER_X = 0;
+	public static float GUI_ORDER_Y = 0;
+	public static boolean GUI_ORDER_PROCESSED = true;
+	
 	// Settings for time slotted camera/guide settings
 	public static final int CAMERA_TIME_SLOTS = 3;
 	public static final int CAMERA_TIME_SLOT_LENGTH = 3000; // [ms]

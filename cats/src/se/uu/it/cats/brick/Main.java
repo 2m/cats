@@ -15,6 +15,7 @@ import se.uu.it.cats.brick.network.*;
 import se.uu.it.cats.brick.network.packet.AbsolutePositionUpdate;
 import se.uu.it.cats.brick.network.packet.LatestSightingUpdate;
 import se.uu.it.cats.brick.network.packet.MeanAndCovarianceUpdate;
+import se.uu.it.cats.brick.network.packet.MoveOrder;
 import se.uu.it.cats.brick.storage.BillBoard;
 import se.uu.it.cats.brick.storage.StorageManager;
 
@@ -27,6 +28,7 @@ public class Main {
 	private static MovementPilot movementPilot;
 	private static AbsolutePositioningFilter positioningFilter;
 	private static TrackingFilter trackingFilter;
+	private static Guide guide;
 
 	public static void main(String[] args) throws InterruptedException {
 		Settings.init(Identity.getId());
@@ -76,6 +78,9 @@ public class Main {
 					1f, BillBoard.getInstance());
 			Thread trackingFilterThread = new Thread(trackingFilter);
 			trackingFilterThread.start();
+			
+			// init guide
+			guide = new Guide(Identity.getId(), BillBoard.getInstance());
 		}
 
 		while (!startYourEngines) {
@@ -145,7 +150,7 @@ public class Main {
 			int milisUntilNextSec = 2000 - (Clock.timestamp() % 2000);
 			Thread.sleep(milisUntilNextSec);
 
-			Logger.println("--- Latest sightings ---");
+			/*Logger.println("--- Latest sightings ---");
 			float[] s = BillBoard.getInstance().getLatestSightings();
 			for (int i = 0; i < BillBoard.getInstance().getNoCats(); i++) {
 				Logger.println("id: " + i + ", x:" + s[i * 4 + 0] + ", y:"
@@ -157,6 +162,20 @@ public class Main {
 			for (int i = 0; i < BillBoard.getInstance().getNoCats(); i++) {
 				Logger.println("id: " + i + ", x:" + p[i * 4 + 0] + ", y:"
 						+ p[i * 4 + 1] + ", th:" + p[i * 4 + 2]);
+			}*/
+			
+			if (Settings.USE_GUIDE)
+			{
+				float[] advice = guide.getAdvice();
+				if (!movementPilot.isProcessing() && advice[0] != -1) {
+					movementPilot.travel(advice[0], advice[1], positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
+					ConnectionManager.getInstance().sendPacketToAll(new MoveOrder(advice[0], advice[1]));
+				}
+			}
+			else if (!Settings.GUI_ORDER_PROCESSED)
+			{
+				movementPilot.travel(Settings.GUI_ORDER_X, Settings.GUI_ORDER_Y, positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
+				Settings.GUI_ORDER_PROCESSED = true;
 			}
 
 			// Logger.println("Buffer size:"+unifiedBuffer.getLength());
