@@ -4,6 +4,7 @@ import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.Music;
+import se.uu.it.cats.brick.Settings;
 import se.uu.it.cats.brick.network.KeepAlive;
 import se.uu.it.cats.brick.storage.BillBoard;
 
@@ -55,12 +56,22 @@ public class PacketManager
 			}
 			case 0x01:
 			{
-				if (arrayEndIndex >= PFMeasurement.LENGTH)
+				if (arrayEndIndex >= SettingUpdate.LENGTH)
 				{
-					p = new PFMeasurement();
+					p = new SettingUpdate();
 					p.readImpl(bArr);
 					
-					//addToBuffer(p);
+					int setting = ((SettingUpdate)p).getSetting();
+					int value = ((SettingUpdate)p).getValue();
+					
+					switch (setting)
+					{
+						case SettingUpdate.USE_GUIDE:
+						{
+							Settings.USE_GUIDE = (value == 1 ? true : false);
+							break;
+						}
+					}
 				}
 				break;
 			}
@@ -141,6 +152,22 @@ public class PacketManager
 					Music m = new Music(Identity.getId(), 3);
 					m.play();
 					Clock.setBeep(true);
+				}
+				break;
+			}
+			case 0x09:
+			{
+				if (arrayEndIndex >= MoveOrder.LENGTH)
+				{
+					p = new MoveOrder();
+					p.readImpl(bArr);
+					
+					float x = ((MoveOrder)p).getX();
+					float y = ((MoveOrder)p).getY();
+					
+					Settings.GUI_ORDER_X = x;
+					Settings.GUI_ORDER_Y = y;
+					Settings.GUI_ORDER_PROCESSED = false;
 				}
 				break;
 			}
