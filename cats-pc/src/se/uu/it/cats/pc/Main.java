@@ -14,6 +14,7 @@ import javax.swing.JTabbedPane;
 
 import se.uu.it.cats.pc.actor.Area;
 import se.uu.it.cats.pc.gui.tab.BillBoardTab;
+import se.uu.it.cats.pc.gui.tab.GuideTab;
 import se.uu.it.cats.pc.gui.tab.MainTab;
 import se.uu.it.cats.pc.gui.tab.TimeSyncTab;
 
@@ -83,6 +84,7 @@ public class Main
 		tabbedPane.addTab("Main", _mainTab);
 		tabbedPane.addTab("BillBoard", new BillBoardTab());
 		tabbedPane.addTab("TimeSync", new TimeSyncTab());
+		tabbedPane.addTab("Guide", new GuideTab());
 
 		frame.getContentPane().add(tabbedPane);
 

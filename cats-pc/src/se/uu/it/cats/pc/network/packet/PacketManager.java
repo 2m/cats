@@ -3,7 +3,10 @@ package se.uu.it.cats.pc.network.packet;
 import se.uu.it.cats.pc.Logger;
 import se.uu.it.cats.pc.actor.Area;
 import se.uu.it.cats.pc.actor.BillBoard;
+import se.uu.it.cats.pc.actor.Cat;
+import se.uu.it.cats.pc.gui.GuidePanel;
 
+import se.uu.it.cats.brick.Settings;
 import se.uu.it.cats.brick.network.packet.*;
 
 public class PacketManager
@@ -48,9 +51,9 @@ public class PacketManager
 			}
 			case 0x01:
 			{
-				if (arrayEndIndex >= PFMeasurement.LENGTH)
+				if (arrayEndIndex >= SettingUpdate.LENGTH)
 				{
-					p = new PFMeasurement();
+					p = new SettingUpdate();
 					p.readImpl(bArr);
 				}
 				break;
@@ -144,6 +147,29 @@ public class PacketManager
 					
 					BillBoard.getInstance().setAbsolutePosition(catId, x, y, angle_c, ((AbsolutePositionUpdate)p).getTimestamp());
 				}
+				break;
+			}
+			case 0x09:
+			{
+				if (arrayEndIndex >= MoveOrder.LENGTH)
+				{
+					p = new MoveOrder();
+					p.readImpl(bArr);
+					
+					int catId = p.getSource();
+					float x = ((MoveOrder)p).getX();
+					float y = ((MoveOrder)p).getY();
+					
+					Area.getInstance().getCat(catId).goTo(x, y);
+					Area.getInstance().getCat(catId).setManualOrder(Cat.ORDER_GUIDE);
+					
+					GuidePanel.updateOrder(catId, "Order x:"+x+" y:"+y);
+				}
+				break;
+			}
+			default:
+			{
+				Logger.println("No code to handle packet of type "+packetType);
 				break;
 			}
 			

@@ -186,10 +186,14 @@ public class ConnectionManager
 		}
 	}
 	
-	public synchronized void sendPacketTo(String name, Packet p)
+	public void sendPacketTo(String name, Packet p)
 	{
 		int id = getIdByName(name);
-		
+		sendPacketTo(id, p);
+	}
+	
+	public synchronized void sendPacketTo(int id, Packet p)
+	{
 		if (id == -1)
 			return;
 		
@@ -199,7 +203,7 @@ public class ConnectionManager
 			return;
 		}
 		
-		Logger.println("Connection not open to "+name);
+		Logger.println("Connection not open to "+id);
 	}
 	
 	private void printIgnores()

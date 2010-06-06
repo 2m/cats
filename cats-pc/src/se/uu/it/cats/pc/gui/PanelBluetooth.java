@@ -17,8 +17,8 @@ import se.uu.it.cats.pc.actor.Area;
 import se.uu.it.cats.pc.network.ConnectionManager;
 
 import se.uu.it.cats.brick.network.packet.CloseConnection;
+import se.uu.it.cats.brick.network.packet.SettingUpdate;
 import se.uu.it.cats.brick.network.packet.Timestamp;
-import se.uu.it.cats.brick.network.packet.PFMeasurement;
 import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
 
 public class PanelBluetooth extends JPanel{
@@ -235,7 +235,7 @@ public class PanelBluetooth extends JPanel{
 			String[] packetStrings = {
 					"-1 CloseConnection",
 					"0x00 TimeStamp",
-					"0x01 PFMeasurement",
+					"0x01 SettingUpdate",
 					"0x02 SimpleMeasurement"
 			};
 
@@ -320,24 +320,18 @@ public class PanelBluetooth extends JPanel{
 					));
 				}
 			}
-			else if (packetName.equals("0x01 PFMeasurement"))
+			else if (packetName.equals("0x01 SettingUpdate"))
 			{
 				if (e.getSource() instanceof JComboBox)
 				{
-					_param1.setText("id");
-					_param2.setText("y");
-					_param3.setText("angle_m");
-					_param4.setText("x_c");
-					_param5.setText("y_c");
+					_param1.setText("setting");
+					_param2.setText("value");
 				}
 				else if (e.getSource() instanceof JButton)
 				{
-					ConnectionManager.getInstance().sendPacketTo(receiver, new PFMeasurement(
+					ConnectionManager.getInstance().sendPacketTo(receiver, new SettingUpdate(
 							Integer.valueOf(_param1.getText()),
-							Integer.valueOf(_param2.getText()),
-							Float.valueOf(_param3.getText()),
-							Float.valueOf(_param4.getText()),
-							Float.valueOf(_param5.getText())
+							Integer.valueOf(_param2.getText())
 					));
 				}
 			}
