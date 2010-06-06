@@ -12,7 +12,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JTabbedPane;
 
-import se.uu.it.cats.pc.gui.Area;
+import se.uu.it.cats.pc.actor.Area;
 import se.uu.it.cats.pc.gui.tab.BillBoardTab;
 import se.uu.it.cats.pc.gui.tab.MainTab;
 import se.uu.it.cats.pc.gui.tab.TimeSyncTab;

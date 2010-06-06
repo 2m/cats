@@ -7,6 +7,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 
+import se.uu.it.cats.pc.actor.Area;
 import se.uu.it.cats.pc.network.ConnectionManager;
 
 public class DataPanel extends JPanel{ // implements ActionListener

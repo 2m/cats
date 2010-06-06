@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import se.uu.it.cats.pc.actor.Area;
 import se.uu.it.cats.pc.network.ConnectionManager;
 
 import se.uu.it.cats.brick.network.packet.CloseConnection;

@@ -1,6 +1,6 @@
-package se.uu.it.cats.pc.gui;
+package se.uu.it.cats.pc.actor;
 
-class Lighthouse {
+public class Lighthouse {
 	private int x; // Absolute position horizontal axis
 	private int y; // Absolute position vertical axis
 	private String lighthouseName;

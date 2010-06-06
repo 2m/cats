@@ -1,4 +1,4 @@
-package se.uu.it.cats.pc.gui;
+package se.uu.it.cats.pc.actor;
 
 import se.uu.it.cats.brick.Settings;
 

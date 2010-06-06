@@ -1,8 +1,8 @@
 package se.uu.it.cats.pc.network.packet;
 
 import se.uu.it.cats.pc.Logger;
-import se.uu.it.cats.pc.gui.Area;
-import se.uu.it.cats.pc.gui.BillBoard;
+import se.uu.it.cats.pc.actor.Area;
+import se.uu.it.cats.pc.actor.BillBoard;
 
 import se.uu.it.cats.brick.network.packet.*;
 
