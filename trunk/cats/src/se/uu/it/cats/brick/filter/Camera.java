@@ -72,6 +72,8 @@ public class Camera implements Runnable {
 		int upperMaxAng = maxAngAbs;
 		int lowerMaxAng = maxAngAbs*-1;
 		
+		int cyanCounter = 0;
+		
 		int offset = Settings.CAMERA_OFFSET;
 		
 		float radPerPix = -1*(float) ((float) 43*Math.PI/180.0 / 176);
@@ -95,7 +97,8 @@ public class Camera implements Runnable {
 
 			if (numObjects >= 1) {// && numObjects <= 8) {				
 				
-				boolean[] foundColor = {false,false,false,false,false,false,false,false};				
+				boolean[] foundColor = {false,false,false,false,false};
+				float[] foundColorAng = new float[5];
 				
 				for (int i=0;i<numObjects;i++) {
 					Rectangle r = NXTcamera.getRectangle(i);
@@ -115,6 +118,8 @@ public class Camera implements Runnable {
 						// there was uncought exception in this methode once
 						// the exception was ArrayIndexOutOfBoundsException
 						// I believe it was thrown here
+						Logger.println("Unknown color found:"+currentColor);
+						
 						continue;
 					}
 					
@@ -123,20 +128,14 @@ public class Camera implements Runnable {
 					angToTarget = (xColor - 176f/2f + offset)*radPerPix;
 					angToTargetRelCat = angToTarget + motorAngRad;
 					
-					if (currentColor == 0) {
+					if (currentColor == Settings.TYPE_MOUSE) {
 						// set the error in pixels to the mouse
 						err = xColor - 176f/2f + offset; //0-88-19=-107 worst case
 						mouseFound = true;
 					}
 					//Logger.println("currentColor: "+currentColor+", i: " + i + ", err: "+ err);
 					
-					unifiedBuffer.push(new SightingData(Clock.timestamp(), angToTargetRelCat, currentColor));
-					MovementPilot.newSighting = true;
-					
-					// send some measurements to the GUI
-					/*ConnectionManager.getInstance().sendPacketToAll(
-							new SimpleMeasurement(currentColor, angToTargetRelCat, motorAngRad)
-					);*/
+					foundColorAng[currentColor] = angToTargetRelCat;
 					
 					/*if (r.height > 30 && r.width > 30) {
 						LCD.drawInt(NXTcamera.getObjectColor(i), 2, 0, 3+i);
@@ -145,6 +144,57 @@ public class Camera implements Runnable {
 						LCD.drawInt(r.y, 3, 11, 3+i);
 						LCD.drawInt(r.x, 3, 15, 3+i);
 					}*/					
+				}
+				
+				// if we found cyan
+				if (foundColor[Settings.TYPE_CYAN]) {
+					if (foundColor[Settings.TYPE_GREEN] ) {
+						// found CYAN and GREEN true landmark is GREEN
+						foundColor[Settings.TYPE_CYAN] = false;
+						foundColorAng[Settings.TYPE_GREEN] = (foundColorAng[Settings.TYPE_GREEN] + foundColorAng[Settings.TYPE_CYAN]) / 2;
+					}
+					else if (foundColor[Settings.TYPE_BLUE]) {
+						// found CYAN and BLUE true landmark is BLUE
+						foundColor[Settings.TYPE_CYAN] = false;
+						foundColorAng[Settings.TYPE_BLUE] = (foundColorAng[Settings.TYPE_BLUE] + foundColorAng[Settings.TYPE_CYAN]) / 2;
+					}
+				}
+				else if (foundColor[Settings.TYPE_BLUE]) {
+					foundColor[Settings.TYPE_PURPLE] = false;
+				}
+				
+				int cyanWindow = 3;				
+				for (int i = 0; i < foundColor.length; i++) {					
+					if (foundColor[i]) {
+						
+						boolean sendColor = true;
+						
+						if (i == Settings.TYPE_CYAN) {
+							if (cyanCounter < cyanWindow) {
+								// see cyan but not too many times to send,
+								// increase counter and not send
+								cyanCounter++;
+								sendColor = false;
+							}
+							else {
+								// cyan counter is large enough, send data
+								cyanCounter = 0;
+							}
+						}
+						else if (i != Settings.TYPE_MOUSE) {
+							// color is not cyan neither mouse, reset cyan counter
+							cyanCounter = 0;
+						}
+						
+						if (sendColor) {
+							unifiedBuffer.push(new SightingData(Clock.timestamp(), foundColorAng[i], i));
+							MovementPilot.newSighting = true;
+							
+							// send some measurements to the GUI
+							ConnectionManager.getInstance().sendPacketToAll(
+									new SimpleMeasurement(i, foundColorAng[i], 0));
+						}
+					}
 				}
 				
 				// send measurements to everyone
