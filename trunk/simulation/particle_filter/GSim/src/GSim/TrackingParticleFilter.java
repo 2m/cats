@@ -3,7 +3,6 @@ package GSim;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.util.Random;
 
 /** Particle filter for tracking a mouse. */
@@ -73,7 +72,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Pre-calculate particle weight
 		Nnorm = Fixed.floatToFixed(1 / ((float) N));
 		// Set up a cut off for survival of the fittest
-		Ncut = (N >> 1);
+		Ncut = (N >> 2);
 		// Create the linked list in which the particles live
 		data = new LinkedList();
 		// Create particles
@@ -95,10 +94,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Loop through all particles
 		while (link != null) {
 			TrackingParticle part = (TrackingParticle) link.data;
-			float x = dr + rn.nextFloat()
-					* (Settings.ARENA_MAX_X - Settings.ARENA_MIN_X - 2 * dr);
-			float y = dr + rn.nextFloat()
-					* (Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y - 2 * dr);
+			float x = (float) (dr + rn.nextDouble()
+					* (Settings.ARENA_MAX_X - Settings.ARENA_MIN_X - 2 * dr));
+			float y = (float) (dr + rn.nextDouble()
+					* (Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y - 2 * dr));
 			part.x = Fixed.floatToFixed(x);
 			part.y = Fixed.floatToFixed(y);
 			part.comparable = Fixed.ONE;
@@ -562,9 +561,6 @@ public class TrackingParticleFilter extends TrackingFilter {
 
 		Graphics2D g2 = (Graphics2D) g;
 
-		// Save the current transform
-		AffineTransform oldTransform = g2.getTransform();
-
 		g2.setColor(Color.green);
 		// Plot particles
 
@@ -592,15 +588,9 @@ public class TrackingParticleFilter extends TrackingFilter {
 		g2.setColor(Color.CYAN);
 		int ix = Actor.e2gX(getX());
 		int iy = Actor.e2gY(getY());
-		double iangle = -Math.atan2(getYv(), getXv());
-		linelength = (int) Math.sqrt(Math.pow(getX(), 2) + Math.pow(getY(), 2)) * 10;
 		g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2), (int) size,
 				(int) size);
-		g2.drawLine((int) ix, (int) iy, (int) (ix + Math.cos(iangle)
-				* linelength), (int) (iy + Math.sin(iangle) * linelength));
-
-		// Reset the transformation matrix
-		g2.setTransform(oldTransform);
+	
 	}
 
 	public void update() {
@@ -644,6 +634,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 			int x = Fixed.floatToFixed(sightings[i * 4]);
 			int y = Fixed.floatToFixed(sightings[i * 4 + 1]);
 			int angle = Fixed.floatToFixed(sightings[i * 4 + 2]);
+			// TODO: check if data is from last iteration
 			if ((sightings[i * 4] >= 0)
 					&& (sightings[i * 4 + 3] <= currentTime)) {
 				compareParticles(x, y, angle);

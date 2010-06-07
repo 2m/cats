@@ -3,13 +3,6 @@ package GSim;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-
-/*import se.uu.it.cats.brick.Clock;
- import se.uu.it.cats.brick.filter.ComparableData;
- import se.uu.it.cats.brick.filter.LandmarkList;
- import se.uu.it.cats.brick.filter.MovementData;
- import se.uu.it.cats.brick.filter.SightingData;*/
 
 /** Geometric filter for absolute positioning of one cat using landmarks. */
 public class AbsolutePositioningGeometricFilter extends
@@ -53,17 +46,27 @@ public class AbsolutePositioningGeometricFilter extends
 	}
 
 	private void resetSightings() {
-		positioning = false;
+		if (positioning) {
+			for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
+				landmarkNoSightings[i] = 0;
+			}
+			positioning = false;
+		}
+	}
+
+	private int noSeenLandmarks() {
+		int ret = 0;
+		for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
+			if (landmarkNoSightings[i] > 0) {
+				ret++;
+			}
+		}
+		return ret;
 	}
 
 	private void addLandmark(float angle, int type) {
 		final float angleEpsilon = (float) (10 * (Math.PI / 180));
-		if (!positioning) {
-			for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
-				landmarkNoSightings[i] = 0;
-			}
-			positioning = true;
-		}
+		positioning = true;
 		// Check if landmark already is in the list
 		boolean inserted = false;
 		for (int i = 0; (i < Settings.NO_LANDMARKS) && (!inserted); i++) {
@@ -123,7 +126,144 @@ public class AbsolutePositioningGeometricFilter extends
 	}
 
 	private void doGeometricMagic() {
-		// TODO: Implement
+		if ((noSeenLandmarks() >= 4) && (positioning)) {
+			sortLandmarks();
+			// Check for the unique landmark
+			for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
+				if (landmarkTypes[0] != Settings.TYPE_RED) {
+					shiftLandmarks();
+				}
+			}
+			// List is now sorted with unique landmark first
+			float[] c1 = null, c2 = null, c3 = null, c4 = null;
+			boolean north = false, west = false, south = false, east = false;
+
+			// North
+			if ((landmarkNoSightings[1] > 0) && (landmarkNoSightings[0] > 0)) {
+				float phi = (float) Math
+						.abs((landmarkAngles[1] - landmarkAngles[0])
+								% (2 * Math.PI));
+				c1 = findCircle(phi, 1);
+				north = true;
+			}
+			// West
+			if ((landmarkNoSightings[2] > 0) && (landmarkNoSightings[1] > 0)) {
+				float phi = (float) Math
+						.abs((landmarkAngles[2] - landmarkAngles[1])
+								% (2 * Math.PI));
+				c2 = findCircle(phi, 2);
+				west = true;
+			}
+			// TODO: Use the ones with the smallest angle
+			if (north && west) {
+				float[] P = findClosestIntersection(c1, c2);
+
+				if ((Settings.ARENA_MIN_X <= P[0])
+						&& (P[0] <= Settings.ARENA_MAX_X)
+						&& (Settings.ARENA_MIN_Y <= P[1])
+						&& (P[1] <= Settings.ARENA_MAX_Y)) {
+					float diff = P[0] - mean_y;
+					if (Math.abs(diff) < 0.01) {
+						mean_y += diff;
+					} else {
+						mean_y += 0.01 * Math.signum(diff);
+					}
+					diff = P[1] - mean_x;
+					if (Math.abs(diff) < 0.01) {
+						mean_x += diff;
+					} else {
+						mean_x += 0.01 * Math.signum(diff);
+					}
+					// TODO: Landmark data will change
+					int j = 3; // Unique landmark
+					// TODO: Trim cap on fix
+					mean_angle = (float) (Math.atan2(
+							Settings.LANDMARK_POSITION[j][1] - mean_y,
+							Settings.LANDMARK_POSITION[j][0] - mean_x) - landmarkAngles[0]);
+
+				}
+			}
+		}
+	}
+
+	private float[] findClosestIntersection(float[] c1, float[] c2) {
+		float d = (float) Math.sqrt((c1[0] - c2[0]) * (c1[0] - c2[0])
+				+ (c1[1] - c2[1]) * (c1[1] - c2[1]));
+
+		if (d > (c1[2] + c2[2])) {
+			// circles are separate
+			Logger.println("circles are separate");
+		} else if (d < Math.abs(c1[2] - c2[2])) {
+			// one circle is inside the other
+			Logger.println("one circle is inside the other");
+		} else if ((d == 0) && (c1[2] == c2[2])) {
+			// circles coincide
+			Logger.println("circles coincide");
+		}
+
+		float a = (c1[2] * c1[2] - c2[2] * c2[2] + d * d) / (2 * d);
+		float h = (float) Math.sqrt(c1[2] * c1[2] - a * a);
+
+		// v=(P1-P0)/d;
+		float[] v = new float[2];
+		v[0] = (c2[0] - c1[0]) / d;
+		v[1] = (c2[1] - c1[1]) / d;
+		// u=[v(2) -v(1)];
+		float[] u = new float[2];
+		u[0] = v[1];
+		u[1] = -v[0];
+		// P0 = [x1 y1];
+		// P1 = [x2 y2];
+		// P2 = P0 + a*v + h*u;
+		float[] P1 = new float[2];
+		P1[0] = c1[0] + a * v[0] + h * u[0];
+		P1[1] = c1[1] + a * v[1] + h * u[1];
+		// P3 = P0 + a*v - h*u;
+		float[] P2 = new float[2];
+		P2[0] = c1[0] + a * v[0] - h * u[0];
+		P2[1] = c1[1] + a * v[1] - h * u[1];
+
+		if (id == 0) {
+			System.out.println("(" + P1[0] + ", " + P1[1] + ") & (" + P2[0]
+					+ ", " + P2[1] + ")");
+		}
+
+		float d1 = (getX() - P1[0]) * (getX() - P1[0]) + (getY() - P1[1])
+				* (getY() - P1[1]);
+		float d2 = (getX() - P2[0]) * (getX() - P2[0]) + (getY() - P2[1])
+				* (getY() - P2[1]);
+
+		if (d1 < d2) {
+			return P1;
+		} else {
+			return P2;
+		}
+	}
+
+	private float[] findCircle(float angle, int direction) {
+		// direction: 1 north, 2 west, 3 south, 4 east
+		float sidex = Settings.ARENA_MAX_X - Settings.ARENA_MIN_X;
+		float sidey = Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y;
+		float[] ret = new float[3];
+		// North
+		if (direction == 1) {
+			float x = sidex / 2;
+			float r = (float) (x / Math.sin(angle));
+			float y = (float) (sidey - x / Math.tan(angle));
+			ret[0] = x;
+			ret[1] = y;
+			ret[2] = r;
+		}
+		// West
+		else if (direction == 2) {
+			float y = sidey / 2;
+			float r = (float) (y / Math.sin(angle));
+			float x = (float) (y / Math.tan(angle));
+			ret[0] = x;
+			ret[1] = y;
+			ret[2] = r;
+		}
+		return ret;
 	}
 
 	/**
