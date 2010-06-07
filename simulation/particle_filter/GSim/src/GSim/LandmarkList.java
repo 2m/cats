@@ -13,5 +13,5 @@ public class LandmarkList {
 			(float) 0.05, (float) 2.95 };
 	public static final boolean[] landmarkC_ = { true, true, true, false };
 	// True if green, false if red
-	public static final int[] Colour_ = { GREEN, GREEN, GREEN, RED };
+	public static final int[] Colour_ = { GREEN_, GREEN_, GREEN_, RED_ };
 }
