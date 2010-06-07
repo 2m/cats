@@ -16,6 +16,7 @@ public class SensorHandler {
 	private boolean initialPhase = true;
 	private Random rnd = new Random();
 	private boolean lookForLandmarksFlag = false;
+	private float ERROR_STD = 2;// Standard deviation in degrees
 
 	public SensorHandler(Actor mouse) {
 		this.mouse = mouse;
@@ -38,7 +39,8 @@ public class SensorHandler {
 
 		float looking_angle = (float) Math.atan2(y1, x1);
 		if (lookForLandmarksFlag) {
-			looking_angle += (rnd.nextDouble() - 0.5) * Math.PI / 2;
+			// This tries to simulate looking around (270 degrees)
+			looking_angle += (rnd.nextDouble() - 0.5) * 3 * Math.PI / 2;
 			looking_angle %= Math.PI * 2;
 		}
 
@@ -51,19 +53,15 @@ public class SensorHandler {
 			SightingData d = new SightingData(t, cx, cy,
 					(float) (angle_to_mouse - cat.getObjectiveAngle() + rnd
 							.nextGaussian()
-							* 1 * (Math.PI / 180)), LandmarkList.MOUSE);
+							* ERROR_STD * (Math.PI / 180)), Settings.TYPE_MOUSE);
 			unifiedBuffer.push(d);
 		}
 		int type = -1;
-		for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
-			float x2 = LandmarkList.landmarkX[i] - cx;
-			float y2 = LandmarkList.landmarkY[i] - cy;
+		for (int i = 0; i < Settings.LANDMARK_POSITION.length; i++) {
+			float x2 = Settings.LANDMARK_POSITION[i][0] - cx;
+			float y2 = Settings.LANDMARK_POSITION[i][1] - cy;
 			float angle_to_landmark = (float) Math.atan2(y2, x2);
-			if (LandmarkList.landmarkC[i]) {
-				type = LandmarkList.GREEN;
-			} else {
-				type = LandmarkList.RED;
-			}
+			type = Settings.LANDMARK_COLOR[i];
 			angle_diff = (float) Math.abs(angle_to_landmark - looking_angle);
 			if ((initialPhase) || (angle_diff < (field_of_view / 2))) {
 				SightingData d = new SightingData(
@@ -72,7 +70,7 @@ public class SensorHandler {
 						cy,
 						(float) (angle_to_landmark - cat.getObjectiveAngle() + rnd
 								.nextGaussian()
-								* 0 * (Math.PI / 180)), type);
+								* ERROR_STD * (Math.PI / 180)), type);
 				unifiedBuffer.push(d);
 			}
 		}

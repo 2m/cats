@@ -3,7 +3,6 @@ package GSim;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 
 /** Particle filter for absolute positioning of one cat using landmarks. */
 public class AbsolutePositioningParticleFilter extends
@@ -13,7 +12,6 @@ public class AbsolutePositioningParticleFilter extends
 	private LinkedList data;
 
 	/** Number of particles */
-	private final int N;
 	private final int Nnorm;
 	private final int Ncut;
 
@@ -72,7 +70,6 @@ public class AbsolutePositioningParticleFilter extends
 			Buffer unifiedData, BillBoard billboard) {
 		// Call constructor of super class
 		super(id, T, unifiedData, billboard);
-		this.N = N;
 		// Pre-calculate particle weight
 		Nnorm = Fixed.floatToFixed(1 / ((float) N));
 		// Set up a cut off for survival of the fittest
@@ -80,16 +77,14 @@ public class AbsolutePositioningParticleFilter extends
 		// Make a local landmark list using fixed point integers. First dim of
 		// landmarks are the landmark number, the second dim are x, y and type.
 		landmarks = new int[4][3];
-		for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
+		for (int i = 0; i < Settings.LANDMARK_POSITION.length; i++) {
 			// Save x and y
-			landmarks[i][0] = Fixed.floatToFixed(LandmarkList.landmarkX[i]);
-			landmarks[i][1] = Fixed.floatToFixed(LandmarkList.landmarkY[i]);
+			landmarks[i][0] = Fixed
+					.floatToFixed(Settings.LANDMARK_POSITION[i][0]);
+			landmarks[i][1] = Fixed
+					.floatToFixed(Settings.LANDMARK_POSITION[i][1]);
 			// Save type
-			if (LandmarkList.landmarkC[i]) {
-				landmarks[i][2] = LandmarkList.GREEN;
-			} else {
-				landmarks[i][2] = LandmarkList.RED;
-			}
+			landmarks[i][2] = Settings.LANDMARK_COLOR[i];
 		}
 		// Create the linked list in which the particles live
 		data = new LinkedList();
@@ -224,7 +219,7 @@ public class AbsolutePositioningParticleFilter extends
 
 			int z = 0;
 			// Loop through landmarks
-			for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
+			for (int i = 0; i < Settings.LANDMARK_POSITION.length; i++) {
 				int a = 0;
 				// Check if the type is right
 				if (type == landmarks[i][2]) {
@@ -347,10 +342,10 @@ public class AbsolutePositioningParticleFilter extends
 		Link link = data.first;
 
 		// Decide on cut off
-//		if (sum_w != 0) {
-			// Only the worst particles needs to be re-sampled, so some
-			// particles can be skipped.
-	//	}
+		// if (sum_w != 0) {
+		// Only the worst particles needs to be re-sampled, so some
+		// particles can be skipped.
+		// }
 
 		int stdAngle = Fixed.sqrt(varAngle);
 		for (int i = 0; (i < Ncut) && (link != null); i++) {
@@ -369,7 +364,7 @@ public class AbsolutePositioningParticleFilter extends
 			part.comparable = Fixed.ONE;
 			link = link.next;
 		}
-		
+
 		// Loop through remaining particles
 		while (link != null) {
 			link.data.comparable = Fixed.ONE;
@@ -471,17 +466,17 @@ public class AbsolutePositioningParticleFilter extends
 			varAngle = Fixed.mul(tvarAngle, norm);
 		}
 		// Check x and y means so they keep inside the arena
-		if (mean_x < Fixed.floatToFixed(Arena.min_x)) {
-			mean_x = Fixed.floatToFixed(Arena.min_x);
+		if (mean_x < Fixed.floatToFixed(Settings.ARENA_MIN_X)) {
+			mean_x = Fixed.floatToFixed(Settings.ARENA_MIN_X);
 		}
-		if (mean_x > Fixed.floatToFixed(Arena.max_x)) {
-			mean_x = Fixed.floatToFixed(Arena.max_x);
+		if (mean_x > Fixed.floatToFixed(Settings.ARENA_MAX_X)) {
+			mean_x = Fixed.floatToFixed(Settings.ARENA_MAX_X);
 		}
-		if (mean_y < Fixed.floatToFixed(Arena.min_y)) {
-			mean_y = Fixed.floatToFixed(Arena.min_y);
+		if (mean_y < Fixed.floatToFixed(Settings.ARENA_MIN_Y)) {
+			mean_y = Fixed.floatToFixed(Settings.ARENA_MIN_Y);
 		}
-		if (mean_y > Fixed.floatToFixed(Arena.max_y)) {
-			mean_y = Fixed.floatToFixed(Arena.max_y);
+		if (mean_y > Fixed.floatToFixed(Settings.ARENA_MAX_Y)) {
+			mean_y = Fixed.floatToFixed(Settings.ARENA_MAX_Y);
 		}
 		// Check for min variance
 		if (varXX < Fixed.floatToFixed(0.0025)) {
@@ -622,19 +617,19 @@ public class AbsolutePositioningParticleFilter extends
 				} else if (data.isSightingData()) {
 					// Compare with landmarks or mouse data
 					SightingData sdata = (SightingData) data;
-					if (sdata.type == LandmarkList.MOUSE) {
+					if (sdata.type == Settings.TYPE_MOUSE) {
 						billboard.setLatestSighting(id, getX(), getY(),
 								sdata.angle + getAngle(), sdata.comparable);
 					} else {
-						if (Math.abs((lastLandmarkSighting - sdata.angle)
-								% Math.PI * 2) > (10 * (Math.PI / 180))) {
-							// Compare sensor data to particles
-							compareParticles(Fixed.floatToFixed(sdata.angle),
-									sdata.type);
-							lastLandmarkSighting = sdata.angle;
-							// Increase evaluation counter
-							evaluationsSinceResample++;
-						}
+						// if (Math.abs((lastLandmarkSighting - sdata.angle)
+						// % Math.PI * 2) > (10 * (Math.PI / 180))) {
+						// Compare sensor data to particles
+						compareParticles(Fixed.floatToFixed(sdata.angle),
+								sdata.type);
+						// lastLandmarkSighting = sdata.angle;
+						// Increase evaluation counter
+						evaluationsSinceResample++;
+						// }
 					}
 				}
 
@@ -647,7 +642,7 @@ public class AbsolutePositioningParticleFilter extends
 
 			// Re-sample every n:th evaluation or if there is no more data and
 			// an evaluation has been performed.
-			if (evaluationsSinceResample >= 2) {
+			if (evaluationsSinceResample >= 3) {
 				calcMean();
 				reSample();
 				evaluationsSinceResample = 0;

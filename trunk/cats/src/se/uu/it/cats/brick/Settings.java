@@ -37,6 +37,7 @@ public class Settings
 	public static final int TYPE_MOUSE = 0;
 	public static final int TYPE_GREEN = 1;
 	public static final int TYPE_RED = 2;
+	// Positions [number][coordinate as (x, y)]
 	public static final float[][] LANDMARK_POSITION = { { 0, 0 }, { 0, 3 },
 			{ 3, 0 }, { 3, 3 } };
 	public static final int[] LANDMARK_COLOR = { TYPE_GREEN, TYPE_GREEN,

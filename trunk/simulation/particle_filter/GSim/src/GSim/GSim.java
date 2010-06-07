@@ -14,10 +14,12 @@ import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-/** Main class of simulation. Initialises graphics and objects then runs
- * a main loop.
+/**
+ * Main class of simulation. Initialises graphics and objects then runs a main
+ * loop.
+ * 
  * @version 0.1
- * @author 	Fredrik Wahlberg
+ * @author Fredrik Wahlberg
  */
 @SuppressWarnings("serial")
 public class GSim extends JFrame implements MouseListener {
@@ -74,15 +76,17 @@ public class GSim extends JFrame implements MouseListener {
 		}
 		Graphics2D g2 = (Graphics2D) g;
 		// Draw landmarks
-		for (int i = 0; i < LandmarkList.landmarkX.length; i++) {
+		for (int i = 0; i < Settings.LANDMARK_POSITION.length; i++) {
 			int size = 5; // Diameter
-			int ix = Actor.e2gX((double) LandmarkList.landmarkX[i]);
-			int iy = Actor.e2gY((double) LandmarkList.landmarkY[i]);
+			int ix = Actor.e2gX((double) Settings.LANDMARK_POSITION[i][0]);
+			int iy = Actor.e2gY((double) Settings.LANDMARK_POSITION[i][1]);
 
-			if (LandmarkList.landmarkC[i]) {
+			if (Settings.LANDMARK_COLOR[i] == Settings.TYPE_GREEN) {
 				g2.setColor(Color.green);
-			} else {
+			} else if (Settings.LANDMARK_COLOR[i] == Settings.TYPE_RED) {
 				g2.setColor(Color.red);
+			}else{
+				g2.setColor(Color.pink);
 			}
 			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
 					(int) size, (int) size);

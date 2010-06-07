@@ -18,9 +18,10 @@ public class Cat extends Actor {
 	private Guide guide;
 
 	private boolean usePositioningParticleFilter = false;
-	private boolean usePositioningUnscentedKalmanFilter = true;
-	private boolean useTrackingParticleFilter = false;
-	private boolean useTrackingUnscentedKalmanFilter = true;
+	private boolean usePositioningGeometricFilter = true;
+	private boolean usePositioningUnscentedKalmanFilter = false;
+	private boolean useTrackingParticleFilter = true;
+	private boolean useTrackingUnscentedKalmanFilter = false;
 	private boolean useGuide = false;
 
 	/* Periods in ms */
@@ -30,8 +31,9 @@ public class Cat extends Actor {
 	// NB: working ok @500ms with q = 0.5f and stddegrees = 1f,
 	// working somewhat ok @750ms with q = 0.005f and stddegrees = 1f
 
-	private int trackingParticlePeriod = 200;
-	private int positioningParticlePeriod = 400;
+	private int trackingParticlePeriod = 500;
+	private int positioningParticlePeriod = 800;
+	private int positioningGeometricPeriod = 500;
 
 	private int nexttrack, nextpos;
 	private int Ntracking = 100;
@@ -53,6 +55,10 @@ public class Cat extends Actor {
 					(float) positioningKalmanPeriod / 1000f, unifiedBuffer,
 					billboard);
 
+		} else if (usePositioningGeometricFilter) {
+			positioningFilter = new AbsolutePositioningGeometricFilter(id,
+					(float) positioningGeometricPeriod / 1000f, unifiedBuffer,
+					billboard);
 		} else {
 			positioningFilter = new AbsolutePositioningNaiveFilter(id,
 					(float) positioningNaivePeriod / 1000f, unifiedBuffer,
@@ -89,8 +95,6 @@ public class Cat extends Actor {
 
 	public void update() {
 		motor.goTo(gotox, gotoy);
-		// motor.goTo(gotox - (getX() - motor.getX()), gotoy - (getY() -
-		// motor.getY()));
 		ComparableData data = motorBuffer.pop();
 		while (data != null) {
 			unifiedBuffer.push(data);
