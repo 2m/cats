@@ -69,8 +69,8 @@ public class Cholesky {
         }
         return L;
     }
-
-
+    
+    /*
     // sample client
     public static void main(String[] args) {
         int N = 3;
@@ -86,6 +86,6 @@ public class Cholesky {
             System.out.println();
         }
 
-    }
+    }*/
 
 }
