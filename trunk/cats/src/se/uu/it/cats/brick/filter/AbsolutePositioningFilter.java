@@ -46,10 +46,6 @@ public abstract class AbsolutePositioningFilter extends Thread {
 		return (float) 0.0;
 	}
 
-	public Buffer getUnifiedBuffer() {
-		return unifiedBuffer;
-	}
-
 	/**
 	 * Runs one update of the filter then exits
 	 */
@@ -65,7 +61,6 @@ public abstract class AbsolutePositioningFilter extends Thread {
 			update();
 			pause((long) (Tint - (Clock.timestamp() % Tint)));
 		}
-
 	}
 
 	/**
