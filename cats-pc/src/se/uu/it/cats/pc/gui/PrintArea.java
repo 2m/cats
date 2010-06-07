@@ -256,7 +256,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 				float angle = _cats[i].getSighting(j) + _cats[i].getAngle_c();
 				linelength = 100;
 				
-				Color[] colors = new Color[] {Color.red, Color.magenta, Color.blue, Color.green, Color.yellow};				
+				Color[] colors = new Color[] {Color.red, Color.magenta, Color.blue, Color.green, Color.cyan};
 				g2d.setColor(colors[j]);
 				
 				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(angle))*linelength), (int) (entityPosY + Math.sin(-(angle))*linelength));
