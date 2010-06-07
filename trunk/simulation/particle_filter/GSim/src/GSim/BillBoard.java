@@ -10,8 +10,7 @@ package GSim;
  *         turn out being ok though.
  */
 public class BillBoard {
-	// FIXME: See how much needs to be synced for ukf
-
+	
 	/** Data to be synced */
 	private float[][] data;
 	private float[] sightings;
@@ -48,9 +47,6 @@ public class BillBoard {
 		 * timestamp + " != " + (float)timestamp +" )");
 		 */
 	}
-
-	// TODO: For UKF, add getter for tachometer positioning and landmark
-	// sighting
 
 	public void setAbsolutePosition(int id, float x, float y, float angle,
 			int timestamp) {
