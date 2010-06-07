@@ -68,10 +68,10 @@ public class PacketManager
 					int catId = p.getSource();
 					int sightId = ((SimpleMeasurement)p).getId();
 					float angle = ((SimpleMeasurement)p).getAngle();
-					float camAngle = ((SimpleMeasurement)p).getCamAngle();
+					float camAngle = ((SimpleMeasurement)p).getCamAngle(); // is always zero
 					
 					Area.getInstance().getCat(catId).setRelSighting(sightId, angle);
-					Area.getInstance().getCat(catId).setAngle_cam(camAngle);
+					//Area.getInstance().getCat(catId).setAngle_cam(camAngle);
 					
 					//Mouse._angles[p.getSource()] = ((SimpleMeasurement)p).getAngle();
 				}
