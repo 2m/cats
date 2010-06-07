@@ -230,25 +230,29 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		//System.out.println("Debug: ut, Y:");
 		//printM(Y);
 		
+		int X_row_dim = X.getRowDimension();
+		int Y_row_dim = Y.getRowDimension();
+		int y_row_dim = y.getRowDimension();
+		Matrix row_in_X;
 		for (int k=0; k<L; k++)
 		{	
 			//for all columns in X, compute fstate for the given row vector and put the result in Y
-			Matrix row_in_X = X.getMatrix(0, X.getRowDimension()-1, k, k);
+			row_in_X = X.getMatrix(0, X_row_dim-1, k, k);
 			/*if (DEBUG2)
 			{
 				System.out.println("Debug: ukf.ut, row_in_X =");
-				printM(row_in_X);
+				printM(row_in_X);s
 			}*/
-			Y.setMatrix(0, Y.getRowDimension()-1, k, k, func.eval(row_in_X) );
+			Y.setMatrix(0, Y_row_dim-1, k, k, func.eval(row_in_X) );
 			/*if (DEBUG2)
 			{
 				System.out.println("Debug: ukf.ut, Y (after function evaluation) =");
 				printM(Y);
 			}*/
-			Matrix row_in_Y = Y.getMatrix(0, Y.getRowDimension()-1, k, k);
+			//Matrix row_in_Y = Y.getMatrix(0, Y.getRowDimension()-1, k, k);
 			//System.out.println("Debug: ut, row_in_Y:");
 			//printM(row_in_Y);
-			y.setMatrix( 0, y.getRowDimension()-1, 0, 0, ( row_in_Y.times(Wm.get(0, k)) ).plus(y)  );
+			y.setMatrix( 0, y_row_dim-1, 0, 0, ( (Y.getMatrix(0, Y_row_dim-1, k, k)).times(Wm.get(0, k)) ).plus(y)  );
 			//System.out.println("Debug: ut, y:");
 			//printM(y);
 		}
