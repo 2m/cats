@@ -346,17 +346,17 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		}
 		
 		// Check x and y so they keep inside the arena and also set velocity in that direction to zero if outside the arena
-		if (states.get(0, 0) < Arena.min_x) {
-			states.set(0, 0, Arena.min_x);
+		if (states.get(0, 0) < Settings.ARENA_MIN_X) {
+			states.set(0, 0, Settings.ARENA_MIN_X);
 		}
-		if (states.get(0, 0) > Arena.max_x) {
-			states.set(0, 0, Arena.max_x);
+		if (states.get(0, 0) > Settings.ARENA_MAX_X) {
+			states.set(0, 0, Settings.ARENA_MAX_X);
 		}
-		if (states.get(1, 0) < Arena.min_y) {
-			states.set(1, 0, Arena.min_y);
+		if (states.get(1, 0) < Settings.ARENA_MIN_Y) {
+			states.set(1, 0, Settings.ARENA_MIN_Y);
 		}
-		if (states.get(1, 0) > Arena.max_y) {
-			states.set(1, 0, Arena.max_y);
+		if (states.get(1, 0) > Settings.ARENA_MAX_Y) {
+			states.set(1, 0, Settings.ARENA_MAX_Y);
 		}
 
 		// Commit data to billboard ??
