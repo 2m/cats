@@ -15,13 +15,34 @@ public abstract class Matlab {
 	 * @param m (1)x(n) matrix
 	 * @return (n)x(n) diagonal matrix
 	 */
-	public static Matrix diag(Matrix m)
+	
+	public static Matrix diagFromColumn(Matrix m)
 	{
-		Matrix m_diag = Matrix.identity(m.getColumnDimension(), m.getColumnDimension());
+		int m_col_dim = m.getColumnDimension();
+		double[][] temp_m_diag = new double[m_col_dim][m_col_dim];
+		double[][] temp_m = m.getArray();
 		//for all rows&coulmns
-		for (int idx=0; idx<m.getColumnDimension(); idx++)  
+		int[] indices = new int[m_col_dim];
+		for (int idx=0; idx<m_col_dim; idx++)  
 		{
-			m_diag.set(idx, idx, m.get(0, idx));
+			temp_m_diag[idx][idx] = temp_m[0][idx];
+		}
+		return new Matrix(temp_m_diag);
+	}
+	
+	/**
+	 * 	Create a diagonal matrix out of a (n)x(n) matrix
+	 * @param m (n)x(n) matrix
+	 * @return (n)x(n) diagonal matrix
+	 */
+	public static Matrix diagFromMatrix(Matrix m)
+	{
+		int m_row_dim = m.getRowDimension();
+		Matrix m_diag = Matrix.identity(m_row_dim, m_row_dim);
+		//for all rows&coulmns
+		for (int idx=0; idx<m_row_dim; idx++)  
+		{
+			m_diag.set(idx, idx, m.get(idx, idx));
 		}
 		return m_diag;	
 	}
