@@ -16,10 +16,18 @@ public class SightingData extends ComparableData {
 	/** Type (used on landmarks) */
 	public int type;
 
+	//For particle filter
 	public SightingData(int timestamp, float x, float y, float angle, int type) {
 		super(timestamp);
 		this.x = x;
 		this.y = y;
+		this.angle = angle;
+		this.type = type;
+	}
+	
+	//For UKF
+	public SightingData(int timestamp, float angle, int type) {
+		super(timestamp);
 		this.angle = angle;
 		this.type = type;
 	}

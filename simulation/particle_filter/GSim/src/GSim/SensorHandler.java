@@ -39,8 +39,8 @@ public class SensorHandler {
 
 		float looking_angle = (float) Math.atan2(y1, x1);
 		if (lookForLandmarksFlag) {
-			// This tries to simulate looking around (270 degrees)
-			looking_angle += (rnd.nextDouble() - 0.5) * 3 * Math.PI / 2;
+			// This tries to simulate looking around
+			looking_angle += ((rnd.nextDouble() - 0.5) * 2) * Math.PI;
 			looking_angle %= Math.PI * 2;
 		}
 
