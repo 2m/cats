@@ -65,8 +65,8 @@ public class Main {
 
 			positioningFilter = new AbsolutePositioningNaiveFilter(Identity
 					.getId(), .33f, unifiedBuffer, BillBoard.getInstance());
-			// FIXME: ERROR init data not set!
-			// it is. In the AbsolutePositioningNaiveFilter constructor
+			positioningFilter.initData(Settings.START_X, Settings.START_Y, Settings.START_ANGLE);
+
 			Thread positioningFilterThread = new Thread(positioningFilter);
 			positioningFilterThread.start();
 

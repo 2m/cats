@@ -11,16 +11,17 @@ public class Guide {
 	private boolean haveMousePosition = false;
 	private final float h = (float) 0.05;
 
-	public float D1 = (float) 1.0; // Optimal distance from mouse
-	public float D2 = (float) 0.40; // Minimal distance to cats
-	public float D3 = (float) 0.30; // Minimal distance from line of sight
-	public float D4 = (float) 0.25; // Minimal distance from arena edges
-	public float D5 = (float) 0.1; // Mouse distance "plateau" size
+	public final float D1 = (float) 0.8; // Optimal distance from mouse
+	public final float D2 = (float) 0.40; // Minimal distance to objects
+	public final float D3 = (float) 0.30; // Minimal distance from line of sight
+	public final float D4 = (float) 0.25; // Minimal distance from arena edges
+	public final float D5 = (float) 0.2; // Mouse distance "plateau" size
 	// Weights on the different parts of the criterion function
-	public float W1 = (float) 1.0; // Importance of distance from cats
-	public float W2 = (float) 0.8; // Importance of distance from mouse
-	public float W3 = (float) 1.0; // Importance of distance from edges
-	public float W4 = (float) 0.8; // LOS
+	public final float W1 = (float) 1.0; // Importance of distance from cats
+	public final float W2 = (float) 0.8; // Importance of distance from mouse
+	public final float W3 = (float) 1.0; // Importance of distance from edges
+	public final float W4 = (float) 0.8; // Importance of distance from LOS
+	public final float W5 = (float) 1.0; // Importance of distance from landm.
 
 	public Guide(int id, BillBoard billboard) {
 		this.billboard = billboard;
@@ -36,22 +37,19 @@ public class Guide {
 		advice[0] = -1.0f;
 		advice[1] = -1.0f;
 		float x = myPos[0];
-		float y = myPos[1];		
-		if (x >= 0) {
+		float y = myPos[1];
+		if (x > -1.0f) {
 			int i = 0;
 			while ((i < 40)
-					&& (Math.sqrt(pow2(myPos[0] - x)
-							+ pow2(myPos[1] - y)) < 0.25f)) {
+					&& (Math.sqrt((myPos[0] - x) * (myPos[0] - x)
+							+ (myPos[1] - y) * (myPos[1] - y)) < 0.25f)) {
 				float[] grad = getGradient(x, y);
 				x += 0.01 * Math.signum(grad[0]);
 				y += 0.01 * Math.signum(grad[1]);
 				i++;
 			}
-			Logger.println("i:"+i+" myPos[0]:"+myPos[0]+" myPos[1]"+myPos[1]+" x"+x+" y"+y);
-			Logger.println("Inside guide:"+Math.sqrt(pow2(myPos[0] - x) + pow2(myPos[1] - y)));
-			Logger.println(pow2(myPos[0] - x)+", "+pow2(myPos[1] - y));
-			if (Math
-					.sqrt(pow2(myPos[0] - x) + pow2(myPos[1] - y)) > 0.15f) {
+			if (Math.sqrt((myPos[0] - x) * (myPos[0] - x) + (myPos[1] - y)
+					* (myPos[1] - y)) > 0.15f) {
 				advice[0] = x;
 				advice[1] = y;
 			}
@@ -107,20 +105,17 @@ public class Guide {
 	 */
 	public float sample(float x, float y) {
 		float a = (1 - W1) + W1 * keepDistanceFromCats(x, y);
-		float c = (1 - W3) + W3 * keepDistanceFromEdges(x, y);
-		
-		//float c = (1 - W5) + W5 * keepDistanceFromLandmarks(x, y);
-		// FIXME: Implement keedDistanceFromLandmarks 
-		
+		float b = (1 - W3) + W3 * keepDistanceFromEdges(x, y);
+		float c = (1 - W5) + W5 * keepDistanceFromLandmarks(x, y);
 		if (haveMousePosition) {
-			float b = (1 - W2) + W2 * keepDistanceFromMouse(x, y);
-			float d = (1 - W4) + W4 * avoidLineOfSight(x, y);
-			return a * b * c * d;
+			float d = (1 - W2) + W2 * keepDistanceFromMouse(x, y);
+			float e = (1 - W4) + W4 * avoidLineOfSight(x, y);
+			return a * b * c * d * e;
 		} else {
-			return a * c;
+			return a * b * c;
 		}
 	}
-	
+
 	/**
 	 * Get the component of the criterion function that handles the distance
 	 * from other cats.
@@ -131,26 +126,47 @@ public class Guide {
 	 *            position in y direction
 	 */
 	private float keepDistanceFromCats(float x, float y) {
-		// TODO: Optimise this
-		float maxT = (float) Math.sqrt(pow2(D2) + pow2(D2));
 		float ret = (float) 1.0;
 		for (int i = 0; i < otherCats.length; i++) {
 			if ((otherCats[i][0] >= 0) && ((otherCats[i][1] >= 0))) {
-				// T = sqrt((c(g, 1) - X).^2 + (c(g, 2) - Y).^2);
-				float T = (float) Math.sqrt(pow2(otherCats[i][0] - x)
-						+ pow2(otherCats[i][1] - y));
-				// T = T.*(T<d2) + d2*(1 + 0.5*T./max(max(T))).*(T>=d2);
-				// Z2(:, :, g) = T/max(max(T));
-				if (T < D2) {
-					ret *= T / maxT;
-				} else {
-					ret *= (float) 1.0;
-					// ret = (float) (D2 * (1 + 0.5 * T / maxT));
-				}
+				ret *= keepDistanceFromObject(otherCats[i][0], otherCats[i][1],
+						x, y);
 			}
 
 		}
 		return ret;
+	}
+
+	private float keepDistanceFromObject(float x0, float y0, float x1, float y1) {
+		float maxT = (float) Math.sqrt(Math.pow(D2, 2) + Math.pow(D2, 2));
+		float T = (float) Math.sqrt((x0 - x1) * (x0 - x1) + (y0 - y1)
+				* (y0 - y1));
+		if (T < D2) {
+			return T / maxT;
+		} else {
+			return (float) 1.0;
+
+		}
+
+	}
+
+	/**
+	 * Get the component of the criterion function that handles the distance
+	 * from landmarks.
+	 * 
+	 * @param x
+	 *            position in x direction
+	 * @param y
+	 *            position in y direction
+	 */
+	private float keepDistanceFromLandmarks(float x, float y) {
+		float ret = (float) 1.0;
+		for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
+			ret *= keepDistanceFromObject(Settings.LANDMARK_POSITION[i][0],
+					Settings.LANDMARK_POSITION[i][1], x, y);
+		}
+		return ret;
+
 	}
 
 	/**
@@ -163,21 +179,18 @@ public class Guide {
 	 *            position in y direction
 	 */
 	private float keepDistanceFromMouse(float x, float y) {
-		// TODO: Optimise this
-		float maxZ1 = (float) Math.sqrt(pow2(Settings.ARENA_MAX_X
-				- Settings.ARENA_MIN_X)
-				+ pow2(Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y));
-		// Z1 = abs(sqrt((m(1) - X).^2 + (m(2) - Y).^2) - d1);
-		float Z1 = (float) Math.abs(Math.sqrt(pow2(mousePos[0] - x)
-				+ pow2(mousePos[1] - y))
+		float maxZ1 = (float) Math.sqrt(Math.pow(Settings.ARENA_MAX_X
+				- Settings.ARENA_MIN_X, 2)
+				+ Math.pow(Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y, 2));
+		float Z1 = (float) Math.abs(Math.sqrt((mousePos[0] - x)
+				* (mousePos[0] - x) + (mousePos[1] - y) * (mousePos[1] - y))
 				- D1);
 		Z1 -= D5;
 		if (Z1 < 0) {
 			Z1 = 0;
 		}
-		// Z1 = 1 - Z1/max(max(Z1));
 		Z1 = 1 - Z1 / maxZ1;
-		return Z1;
+		return Z1 * keepDistanceFromObject(mousePos[0], mousePos[1], x, y);
 	}
 
 	/**
@@ -190,13 +203,16 @@ public class Guide {
 	 *            position in y direction
 	 */
 	private float keepDistanceFromEdges(float x, float y) {
-		// TODO: Optimise this
-		float ret = (float) 1.0;
+		float ret;
+		// Function in x direction
 		if ((x - Settings.ARENA_MIN_X) < D4) {
-			ret *= (x - Settings.ARENA_MIN_X) / D4;
+			ret = (x - Settings.ARENA_MIN_X) / D4;
 		} else if ((Settings.ARENA_MAX_X - x) < D4) {
-			ret *= (Settings.ARENA_MAX_X - x) / D4;
+			ret = (Settings.ARENA_MAX_X - x) / D4;
+		} else {
+			ret = 1.0f;
 		}
+		// Function in y direction
 		if ((y - Settings.ARENA_MIN_Y) < D4) {
 			ret *= (y - Settings.ARENA_MIN_Y) / D4;
 		} else if ((Settings.ARENA_MAX_Y - y) < D4) {
@@ -218,17 +234,16 @@ public class Guide {
 	 *            position in y direction
 	 */
 	private float avoidLineOfSight(float x, float y) {
-		// TODO: Optimise this
-		float maxT = (float) Math.sqrt(pow2(D3) + pow2(D3));
-		float Z3 = (float) 1.0;
+		final float maxT = (float) Math.sqrt(Math.pow(D3, 2) + Math.pow(D3, 2));
+		float Z3 = (D3 / maxT);
 		for (int i = 0; i < otherCats.length; i++) {
 			if ((otherCats[i][0] >= 0) && ((otherCats[i][1] >= 0))) {
 				// v = m' - c(g, :)';
 				float v1 = mousePos[0] - otherCats[i][0];
 				float v2 = mousePos[1] - otherCats[i][1];
 				// v = v/norm(v); % Direction to mouse
-				float vnorm = (float) Math.sqrt(pow2(v1)
-						+ pow2(v2));
+				float vnorm = (float) Math.sqrt(Math.pow(v1, 2)
+						+ Math.pow(v2, 2));
 				v1 /= vnorm;
 				v2 /= vnorm;
 				// u = [v(2); -v(1)]; % Perpendicular to v
@@ -237,18 +252,11 @@ public class Guide {
 						+ (-v1 * (y - otherCats[i][1])));
 				// T = T.*(T<d3) + d3*(T>=d3);
 				// Z3(:, :, g) = T/max(max(T));
-				if (T >= D3) {
-					Z3 *= (D3 / maxT);
-				} else {
-					Z3 *= (T / maxT);
+				if (T < D3) {
+					Z3 = (T / maxT);
 				}
 			}
 		}
 		return Z3;
 	}
-	
-	private float pow2(float x) {
-		return x*x;
-	}
-	
 }
