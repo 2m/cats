@@ -31,6 +31,17 @@ public class Settings
 	public static final float ARENA_MIN_Y = 0;
 	public static final float ARENA_MAX_Y = 3f;
 	
+	// Landmark data
+	static final int NO_LANDMARKS = 4;
+	// FIXME: Add real colours to landmark lists in settings
+	public static final int TYPE_MOUSE = 0;
+	public static final int TYPE_GREEN = 1;
+	public static final int TYPE_RED = 2;
+	public static final float[][] LANDMARK_POSITION = { { 0, 0 }, { 0, 3 },
+			{ 3, 0 }, { 3, 3 } };
+	public static final int[] LANDMARK_COLOR = { TYPE_GREEN, TYPE_GREEN,
+			TYPE_GREEN, TYPE_RED };
+
 	// starting position and angle
 	public static float START_X;
 	public static float START_Y;
