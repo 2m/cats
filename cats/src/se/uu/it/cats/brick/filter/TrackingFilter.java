@@ -56,15 +56,15 @@ public abstract class TrackingFilter extends Thread {
 	public void update() {
 	}
 
+	/** Reset filter with some initial data */
+	public void initData(float x, float y, float xv, float yv) {
+	}
+
 	public void run() {
 		while (true) {
 			update();
 			pause((long) (Tint - (Clock.timestamp() % Tint)));
 		}
-	}
-
-	/** Reset filter with some initial data */
-	public void initData(float x, float y, float xv, float yv) {
 	}
 
 	/**

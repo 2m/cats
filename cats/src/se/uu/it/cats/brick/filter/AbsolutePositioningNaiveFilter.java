@@ -4,6 +4,7 @@ import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.Settings;
 import se.uu.it.cats.brick.storage.BillBoard;
 
+
 /** Naive filter for absolute positioning of one cat using landmarks. */
 public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 
@@ -33,7 +34,6 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 			Buffer unifiedBuffer, BillBoard billboard) {
 		// Call constructor of super class
 		super(id, T, unifiedBuffer, billboard);
-		initData(Settings.START_X, Settings.START_Y, Settings.START_ANGLE);
 	}
 
 	/**
@@ -123,9 +123,15 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 					mean_y += Math.sin(mean_angle) * mdata.dr;
 					mean_angle += mdata.dangle;
 					lastCurrentTime = mdata.comparable;
+					/*
+					 * billboard.setAbsolutePosition(id, getX(), getY(),
+					 * getAngle(), getTime());
+					 */
 				} else if (data.isSightingData()) {
+					// System.out.println("isSightingData");
 					SightingData sdata = (SightingData) data;
-					if (sdata.type == LandmarkList.MOUSE) {
+					if (sdata.type == Settings.TYPE_MOUSE) {
+						// System.out.println("isMouse");
 						latestSighting[0] = getX();
 						latestSighting[1] = getY();
 						latestSighting[2] = sdata.angle + getAngle();
@@ -143,10 +149,12 @@ public class AbsolutePositioningNaiveFilter extends AbsolutePositioningFilter {
 		billboard.setAbsolutePosition(id, getX(), getY(), getAngle(), Clock
 				.timestamp());
 
-		if (needToSendSighting)
+		if (needToSendSighting) {
 			billboard.setLatestSighting(id, latestSighting[0],
 					latestSighting[1], latestSighting[2],
 					(int) latestSighting[3]);
+			// System.out.println("Cat: "+id+", zMouse: "+Math.toDegrees(latestSighting[2])+" updated to billboard");
+		}
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;

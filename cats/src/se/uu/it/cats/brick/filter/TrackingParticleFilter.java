@@ -74,7 +74,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Pre-calculate particle weight
 		Nnorm = Fixed.floatToFixed(1 / ((float) N));
 		// Set up a cut off for survival of the fittest
-		Ncut = (N >> 1);
+		Ncut = (N >> 2);
 		// Create the linked list in which the particles live
 		data = new LinkedList();
 		// Create particles
@@ -96,10 +96,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Loop through all particles
 		while (link != null) {
 			TrackingParticle part = (TrackingParticle) link.data;
-			float x = dr + (float)rn.nextDouble()
-					* (Settings.ARENA_MAX_X - Settings.ARENA_MIN_X - 2 * dr);
-			float y = dr + (float)rn.nextDouble()
-					* (Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y - 2 * dr);
+			float x = (float) (dr + rn.nextDouble()
+					* (Settings.ARENA_MAX_X - Settings.ARENA_MIN_X - 2 * dr));
+			float y = (float) (dr + rn.nextDouble()
+					* (Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y - 2 * dr));
 			part.x = Fixed.floatToFixed(x);
 			part.y = Fixed.floatToFixed(y);
 			part.comparable = Fixed.ONE;
@@ -553,7 +553,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 	public float getExecutionTime() {
 		return ((((float) iterationTime) / 1000) / ((float) iterationCounter));
 	}
-
+	
 	public void update() {
 		// Download mean and co-variance data
 		float[] net = billboard.getMeanAndCovariance();
