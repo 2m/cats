@@ -87,6 +87,8 @@ public class TrackingParticleFilter extends TrackingFilter {
 		for (int i = 0; i <= RANDN_MASK; i++) {
 			randn_lut[i] = Fixed.randn();
 		}
+		// Start checking data from now
+		lastCurrentTime = Clock.timestamp();
 	}
 
 	private void reSampleUniformly() {
@@ -289,12 +291,12 @@ public class TrackingParticleFilter extends TrackingFilter {
 			int[][] V1 = new int[2][2];
 			int[][] V2 = new int[2][2];
 			V1[0][0] = Fixed.sqrt(varXX);
-			V1[0][1] = 0;
-			V1[1][0] = 0;
+			//V1[0][1] = 0;
+			//V1[1][0] = 0;
 			V1[1][1] = Fixed.sqrt(varYY);
 			V2[0][0] = Fixed.sqrt(varXvXv);
-			V2[0][1] = 0;
-			V2[1][0] = 0;
+			//V2[0][1] = 0;
+			//V2[1][0] = 0;
 			V2[1][1] = Fixed.sqrt(varYvYv);
 
 			// Get pointer to first element
@@ -403,7 +405,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 			 */
 		} else {
 			// Create local summation variables
-			int tvarXX = 0, tvarXY = 0, tvarYY = 0, tvarXvXv = 0, tvarXvYv = 0, tvarYvYv = 0;
+			int tvarXX = 0, tvarYY = 0, tvarXvXv = 0, tvarYvYv = 0;//, tvarXY = 0, tvarXvYv = 0;
 			// Loop through particles
 			// Should something like sum(w(x-meanx)(x-meanx)) ..
 			Link link = data.first;
@@ -420,10 +422,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 				int xvw = Fixed.mul(xv, part.comparable);
 				int yvw = Fixed.mul(yv, part.comparable);
 				tvarXX += Fixed.mul(xw, x);
-				tvarXY += Fixed.mul(xw, y);
+				//tvarXY += Fixed.mul(xw, y);
 				tvarYY += Fixed.mul(yw, y);
 				tvarXvXv += Fixed.mul(xvw, xv);
-				tvarXvYv += Fixed.mul(xvw, yv);
+				//tvarXvYv += Fixed.mul(xvw, yv);
 				tvarYvYv += Fixed.mul(yvw, yv);
 				link = link.next;
 			}
@@ -553,8 +555,11 @@ public class TrackingParticleFilter extends TrackingFilter {
 	public float getExecutionTime() {
 		return ((((float) iterationTime) / 1000) / ((float) iterationCounter));
 	}
-	
+
 	public void update() {
+		// Get time reference
+		int startTime = Clock.timestamp();
+
 		// Download mean and co-variance data
 		float[] net = billboard.getMeanAndCovariance();
 		// Update the local mean and co-variance
@@ -580,12 +585,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 		// Re-sample
 		reSample();
 
-		// Get time reference
-		currentTime = Clock.timestamp();
-
 		// Integrate particles
-		// TODO: Integration should be done with respect to time diff between
-		// sightings
 		integrateParticles(Fixed.floatToFixed(T));
 
 		// Compare sensor data to particles
@@ -595,9 +595,10 @@ public class TrackingParticleFilter extends TrackingFilter {
 			int x = Fixed.floatToFixed(sightings[i * 4]);
 			int y = Fixed.floatToFixed(sightings[i * 4 + 1]);
 			int angle = Fixed.floatToFixed(sightings[i * 4 + 2]);
-			if ((sightings[i * 4] >= 0)
-					&& (sightings[i * 4 + 3] <= currentTime)) {
+			int time = (int) sightings[i * 4 + 3];
+			if (time > lastCurrentTime) {
 				compareParticles(x, y, angle);
+				currentTime = time;
 			}
 		}
 
@@ -620,7 +621,7 @@ public class TrackingParticleFilter extends TrackingFilter {
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
-		iterationTime += Clock.timestamp() - currentTime;
+		iterationTime += Clock.timestamp() - startTime;
 		// Update public time
 		lastCurrentTime = currentTime;
 	}

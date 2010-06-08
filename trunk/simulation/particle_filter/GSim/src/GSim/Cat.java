@@ -22,7 +22,7 @@ public class Cat extends Actor {
 	private boolean usePositioningUnscentedKalmanFilter = false;
 	private boolean useTrackingParticleFilter = false;
 	private boolean useTrackingUnscentedKalmanFilter = true;
-	private boolean useGuide = false;
+	private boolean useGuide = true;
 
 	/* Periods in ms */
 	private int positioningNaivePeriod = 500;// 200;
@@ -38,6 +38,8 @@ public class Cat extends Actor {
 	private int nexttrack, nextpos;
 	private int Ntracking = 100;
 	private int Npositioning = 200;
+
+	private int guideCounter = 0;
 
 	public Cat(Actor mouse, double x, double y, double angle,
 			BillBoard billboard, int id) {
@@ -108,20 +110,24 @@ public class Cat extends Actor {
 			sensors.update();
 		}
 		if ((iter % 10) == 0) {
-			if ((useGuide)
-					&& (slot != id)
-					&& (iter > 10)
-					&& (Math.sqrt(Math.pow(gotox - motor.getX(), 2)
-							+ Math.pow(gotoy - motor.getY(), 2)) < 0.1f)) {
-				float[] adv = guide.getAdvice();
-				if (adv[0] >= 0) {
-					gotox = adv[0] - (getX() - motor.getX());
-					gotoy = adv[1] - (getY() - motor.getY());
-					if (id == 0) {
-						System.out.println("Advice: (" + adv[0] + ", " + adv[1]
-								+ ")");
+			if (useGuide) {
+				if ((slot != id)
+						&& (guideCounter > 5)
+						&& (iter > 10)
+						&& (Math.sqrt(Math.pow(gotox - motor.getX(), 2)
+								+ Math.pow(gotoy - motor.getY(), 2)) < 0.1f)) {
+					float[] adv = guide.getAdvice();
+					if (adv[0] >= 0) {
+						gotox = adv[0] - (getX() - motor.getX());
+						gotoy = adv[1] - (getY() - motor.getY());
+						if (id == 0) {
+							System.out.println("Advice: (" + adv[0] + ", "
+									+ adv[1] + ")");
+						}
 					}
+					guideCounter = 0;
 				}
+				guideCounter++;
 			}
 		}
 
