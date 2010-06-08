@@ -148,12 +148,12 @@ public class Cat {
 	
 	public void setAbsSighting(int sightingId, float angle) {
 		sightings[sightingId][0] = angle - angle_c;
-		sightings[sightingId][1] = 20;
+		sightings[sightingId][1] = 50;
 	}
 	
 	public void setRelSighting(int sightingId, float angle) {
 		sightings[sightingId][0] = angle;
-		sightings[sightingId][1] = 20;
+		sightings[sightingId][1] = 50;
 	}
 	
 	public float getSighting(int sightingId) {

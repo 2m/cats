@@ -84,6 +84,8 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	static final int SCALE_INIT = 50;
 	private int SCALE_CURRENT = SCALE_INIT;
 	
+	Color[] lighthouseColors = new Color[] {Color.red, Color.magenta, Color.blue, Color.green, Color.lightGray};
+	
 	//Load image
 	//BufferedImage image = null;  //Toolkit.getDefaultToolkit().getImage("robot2.png");
 	private Image robot;
@@ -197,16 +199,16 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	for (int i = 0; i < _lighthouse.length; i++) {
 		if (_lighthouse[i] != null) {
 			if(_lighthouse[i].getLighthouseName().compareTo("Beacon 1") == 0) {
-				currentColor = Color.magenta; 
+				currentColor = lighthouseColors[1];
 			}
 			if(_lighthouse[i].getLighthouseName().compareTo("Beacon 2") == 0) {
-				currentColor = Color.green; 
+				currentColor = lighthouseColors[3];
 			}
 			if(_lighthouse[i].getLighthouseName().compareTo("Beacon 3") == 0) {
-				currentColor = Color.blue; 
+				currentColor = lighthouseColors[2];
 			}
 			if(_lighthouse[i].getLighthouseName().compareTo("Beacon 4") == 0) {
-				currentColor = Color.cyan; 
+				currentColor = lighthouseColors[4];
 			}
 			//g2d.fillOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-(_lighthouse[i].getY()*zk/50+10), 20, 20);
 			
@@ -215,10 +217,13 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			g2d.fillOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-((_lighthouse[i].getY())*zk/50), 20, 10);
 			g2d.setColor(Color.black); 
 			g2d.drawOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-((_lighthouse[i].getY())*zk/50), 20, 10);
+			
 			// Body
+			g2d.setColor(Color.black);
+			g2d.fillRect( (int) centFix_X+((_lighthouse[i].getX()-1)*zk/50-10), (int) centFix_Y-((_lighthouse[i].getY())*zk/50+25), 22, 30);
 			g2d.setColor(currentColor);
 			g2d.fillRect( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-((_lighthouse[i].getY())*zk/50+25), 20, 30);
-			
+						
 			// Upper hat
 			g2d.fillOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-(_lighthouse[i].getY()*zk/50+30), 20, 10);
 			g2d.setColor(Color.black);
@@ -330,8 +335,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 				float angle = _cats[i].getSighting(j) + _cats[i].getAngle_c();
 				linelength = 100;
 				
-				Color[] colors = new Color[] {Color.red, Color.magenta, Color.blue, Color.green, Color.cyan};
-				g2d.setColor(colors[j]);
+				g2d.setColor(lighthouseColors[j]);
 				
 				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(angle))*linelength), (int) (entityPosY + Math.sin(-(angle))*linelength));
 				
