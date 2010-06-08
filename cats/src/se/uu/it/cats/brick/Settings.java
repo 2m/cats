@@ -12,6 +12,15 @@ public class Settings {
 	// camera offset, measured in pixels
 	public static int CAMERA_OFFSET;
 
+	// positioning filter
+	public static boolean USE_POSITIONING_GEOMETRIC_FILTER = true;
+	public static boolean USE_POSITIONING_UNSCENTED_KALMAN_FILTER = false;
+	public static boolean USE_POSITIONING_PARTICLE_FILTER  = false;
+	
+	// tracking filter
+	public static boolean USE_TRACKING_UNSCENTED_KALMAN_FILTER = true;
+	public static boolean USE_TRACKING_PARTICLE_FILTER = false;
+	
 	// guide
 	public static boolean USE_GUIDE = false;
 
@@ -23,6 +32,18 @@ public class Settings {
 	// Settings for time slotted camera/guide settings
 	public static final int CAMERA_TIME_SLOTS = 3;
 	public static final int CAMERA_TIME_SLOT_LENGTH = 3000; // [ms]
+	
+	// periods in ms 
+	public static final int PERIOD_POSITIONING_NAIVE = 330; //PC:500;
+	public static final int PERIOD_POSITIONING_GEOMETRIC = 100;	//PC:100;
+	public static final int PERIOD_POSITIONING_KALMAN = 200; //PC:200;
+	public static final int PERIOD_POSITIONING_PARTICLE = 800; //PC:800;
+	public static final int PERIOD_TRACKING_KALMAN = 100; //PC:100;
+	public static final int PERIOD_TRACKING_PARTICLE = 1000; //PC:500;
+	
+	// particle filter settings
+	public static final int N_TRACKING = 50; //PC:100;
+	public static final int N_POSITIONING = 200;
 
 	// Arena size
 	public static final float ARENA_MIN_X = 0;
