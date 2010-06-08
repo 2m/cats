@@ -1,6 +1,7 @@
 package se.uu.it.cats.pc.gui;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
@@ -8,6 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import se.uu.it.cats.brick.network.packet.SettingUpdate;
+import se.uu.it.cats.brick.network.packet.SweepOrder;
 import se.uu.it.cats.pc.actor.Area;
 import se.uu.it.cats.pc.network.ConnectionManager;
 
@@ -105,11 +107,28 @@ public class DataPanel extends JPanel{ // implements ActionListener
 				}
 			};
 			
+			JPanel panel = new JPanel();
+			panel.setBackground(Color.white);			
 			JCheckBox checkBox = new JCheckBox("Use guide");
 			checkBox.setSelected(false);
 			checkBox.setBackground(Color.white);
 			checkBox.addActionListener(ae);
-			add(checkBox);
+			checkBox.setMargin(new Insets(0, 0, 0, 0));
+			checkBox.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
+			panel.add(checkBox);
+			
+			JButton sweepButton = new JButton("Sweep");
+			sweepButton.setMargin(new Insets(0, 0, 0, 0));
+			sweepButton.setBorder(new EmptyBorder(new Insets(0, 5, 0, 5)));
+			sweepButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae)
+				{
+					ConnectionManager.getInstance().sendPacketTo(id, new SweepOrder());
+				}
+			});
+			panel.add(sweepButton);
+			
+			add(panel);
 		}
 		
 		public void repaint() {
