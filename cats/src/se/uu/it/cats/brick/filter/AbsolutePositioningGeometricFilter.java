@@ -72,19 +72,25 @@ public class AbsolutePositioningGeometricFilter extends
 		positioning = true;
 		for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
 			if (Settings.LANDMARK_COLOR[i] == type) {
-				// Check if landmark already is in the list
-				if (landmarkNoSightings[i] > 0) {
-					if (Math.abs(landmarkAngles[i] - angle) < angleEpsilon) {
+				// TODO: Implement ML classifier
+				// Removes some erroneous landmark hits
+				if (Math.abs(Math.atan2(Settings.LANDMARK_POSITION[i][1]
+						- getY(), Settings.LANDMARK_POSITION[i][0] - getX())
+						- getAngle() - angle) < (45 * (Math.PI / 180))) {
+					// Check if this landmark has been seen
+					if (landmarkNoSightings[i] > 0) {
+						// Check if new landmark is close enough to the existing
+						if (Math.abs(landmarkAngles[i] - angle) < angleEpsilon) {
+							landmarkNoSightings[i]++;
+							landmarkAngles[i] = ((landmarkNoSightings[i] - 1)
+									* landmarkAngles[i] + angle)
+									/ landmarkNoSightings[i];
+						}
+					} else {
 						landmarkNoSightings[i]++;
-						landmarkAngles[i] = ((landmarkNoSightings[i] - 1)
-								* landmarkAngles[i] + angle)
-								/ landmarkNoSightings[i];
+						landmarkAngles[i] = angle;
 					}
-				} else {
-					landmarkNoSightings[i]++;
-					landmarkAngles[i] = angle;
 				}
-
 			}
 		}
 	}
