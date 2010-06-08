@@ -3,7 +3,6 @@ package GSim;
 import lejos.util.Matrix;
 import static java.lang.Math.*;
 import static GSim.Matlab.*;
-import GSim.Clock;
 
 /**
  * The Unscented Kalman Filter 
@@ -90,7 +89,6 @@ public class UnscentedKalmanFilter
 	 */
 	public Matrix[] run_ukf(IFunction f, Matrix[] x_and_P, IFunction h, Matrix z, Matrix Q, Matrix R)
 	{
-		long time_start_run_ukf = System.currentTimeMillis();
 		
 		/*if (DEBUG ||DEBUG_LIGHT)
 		{	System.out.println("Entering ukf with the following parameters:");	
@@ -124,7 +122,6 @@ public class UnscentedKalmanFilter
 	
 		
 		Matrix X = sigmas(x_and_P[0],x_and_P[1],c);  //sigma points around x, NB: c has been set in the constructor
-		long time_after_sigmas = System.currentTimeMillis();
 		/*if (DEBUG)
 		{
 			System.out.println("Debug: ukf, X dim= " + X.getRowDimension() + " x " + X.getColumnDimension() + ", X (after sigmas() )= ");
@@ -136,7 +133,6 @@ public class UnscentedKalmanFilter
 		Matrix X1 = ut_f_matrices[1];
 		Matrix P1 = ut_f_matrices[2];
 		Matrix X2 = ut_f_matrices[3];
-		long time_after_ut_f = System.currentTimeMillis();
 		/*if (DEBUG)
 		{
 			System.out.println("Debug: ukf, x1 dim= " + x1.getRowDimension() + " x " + x1.getColumnDimension() + ", x1= ");
@@ -156,7 +152,6 @@ public class UnscentedKalmanFilter
 		Matrix Z1 = ut_h_matrices[1];
 		Matrix P2 = ut_h_matrices[2];
 		Matrix Z2 = ut_h_matrices[3];
-		long time_after_ut_h = System.currentTimeMillis();
 		/*if (DEBUG)
 		{
 			System.out.println("Debug: ukf, z1 dim= " + z1.getRowDimension() + " x " + z1.getColumnDimension() + ", z1= ");
@@ -183,7 +178,6 @@ public class UnscentedKalmanFilter
 		//Before: P12.times(P2.inverse());
 		//This should be faster (matrix inverse is slow and numerically less stable):
 		Matrix K = P2.transpose().solve(P12.transpose()).transpose();
-		long time_after_solve = System.currentTimeMillis();
 		//can be used since: A/B is equivalent to (B'\A')'
 		
 		/*if (DEBUG)
@@ -203,14 +197,6 @@ public class UnscentedKalmanFilter
 			System.out.println("Debug: ukf, P_updated dim= " + x_and_P[1].getRowDimension() + " x " + x_and_P[1].getColumnDimension() + ", P_updated= ");
 			printM(x_and_P[1]);		
 		}*/
-	    long time_end_run_ukf = System.currentTimeMillis();
-	    long time_sigmas = time_after_sigmas - time_start_run_ukf;
-	    long time_ut_f = time_after_ut_f - time_after_sigmas;
-	    long time_ut_h = time_after_ut_h - time_after_ut_f;
-	    long time_solve = time_after_solve - time_after_ut_h;
-	    long time_total = time_end_run_ukf - time_start_run_ukf;
-	    System.out.println("time_total = " + time_total + ", time_sigmas = " + time_sigmas + ", time_ut_f = " + time_ut_f + ", time_ut_h = " + time_ut_h + ", time_solve = " + time_solve);
-	    System.out.println("current_time = " + time_end_run_ukf);
 	    return x_and_P;
 		
 		
