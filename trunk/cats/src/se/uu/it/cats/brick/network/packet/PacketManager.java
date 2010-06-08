@@ -5,6 +5,7 @@ import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.Music;
 import se.uu.it.cats.brick.Settings;
+import se.uu.it.cats.brick.filter.Camera;
 import se.uu.it.cats.brick.storage.BillBoard;
 
 public class PacketManager
@@ -169,7 +170,7 @@ public class PacketManager
 					p = new SweepOrder();
 					p.readImpl(bArr);
 					
-					// TODO sweep order handling
+					Camera.doSweep = true;
 				}
 				break;
 			}
