@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;*/
 
 
+import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.Settings;
 import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.storage.BillBoard;
@@ -62,7 +63,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	private float large = (float)pow(10,10);
 	
 	/**Toggle debug info*/
-	private final boolean DEBUG = true;
+	private final boolean DEBUG = false;
 
 
 	/**
@@ -278,6 +279,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	
 	public void update() 
 	{
+		
 		// Get latest sighting
 		/*SightingData sens = null;
 		SightingData sens2 = (SightingData) sensorData.pop();
@@ -368,6 +370,8 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
+	    //long time_total = Clock.timestamp() - currentTime;
+	    //Logger.println("time_total tracking.ukf = " + time_total );
 	}
 	
 	private void debug(Object info)
