@@ -58,7 +58,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	private float large = (float)pow(10,10);
 	
 	/**Toggle debug info*/
-	private final boolean DEBUG = false;
+	private final boolean DEBUG = true;
 
 
 	/**
@@ -272,8 +272,8 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		float[] positions = billboard.getLatestSightings();
 		int catXpos = Actor.e2gX( positions[id * 4 + 0] );
 		int catYpos = Actor.e2gY( positions[id * 4 + 1] );
-		System.out.println("Cat: " + id + ", catX: " + positions[id * 4 + 0] + ", catY: " + positions[id * 4 + 1]
-		            + ", zMouse: " + Math.toDegrees(measurments.get(id, 0)));
+		//System.out.println("Cat: " + id + ", catX: " + positions[id * 4 + 0] + ", catY: " + positions[id * 4 + 1]
+		//            + ", zMouse: " + Math.toDegrees(measurments.get(id, 0)));
 		g2.setColor(Color.black);
 			g2.drawLine(catXpos, catYpos, (int) (catXpos + Math.cos(-measurments.get(id, 0))
 					* raylength), (int) (catYpos + Math.sin(-measurments.get(id, 0)) * raylength));
@@ -341,8 +341,9 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 				
 		//One iteration with UKF
 		states_and_P = ufk_filter.run_ukf(f, states_and_P, h, measurments, Q, R);
-		//states = states_and_P[0]; 
-		//P = states_and_P[1];
+		states = states_and_P[0]; 
+		P = states_and_P[1];
+		
 		if (DEBUG)
 		{
 			debug("Debug: tracking.ukf cat " +id + ", P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", mouse P:");
@@ -388,7 +389,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	
 	private void debug(Object info)
 	{
-		if (DEBUG) System.out.println(info);
+		if (true) System.out.println(info);
 	}
 
 }//End of class

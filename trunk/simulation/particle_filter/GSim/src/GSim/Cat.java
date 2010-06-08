@@ -18,15 +18,15 @@ public class Cat extends Actor {
 	private Guide guide;
 
 	private boolean usePositioningParticleFilter = false;
-	private boolean usePositioningGeometricFilter = true;
+	private boolean usePositioningGeometricFilter = false;
 	private boolean usePositioningUnscentedKalmanFilter = false;
-	private boolean useTrackingParticleFilter = true;
-	private boolean useTrackingUnscentedKalmanFilter = false;
+	private boolean useTrackingParticleFilter = false;
+	private boolean useTrackingUnscentedKalmanFilter = true;
 	private boolean useGuide = false;
 
 	/* Periods in ms */
 	private int positioningNaivePeriod = 500;// 200;
-	private int trackingKalmanPeriod = 200;// 50;
+	private int trackingKalmanPeriod = 50;// 50;
 	private int positioningKalmanPeriod = 200;// 500;
 	// NB: working ok @500ms with q = 0.5f and stddegrees = 1f,
 	// working somewhat ok @750ms with q = 0.005f and stddegrees = 1f
