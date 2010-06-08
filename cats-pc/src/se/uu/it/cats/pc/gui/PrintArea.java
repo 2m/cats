@@ -85,8 +85,8 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	private int SCALE_CURRENT = SCALE_INIT;
 	
 	//Load image
-	BufferedImage image = null;  //Toolkit.getDefaultToolkit().getImage("robot2.png");
-	
+	//BufferedImage image = null;  //Toolkit.getDefaultToolkit().getImage("robot2.png");
+	private Image robot;
 	private boolean marked = false;
   
   public PrintArea(int areaHeight, int areaWidth) {
@@ -135,11 +135,16 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
     // Slider initialt osynlig
     scaleSlider.setVisible(false);
     
+    /*
     //Add image
     try {
     	image = ImageIO.read(new File("robot2.png"));
     } catch (IOException e) {
-    }
+    }*/
+    
+	// Load image.
+    //Toolkit toolkit = Toolkit.getDefaultToolkit();
+    //robot = toolkit.getImage("robot.jpg");
     
     
   }
@@ -162,7 +167,9 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
     _arenaWidth = _newArea.getArenaWidth();
 	
 	wBetDashedLines_zk = wBetDashedLines*zk/50; //Adjusting grid for zoom
-    //Draw lines
+    
+	
+	//Draw lines
 	if(_showgrid){
 		//g2d.setColor(Color.gray);
 		g2d.setColor(new Color(0f,0f,0f,0.2f));
@@ -359,6 +366,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	//Print cat-image
 	//g2d.rotate(Math.PI);  // Rotate the image by 1 radian.
     //g2d.drawImage(image, 30, 30, ImageObserver observer);
+	g2d.drawImage(robot, (int) 100 , (int) 100, (int) 100, (int) 100, null);
   }
   
   public void showGrid(boolean showgrid){
