@@ -220,7 +220,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			
 			// Body
 			g2d.setColor(Color.black);
-			g2d.fillRect( (int) centFix_X+((_lighthouse[i].getX()-1)*zk/50-10), (int) centFix_Y-((_lighthouse[i].getY())*zk/50+25), 22, 30);
+			g2d.fillRect( (int) centFix_X+((_lighthouse[i].getX())*zk/50-10-1), (int) centFix_Y-((_lighthouse[i].getY())*zk/50+25), 22, 30);
 			g2d.setColor(currentColor);
 			g2d.fillRect( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-((_lighthouse[i].getY())*zk/50+25), 20, 30);
 						
