@@ -51,8 +51,15 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	
 	private int entityPosX;
 	private int entityPosY;
+	//Mouse fading
 	private int oldEntityPosX;
 	private int oldEntityPosY;
+	//Mouse lines
+	private int oldEntityPosX0;
+	private int oldEntityPosY0;
+	private int oldEntityPosX1;
+	private int oldEntityPosY1;
+	
 	private int linelength;
 	private float[] bufferX;
 	private float[] bufferY;
@@ -197,11 +204,27 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	bufferY = _mouse.getBufferY();
 	posBuffer = _mouse.getPosBuffer();
 	bufferLength = _mouse.getBufferLength();
-	for(int j = 0; j<bufferLength;j++) {
+	g2d.setColor(Color.magenta);
+	g2d.fillOval( centFix_X+ (int) _mouse.getX()-5, centFix_Y - (int) _mouse.getY()-5, 10, 10);
+	
+	//Mouse fading
+	/*for(int j = 0; j<bufferLength;j++) {
 		oldEntityPosX = centFix_X+(int)(bufferX[(posBuffer+j) % bufferLength]*100)*zk/50;
 		oldEntityPosY = centFix_Y-(int)(bufferY[(posBuffer+j) % bufferLength]*100)*zk/50;
 		g2d.setColor(new Color((int) 255, (int) (bufferLength-j)*255/bufferLength,(int) (bufferLength-j)*255/bufferLength));
 		g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
+	}*/
+	//Mouse lines
+	for(int j = 0; j<bufferLength;j++) {
+		oldEntityPosX0 = centFix_X+(int)(bufferX[(posBuffer+j) % bufferLength]*100)*zk/50;
+		oldEntityPosY0 = centFix_Y-(int)(bufferY[(posBuffer+j) % bufferLength]*100)*zk/50;
+		oldEntityPosX1 = centFix_X+(int)(bufferX[(posBuffer+j+1) % bufferLength]*100)*zk/50;
+		oldEntityPosY1 = centFix_Y-(int)(bufferY[(posBuffer+j+1) % bufferLength]*100)*zk/50;
+		
+		g2d.setColor(new Color((int) 255, (int) (bufferLength-j)*255/bufferLength,(int) (bufferLength-j)*255/bufferLength));
+		//g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
+
+		g2d.drawLine( (int) oldEntityPosX0, (int) oldEntityPosY0, (int) oldEntityPosX1,(int) oldEntityPosY1);
 	}
 	
 	
