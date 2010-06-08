@@ -5,9 +5,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;*/
 
+
+import se.uu.it.cats.brick.Settings;
 import se.uu.it.cats.brick.Clock;
-import se.uu.it.cats.brick.Identity;
-import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.storage.BillBoard;
 import lejos.util.Matrix;
 import static java.lang.Math.*;
@@ -33,6 +33,10 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	/** state covariance */
 	private Matrix P;
 	
+	/** a matrix array combining the state vector and state covariance 
+	 * into one variable to simply input/output from methods.*/
+	private Matrix[] states_and_P;
+	
 	/** measurement equation */
 	private IFunction h;
 	
@@ -47,7 +51,6 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	
 	/** std of expected measurement noise for the mouse TODO: update comment(for bearing angle, x, y, orient., cam.ang respectivly)*/
 	private double[] std_array;
-	private Matrix r; //TODO never used ? remove ?
 	
 	/** Varible for time */
 	private int currentTime, lastCurrentTime;
@@ -56,13 +59,10 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	private int iterationCounter = 0;
 	private int iterationTime = 0;
 	
-	/** number of landmarks */
-	private int numberOfLandmarks;
-	
 	private float large = (float)pow(10,10);
 	
 	/**Toggle debug info*/
-	private final boolean DEBUG = false;
+	private final boolean DEBUG = true;
 
 
 	/**
@@ -106,10 +106,12 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		h = new HmeasMouse(billboard);  //measurement equation  
 		
 		P = eye(nx).timesEquals( pow(10,-3) );  //initial state covariance
+		
+		states_and_P = new Matrix[]{states, P};
 
 		//Initialize some data just to be sure that it gets done
 		initData(1f, 1f, 0.00001f, 0.00001f, Clock.timestamp());
-		//billboard.setLatestSighting(id, 0, 0, 0, lastCurrentTime-1000);
+		billboard.setLatestSighting(id, 0, 0, 0, lastCurrentTime-1000);
 		
 		if (DEBUG){
 			debug("Creating TrackingUnscentedKalmanFilter object for cat " + id);
@@ -308,42 +310,33 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		R.set(2,2, large);
 		// Loop through cats in billboard
 		for (int i = 1; i <= billboard.getNoCats(); i++) {
-			//Logger.println("Cat" + id + " checking billboard for cat " + (i) + ": sighting timestamp = " + sightings[(i - 1) * 4 + 3] + ", lastCurrentTime = " + (float)lastCurrentTime);
+			//System.out.println("Cat" + id + " checking billboard for cat " + (i) + ": sighting timestamp = " + sightings[(i - 1) * 4 + 3] + ", lastCurrentTime = " + (float)lastCurrentTime);
 			
 			//use a mouse sighting if it's newer then lastCurrentTime (and older then currentTime?)
-			//System.out.println("TS sightings: " + sightings[(i - 1) * 4 + 3]);
-			//System.out.println("TS lastCurrentTime: " + lastCurrentTime);
-			if (sightings[(i - 1) * 4 + 3] >= (float)lastCurrentTime)
-			{
+			//System.out.println("SightingTS: "+sightings[(i - 1) * 4 + 3]+"lastCurrentTime: "+lastCurrentTime);
+						
+			//if (sightings[(i - 1) * 4 + 3] >= (float)lastCurrentTime)
+			//{
 				//System.out.println("Cat " + id + " setting measurement for cat" + (i));
 				R.set(i-1, i-1, pow(std_array[0],2) );
 				measurments.set(i-1, 0, (sightings[(i - 1) * 4 + 2] + 2.0*PI) % (2.0*PI) );
 				
-			}
+			//}
 		}
-		//if (DEBUG)
-		//{
-			//debug("Debug: tracking.ukf cat " +id + ", measurments dim: " + measurments.getRowDimension() + " x " + measurments.getColumnDimension() + ", mouse measurments:");
-			//System.out.println("z[0]: ");
-			//System.out.println(measurments.get(0, 0));
-			//printM(measurments);
-			//debug("Debug: tracking.ukf cat " +id + ", R dim: " + R.getRowDimension() + " x " + R.getColumnDimension() + ", mouse R:");
-			//printM(R);
-		//}
+		if (DEBUG)
+		{
+			debug("Debug: tracking.ukf cat " +id + ", measurments dim: " + measurments.getRowDimension() + " x " + measurments.getColumnDimension() + ", mouse measurments:");
+			printM(measurments);
+			debug("Debug: tracking.ukf cat " +id + ", R dim: " + R.getRowDimension() + " x " + R.getColumnDimension() + ", mouse R:");
+			printM(R);
+		}
 		
 				
 		//One iteration with UKF
-		//int before =  Clock.timestamp(); //performance testing
+		states_and_P = ufk_filter.run_ukf(f, states_and_P, h, measurments, Q, R);
+		states = states_and_P[0]; 
+		P = states_and_P[1];
 		
-		Matrix[] result = ufk_filter.ukf(f, states, P, h, measurments, Q, R);
-		
-		/*int after =  Clock.timestamp(); //performance testing
-		int diff = after - before;
-		System.out.println("UKFTimeCalc: " + diff);
-		try{Thread.sleep(1000);}catch(Exception ex){}*/
-		
-		states = result[0]; 
-		P = result[1];
 		if (DEBUG)
 		{
 			debug("Debug: tracking.ukf cat " +id + ", P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", mouse P:");
@@ -353,17 +346,17 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		}
 		
 		// Check x and y so they keep inside the arena and also set velocity in that direction to zero if outside the arena
-		if (states.get(0, 0) < Arena.min_x) {
-			states.set(0, 0, Arena.min_x);
+		if (states.get(0, 0) < Settings.ARENA_MIN_X) {
+			states.set(0, 0, Settings.ARENA_MIN_X);
 		}
-		if (states.get(0, 0) > Arena.max_x) {
-			states.set(0, 0, Arena.max_x);
+		if (states.get(0, 0) > Settings.ARENA_MAX_X) {
+			states.set(0, 0, Settings.ARENA_MAX_X);
 		}
-		if (states.get(1, 0) < Arena.min_y) {
-			states.set(1, 0, Arena.min_y);
+		if (states.get(1, 0) < Settings.ARENA_MIN_Y) {
+			states.set(1, 0, Settings.ARENA_MIN_Y);
 		}
-		if (states.get(1, 0) > Arena.max_y) {
-			states.set(1, 0, Arena.max_y);
+		if (states.get(1, 0) > Settings.ARENA_MAX_Y) {
+			states.set(1, 0, Settings.ARENA_MAX_Y);
 		}
 
 		// Commit data to billboard ??
@@ -375,32 +368,23 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
-		
-		//System.out.println("TracUKF: cat " + Identity.getId() + " iter: " + iterationCounter);
 	}
 
 	public void run() 
 	{
 		while (true) 
 		{
-			update();
-			pause((long) (Tint - (Clock.timestamp() % Tint)));
-			//System.out.println("X: " + getX());
-			//System.out.println("Y: " + getY());
-			//Logger.println("X: " + getX());
-			//Logger.println("Y: " + getY());
-			//Logger.println("Xv: " + getXv());
-			//Logger.println("Yv: " + getYv());
-			//System.out.println("ExecTime: " + getExecutionTime());
-			//System.out.println("Xv: " + getXv() + "Yv: " + getYv());
+			// update();
+			pause((long) (Clock.timestamp() % Tint));
 		}
 
 	}
 	
 	private void debug(Object info)
 	{
-		if (DEBUG) System.out.println(info);
+		if (true) System.out.println(info);
 	}
 
 }//End of class
+
 

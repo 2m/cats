@@ -1,8 +1,8 @@
 package se.uu.it.cats.brick.filter;
 
 /*Below is the syntax highlighted version of Cholesky.java 
- *from paragraph 9.4 Numerical Solutions to Differential Equations. 
- *Copyright 2007, Robert Sedgewick and Kevin Wayne. 
+ *from §9.4 Numerical Solutions to Differential Equations. 
+ *Copyright © 2007, Robert Sedgewick and Kevin Wayne. 
  *Last updated: Tue Sep 29 16:17:41 EDT 2009. 
  */
 /*************************************************************************
@@ -19,14 +19,14 @@ package se.uu.it.cats.brick.filter;
  *
  *************************************************************************/
 public class Cholesky {
-    private static final double EPSILON = 1e-10;//1e-10;
+    private static final double EPSILON = 1e-10;
 
     // is symmetric
     public static boolean isSymmetric(double[][] A) {
         int N = A.length;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < i; j++) {
-                if (Math.abs(A[i][j] - A[j][i]) > EPSILON) return false;  //updated so that rounding errors doesn't make it fail
+                if (A[i][j] - A[j][i] > EPSILON) return false;  //updated so that rounding errors doesn't make it fail
             }
         }
         return true;
@@ -45,26 +45,16 @@ public class Cholesky {
     // return Cholesky factor L of psd matrix A = L L^T
     public static double[][] cholesky(double[][] A) {
         if (!isSquare(A)) {
-        	
-    		System.out.println("Cholesky: not sq.!");
-    		try{Thread.sleep(2000);}catch(Exception ex){}
             throw new RuntimeException("Matrix is not square");
         }
         if (!isSymmetric(A)) {
-        	
-    		System.out.println("Cholesky: not sym.!");
-    		try{Thread.sleep(2000);}catch(Exception ex){}
-    		
             throw new RuntimeException("Matrix is not symmetric");
         }
 
-		/*System.out.println("Cholesky 1");
-		try{Thread.sleep(3000);}catch(Exception ex){}*/
-        
         int N  = A.length;
         double[][] L = new double[N][N];
 
-        for (int i = 0; i < N; i++)  {	
+        for (int i = 0; i < N; i++)  {
             for (int j = 0; j <= i; j++) {
                 double sum = 0.0;
                 for (int k = 0; k < j; k++) {
@@ -74,23 +64,15 @@ public class Cholesky {
                 else        L[i][j] = 1.0 / L[j][j] * (A[i][j] - sum);
             }
             if (L[i][i] <= 0) {
-            	
-        		System.out.println("Cholesky: non pos def!");
-        		try{Thread.sleep(2000);}catch(Exception ex){}
-
                 throw new RuntimeException("Matrix not positive definite");
             }
         }
-        
-		/*System.out.println("CholeskyReturn 1");
-		try{Thread.sleep(1000);}catch(Exception ex){}*/
-		
         return L;
     }
-
-
+    
+    /*
     // sample client
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         int N = 3;
         double[][] A = { { 4, 1,  1 },
                          { 1, 5,  3 },
