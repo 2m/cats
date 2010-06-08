@@ -58,9 +58,9 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	{
 		this.L = L;
 		this.m = m;
-		alpha=3.5f;  //1e-3 default
+		alpha=3e-3f;  //1e-3 default
 		ki=0;  //default
-		beta=pow(alpha, 2) -0.9f;  //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
+		beta=2; //pow(alpha, 2) -0.9f;  //lower bound -2; 10 5 10000 -2* -1 0 1 def:2; default, tunable
 		lambda=pow(alpha, 2)*(L+ki)-L;  
 		c=L+lambda; 
 		Wm = new Matrix(1, (2*L+1), 0.5/c);
