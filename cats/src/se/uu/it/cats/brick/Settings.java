@@ -13,13 +13,13 @@ public class Settings {
 	public static int CAMERA_OFFSET;
 
 	// positioning filter
-	public static boolean USE_POSITIONING_GEOMETRIC_FILTER = true;
-	public static boolean USE_POSITIONING_UNSCENTED_KALMAN_FILTER = false;
-	public static boolean USE_POSITIONING_PARTICLE_FILTER  = false;
+	public static final boolean USE_POSITIONING_GEOMETRIC_FILTER = true;
+	public static final boolean USE_POSITIONING_UNSCENTED_KALMAN_FILTER = false;
+	public static final boolean USE_POSITIONING_PARTICLE_FILTER  = false;
 	
 	// tracking filter
-	public static boolean USE_TRACKING_UNSCENTED_KALMAN_FILTER = true;
-	public static boolean USE_TRACKING_PARTICLE_FILTER = false;
+	public static final boolean USE_TRACKING_UNSCENTED_KALMAN_FILTER = true;
+	public static final boolean USE_TRACKING_PARTICLE_FILTER = false;
 	
 	// guide
 	public static boolean USE_GUIDE = false;
