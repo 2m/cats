@@ -67,7 +67,7 @@ public class AbsolutePositioningGeometricFilter extends
 	}
 
 	private void addLandmark(float angle, int type) {
-		final float angleEpsilon = (float) (10 * (Math.PI / 180));
+		final float angleEpsilon = (float) (15 * (Math.PI / 180));
 		positioning = true;
 		for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
 			if (Settings.LANDMARK_COLOR[i] == type) {
@@ -75,7 +75,7 @@ public class AbsolutePositioningGeometricFilter extends
 				// Removes some erroneous landmark hits
 				if (Math.abs(Math.atan2(Settings.LANDMARK_POSITION[i][1]
 						- getY(), Settings.LANDMARK_POSITION[i][0] - getX())
-						- getAngle() - angle) < (45 * (Math.PI / 180))) {
+						- getAngle() - angle) < (40 * (Math.PI / 180))) {
 					// Check if this landmark has been seen
 					if (landmarkNoSightings[i] > 0) {
 						// Check if new landmark is close enough to the existing
@@ -211,32 +211,29 @@ public class AbsolutePositioningGeometricFilter extends
 							mean_y += maxPositionCorrection * Math.signum(diff);
 						}
 					}
-					if (noSeenLandmarks() >= 1) {
+				}
+			}
+			if (noSeenLandmarks() >= 1) {
 
-						float diff = 0;
-						int denominator = 0;
-						for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
-							if (landmarkNoSightings[i] > 0) {
-								diff += (float) (Math.atan2(
-										Settings.LANDMARK_POSITION[i][1]
-												- mean_y,
-										Settings.LANDMARK_POSITION[i][0]
-												- mean_x) - landmarkAngles[i])
-										- mean_angle;
-								denominator++;
-							}
+				float diff = 0;
+				int denominator = 0;
+				for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
+					if (landmarkNoSightings[i] > 0) {
+						diff += (float) (Math.atan2(
+								Settings.LANDMARK_POSITION[i][1] - mean_y,
+								Settings.LANDMARK_POSITION[i][0] - mean_x) - landmarkAngles[i])
+								- mean_angle;
+						denominator++;
+					}
 
-						}
-						if (denominator > 0) {
-							diff = diff / denominator;
-							if (Math.abs(diff) < maxAngleCorrection
-									* denominator) {
-								mean_angle += diff;
-							} else {
-								mean_angle += maxAngleCorrection * denominator
-										* Math.signum(diff);
-							}
-						}
+				}
+				if (denominator > 0) {
+					diff = diff / denominator;
+					if (Math.abs(diff) < maxAngleCorrection * denominator) {
+						mean_angle += diff;
+					} else {
+						mean_angle += maxAngleCorrection * denominator
+								* Math.signum(diff);
 					}
 				}
 			}
