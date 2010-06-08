@@ -67,11 +67,7 @@ public class Main {
 				positioningFilter = new AbsolutePositioningParticleFilter(Identity.getId(), 
 						Settings.N_POSITIONING, (float) Settings.PERIOD_POSITIONING_PARTICLE / 1000f,
 						unifiedBuffer, BillBoard.getInstance());
-			} /*else if (Settings.USE_POSITIONING_UNSCENTED_KALMAN_FILTER) {
-				positioningFilter = new AbsolutePositioningUKF(Identity.getId(),
-						(float) Settings.PERIOD_POSITIONING_KALMAN / 1000f, unifiedBuffer,
-						BillBoard.getInstance());
-			}*/ else if (Settings.USE_POSITIONING_GEOMETRIC_FILTER) {
+			} else if (Settings.USE_POSITIONING_GEOMETRIC_FILTER) {
 				positioningFilter = new AbsolutePositioningGeometricFilter(Identity.getId(),
 						(float) Settings.PERIOD_POSITIONING_GEOMETRIC / 1000f, unifiedBuffer,
 						BillBoard.getInstance());
@@ -83,7 +79,11 @@ public class Main {
 			positioningFilter.initData(Settings.START_X, Settings.START_Y, Settings.START_ANGLE);
 			Thread positioningFilterThread = new Thread(positioningFilter);
 			positioningFilterThread.start();
-
+			/*else if (Settings.USE_POSITIONING_UNSCENTED_KALMAN_FILTER) {
+			positioningFilter = new AbsolutePositioningUKF(Identity.getId(),
+					(float) Settings.PERIOD_POSITIONING_KALMAN / 1000f, unifiedBuffer,
+					BillBoard.getInstance());
+			}*/
 
 
 			if (Settings.USE_TRACKING_PARTICLE_FILTER) {
@@ -95,8 +95,6 @@ public class Main {
 						(float) Settings.PERIOD_TRACKING_KALMAN / 1000f, 
 						BillBoard.getInstance());
 			}
-			trackingFilter = new TrackingParticleFilter(Identity.getId(), 50,
-					1f, BillBoard.getInstance());
 			Thread trackingFilterThread = new Thread(trackingFilter);
 			trackingFilterThread.start();
 			
