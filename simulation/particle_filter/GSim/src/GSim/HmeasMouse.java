@@ -1,6 +1,5 @@
-package se.uu.it.cats.brick.filter;
+package GSim;
 
-import se.uu.it.cats.brick.storage.BillBoard;
 import lejos.util.Matrix;
 import static java.lang.Math.*;
 
