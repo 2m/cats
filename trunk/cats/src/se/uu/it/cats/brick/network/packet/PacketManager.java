@@ -5,20 +5,14 @@ import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.Music;
 import se.uu.it.cats.brick.Settings;
-import se.uu.it.cats.brick.network.KeepAlive;
 import se.uu.it.cats.brick.storage.BillBoard;
 
 public class PacketManager
 {
 	private static PacketManager _instanceHolder = new PacketManager();
 	
-	private static final int BUF_COUNT = 4;
-	
-	private PacketBuffer[] _buffer;
-	
 	private PacketManager()
-	{
-		_buffer = new PacketBuffer[BUF_COUNT];
+	{		
 	}
 	
 	public static PacketManager getInstance()
@@ -50,7 +44,6 @@ public class PacketManager
 					p.readImpl(bArr);
 					
 					Clock.incommingPacket((Timestamp)p);
-					//addToBuffer(p);
 				}
 				break;
 			}
@@ -81,8 +74,6 @@ public class PacketManager
 				{
 					p = new SimpleMeasurement();
 					p.readImpl(bArr);
-					
-					//addToBuffer(p);
 				}
 				break;
 			}
@@ -171,14 +162,23 @@ public class PacketManager
 				}
 				break;
 			}
+			case 0x10:
+			{
+				if (arrayEndIndex >= SweepOrder.LENGTH)
+				{
+					p = new SweepOrder();
+					p.readImpl(bArr);
+					
+					// TODO sweep order handling
+				}
+				break;
+			}
 			case -1:
 			{
 				if (arrayEndIndex >= CloseConnection.LENGTH)
 				{
 					p = new CloseConnection();
 					p.readImpl(bArr);
-					
-					//addToBuffer(p);
 				}
 				break;
 			}
@@ -194,15 +194,5 @@ public class PacketManager
 		}
 		
 		return p;
-	}
-	
-	public boolean addToBuffer(Packet p)
-	{
-		int bufId = p.getSource();
-		
-		if (_buffer[bufId] == null)
-			_buffer[bufId] = new PacketBuffer();
-		
-		return _buffer[bufId].addPacket(p);
 	}
 }
