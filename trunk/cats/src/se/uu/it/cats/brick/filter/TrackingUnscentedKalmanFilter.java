@@ -369,16 +369,6 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		// Update public time
 		lastCurrentTime = currentTime;
 	}
-
-	public void run() 
-	{
-		while (true) 
-		{
-			// update();
-			pause((long) (Clock.timestamp() % Tint));
-		}
-
-	}
 	
 	private void debug(Object info)
 	{
