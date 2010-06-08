@@ -32,7 +32,6 @@ public class Settings {
 
 	// Landmark data
 	public static final int NO_LANDMARKS = 4;
-	// FIXME: Add real colours to landmark lists in settings
 	public static final int TYPE_MOUSE = 0;
 	public static final int TYPE_PURPLE = 1;
 	public static final int TYPE_BLUE = 2;
