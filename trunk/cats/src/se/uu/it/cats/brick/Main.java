@@ -20,7 +20,7 @@ import se.uu.it.cats.brick.storage.BillBoard;
 import se.uu.it.cats.brick.storage.StorageManager;
 
 /**
- * Example leJOS Project with an ant build file
+ * Main file to run the bearings only project
  * 
  */
 public class Main {
@@ -62,18 +62,39 @@ public class Main {
 			movementPilot = new MovementPilot(unifiedBuffer);
 			Thread movementThread = new Thread(movementPilot);
 			movementThread.start();
-
-			positioningFilter = new AbsolutePositioningNaiveFilter(Identity
-					.getId(), .33f, unifiedBuffer, BillBoard.getInstance());
+				
+			if (Settings.USE_POSITIONING_PARTICLE_FILTER) {
+				positioningFilter = new AbsolutePositioningParticleFilter(Identity.getId(), 
+						Settings.N_POSITIONING, (float) Settings.PERIOD_POSITIONING_PARTICLE / 1000f,
+						unifiedBuffer, BillBoard.getInstance());
+			} /*else if (Settings.USE_POSITIONING_UNSCENTED_KALMAN_FILTER) {
+				positioningFilter = new AbsolutePositioningUKF(Identity.getId(),
+						(float) Settings.PERIOD_POSITIONING_KALMAN / 1000f, unifiedBuffer,
+						BillBoard.getInstance());
+			}*/ else if (Settings.USE_POSITIONING_GEOMETRIC_FILTER) {
+				positioningFilter = new AbsolutePositioningGeometricFilter(Identity.getId(),
+						(float) Settings.PERIOD_POSITIONING_GEOMETRIC / 1000f, unifiedBuffer,
+						BillBoard.getInstance());
+			} else {
+				positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(),
+						(float) Settings.PERIOD_POSITIONING_NAIVE / 1000f, unifiedBuffer,
+						BillBoard.getInstance());
+			}
 			positioningFilter.initData(Settings.START_X, Settings.START_Y, Settings.START_ANGLE);
-
 			Thread positioningFilterThread = new Thread(positioningFilter);
 			positioningFilterThread.start();
 
-			// trackingFilter = new
-			// TrackingUnscentedKalmanFilter(Identity.getId(), 0.25f,
-			// BillBoard.getInstance());
 
+
+			if (Settings.USE_TRACKING_PARTICLE_FILTER) {
+				trackingFilter = new TrackingParticleFilter(Identity.getId(), 
+						Settings.N_TRACKING, (float) Settings.PERIOD_TRACKING_PARTICLE / 1000f,
+						BillBoard.getInstance());
+			} else if (Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER) {
+				trackingFilter = new TrackingUnscentedKalmanFilter(Identity.getId(),
+						(float) Settings.PERIOD_TRACKING_KALMAN / 1000f, 
+						BillBoard.getInstance());
+			}
 			trackingFilter = new TrackingParticleFilter(Identity.getId(), 50,
 					1f, BillBoard.getInstance());
 			Thread trackingFilterThread = new Thread(trackingFilter);
