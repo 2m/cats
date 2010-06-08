@@ -2,7 +2,6 @@ package se.uu.it.cats.brick.filter;
 
 import java.awt.Rectangle;
 
-import se.uu.it.cats.brick.CatPosCalc;
 import se.uu.it.cats.brick.Clock;
 import se.uu.it.cats.brick.Identity;
 import se.uu.it.cats.brick.Logger;
@@ -23,12 +22,20 @@ public class Camera implements Runnable {
 	private static final int CLOCKWISE = -1;
 	private static final int COUNTER_CLOCKWISE = 1;
 	
+	// iteration counter which will increase when camera is stopped when landmark is seen
+	private int iterCounterSweep = 0;
+	private final int maxIterCounter = 40;
+	private final int maxIterToCapture = 20;
+	
 	private NXTCam NXTcamera = null;
 	private Motor camMotor = Motor.B;
 	
 	private final int maxSpeed = 900;
+	private final int maxSweepSpeed = 500;
 	private final float motorCal = 0.978f;//1.19f; //linear calibration
 	private final float gearRatio = -0.2f * motorCal; //1:5 gear down (smallest gear to biggest)
+	
+	private final float radPerPix = -1*(float) ((float) 43*Math.PI/180.0 / 176);
 	
 	private final int maxAngAbs = 180;
 	private final int upperMaxAng = maxAngAbs;
@@ -37,7 +44,10 @@ public class Camera implements Runnable {
 	private final int offset = Settings.CAMERA_OFFSET;
 	
 	final static int dt = 10; // milliseconds
-	Buffer unifiedBuffer;
+	private Buffer unifiedBuffer;
+	
+	private int cyanCounter;
+	private int dir = COUNTER_CLOCKWISE; //Specifies which direction to turn
 	
 	public static boolean doSweep = false;
 	
@@ -70,13 +80,9 @@ public class Camera implements Runnable {
 		float integral = 0;
 		float derivative;
 		
-		//int iterCounter = 0;
-		
-		int dir = COUNTER_CLOCKWISE; //Specifies which direction to turn
+		//int iterCounter = 0;		
 		
 		int cyanCounter = 0;
-		
-		float radPerPix = -1*(float) ((float) 43*Math.PI/180.0 / 176);
 	
 		while (true) {
 			if (doSweep) {
@@ -100,7 +106,7 @@ public class Camera implements Runnable {
 				
 				boolean mouseFound = false;
 	
-				if (numObjects >= 1) {// && numObjects <= 8) {				
+				if (numObjects >= 1) {// && numObjects <= 8) {
 					
 					boolean[] foundColor = {false,false,false,false,false};
 					float[] foundColorAng = new float[5];
@@ -169,7 +175,7 @@ public class Camera implements Runnable {
 						foundColor[Settings.TYPE_PURPLE] = false;
 					}
 					
-					int cyanWindow = 3;				
+					int cyanWindow = 3;
 					for (int i = 0; i < foundColor.length; i++) {					
 						if (foundColor[i]) {
 							
@@ -293,39 +299,49 @@ public class Camera implements Runnable {
 	
 	public void sweep() {
 		
+		boolean[] seenLandmarks = new boolean[] {false, false, false, false, false};
+		
 		camMotor.stop();
-		try {Thread.sleep(1000);} catch (Exception ex) {}
 		
 		int startAngle = getMotorAng();
-		camMotor.setSpeed(maxSpeed); //Search for landmarks with maximum speed
+		camMotor.setSpeed(maxSweepSpeed); //Search for landmarks with maximum speed
 		
 		// first go to the nearest border
 		if (startAngle > 0) {
-			changeDirection(COUNTER_CLOCKWISE);
+			dir = COUNTER_CLOCKWISE;
+			changeDirection(dir);
 		}
 		else {
-			changeDirection(CLOCKWISE);
+			dir = CLOCKWISE;
+			changeDirection(dir);
 		}
 		
 		boolean firstTurnMade = false;
 		boolean secondTurnMade = false;
-		while (!firstTurnMade || !secondTurnMade) {
+		int motorAng = startAngle;
+		// do full sweep and return to the starting position
+		while (!firstTurnMade || !secondTurnMade || Math.abs(motorAng - startAngle) > 5) {
 				
-			int motorAng = getMotorAng();
+			motorAng = getMotorAng();
 			
 			//Reverse motor direction if at maximum turning angle
 			if (motorAng > upperMaxAng) {
-				changeDirection(CLOCKWISE);
+				dir = CLOCKWISE;
+				changeDirection(dir);
 				firstTurnMade = true;
 			}
 			if (motorAng < lowerMaxAng) {
-				changeDirection(COUNTER_CLOCKWISE);
+				dir = COUNTER_CLOCKWISE;
+				changeDirection(dir);
 				secondTurnMade = true;
 			}
+			
+			int landmark = checkForLandmark(motorAng, seenLandmarks);
+			if (landmark != -1)
+				seenLandmarks[landmark] = true;
 		}
 		
 		camMotor.stop();
-		try {Thread.sleep(1000);} catch (Exception ex) {}		
 		
 		doSweep = false;
 	}
@@ -346,5 +362,128 @@ public class Camera implements Runnable {
 		else {
 			camMotor.forward();                                                                                                                                                                                                                                             
 		}
+	}
+	
+	public int checkForLandmark(int motorAng, boolean[] seenLandmarks) {
+		int landmarkToReturn = -1;
+		
+		iterCounterSweep++;
+		// start moving is not moving longer than max iterations
+		if (!camMotor.isMoving() && iterCounterSweep > maxIterCounter)
+			changeDirection(dir);
+		
+		int numObjects = NXTcamera.getNumberOfObjects();
+		
+		if (numObjects >= 1) {// && numObjects <= 8) {
+			
+			boolean[] foundColor = {false,false,false,false,false};
+			float[] foundColorAng = new float[5];
+			
+			for (int i=0;i<numObjects;i++) {
+				Rectangle r = NXTcamera.getRectangle(i);
+				
+				//calibrated color group, 0 up to 7
+				int currentColor = NXTcamera.getObjectColor(i);
+				
+				if (currentColor == Settings.TYPE_MOUSE) {
+					// skip the mouse
+					continue;
+				}
+				
+				try {					
+					if (foundColor[currentColor])
+						continue;
+					
+					//color has been found,
+					//discard all forthcoming smaller objects
+					foundColor[currentColor] = true;
+				}
+				catch (Exception ex) {
+					// there was uncaught exception in this method once
+					// the exception was ArrayIndexOutOfBoundsException
+					// I believe it was thrown here
+					Logger.println("Unknown color found:"+currentColor);
+					
+					continue;
+				}
+				
+				// x-coordinate of the middle of the found color rectangle
+				int xColor = r.x + r.width / 2;					
+				
+				float angToTarget = (xColor - 176f/2f + offset)*radPerPix;
+				float angToTargetRelCat = angToTarget + degToRad(motorAng);				
+				
+				foundColorAng[currentColor] = angToTargetRelCat;
+			}
+			
+			// if we found cyan
+			if (foundColor[Settings.TYPE_CYAN]) {
+				if (foundColor[Settings.TYPE_GREEN] ) {
+					// found CYAN and GREEN true landmark is GREEN
+					foundColor[Settings.TYPE_CYAN] = false;
+					foundColorAng[Settings.TYPE_GREEN] = (foundColorAng[Settings.TYPE_GREEN] + foundColorAng[Settings.TYPE_CYAN]) / 2;
+				}
+				else if (foundColor[Settings.TYPE_BLUE]) {
+					// found CYAN and BLUE true landmark is BLUE
+					foundColor[Settings.TYPE_CYAN] = false;
+					foundColorAng[Settings.TYPE_BLUE] = (foundColorAng[Settings.TYPE_BLUE] + foundColorAng[Settings.TYPE_CYAN]) / 2;
+				}
+			}
+			else if (foundColor[Settings.TYPE_BLUE]) {
+				foundColor[Settings.TYPE_PURPLE] = false;
+			}
+			
+			int cyanWindow = 3;
+			for (int i = 0; i < foundColor.length; i++) {					
+				if (foundColor[i]) {
+					
+					boolean sendColor = true;
+					
+					if (i == Settings.TYPE_CYAN) {
+						if (cyanCounter < cyanWindow) {
+							// see cyan but not too many times to send,
+							// increase counter and not send
+							cyanCounter++;
+							sendColor = false;
+						}
+						else {
+							// cyan counter is large enough, send data
+							cyanCounter = 0;
+						}
+					}
+					else if (i != Settings.TYPE_MOUSE) {
+						// color is not cyan neither mouse, reset cyan counter
+						cyanCounter = 0;
+					}
+					
+					if (seenLandmarks[i]) {
+						// skip all seen landmarks
+						continue;
+					}
+					
+					if (sendColor) {
+						if (camMotor.isMoving()) {
+							camMotor.stop();
+							iterCounterSweep = 0;
+						}
+						else {
+							if (iterCounterSweep > maxIterToCapture) {
+								unifiedBuffer.push(new SightingData(Clock.timestamp(), foundColorAng[i], i));
+								
+								// send some measurements to the GUI
+								ConnectionManager.getInstance().sendPacketToAll(
+										new SimpleMeasurement(i, foundColorAng[i], 0));
+								
+								changeDirection(dir);
+								
+								landmarkToReturn = i;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return landmarkToReturn;
 	}
 }
