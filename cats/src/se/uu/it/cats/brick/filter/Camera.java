@@ -80,10 +80,6 @@ public class Camera implements Runnable {
 		float integral = 0;
 		float derivative;
 		
-		//int iterCounter = 0;		
-		
-		int cyanCounter = 0;
-	
 		while (true) {
 			if (doSweep) {
 				sweep();
@@ -158,73 +154,36 @@ public class Camera implements Runnable {
 						}*/					
 					}
 					
-					// if we found cyan
-					if (foundColor[Settings.TYPE_CYAN]) {
+					// if we found white
+					if (foundColor[Settings.TYPE_WHITE]) {
 						if (foundColor[Settings.TYPE_GREEN] ) {
-							// found CYAN and GREEN true landmark is GREEN
-							foundColor[Settings.TYPE_CYAN] = false;
-							foundColorAng[Settings.TYPE_GREEN] = (foundColorAng[Settings.TYPE_GREEN] + foundColorAng[Settings.TYPE_CYAN]) / 2;
+							// found WHITE and GREEN true landmark is GREEN
+							foundColor[Settings.TYPE_WHITE] = false;
+							foundColorAng[Settings.TYPE_GREEN] = (foundColorAng[Settings.TYPE_GREEN] + foundColorAng[Settings.TYPE_WHITE]) / 2;
 						}
 						else if (foundColor[Settings.TYPE_BLUE]) {
-							// found CYAN and BLUE true landmark is BLUE
-							foundColor[Settings.TYPE_CYAN] = false;
-							foundColorAng[Settings.TYPE_BLUE] = (foundColorAng[Settings.TYPE_BLUE] + foundColorAng[Settings.TYPE_CYAN]) / 2;
+							// found WHITE and BLUE true landmark is BLUE
+							foundColor[Settings.TYPE_WHITE] = false;
+							foundColorAng[Settings.TYPE_BLUE] = (foundColorAng[Settings.TYPE_BLUE] + foundColorAng[Settings.TYPE_WHITE]) / 2;
+						}
+						else if (foundColor[Settings.TYPE_PURPLE]) {
+							// found WHITE and PURPLE true landmark is BLUE
+							foundColor[Settings.TYPE_WHITE] = false;
+							foundColorAng[Settings.TYPE_PURPLE] = (foundColorAng[Settings.TYPE_PURPLE] + foundColorAng[Settings.TYPE_WHITE]) / 2;
 						}
 					}
-					else if (foundColor[Settings.TYPE_BLUE]) {
-						foundColor[Settings.TYPE_PURPLE] = false;
-					}
 					
-					int cyanWindow = 3;
 					for (int i = 0; i < foundColor.length; i++) {					
 						if (foundColor[i]) {
 							
-							boolean sendColor = true;
+							unifiedBuffer.push(new SightingData(Clock.timestamp(), foundColorAng[i], i));
+							MovementPilot.newSighting = true;
 							
-							if (i == Settings.TYPE_CYAN) {
-								if (cyanCounter < cyanWindow) {
-									// see cyan but not too many times to send,
-									// increase counter and not send
-									cyanCounter++;
-									sendColor = false;
-								}
-								else {
-									// cyan counter is large enough, send data
-									cyanCounter = 0;
-								}
-							}
-							else if (i != Settings.TYPE_MOUSE) {
-								// color is not cyan neither mouse, reset cyan counter
-								cyanCounter = 0;
-							}
-							
-							if (sendColor) {
-								unifiedBuffer.push(new SightingData(Clock.timestamp(), foundColorAng[i], i));
-								MovementPilot.newSighting = true;
-								
-								// send some measurements to the GUI
-								ConnectionManager.getInstance().sendPacketToAll(
-										new SimpleMeasurement(i, foundColorAng[i], 0));
-							}
+							// send some measurements to the GUI
+							ConnectionManager.getInstance().sendPacketToAll(
+									new SimpleMeasurement(i, foundColorAng[i], 0));
 						}
 					}
-					
-					// send measurements to everyone
-					/*try
-					{
-						Thread.sleep(1000);
-					}
-					catch (Exception e)
-					{
-						
-					}*/
-					/*ConnectionManager.getInstance().sendPacketToAll(
-							new SimpleMeasurement(id, angToTargetRelCat, motorAngRad)
-					);*/
-					
-					//Logger.println("Found at:" + (int) (angToTargetAbs*180/Math.PI));
-					//Logger.println("Rel cat:" + (int) (angToTargetRelCat*180/Math.PI));
-					//Logger.println("CamMotor:" + motorAng);
 				}
 				
 				if (mouseFound)
@@ -416,68 +375,48 @@ public class Camera implements Runnable {
 				foundColorAng[currentColor] = angToTargetRelCat;
 			}
 			
-			// if we found cyan
-			if (foundColor[Settings.TYPE_CYAN]) {
+			// if we found white
+			if (foundColor[Settings.TYPE_WHITE]) {
 				if (foundColor[Settings.TYPE_GREEN] ) {
-					// found CYAN and GREEN true landmark is GREEN
-					foundColor[Settings.TYPE_CYAN] = false;
-					foundColorAng[Settings.TYPE_GREEN] = (foundColorAng[Settings.TYPE_GREEN] + foundColorAng[Settings.TYPE_CYAN]) / 2;
+					// found WHITE and GREEN true landmark is GREEN
+					foundColor[Settings.TYPE_WHITE] = false;
+					foundColorAng[Settings.TYPE_GREEN] = (foundColorAng[Settings.TYPE_GREEN] + foundColorAng[Settings.TYPE_WHITE]) / 2;
 				}
 				else if (foundColor[Settings.TYPE_BLUE]) {
-					// found CYAN and BLUE true landmark is BLUE
-					foundColor[Settings.TYPE_CYAN] = false;
-					foundColorAng[Settings.TYPE_BLUE] = (foundColorAng[Settings.TYPE_BLUE] + foundColorAng[Settings.TYPE_CYAN]) / 2;
+					// found WHITE and BLUE true landmark is BLUE
+					foundColor[Settings.TYPE_WHITE] = false;
+					foundColorAng[Settings.TYPE_BLUE] = (foundColorAng[Settings.TYPE_BLUE] + foundColorAng[Settings.TYPE_WHITE]) / 2;
+				}
+				else if (foundColor[Settings.TYPE_PURPLE]) {
+					// found WHITE and PURPLE true landmark is BLUE
+					foundColor[Settings.TYPE_WHITE] = false;
+					foundColorAng[Settings.TYPE_PURPLE] = (foundColorAng[Settings.TYPE_PURPLE] + foundColorAng[Settings.TYPE_WHITE]) / 2;
 				}
 			}
-			else if (foundColor[Settings.TYPE_BLUE]) {
-				foundColor[Settings.TYPE_PURPLE] = false;
-			}
 			
-			int cyanWindow = 3;
 			for (int i = 0; i < foundColor.length; i++) {					
 				if (foundColor[i]) {
-					
-					boolean sendColor = true;
-					
-					if (i == Settings.TYPE_CYAN) {
-						if (cyanCounter < cyanWindow) {
-							// see cyan but not too many times to send,
-							// increase counter and not send
-							cyanCounter++;
-							sendColor = false;
-						}
-						else {
-							// cyan counter is large enough, send data
-							cyanCounter = 0;
-						}
-					}
-					else if (i != Settings.TYPE_MOUSE) {
-						// color is not cyan neither mouse, reset cyan counter
-						cyanCounter = 0;
-					}
 					
 					if (seenLandmarks[i]) {
 						// skip all seen landmarks
 						continue;
 					}
 					
-					if (sendColor) {
-						if (camMotor.isMoving()) {
-							camMotor.stop();
-							iterCounterSweep = 0;
-						}
-						else {
-							if (iterCounterSweep > maxIterToCapture) {
-								unifiedBuffer.push(new SightingData(Clock.timestamp(), foundColorAng[i], i));
-								
-								// send some measurements to the GUI
-								ConnectionManager.getInstance().sendPacketToAll(
-										new SimpleMeasurement(i, foundColorAng[i], 0));
-								
-								changeDirection(dir);
-								
-								landmarkToReturn = i;
-							}
+					if (camMotor.isMoving()) {
+						camMotor.stop();
+						iterCounterSweep = 0;
+					}
+					else {
+						if (iterCounterSweep > maxIterToCapture) {
+							unifiedBuffer.push(new SightingData(Clock.timestamp(), foundColorAng[i], i));
+							
+							// send some measurements to the GUI
+							ConnectionManager.getInstance().sendPacketToAll(
+									new SimpleMeasurement(i, foundColorAng[i], 0));
+							
+							changeDirection(dir);
+							
+							landmarkToReturn = i;
 						}
 					}
 				}
