@@ -26,9 +26,9 @@ public class Settings {
 
 	// Arena size
 	public static final float ARENA_MIN_X = 0;
-	public static final float ARENA_MAX_X = 3f;
+	public static final float ARENA_MAX_X = 2.5f;
 	public static final float ARENA_MIN_Y = 0;
-	public static final float ARENA_MAX_Y = 3f;
+	public static final float ARENA_MAX_Y = 2.5f;
 
 	// Landmark data
 	public static final int NO_LANDMARKS = 4;
@@ -39,8 +39,8 @@ public class Settings {
 	public static final int TYPE_CYAN = 4;
 
 	// Positions [number][coordinate as (x, y)]
-	public static final float[][] LANDMARK_POSITION = { { 0, 0 }, { 0, 3 },
-			{ 3, 0 }, { 3, 3 } };
+	public static final float[][] LANDMARK_POSITION = { { 0, 0 }, { 0, 2.5f },
+			{ 2.5f, 0 }, { 2.5f, 2.5f } };
 	public static final int[] LANDMARK_COLOR = { TYPE_PURPLE, TYPE_CYAN,
 		TYPE_GREEN, TYPE_BLUE };
 
