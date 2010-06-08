@@ -4,7 +4,7 @@ public class Mouse {
 	private float _x; // Absolute position horizontal axis
 	private float _y; // Absolute position vertical axis
 	
-	private int bufferLength = 20;
+	private int bufferLength = 10;
 	private float[] bufferX = new float[bufferLength];
 	private float[] bufferY = new float[bufferLength];
 	private int posBuffer = 0;
