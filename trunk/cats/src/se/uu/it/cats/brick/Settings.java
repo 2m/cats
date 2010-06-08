@@ -57,12 +57,12 @@ public class Settings {
 	public static final int TYPE_PURPLE = 1;
 	public static final int TYPE_BLUE = 2;
 	public static final int TYPE_GREEN = 3;
-	public static final int TYPE_CYAN = 4;
+	public static final int TYPE_WHITE = 4;
 
 	// Positions [number][coordinate as (x, y)]
 	public static final float[][] LANDMARK_POSITION = { { 0, 0 }, { 0, 2.5f },
 			{ 2.5f, 0 }, { 2.5f, 2.5f } };
-	public static final int[] LANDMARK_COLOR = { TYPE_PURPLE, TYPE_CYAN,
+	public static final int[] LANDMARK_COLOR = { TYPE_PURPLE, TYPE_WHITE,
 		TYPE_GREEN, TYPE_BLUE };
 
 	// starting position and angle
