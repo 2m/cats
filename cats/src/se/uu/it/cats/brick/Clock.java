@@ -84,4 +84,11 @@ public class Clock
 	{
 		_beep = beep;
 	}
+	
+	/** Returns which global time slot is the current one */
+	public static int getTimeSlot() {
+		int time = timestamp()
+				% (Settings.CAMERA_TIME_SLOT_LENGTH * Settings.CAMERA_TIME_SLOTS);
+		return (int) Math.floor(time / Settings.CAMERA_TIME_SLOT_LENGTH);
+	}
 }
