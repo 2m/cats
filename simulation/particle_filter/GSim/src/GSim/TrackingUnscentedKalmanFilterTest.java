@@ -15,7 +15,7 @@ public class TrackingUnscentedKalmanFilterTest {
 		
 		int id = 1;
 		int timestepsBetweenFilterUpdates = 5;
-		float T = (float)(100.0*5/1000.0);//(float) GSim.timestep * timestepsBetweenFilterUpdates / 1000;
+		float T = 1.0f;//(float)(100.0*5/1000.0);//(float) GSim.timestep * timestepsBetweenFilterUpdates / 1000;
 		Buffer buffer = new BufferSorted();
 		BillBoard billboard = new BillBoard(3);
 		
@@ -35,15 +35,15 @@ public class TrackingUnscentedKalmanFilterTest {
 		P1_correct.timesEquals(0.0001);
 		trackingFilter.setStateCovariance(P1_correct);
 				
-		billboard.setAbsolutePosition(1, 0.363795125006558f, 0.216067986651408f, -0.124804764073335f, time +100);
-		billboard.setAbsolutePosition(2, 1.638056992700254f, 1.789290480544979f, -3.095256852035598f, time +100);
-		billboard.setAbsolutePosition(3, 1.802691755315792f, 0.349717175671003f,  1.603020253504810f, time +100);		      
+		billboard.setAbsolutePosition(0, 0.363795125006558f, 0.216067986651408f, -0.124804764073335f, time +100);
+		billboard.setAbsolutePosition(1, 1.638056992700254f, 1.789290480544979f, -3.095256852035598f, time +100);
+		billboard.setAbsolutePosition(2, 1.802691755315792f, 0.349717175671003f,  1.603020253504810f, time +100);		      
 		//other angle (cam?) 0.765110147757594   2.199999999999884   2.049976488387934
 		
 		//NB: x and y are set to the same as in above
-		billboard.setLatestSighting(1, 0.363795125006558f, 0.216067986651408f, 0.808272447212222f, time +100);  //Sees the mouse
-		billboard.setLatestSighting(2, 1.638056992700254f, 1.789290480544979f, 3.141592653589793f, time -100);  //Doesn't see the mouse
-		billboard.setLatestSighting(3, 1.802691755315792f, 0.349717175671003f, 2.072717556964165f, time +100);	//Sees the mouse
+		billboard.setLatestSighting(0, 0.363795125006558f, 0.216067986651408f, 0.808272447212222f, time +100);  //Sees the mouse
+		billboard.setLatestSighting(1, 1.638056992700254f, 1.789290480544979f, 3.141592653589793f, time -100);  //Doesn't see the mouse
+		billboard.setLatestSighting(2, 1.802691755315792f, 0.349717175671003f, 2.072717556964165f, time +100);	//Sees the mouse
 		
 		//Check that the initial values where set correctcly
 		System.out.println("Inputs");
