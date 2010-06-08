@@ -377,16 +377,6 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		lastCurrentTime = currentTime;
 		System.out.println("Tracking.ukf update = " + getExecutionTime());
 	}
-
-	public void run() 
-	{
-		while (true) 
-		{
-			// update();
-			pause((long) (Clock.timestamp() % Tint));
-		}
-
-	}
 	
 	private void debug(Object info)
 	{
