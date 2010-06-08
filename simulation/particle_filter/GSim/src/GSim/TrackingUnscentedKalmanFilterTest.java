@@ -6,14 +6,15 @@ import static GSim.Matlab.*;
 
 public class TrackingUnscentedKalmanFilterTest {
 
-	//NB: This test worked ok 2010-05-24 on revison 478 in GSim
-	//Important: Set float stddegrees = 0.1f; and float dt = 1.0f; in TrackingUnscentedKalmanFilter before running this test
+	//NB: This test worked ok 2010-05-24 on revison 478, 491, 509 (with updated ids) in GSim
+	//NB: This test worked ok 2010-06-06 on revison 491, 509, 511 (512 and later not working) with updated ids in GSim
+	//Important: Set float stddegrees = 0.1f; float q = 0.005f; float dt = 1.0f; in TrackingUnscentedKalmanFilter before running this test
 
 	public static void main(String[] arg)
 	{
 		System.out.println("Running TestTrackingUnscentedKalmanFilter");
 		
-		int id = 1;
+		int id = 0;
 		int timestepsBetweenFilterUpdates = 5;
 		float T = 1.0f;//(float)(100.0*5/1000.0);//(float) GSim.timestep * timestepsBetweenFilterUpdates / 1000;
 		Buffer buffer = new BufferSorted();
