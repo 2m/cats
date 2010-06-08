@@ -14,7 +14,7 @@ public class MatlabTest {
 	Matrix m = new Matrix(temp_m); 
 	//System.out.println(temp_m.length);
 	
-	Matrix m_diag = diagFromMatrix(m);
+	/*Matrix m_diag = diagFromMatrix(m);
 	printM(m_diag);
 	double[][] temp_expected_result = {{	0.091976381876777,  0.0,  0.0,  0.0 },  
 								  { 0.0,  0.128394398537096,  0.0,  0.0 },  
@@ -22,7 +22,7 @@ public class MatlabTest {
 								  { 0.0,  0.0,  0.0,  0.342995645416571 }};  
 	Matrix expected_result = new Matrix(temp_expected_result); 
 	System.out.println("Excpected results: ");
-	printM(expected_result);
+	printM(expected_result);*/
 	
 	
 	

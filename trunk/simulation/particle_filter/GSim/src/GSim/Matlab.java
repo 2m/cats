@@ -35,7 +35,7 @@ public abstract class Matlab {
 	 * @param m (n)x(n) matrix
 	 * @return (n)x(n) diagonal matrix
 	 */
-	public static Matrix diagFromMatrix(Matrix m)
+	/*public static Matrix diagFromMatrix(Matrix m)
 	{
 		int m_row_dim = m.getRowDimension();
 		Matrix m_diag = Matrix.identity(m_row_dim, m_row_dim);
@@ -45,7 +45,7 @@ public abstract class Matlab {
 			m_diag.set(idx, idx, m.get(idx, idx));
 		}
 		return m_diag;	
-	}
+	}*/
 	
 	/**
 	 * Creates a with matrix with ones

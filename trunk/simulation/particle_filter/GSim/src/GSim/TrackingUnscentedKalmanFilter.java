@@ -58,7 +58,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	private float large = (float)pow(10,10);
 	
 	/**Toggle debug info*/
-	private final boolean DEBUG = true;
+	private final boolean DEBUG = false;
 
 
 	/**
@@ -375,6 +375,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
+		System.out.println("Tracking.ukf update = " + getExecutionTime());
 	}
 
 	public void run() 
