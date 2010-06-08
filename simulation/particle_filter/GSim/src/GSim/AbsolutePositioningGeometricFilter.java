@@ -21,9 +21,12 @@ public class AbsolutePositioningGeometricFilter extends
 	private int iterationTime = 0;
 
 	private float[] landmarkAngles;
-	private int[] landmarkTypes;
 	private int[] landmarkNoSightings;
 	private boolean positioning = false;
+
+	final float maxPositionCorrection = 0.01f;
+	final float maxAngleCorrection = (float) (0.5 * (Math.PI / 180));
+	final float maxAngle = (float) (140 * Math.PI / 180);
 
 	/**
 	 * Constructor of the geometric absolute positioning filter.
@@ -40,7 +43,6 @@ public class AbsolutePositioningGeometricFilter extends
 		// Call constructor of super class
 		super(id, T, unifiedBuffer, billboard);
 		landmarkAngles = new float[Settings.NO_LANDMARKS];
-		landmarkTypes = new int[Settings.NO_LANDMARKS];
 		landmarkNoSightings = new int[Settings.NO_LANDMARKS];
 		resetSightings();
 	}
@@ -67,120 +69,168 @@ public class AbsolutePositioningGeometricFilter extends
 	private void addLandmark(float angle, int type) {
 		final float angleEpsilon = (float) (10 * (Math.PI / 180));
 		positioning = true;
-		// Check if landmark already is in the list
-		boolean inserted = false;
-		for (int i = 0; (i < Settings.NO_LANDMARKS) && (!inserted); i++) {
-			if (landmarkNoSightings[i] > 0) {
-				if ((Math.abs(landmarkAngles[i] - angle) < angleEpsilon)
-						&& (landmarkTypes[i] == type)) {
+		for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
+			if (Settings.LANDMARK_COLOR[i] == type) {
+				// Check if landmark already is in the list
+				if (landmarkNoSightings[i] > 0) {
+					if (Math.abs(landmarkAngles[i] - angle) < angleEpsilon) {
+						landmarkNoSightings[i]++;
+						landmarkAngles[i] = ((landmarkNoSightings[i] - 1)
+								* landmarkAngles[i] + angle)
+								/ landmarkNoSightings[i];
+					}
+				} else {
 					landmarkNoSightings[i]++;
-					landmarkAngles[i] = ((landmarkNoSightings[i] - 1)
-							* landmarkAngles[i] + angle)
-							/ landmarkNoSightings[i];
-					inserted = true;
+					landmarkAngles[i] = angle;
 				}
-			}
-		}
-		for (int i = 0; (i < Settings.NO_LANDMARKS) && (!inserted); i++) {
-			if (landmarkNoSightings[i] == 0) {
-				landmarkNoSightings[i]++;
-				landmarkAngles[i] = angle;
-				landmarkTypes[i] = type;
-				inserted = true;
+
 			}
 		}
 	}
 
-	private void sortLandmarks() {
-		// Bubble sort
-		for (int j = 0; j < (Settings.NO_LANDMARKS - 1); j++) {
-			for (int i = 0; i < (Settings.NO_LANDMARKS - 1); i++) {
-				if (landmarkAngles[i] < landmarkAngles[i + 1]) {
-					float a = landmarkAngles[i];
-					landmarkAngles[i] = landmarkAngles[i + 1];
-					landmarkAngles[i + 1] = a;
-					int t = landmarkTypes[i];
-					landmarkTypes[i] = landmarkTypes[i + 1];
-					landmarkTypes[i + 1] = t;
-					int s = landmarkNoSightings[i];
-					landmarkNoSightings[i] = landmarkNoSightings[i + 1];
-					landmarkNoSightings[i + 1] = s;
-				}
-			}
-		}
-	}
+	/*
+	 * private void sortLandmarks() { // Bubble sort for (int j = 0; j <
+	 * (Settings.NO_LANDMARKS - 1); j++) { for (int i = 0; i <
+	 * (Settings.NO_LANDMARKS - 1); i++) { if (landmarkAngles[i] <
+	 * landmarkAngles[i + 1]) { float a = landmarkAngles[i]; landmarkAngles[i] =
+	 * landmarkAngles[i + 1]; landmarkAngles[i + 1] = a; int t =
+	 * landmarkTypes[i]; landmarkTypes[i] = landmarkTypes[i + 1];
+	 * landmarkTypes[i + 1] = t; int s = landmarkNoSightings[i];
+	 * landmarkNoSightings[i] = landmarkNoSightings[i + 1];
+	 * landmarkNoSightings[i + 1] = s; } } } }
+	 */
 
-	private void shiftLandmarks() {
-		// Simple shift
-		float a = landmarkAngles[0];
-		int t = landmarkTypes[0];
-		int s = landmarkNoSightings[0];
-		for (int i = 0; i < (Settings.NO_LANDMARKS - 1); i++) {
-			landmarkAngles[i] = landmarkAngles[i + 1];
-			landmarkTypes[i] = landmarkTypes[i + 1];
-			landmarkNoSightings[i] = landmarkNoSightings[i + 1];
-		}
-		landmarkAngles[Settings.NO_LANDMARKS - 1] = a;
-		landmarkTypes[Settings.NO_LANDMARKS - 1] = t;
-		landmarkNoSightings[Settings.NO_LANDMARKS - 1] = s;
-	}
+	/*
+	 * private void shiftLandmarks() { // Simple shift float a =
+	 * landmarkAngles[0]; int t = landmarkTypes[0]; int s =
+	 * landmarkNoSightings[0]; for (int i = 0; i < (Settings.NO_LANDMARKS - 1);
+	 * i++) { landmarkAngles[i] = landmarkAngles[i + 1]; landmarkTypes[i] =
+	 * landmarkTypes[i + 1]; landmarkNoSightings[i] = landmarkNoSightings[i +
+	 * 1]; } landmarkAngles[Settings.NO_LANDMARKS - 1] = a;
+	 * landmarkTypes[Settings.NO_LANDMARKS - 1] = t;
+	 * landmarkNoSightings[Settings.NO_LANDMARKS - 1] = s; }
+	 */
 
 	private void doGeometricMagic() {
-		if ((noSeenLandmarks() >= 4) && (positioning)) {
-			sortLandmarks();
-			// Check for the unique landmark
-			for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
-				if (landmarkTypes[0] != Settings.TYPE_RED) {
-					shiftLandmarks();
+		if (positioning) {
+			if (noSeenLandmarks() >= 3) {
+				// List is now sorted with unique landmark first
+				float[] north = null, west = null, south = null, east = null;
+				float[] phi = new float[Settings.NO_LANDMARKS];
+				// North
+				if ((landmarkNoSightings[3] > 0)
+						&& (landmarkNoSightings[1] > 0)) {
+					phi[0] = (float) Math
+							.abs((landmarkAngles[3] - landmarkAngles[1])
+									% (2 * Math.PI));
+					if (phi[0] > Math.PI) {
+						phi[0] = (float) (2 * Math.PI - phi[0]);
+					}
+					if (phi[0] < maxAngle) {
+						north = findCircle(phi[0], 1);
+					}
 				}
-			}
-			// List is now sorted with unique landmark first
-			float[] c1 = null, c2 = null, c3 = null, c4 = null;
-			boolean north = false, west = false, south = false, east = false;
-
-			// North
-			if ((landmarkNoSightings[1] > 0) && (landmarkNoSightings[0] > 0)) {
-				float phi = (float) Math
-						.abs((landmarkAngles[1] - landmarkAngles[0])
-								% (2 * Math.PI));
-				c1 = findCircle(phi, 1);
-				north = true;
-			}
-			// West
-			if ((landmarkNoSightings[2] > 0) && (landmarkNoSightings[1] > 0)) {
-				float phi = (float) Math
-						.abs((landmarkAngles[2] - landmarkAngles[1])
-								% (2 * Math.PI));
-				c2 = findCircle(phi, 2);
-				west = true;
-			}
-			// TODO: Use the ones with the smallest angle
-			if (north && west) {
-				float[] P = findClosestIntersection(c1, c2);
-
-				if ((Settings.ARENA_MIN_X <= P[0])
-						&& (P[0] <= Settings.ARENA_MAX_X)
-						&& (Settings.ARENA_MIN_Y <= P[1])
-						&& (P[1] <= Settings.ARENA_MAX_Y)) {
-					float diff = P[0] - mean_y;
-					if (Math.abs(diff) < 0.01) {
-						mean_y += diff;
-					} else {
-						mean_y += 0.01 * Math.signum(diff);
+				// West
+				if ((landmarkNoSightings[1] > 0)
+						&& (landmarkNoSightings[0] > 0)) {
+					phi[1] = (float) Math
+							.abs((landmarkAngles[1] - landmarkAngles[0])
+									% (2 * Math.PI));
+					if (phi[1] > Math.PI) {
+						phi[1] = (float) (2 * Math.PI - phi[1]);
 					}
-					diff = P[1] - mean_x;
-					if (Math.abs(diff) < 0.01) {
-						mean_x += diff;
-					} else {
-						mean_x += 0.01 * Math.signum(diff);
+					if (phi[1] < maxAngle) {
+						west = findCircle(phi[1], 2);
 					}
-					// TODO: Landmark data will change
-					int j = 3; // Unique landmark
-					// TODO: Trim cap on fix
-					mean_angle = (float) (Math.atan2(
-							Settings.LANDMARK_POSITION[j][1] - mean_y,
-							Settings.LANDMARK_POSITION[j][0] - mean_x) - landmarkAngles[0]);
 
+				}
+				// South
+				if ((landmarkNoSightings[0] > 0)
+						&& (landmarkNoSightings[2] > 0)) {
+					phi[2] = (float) Math
+							.abs((landmarkAngles[0] - landmarkAngles[2])
+									% (2 * Math.PI));
+					if (phi[2] > Math.PI) {
+						phi[2] = (float) (2 * Math.PI - phi[2]);
+					}
+					if (phi[2] < maxAngle) {
+						south = findCircle(phi[2], 3);
+					}
+
+				}
+				// East
+				if ((landmarkNoSightings[2] > 0)
+						&& (landmarkNoSightings[3] > 0)) {
+					phi[3] = (float) Math
+							.abs((landmarkAngles[2] - landmarkAngles[3])
+									% (2 * Math.PI));
+					if (phi[3] > Math.PI) {
+						phi[3] = (float) (2 * Math.PI - phi[3]);
+					}
+					if (phi[3] < maxAngle) {
+						east = findCircle(phi[3], 4);
+					}
+
+				}
+				// TODO: Use the ones with the smallest angle
+
+				float[] P = null;
+
+				if ((north != null) && (east != null)) {
+					P = findClosestIntersection(north, east);
+				} else if ((east != null) && (south != null)) {
+					P = findClosestIntersection(east, south);
+				} else if ((south != null) && (west != null)) {
+					P = findClosestIntersection(south, west);
+				} else if ((west != null) && (north != null)) {
+					P = findClosestIntersection(west, north);
+				}
+
+				if (P != null) {
+					if ((Settings.ARENA_MIN_X <= P[0])
+							&& (P[0] <= Settings.ARENA_MAX_X)
+							&& (Settings.ARENA_MIN_Y <= P[1])
+							&& (P[1] <= Settings.ARENA_MAX_Y)) {
+						float diff = P[0] - mean_x;
+						if (Math.abs(diff) < maxPositionCorrection) {
+							mean_x += diff;
+						} else {
+							mean_x += maxPositionCorrection * Math.signum(diff);
+						}
+						diff = P[1] - mean_y;
+						if (Math.abs(diff) < maxPositionCorrection) {
+							mean_y += diff;
+						} else {
+							mean_y += maxPositionCorrection * Math.signum(diff);
+						}
+					}
+					if (noSeenLandmarks() >= 1) {
+
+						float diff = 0;
+						int denominator = 0;
+						for (int i = 0; i < Settings.NO_LANDMARKS; i++) {
+							if (landmarkNoSightings[i] > 0) {
+								diff += (float) (Math.atan2(
+										Settings.LANDMARK_POSITION[i][1]
+												- mean_y,
+										Settings.LANDMARK_POSITION[i][0]
+												- mean_x) - landmarkAngles[i])
+										- mean_angle;
+								denominator++;
+							}
+
+						}
+						if (denominator > 0) {
+							diff = diff / denominator;
+							if (Math.abs(diff) < maxAngleCorrection
+									* denominator) {
+								mean_angle += diff;
+							} else {
+								mean_angle += maxAngleCorrection * denominator
+										* Math.signum(diff);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -223,17 +273,15 @@ public class AbsolutePositioningGeometricFilter extends
 		P2[0] = c1[0] + a * v[0] - h * u[0];
 		P2[1] = c1[1] + a * v[1] - h * u[1];
 
-		if (id == 0) {
-			System.out.println("(" + P1[0] + ", " + P1[1] + ") & (" + P2[0]
-					+ ", " + P2[1] + ")");
-		}
-
 		float d1 = (getX() - P1[0]) * (getX() - P1[0]) + (getY() - P1[1])
 				* (getY() - P1[1]);
 		float d2 = (getX() - P2[0]) * (getX() - P2[0]) + (getY() - P2[1])
 				* (getY() - P2[1]);
 
-		if (d1 < d2) {
+		if ((d1 < d2) && (Settings.ARENA_MIN_X <= P1[0])
+				&& (P1[0] <= Settings.ARENA_MAX_X)
+				&& (Settings.ARENA_MIN_Y <= P1[1])
+				&& (P1[1] <= Settings.ARENA_MAX_Y)) {
 			return P1;
 		} else {
 			return P2;
@@ -259,6 +307,24 @@ public class AbsolutePositioningGeometricFilter extends
 			float y = sidey / 2;
 			float r = (float) (y / Math.sin(angle));
 			float x = (float) (y / Math.tan(angle));
+			ret[0] = x;
+			ret[1] = y;
+			ret[2] = r;
+		}
+		// South
+		else if (direction == 3) {
+			float x = sidex / 2;
+			float r = (float) (x / Math.sin(angle));
+			float y = (float) (x / Math.tan(angle));
+			ret[0] = x;
+			ret[1] = y;
+			ret[2] = r;
+		}
+		// East
+		else if (direction == 4) {
+			float y = sidey / 2;
+			float r = (float) (y / Math.sin(angle));
+			float x = (float) (sidex - y / Math.tan(angle));
 			ret[0] = x;
 			ret[1] = y;
 			ret[2] = r;
@@ -386,10 +452,10 @@ public class AbsolutePositioningGeometricFilter extends
 					if ((Math.abs(mdata.dr) > 0.0005)
 							|| (Math.abs(mdata.dangle) > 0.001)) {
 						doGeometricMagic();
+						resetSightings();
 						mean_x += Math.cos(mean_angle) * mdata.dr;
 						mean_y += Math.sin(mean_angle) * mdata.dr;
 						mean_angle += mdata.dangle;
-						resetSightings();
 					}
 					lastCurrentTime = mdata.comparable;
 				} else if (data.isSightingData()) {

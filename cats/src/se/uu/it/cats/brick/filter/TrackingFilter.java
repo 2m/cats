@@ -26,7 +26,6 @@ public abstract class TrackingFilter extends Thread {
 		/** Shared data */
 		this.billboard = billboard;
 		// Set priority for thread
-		// TODO: Decide priority for absolute positioning filter
 		setPriority(Thread.MIN_PRIORITY);
 	}
 

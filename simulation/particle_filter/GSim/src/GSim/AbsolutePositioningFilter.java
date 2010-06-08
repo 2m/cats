@@ -26,7 +26,6 @@ public abstract class AbsolutePositioningFilter extends Thread {
 		this.billboard = billboard;
 		this.id = id;
 		// Set priority for thread
-		// TODO: Decide priority for absolute positioning filter
 		setPriority(Thread.MIN_PRIORITY);
 	}
 
