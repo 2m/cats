@@ -337,7 +337,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 				
 				g2d.setColor(lighthouseColors[j]);
 				
-				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(angle))*linelength), (int) (entityPosY + Math.sin(-(angle))*linelength));
+				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(angle))*linelength*3), (int) (entityPosY + Math.sin(-(angle))*linelength*3));
 				
 				_cats[i].decreaseSightingDrawnCount(j);
 			}
