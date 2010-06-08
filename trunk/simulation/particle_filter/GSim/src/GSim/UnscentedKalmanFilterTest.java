@@ -91,10 +91,11 @@ public class UnscentedKalmanFilterTest
 		Matrix x = new Matrix(3,3);  //state estimate
 		x=s.copy();//s.plus( Matrix.random(3,1).times(q) );  //initial state with noise
 		Matrix P = eye(n);  //initial state covraiance
+		Matrix[] x_and_P = new Matrix[]{x, P};
 		
 		//First iteration with UKF
 		Matrix z = h.eval(s);  //h.eval(s).plus( Matrix.random(1,1).times(r) );  //measurments		
-		Matrix[] result = ukf_obj.ukf(f, x, P, h, z, Q, R);
+		Matrix[] result = ukf_obj.run_ukf(f, x_and_P, h, z, Q, R);
 		x = result[0];  
 		P = result[1];
 		s = f.eval(s);  //update process 
@@ -142,14 +143,12 @@ public class UnscentedKalmanFilterTest
 		for (int i=2; i<21; i++)
 		{
 			z = h.eval(s);  //measurments		
-			result = ukf_obj.ukf(f, x, P, h, z, Q, R);
-			x = result[0];
-			P = result[1];
+			x_and_P = ukf_obj.run_ukf(f, x_and_P, h, z, Q, R);
 			s = f.eval(s);  //update process 
 			System.out.println("Debug: ukf test, x after iteration " +i+" :");
-			printM(x);
+			printM(x_and_P[0]);
 			System.out.println("Debug: ukf test, P after iteration " +i+" :");
-			printM(P);	
+			printM(x_and_P[1]);	
 		}
 		
 

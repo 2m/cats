@@ -6,9 +6,9 @@ import static GSim.Matlab.*;
 
 /**
  * The Unscented Kalman Filter 
- * @author Edvard
+ * @author Edvard Zak, Nils Tornblom 
  */
-public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
+public class UnscentedKalmanFilter
 {
 	//Class constants 
 	/* True position and other information like color of the landmarks
@@ -70,17 +70,31 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 	}
 	
 
-    /* (non-Javadoc)
-     * @see IUnscentedKalmanFilter#ukf()
-     */
-	public Matrix[] ukf(IFunction f, Matrix x, Matrix P, IFunction h, Matrix z, Matrix Q, Matrix R)
+	/**
+	 * UKF, Unscented Kalman Filter, for nonlinear dynamic systems. 
+	 * [x, P] = ukf(f,x,P,h,z,Q,R) returns state estimate x and state covariance P 
+	 * for nonlinear dynamic system (for simplicity, noises are assumed as additive):
+	 *            x_k+1 = f(x_k) + w_k
+	 *            z_k   = h(x_k) + v_k
+	 * where w ~ N(0,Q) meaning w is gaussian noise with covariance Q and 
+	 *       v ~ N(0,R) meaning v is gaussian noise with covariance R.         
+	 * @param f  function handle for f(x), nonlinear state equations
+	 * @param x  "a priori" state estimate
+	 * @param P  "a priori" estimated state covariance
+	 * @param h  fanction handle for h(x), measurement equation
+	 * @param z  current measurement
+	 * @param Q  process noise covariance
+	 * @param R  measurement noise covariance
+	 * @return  "a posteriori" state estimate and P: "a posteriori" state covariance
+	 */
+	public Matrix[] run_ukf(IFunction f, Matrix[] x_and_P, IFunction h, Matrix z, Matrix Q, Matrix R)
 	{
 		if (DEBUG ||DEBUG_LIGHT)
 		{	System.out.println("Entering ukf with the following parameters:");	
-			System.out.println("Debug: ukf, x dim= " + x.getRowDimension() + " x " + x.getColumnDimension() + ", x= ");
-			printM(x);
-			System.out.println("Debug: ukf, P dim= " + P.getRowDimension() + " x " + P.getColumnDimension() + ", P= ");
-			printM(P);
+			System.out.println("Debug: ukf, x dim= " + x_and_P[0].getRowDimension() + " x " + x_and_P[0].getColumnDimension() + ", x= ");
+			printM(x_and_P[0]);
+			System.out.println("Debug: ukf, P dim= " + x_and_P[1].getRowDimension() + " x " + x_and_P[1].getColumnDimension() + ", P= ");
+			printM(x_and_P[1]);
 			System.out.println("Debug: ukf, z dim= " + z.getRowDimension() + " x " + z.getColumnDimension() + ", z= ");
 			printM(z);
 			System.out.println("Debug: ukf, Q dim= " + Q.getRowDimension() + " x " + Q.getColumnDimension() + ", Q= ");
@@ -98,14 +112,14 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 		}
 		if (DEBUG ||DEBUG_LIGHT)
 		{
-			if (x.getRowDimension() != L || x.getColumnDimension() != 1) System.out.println("WARNING: The dimension of the state vector (matrix) x is incorrect! Expected dim = " + L +" x 1" );
-			if (P.getRowDimension() != L || P.getColumnDimension() != L) System.out.println("WARNING: The dimension of the state covariance matrix P is incorrect! Expected dim = " + L +" x " + L);	
+			if (x_and_P[0].getRowDimension() != L || x_and_P[0].getColumnDimension() != 1) System.out.println("WARNING: The dimension of the state vector (matrix) x is incorrect! Expected dim = " + L +" x 1" );
+			if (x_and_P[1].getRowDimension() != L || x_and_P[1].getColumnDimension() != L) System.out.println("WARNING: The dimension of the state covariance matrix P is incorrect! Expected dim = " + L +" x " + L);	
 			if (Q.getRowDimension() != L || Q.getColumnDimension() != L) System.out.println("WARNING: The dimension of the covariance of process matrix Q is incorrect! Expected dim = " + L +" x " + L);	
 			if (z.getRowDimension() != m || z.getColumnDimension() != 1) System.out.println("WARNING: The dimension of the measurement vector (matrix) z is incorrect! Expected dim = " + m +" x 1");
 			if (R.getRowDimension() != m || R.getColumnDimension() != m) System.out.println("WARNING: The dimension of the covariance of measurement matrix P is incorrect! Expected dim = " + m +" x " + m);
 		}
 	
-		Matrix X = sigmas(x,P,c);  //sigma points around x, NB: c has been set in the constructor
+		Matrix X = sigmas(x_and_P[0],x_and_P[1],c);  //sigma points around x, NB: c has been set in the constructor
 		if (DEBUG)
 		{
 			System.out.println("Debug: ukf, X dim= " + X.getRowDimension() + " x " + X.getColumnDimension() + ", X (after sigmas() )= ");
@@ -169,19 +183,20 @@ public class UnscentedKalmanFilter implements IUnscentedKalmanFilter
 			System.out.println("Debug: ukf, K dim= " + K.getRowDimension() + " x " + K.getColumnDimension() + ", K= ");
 			printM(K);
 		}
-	
-	    Matrix x_updated = x1.plus( K.times(z.minus(z1)) );  //state update
-	    Matrix P_updated =P1.minus( K.times(P12.transpose()) );  //covariance update
-	    Matrix[] output = {x_updated, P_updated};
+		
+		x_and_P[0] = x1.plus( K.times(z.minus(z1)) );  //state update
+		x_and_P[1] = P1.minus( K.times(P12.transpose()) );  //covariance update
+	    //Matrix[] output = {x_updated, P_updated};
 	    if (DEBUG ||DEBUG_LIGHT)
 		{
 			System.out.println("Leaving ukf with the following results:");
-			System.out.println("Debug: ukf, x_updated dim= " + x_updated.getRowDimension() + " x " + x_updated.getColumnDimension() + ", x_updated= ");
-			printM(x_updated);
-			System.out.println("Debug: ukf, P_updated dim= " + P_updated.getRowDimension() + " x " + P_updated.getColumnDimension() + ", P_updated= ");
-			printM(P_updated);		
+			System.out.println("Debug: ukf, x_updated dim= " + x_and_P[0].getRowDimension() + " x " + x_and_P[0].getColumnDimension() + ", x_updated= ");
+			printM(x_and_P[0]);
+			System.out.println("Debug: ukf, P_updated dim= " + x_and_P[1].getRowDimension() + " x " + x_and_P[1].getColumnDimension() + ", P_updated= ");
+			printM(x_and_P[1]);		
 		}
-		return output;
+		return x_and_P;
+		
 		
 		/*
 		Original matlab code:

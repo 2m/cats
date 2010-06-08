@@ -29,6 +29,10 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	/** state covariance */
 	private Matrix P;
 	
+	/** a matrix array combining the state vector and state covariance 
+	 * into one variable to simply input/output from methods.*/
+	private Matrix[] states_and_P;
+	
 	/** measurement equation */
 	private IFunction h;
 	
@@ -98,6 +102,8 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		h = new HmeasMouse(billboard);  //measurement equation  
 		
 		P = eye(nx).timesEquals( pow(10,-3) );  //initial state covariance
+		
+		states_and_P = new Matrix[]{states, P};
 
 		//Initialize some data just to be sure that it gets done
 		initData(1f, 1f, 0.00001f, 0.00001f, Clock.timestamp());
@@ -334,9 +340,9 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		
 				
 		//One iteration with UKF
-		Matrix[] result = ufk_filter.ukf(f, states, P, h, measurments, Q, R);
-		states = result[0]; 
-		P = result[1];
+		states_and_P = ufk_filter.run_ukf(f, states_and_P, h, measurments, Q, R);
+		//states = states_and_P[0]; 
+		//P = states_and_P[1];
 		if (DEBUG)
 		{
 			debug("Debug: tracking.ukf cat " +id + ", P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", mouse P:");
