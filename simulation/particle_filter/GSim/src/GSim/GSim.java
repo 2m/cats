@@ -37,7 +37,6 @@ public class GSim extends JFrame implements MouseListener {
 	// Array with all the actors
 	private Actor[] actors = new Actor[1 + 3];// [1 + 3];
 	private boolean marked = false;
-	public LandmarkList llist = new LandmarkList();
 	public BillBoard billboard = new BillBoard(3);
 
 	public GSim() {
@@ -77,16 +76,18 @@ public class GSim extends JFrame implements MouseListener {
 		Graphics2D g2 = (Graphics2D) g;
 		// Draw landmarks
 		for (int i = 0; i < Settings.LANDMARK_POSITION.length; i++) {
-			int size = 5; // Diameter
+			int size = 8; // Diameter
 			int ix = Actor.e2gX((double) Settings.LANDMARK_POSITION[i][0]);
 			int iy = Actor.e2gY((double) Settings.LANDMARK_POSITION[i][1]);
 
 			if (Settings.LANDMARK_COLOR[i] == Settings.TYPE_GREEN) {
-				g2.setColor(Color.green);
-			} else if (Settings.LANDMARK_COLOR[i] == Settings.TYPE_RED) {
-				g2.setColor(Color.red);
-			}else{
-				g2.setColor(Color.pink);
+				g2.setColor(Color.GREEN);
+			} else if (Settings.LANDMARK_COLOR[i] == Settings.TYPE_PURPLE) {
+				g2.setColor(Color.MAGENTA);
+			} else if (Settings.LANDMARK_COLOR[i] == Settings.TYPE_BLUE) {
+				g2.setColor(Color.BLUE);
+			} else if (Settings.LANDMARK_COLOR[i] == Settings.TYPE_CYAN) {
+				g2.setColor(Color.CYAN);
 			}
 			g2.fillOval((int) ix - (size / 2), (int) iy - (size / 2),
 					(int) size, (int) size);
