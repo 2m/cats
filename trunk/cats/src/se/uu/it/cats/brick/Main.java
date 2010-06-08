@@ -164,6 +164,7 @@ public class Main {
 		// Thread.sleep(2000);
 
 		int test = 0;
+		int numberOfCommands = 0;
 		while (test == 0) {
 
 			int milisUntilNextSec = 2000 - (Clock.timestamp() % 2000);
@@ -183,19 +184,34 @@ public class Main {
 						+ p[i * 4 + 1] + ", th:" + p[i * 4 + 2]);
 			}*/
 			
-			if (Settings.USE_GUIDE)
+			if (!Camera.doSweep)
 			{
-				float[] advice = guide.getAdvice();
-				if (!movementPilot.isProcessing() && advice[0] != -1) {
-					movementPilot.travel(advice[0], advice[1], positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
-					ConnectionManager.getInstance().sendPacketToAll(new MoveOrder(advice[0], advice[1]));
+				if (Settings.USE_GUIDE)
+				{
+					float[] advice = guide.getAdvice();
+					if (!movementPilot.isProcessing() && advice[0] != -1) {
+						movementPilot.travel(advice[0], advice[1], positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
+						ConnectionManager.getInstance().sendPacketToAll(new MoveOrder(advice[0], advice[1]));
+						numberOfCommands++;
+					}
+				}
+				else if (!Settings.GUI_ORDER_PROCESSED)
+				{
+					movementPilot.travel(Settings.GUI_ORDER_X, Settings.GUI_ORDER_Y, positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
+					Settings.GUI_ORDER_PROCESSED = true;
+					numberOfCommands++;
 				}
 			}
-			else if (!Settings.GUI_ORDER_PROCESSED)
-			{
-				movementPilot.travel(Settings.GUI_ORDER_X, Settings.GUI_ORDER_Y, positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
-				Settings.GUI_ORDER_PROCESSED = true;
-			}
+			
+			if (numberOfCommands > 5) {
+				// wait until movement finishes
+				while (movementPilot.isProcessing()) {
+					Thread.sleep(100);
+				}
+				
+				Camera.doSweep = true;
+				numberOfCommands = 0;
+			}				
 
 			// Logger.println("Buffer size:"+unifiedBuffer.getLength());
 			// Thread.sleep(100);
@@ -319,12 +335,5 @@ public class Main {
 		}
 
 		Logger.println("");
-	}
-
-	/** Returns which global time slot is the current one */
-	public static int getTimeSlot() {
-		int time = Clock.timestamp()
-				% (Settings.CAMERA_TIME_SLOT_LENGTH * Settings.CAMERA_TIME_SLOTS);
-		return (int) Math.floor(time / Settings.CAMERA_TIME_SLOT_LENGTH);
-	}
+	}	
 }

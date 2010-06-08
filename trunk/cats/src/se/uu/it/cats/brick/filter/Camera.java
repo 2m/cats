@@ -25,7 +25,7 @@ public class Camera implements Runnable {
 	// iteration counter which will increase when camera is stopped when landmark is seen
 	private int iterCounterSweep = 0;
 	private final int maxIterCounter = 40;
-	private final int maxIterToCapture = 20;
+	private final int maxIterToCapture = 20;	
 	
 	private NXTCam NXTcamera = null;
 	private Motor camMotor = Motor.B;
@@ -179,9 +179,11 @@ public class Camera implements Runnable {
 							unifiedBuffer.push(new SightingData(Clock.timestamp(), foundColorAng[i], i));
 							MovementPilot.newSighting = true;
 							
-							// send some measurements to the GUI
-							ConnectionManager.getInstance().sendPacketToAll(
-									new SimpleMeasurement(i, foundColorAng[i], 0));
+							if (i != Settings.TYPE_MOUSE) {
+								// send some measurements to the GUI
+								ConnectionManager.getInstance().sendPacketToAll(
+										new SimpleMeasurement(i, foundColorAng[i], 0));
+							}
 						}
 					}
 				}
@@ -258,8 +260,6 @@ public class Camera implements Runnable {
 	
 	public void sweep() {
 		
-		boolean[] seenLandmarks = new boolean[] {false, false, false, false, false};
-		
 		camMotor.stop();
 		
 		int startAngle = getMotorAng();
@@ -278,6 +278,7 @@ public class Camera implements Runnable {
 		boolean firstTurnMade = false;
 		boolean secondTurnMade = false;
 		int motorAng = startAngle;
+		int latestCaptureAngle = -360;
 		// do full sweep and return to the starting position
 		while (!firstTurnMade || !secondTurnMade || Math.abs(motorAng - startAngle) > 5) {
 				
@@ -292,12 +293,18 @@ public class Camera implements Runnable {
 			if (motorAng < lowerMaxAng) {
 				dir = COUNTER_CLOCKWISE;
 				changeDirection(dir);
-				secondTurnMade = true;
+				secondTurnMade = true;				
 			}
 			
-			int landmark = checkForLandmark(motorAng, seenLandmarks);
-			if (landmark != -1)
-				seenLandmarks[landmark] = true;
+			if (((firstTurnMade || secondTurnMade) && !(firstTurnMade && secondTurnMade)) && Math.abs(motorAng - latestCaptureAngle) > 40) {
+				int captureAngle = checkForLandmark(motorAng);
+				if (captureAngle != -1)
+					latestCaptureAngle = captureAngle;
+			}
+			
+			// start moving is not moving longer than max iterations
+			if (!camMotor.isMoving() && iterCounterSweep > maxIterCounter)
+				changeDirection(dir);
 		}
 		
 		camMotor.stop();
@@ -323,13 +330,11 @@ public class Camera implements Runnable {
 		}
 	}
 	
-	public int checkForLandmark(int motorAng, boolean[] seenLandmarks) {
-		int landmarkToReturn = -1;
+	public int checkForLandmark(int motorAng) {
 		
-		iterCounterSweep++;
-		// start moving is not moving longer than max iterations
-		if (!camMotor.isMoving() && iterCounterSweep > maxIterCounter)
-			changeDirection(dir);
+		int captureAngle = -1;
+		
+		iterCounterSweep++;		
 		
 		int numObjects = NXTcamera.getNumberOfObjects();
 		
@@ -397,11 +402,6 @@ public class Camera implements Runnable {
 			for (int i = 0; i < foundColor.length; i++) {					
 				if (foundColor[i]) {
 					
-					if (seenLandmarks[i]) {
-						// skip all seen landmarks
-						continue;
-					}
-					
 					if (camMotor.isMoving()) {
 						camMotor.stop();
 						iterCounterSweep = 0;
@@ -412,17 +412,17 @@ public class Camera implements Runnable {
 							
 							// send some measurements to the GUI
 							ConnectionManager.getInstance().sendPacketToAll(
-									new SimpleMeasurement(i, foundColorAng[i], 0));
+									new SimpleMeasurement(i, foundColorAng[i], 0));							
 							
 							changeDirection(dir);
 							
-							landmarkToReturn = i;
+							captureAngle = motorAng;
 						}
 					}
 				}
 			}
 		}
 		
-		return landmarkToReturn;
+		return captureAngle;
 	}
 }
