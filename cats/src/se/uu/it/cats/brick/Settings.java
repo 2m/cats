@@ -40,6 +40,7 @@ public class Settings {
 	public static final int PERIOD_POSITIONING_PARTICLE = 800; //PC:800;
 	public static final int PERIOD_TRACKING_KALMAN = 500; //Estimated time needed for one iteration = 300-400ms @ 2010-06-08
 	public static final int PERIOD_TRACKING_PARTICLE = 1000; //Estimated time needed for one iteration = 300-2500ms (most often 300-400)@ 2010-06-08
+	public static final int PERIOD_MAIN = 5000; //TODO: Use in main! Aka PERIOD_GUIDE Estimated time needed for one iteration = 2500-8000ms (most often 4500)@ 2010-06-08
 	
 	// particle filter settings
 	public static final int N_TRACKING = 50; //PC:100;
