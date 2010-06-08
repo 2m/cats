@@ -58,7 +58,7 @@ public class Area { // implements ActionListener
 
 	}
 
-	/* Tick master. On call aquires all items in enclosed area. */
+	/* Tick master. On call acquires all items in enclosed area. */
 	public void tick() {
 		time++;
 	}

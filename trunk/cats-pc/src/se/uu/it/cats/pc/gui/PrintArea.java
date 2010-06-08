@@ -186,16 +186,55 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	centFix_Y = _areaHeight/2+_arenaHeight/2*zk/50;
 	
 	//Print lighthouses
+	Color currentColor = Color.black;
 	for (int i = 0; i < _lighthouse.length; i++) {
 		if (_lighthouse[i] != null) {
-			g2d.setColor(Color.green); 
-			if(i==3) { g2d.setColor(Color.blue); }
-			g2d.fillOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-15), (int) centFix_Y-(_lighthouse[i].getY()*zk/50+15), 30, 30);
+			if(_lighthouse[i].getLighthouseName().compareTo("Beacon 1") == 0) {
+				currentColor = Color.magenta; 
+			}
+			if(_lighthouse[i].getLighthouseName().compareTo("Beacon 2") == 0) {
+				currentColor = Color.green; 
+			}
+			if(_lighthouse[i].getLighthouseName().compareTo("Beacon 3") == 0) {
+				currentColor = Color.blue; 
+			}
+			if(_lighthouse[i].getLighthouseName().compareTo("Beacon 4") == 0) {
+				currentColor = Color.cyan; 
+			}
+			//g2d.fillOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-(_lighthouse[i].getY()*zk/50+10), 20, 20);
+			
+			// Bottom hat
+			g2d.setColor(currentColor);
+			g2d.fillOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-((_lighthouse[i].getY())*zk/50), 20, 10);
 			g2d.setColor(Color.black); 
-			g2d.drawString(_lighthouse[i].getLighthouseName(), (int) centFix_X+(_lighthouse[i].getX()*zk/50-15)-10, (int) centFix_Y-(_lighthouse[i].getY()*zk/50+15)-10f);
-
+			g2d.drawOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-((_lighthouse[i].getY())*zk/50), 20, 10);
+			// Body
+			g2d.setColor(currentColor);
+			g2d.fillRect( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-((_lighthouse[i].getY())*zk/50+25), 20, 30);
+			
+			// Upper hat
+			g2d.fillOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-(_lighthouse[i].getY()*zk/50+30), 20, 10);
+			g2d.setColor(Color.black);
+			g2d.drawOval( (int) centFix_X+(_lighthouse[i].getX()*zk/50-10), (int) centFix_Y-(_lighthouse[i].getY()*zk/50+30), 20, 10);
+			
+			g2d.setColor(Color.black); 
+			g2d.drawString(_lighthouse[i].getLighthouseName(), (int) centFix_X+(_lighthouse[i].getX()*zk/50-15)-10, (int) centFix_Y-(_lighthouse[i].getY()*zk/50+25)-10f);
+			
 		}
     } 
+	// TEST BEACON
+	/*g2d.setColor(Color.green); 
+	g2d.fillRect( (int) centFix_X+(100*zk/50-10), (int) centFix_Y-((100)*zk/50-5), 20, 30);
+	g2d.setColor(Color.black); 
+	g2d.fillOval( (int) centFix_X+(100*zk/50-10), (int) centFix_Y-(100*zk/50), 20, 10);
+	g2d.setColor(Color.black); 
+	g2d.fillOval( (int) centFix_X+(100*zk/50-10), (int) centFix_Y-((100)*zk/50-30), 20, 10);
+	
+	g2d.drawOval( (int) centFix_X+(200*zk/50-10), (int) centFix_Y-((200)*zk/50-30), 20, 10);
+	*/
+	
+	//g2d.drawString("Test Beacon", (int) centFix_X+(100*zk/50-15)-10, (int) centFix_Y-(100*zk/50+50)-10f);
+	
 	
 	//Print mouse
 	g2d.setColor(Color.red);
