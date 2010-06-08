@@ -1,9 +1,6 @@
 package se.uu.it.cats.brick.filter;
 
 /*Below is the syntax highlighted version of Cholesky.java 
- *from 9.4 Numerical Solutions to Differential Equations. 
- *Copyright 2007, Robert Sedgewick and Kevin Wayne. 
- *Last updated: Tue Sep 29 16:17:41 EDT 2009. 
  */
 /*************************************************************************
  *  Compilation:  javac Cholesky.java
