@@ -65,15 +65,15 @@ public class Main {
 				
 			if (Settings.USE_POSITIONING_PARTICLE_FILTER) {
 				positioningFilter = new AbsolutePositioningParticleFilter(Identity.getId(), 
-						Settings.N_POSITIONING, (float) Settings.PERIOD_POSITIONING_PARTICLE / 1000f,
+						Settings.N_POSITIONING, (float) (Settings.PERIOD_POSITIONING_PARTICLE) / 1000f,
 						unifiedBuffer, BillBoard.getInstance());
 			} else if (Settings.USE_POSITIONING_GEOMETRIC_FILTER) {
 				positioningFilter = new AbsolutePositioningGeometricFilter(Identity.getId(),
-						(float) Settings.PERIOD_POSITIONING_GEOMETRIC / 1000f, unifiedBuffer,
+						(float) (Settings.PERIOD_POSITIONING_GEOMETRIC) / 1000f, unifiedBuffer,
 						BillBoard.getInstance());
 			} else {
 				positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(),
-						(float) Settings.PERIOD_POSITIONING_NAIVE / 1000f, unifiedBuffer,
+						(float) (Settings.PERIOD_POSITIONING_NAIVE) / 1000f, unifiedBuffer,
 						BillBoard.getInstance());
 			}
 			positioningFilter.initData(Settings.START_X, Settings.START_Y, Settings.START_ANGLE);
@@ -88,11 +88,11 @@ public class Main {
 
 			if (Settings.USE_TRACKING_PARTICLE_FILTER) {
 				trackingFilter = new TrackingParticleFilter(Identity.getId(), 
-						Settings.N_TRACKING, (float) Settings.PERIOD_TRACKING_PARTICLE / 1000f,
+						Settings.N_TRACKING, (float) (Settings.PERIOD_TRACKING_PARTICLE) / 1000f,
 						BillBoard.getInstance());
 			} else if (Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER) {
 				trackingFilter = new TrackingUnscentedKalmanFilter(Identity.getId(),
-						(float) Settings.PERIOD_TRACKING_KALMAN / 1000f, 
+						(float) (Settings.PERIOD_TRACKING_KALMAN) / 1000f, 
 						BillBoard.getInstance());
 			}
 			Thread trackingFilterThread = new Thread(trackingFilter);
@@ -211,7 +211,7 @@ public class Main {
 					Thread.sleep(100);
 				}
 				
-				Camera.doSweep = true;
+				//Camera.doSweep = true;
 				numberOfCommands = 0;
 			}				
 

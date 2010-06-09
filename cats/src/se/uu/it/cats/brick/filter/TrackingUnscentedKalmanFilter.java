@@ -317,13 +317,15 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			//use a mouse sighting if it's newer then lastCurrentTime (and older then currentTime?)
 			//System.out.println("SightingTS: "+sightings[(i - 1) * 4 + 3]+"lastCurrentTime: "+lastCurrentTime);
 						
-			if (sightings[(i - 1) * 4 + 3] >= (float)lastCurrentTime)
+			if (sightings[(i - 1) * 4 + 3] >= (float)lastCurrentTime - Settings.PERIOD_TRACKING_KALMAN)
 			{
 				//System.out.println("Cat " + id + " setting measurement for cat" + (i));
 				R.set(i-1, i-1, pow(std_array[0],2) );
-				measurments.set(i-1, 0, (sightings[(i - 1) * 4 + 2] + 2.0*PI) % (2.0*PI) );
-				
+				measurments.set(i-1, 0, (sightings[(i - 1) * 4 + 2] + 2.0*PI) % (2.0*PI) );	
+				//Logger.println("Accepting measurement " + (i-1) + ", timestamp = " + (sightings[(i - 1) * 4 + 3]) + ", lastCurrentTime = " + ((float)lastCurrentTime));
 			}
+			//else
+				//Logger.println("Discarding measurement " + (i-1) + ", timestamp = " + (sightings[(i - 1) * 4 + 3]) + ", limit = " + ((float)lastCurrentTime - Settings.PERIOD_TRACKING_KALMAN));
 		}
 		/*if (DEBUG)
 		{
@@ -365,7 +367,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		}
 
 		// Commit data to billboard from the leader
-		if (id == 0)
+		//if (id == 0)
 		{
 			billboard.setMeanAndCovariance(id, (float)states.get(0, 0), (float)states.get(1, 0), (float)states.get(2, 0), (float)states.get(3, 0),
 				0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);

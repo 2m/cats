@@ -18,11 +18,11 @@ public class Settings {
 	public static final boolean USE_POSITIONING_PARTICLE_FILTER  = false;
 	
 	// tracking filter
-	public static final boolean USE_TRACKING_UNSCENTED_KALMAN_FILTER = false;
-	public static final boolean USE_TRACKING_PARTICLE_FILTER = true;
+	public static final boolean USE_TRACKING_UNSCENTED_KALMAN_FILTER = true;
+	public static final boolean USE_TRACKING_PARTICLE_FILTER = false;
 	
 	// guide
-	public static boolean USE_GUIDE = false;
+	public static boolean USE_GUIDE = false; //Should always be enabled in the GUI instead
 
 	// orders from GUI
 	public static float GUI_ORDER_X = 0;
@@ -35,7 +35,7 @@ public class Settings {
 	
 	// periods in ms 
 	public static final int PERIOD_POSITIONING_NAIVE = 330; //PC:500;
-	public static final int PERIOD_POSITIONING_GEOMETRIC = 1000;	//Estimated time needed for one iteration = 10-100ms @ 2010-06-08
+	public static final int PERIOD_POSITIONING_GEOMETRIC = 500;	//Estimated time needed for one iteration = 10-100ms @ 2010-06-08
 	public static final int PERIOD_POSITIONING_KALMAN = 500; //PC:200;
 	public static final int PERIOD_POSITIONING_PARTICLE = 800; //PC:800;
 	public static final int PERIOD_TRACKING_KALMAN = 500; //Estimated time needed for one iteration = 300-400ms @ 2010-06-08
