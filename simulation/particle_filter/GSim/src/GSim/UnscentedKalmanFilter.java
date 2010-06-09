@@ -89,7 +89,7 @@ public class UnscentedKalmanFilter
 	 * @param R  measurement noise covariance
 	 * @return  "a posteriori" state estimate and P: "a posteriori" state covariance
 	 */
-	public Matrix[] run_ukf(IFunction f, Matrix[] x_and_P, IFunction h, Matrix z, Matrix Q, Matrix R)
+	public Matrix[] run_ukf(IFunction f, Matrix[] x_and_P, IFunction h, Matrix z, Matrix Q, Matrix R) throws Exception //Cholesky can throw exception 
 	{
 		
 		//long time_start_run_ukf = System.currentTimeMillis();
@@ -300,14 +300,14 @@ public class UnscentedKalmanFilter
 	 * @param c  coefficient
 	 * @return Sigma points
 	 */
-	private Matrix sigmas(Matrix x, Matrix P, double c)
+	private Matrix sigmas(Matrix x, Matrix P, double c) throws Exception //Cholesky can throw exception 
 	{
 		/*if (DEBUG3)
 		{
 			System.out.println("Debug: ukf.sigmas, c = " + c);
 		}*/
 		
-		Matrix A = new Matrix( Cholesky.cholesky( P.getArray() ) );
+		Matrix A = new Matrix( Cholesky.cholesky( P.getArray() ) ); 
 		//A = (A.times(c)).transpose();  //Incorrect, not transposed...
 		A = A.times(c);
 		A.transpose();
