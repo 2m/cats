@@ -1,5 +1,6 @@
 package se.uu.it.cats.brick.filter;
 
+import se.uu.it.cats.brick.Logger;
 import se.uu.it.cats.brick.storage.BillBoard;
 import lejos.util.Matrix;
 import static java.lang.Math.*;
@@ -42,14 +43,13 @@ public class HmeasMouse implements IFunction{
 			float measured_x_pos = positions[i*4+0];
 			float measured_y_pos = positions[i*4+1];
 			//use either acos or asin
-			if (y_pos - positions[i*4+1] >=0) //needed because of ambiguity in acos (and asin)
-			{
-				zm.set(   i, 0, acos(  ( x_pos - measured_x_pos ) / sqrt( Math.pow(x_pos - measured_x_pos, 2) + Math.pow(y_pos - measured_y_pos, 2) )  )   );
+			zm.set(i, 0, Math.atan2(y_pos - measured_y_pos, x_pos - measured_x_pos));
+			zm.set(i, 0, (zm.get(i,0)+2*Math.PI)%(2*Math.PI));
+			if (Double.isNaN(zm.get(i,0))){
+				Logger.println("Hmeas: z is NaN");
+				throw new RuntimeException("Hmeas: z is NaN");
 			}
-			else
-			{
-				zm.set(   i, 0, 2*PI-acos(  ( x_pos - measured_x_pos ) / sqrt( Math.pow(x_pos - measured_x_pos, 2) + Math.pow(y_pos - measured_y_pos, 2) )  )   );
-			}
+				
 		}	
 
 		/*System.out.println("Debug, in HmeasCat: input (xm) = ");
