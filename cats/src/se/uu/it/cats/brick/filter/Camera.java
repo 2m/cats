@@ -30,7 +30,7 @@ public class Camera implements Runnable {
 	private NXTCam NXTcamera = null;
 	private Motor camMotor = Motor.B;
 	
-	private final int maxSpeed = 900;
+	private final int maxSpeed = 900;//900;
 	private final int maxSweepSpeed = 500;
 	private final float motorCal = 0.978f;//1.19f; //linear calibration
 	private final float gearRatio = -0.2f * motorCal; //1:5 gear down (smallest gear to biggest)
@@ -46,22 +46,23 @@ public class Camera implements Runnable {
 	final static int dt = 10; // milliseconds
 	private Buffer unifiedBuffer;
 	
-	private int cyanCounter;
 	private int dir = COUNTER_CLOCKWISE; //Specifies which direction to turn
 	
 	public static boolean doSweep = false;
 	
 	public Camera(Buffer unifiedBuffer) {
 		this.unifiedBuffer = unifiedBuffer;
-		
-		NXTcamera = new NXTCam(SensorPort.S3);
-		
+		init();
+	}
+	
+	public void init() {
+		NXTcamera = new NXTCam(SensorPort.S3);		
 		NXTcamera.setTrackingMode(NXTCam.OBJECT_TRACKING);
 		NXTcamera.sortBy(NXTCam.SIZE);
 		NXTcamera.enableTracking(true);
 	}
 	
-	public void run() {		
+	public void run() {
 		track();
 	}
 	
@@ -74,11 +75,11 @@ public class Camera implements Runnable {
 		//PID-controller: tunable parameters
 		//Tuned using manual tuning method:
 		float Kp = 8.42f; //start osc. at 4
-		float Ki = 0f;
 		float Kd = 3f;
 		float previous_error = 0;
-		float integral = 0;
 		float derivative;
+		
+		//int ocilationCounter = 0;
 		
 		while (true) {
 			if (doSweep) {
@@ -90,16 +91,7 @@ public class Camera implements Runnable {
 				int motorAng = getMotorAng();
 				
 				int numObjects = NXTcamera.getNumberOfObjects();
-				
-				/*LCD.clear();
-				LCD.drawString(NXTcamera.getProductID(), 0, 0);
-				LCD.drawString(NXTcamera.getSensorType(), 0, 1);
-				LCD.drawString(NXTcamera.getVersion(), 9, 1);
-				LCD.drawString(objects, 0, 2);
-				LCD.drawInt(numObjects,1,9,2);*/
 	
-				//Logger.println("numObjects"+numObjects);
-				
 				boolean mouseFound = false;
 	
 				if (numObjects >= 1) {// && numObjects <= 8) {
@@ -110,7 +102,7 @@ public class Camera implements Runnable {
 					for (int i=0;i<numObjects;i++) {
 						Rectangle r = NXTcamera.getRectangle(i);
 						
-						//calibrated color group, 0 up to 7
+						//calibrated color group, 0 up to 5
 						int currentColor = NXTcamera.getObjectColor(i);
 						
 						try {					
@@ -131,7 +123,7 @@ public class Camera implements Runnable {
 						}
 						
 						// x-coordinate of the middle of the found color rectangle
-						int xColor = r.x + r.width / 2;					
+						int xColor = r.x + r.width / 2;
 						
 						float angToTarget = (xColor - 176f/2f + offset)*radPerPix;
 						float angToTargetRelCat = angToTarget + degToRad(motorAng);
@@ -176,6 +168,9 @@ public class Camera implements Runnable {
 					for (int i = 0; i < foundColor.length; i++) {					
 						if (foundColor[i]) {
 							
+							// reset counter if we see anything
+							//ocilationCounter = 0;
+							
 							unifiedBuffer.push(new SightingData(Clock.timestamp(), foundColorAng[i], i));
 							MovementPilot.newSighting = true;
 							
@@ -197,9 +192,8 @@ public class Camera implements Runnable {
 					else
 					{
 						//PID-controller:
-						integral=integral+err*dt;
 						derivative = (err - previous_error)/dt;
-						int newSpeed = (int) (Kp*err + Ki*integral + Kd*derivative);
+						int newSpeed = (int) (Kp*err + Kd*derivative);
 						
 						//newSpeed = (int)Math.exp(Math.abs(err) * 0.08);
 						if (Math.abs(newSpeed) > maxSpeed)
@@ -241,13 +235,20 @@ public class Camera implements Runnable {
 					
 					//Reverse motor direction if at maximum turning angle
 					if (motorAng > upperMaxAng) {
-						dir = CLOCKWISE;
+						dir = CLOCKWISE;						
 					}
 					if (motorAng < lowerMaxAng) {
 						dir = COUNTER_CLOCKWISE;
 					}
 					
 					changeDirection(dir);
+					
+					/*ocilationCounter++;
+					if (ocilationCounter >= 2) {
+						init();
+						ocilationCounter = 0;
+					}*/
+					
 				}
 	
 				//LCD.refresh();
@@ -260,19 +261,20 @@ public class Camera implements Runnable {
 	
 	public void sweep() {
 		
-		camMotor.stop();
-		
 		int startAngle = getMotorAng();
-		camMotor.setSpeed(maxSweepSpeed); //Search for landmarks with maximum speed
+		int direction = 0;
+		
+		// go to the first edge with full speed
+		camMotor.setSpeed(maxSpeed);
 		
 		// first go to the nearest border
 		if (startAngle > 0) {
-			dir = COUNTER_CLOCKWISE;
-			changeDirection(dir);
+			direction = COUNTER_CLOCKWISE;
+			changeDirection(direction);
 		}
 		else {
-			dir = CLOCKWISE;
-			changeDirection(dir);
+			direction = CLOCKWISE;
+			changeDirection(direction);
 		}
 		
 		boolean firstTurnMade = false;
@@ -280,36 +282,52 @@ public class Camera implements Runnable {
 		int motorAng = startAngle;
 		int latestCaptureAngle = -360;
 		// do full sweep and return to the starting position
-		while (!firstTurnMade || !secondTurnMade || Math.abs(motorAng - startAngle) > 5) {
+		while (!firstTurnMade || !secondTurnMade) {
 				
 			motorAng = getMotorAng();
 			
 			//Reverse motor direction if at maximum turning angle
-			if (motorAng > upperMaxAng) {
-				dir = CLOCKWISE;
-				changeDirection(dir);
+			if (motorAng > upperMaxAng && !(firstTurnMade)) {
+				// check if this was the first turn
+				if (!secondTurnMade) {
+					camMotor.setSpeed(maxSweepSpeed); //Search for landmarks with maximum sweep speed
+				}
+				
+				direction = CLOCKWISE;
+				changeDirection(direction);
 				firstTurnMade = true;
+				
 			}
-			if (motorAng < lowerMaxAng) {
-				dir = COUNTER_CLOCKWISE;
-				changeDirection(dir);
+			if (motorAng < lowerMaxAng && !(secondTurnMade)) {
+				// check if this was the first turn
+				if (!firstTurnMade) {
+					camMotor.setSpeed(maxSweepSpeed); //Search for landmarks with maximum sweep speed
+				}
+				
+				direction = COUNTER_CLOCKWISE;
+				changeDirection(direction);
 				secondTurnMade = true;				
 			}
 			
+			NXTcamera.getNumberOfObjects();
+			
 			if (((firstTurnMade || secondTurnMade) && !(firstTurnMade && secondTurnMade)) && Math.abs(motorAng - latestCaptureAngle) > 40) {
-				int captureAngle = checkForLandmark(motorAng);
+				int captureAngle = checkForLandmark(motorAng, direction);
 				if (captureAngle != -1)
 					latestCaptureAngle = captureAngle;
 			}
 			
-			// start moving is not moving longer than max iterations
+			// start moving if not moving longer than max iterations
 			if (!camMotor.isMoving() && iterCounterSweep > maxIterCounter)
-				changeDirection(dir);
+				changeDirection(direction);
+			
+			try{Thread.sleep(dt);}catch(Exception ex){}
 		}
 		
 		camMotor.stop();
 		
 		doSweep = false;
+		//init();
 	}
 	
 	public int getMotorAng() {
@@ -322,6 +340,7 @@ public class Camera implements Runnable {
 	
 	// change direction to:	
 	public void changeDirection(int dir) {
+		Logger.println("in changeDirection:"+dir);
 		if (dir == COUNTER_CLOCKWISE) {
 			camMotor.backward();
 		}
@@ -330,11 +349,10 @@ public class Camera implements Runnable {
 		}
 	}
 	
-	public int checkForLandmark(int motorAng) {
+	public int checkForLandmark(int motorAng, int currentDirection) {
 		
+		iterCounterSweep++;
 		int captureAngle = -1;
-		
-		iterCounterSweep++;		
 		
 		int numObjects = NXTcamera.getNumberOfObjects();
 		
@@ -346,7 +364,7 @@ public class Camera implements Runnable {
 			for (int i=0;i<numObjects;i++) {
 				Rectangle r = NXTcamera.getRectangle(i);
 				
-				//calibrated color group, 0 up to 7
+				//calibrated color group, 0 up to 5
 				int currentColor = NXTcamera.getObjectColor(i);
 				
 				if (currentColor == Settings.TYPE_MOUSE) {
@@ -412,9 +430,9 @@ public class Camera implements Runnable {
 							
 							// send some measurements to the GUI
 							ConnectionManager.getInstance().sendPacketToAll(
-									new SimpleMeasurement(i, foundColorAng[i], 0));							
+									new SimpleMeasurement(i, foundColorAng[i], 0));
 							
-							changeDirection(dir);
+							changeDirection(currentDirection);
 							
 							captureAngle = motorAng;
 						}
