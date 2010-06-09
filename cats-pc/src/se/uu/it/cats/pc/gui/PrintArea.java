@@ -248,40 +248,6 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	//g2d.drawString("Test Beacon", (int) centFix_X+(100*zk/50-15)-10, (int) centFix_Y-(100*zk/50+50)-10f);
 	
 	
-	//Print mouse
-	g2d.setColor(Color.red);
-	//g2d.fillOval( (int) centFix_X+_mouse.getX()*zk/50-8, (int) centFix_Y-_mouse.getY()*zk/50-8, 16, 16);
-	bufferX = _mouse.getBufferX();
-	bufferY = _mouse.getBufferY();
-	posBuffer = _mouse.getPosBuffer();
-	bufferLength = _mouse.getBufferLength();
-	
-	//Mouse fading
-	for(int j = 0; j<bufferLength;j++) {
-		oldEntityPosX = centFix_X+(int)(bufferX[(posBuffer+j) % bufferLength]*100)*zk/50;
-		oldEntityPosY = centFix_Y-(int)(bufferY[(posBuffer+j) % bufferLength]*100)*zk/50;
-		g2d.setColor(new Color((int) 255, (int) (bufferLength-j)*255/bufferLength,(int) (bufferLength-j)*255/bufferLength));
-		g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
-	}
-	//Mouse lines
-	/*
-	for(int j = 0; j<bufferLength-1;j++) {
-		oldEntityPosX0 = centFix_X+(int)(bufferX[(posBuffer+j) % bufferLength]*100)*zk/50;
-		oldEntityPosY0 = centFix_Y-(int)(bufferY[(posBuffer+j) % bufferLength]*100)*zk/50;
-		oldEntityPosX1 = centFix_X+(int)(bufferX[(posBuffer+j+1) % bufferLength]*100)*zk/50;
-		oldEntityPosY1 = centFix_Y-(int)(bufferY[(posBuffer+j+1) % bufferLength]*100)*zk/50;
-		
-		g2d.setColor(new Color((int) 255, (int) (bufferLength-j)*255/bufferLength,(int) (bufferLength-j)*255/bufferLength));
-		//g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
-
-		g2d.drawLine( (int) oldEntityPosX0, (int) oldEntityPosY0, (int) oldEntityPosX1,(int) oldEntityPosY1);
-	}
-	g2d.setColor(Color.magenta);
-	*/
-	
-	g2d.setColor(new Color((int) 200, (int) 200,(int) 0));
-	g2d.fillOval( centFix_X+ (int) (_mouse.getX()-5)*zk/50, centFix_Y - (int) (_mouse.getY()+5)*zk/50, 10, 10);
-	
 	
 	
 	//Print cats    
@@ -333,11 +299,15 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 					continue;
 				
 				float angle = _cats[i].getSighting(j) + _cats[i].getAngle_c();
+				
 				linelength = 100;
 				
 				g2d.setColor(lighthouseColors[j]);
+				if(j==0) {
+					linelength = 400;
+				}
 				
-				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(angle))*linelength*4), (int) (entityPosY + Math.sin(-(angle))*linelength*4));
+				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(angle))*linelength), (int) (entityPosY + Math.sin(-(angle))*linelength));
 				
 				_cats[i].decreaseSightingDrawnCount(j);
 			}
@@ -366,11 +336,48 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			g2d.drawString(_cats[i].getName(), entityPosX-10f, entityPosY-10f);
 		}
     }
+	
+	//Print mouse
+	g2d.setColor(Color.red);
+	//g2d.fillOval( (int) centFix_X+_mouse.getX()*zk/50-8, (int) centFix_Y-_mouse.getY()*zk/50-8, 16, 16);
+	bufferX = _mouse.getBufferX();
+	bufferY = _mouse.getBufferY();
+	posBuffer = _mouse.getPosBuffer();
+	bufferLength = _mouse.getBufferLength();
+	
+	//Mouse fading
+	for(int j = 0; j<bufferLength;j++) {
+		oldEntityPosX = centFix_X+(int)(bufferX[(posBuffer+j) % bufferLength]*100)*zk/50;
+		oldEntityPosY = centFix_Y-(int)(bufferY[(posBuffer+j) % bufferLength]*100)*zk/50;
+		g2d.setColor(new Color((int) 255, (int) (bufferLength-j)*255/bufferLength,(int) (bufferLength-j)*255/bufferLength));
+		g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
+	}
+	//Mouse lines
+	/*
+	for(int j = 0; j<bufferLength-1;j++) {
+		oldEntityPosX0 = centFix_X+(int)(bufferX[(posBuffer+j) % bufferLength]*100)*zk/50;
+		oldEntityPosY0 = centFix_Y-(int)(bufferY[(posBuffer+j) % bufferLength]*100)*zk/50;
+		oldEntityPosX1 = centFix_X+(int)(bufferX[(posBuffer+j+1) % bufferLength]*100)*zk/50;
+		oldEntityPosY1 = centFix_Y-(int)(bufferY[(posBuffer+j+1) % bufferLength]*100)*zk/50;
+		
+		g2d.setColor(new Color((int) 255, (int) (bufferLength-j)*255/bufferLength,(int) (bufferLength-j)*255/bufferLength));
+		//g2d.fillOval( (int) oldEntityPosX-4, (int) oldEntityPosY-4, 8, 8);
+
+		g2d.drawLine( (int) oldEntityPosX0, (int) oldEntityPosY0, (int) oldEntityPosX1,(int) oldEntityPosY1);
+	}
+	g2d.setColor(Color.magenta);
+	*/
+	
+	g2d.setColor(new Color((int) 140, (int) 0,(int) 0));
+	g2d.fillOval( centFix_X+ (int) (_mouse.getX()-5)*zk/50, centFix_Y - (int) (_mouse.getY()+5)*zk/50, 10, 10);
+	
+	
+	
   
 	//Print cat-image
 	//g2d.rotate(Math.PI);  // Rotate the image by 1 radian.
     //g2d.drawImage(image, 30, 30, ImageObserver observer);
-	g2d.drawImage(robot, (int) 100 , (int) 100, (int) 100, (int) 100, null);
+	//g2d.drawImage(robot, (int) 100 , (int) 100, (int) 100, (int) 100, null);
   }
   
   public void showGrid(boolean showgrid){
