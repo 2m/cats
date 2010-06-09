@@ -27,7 +27,7 @@ public class Cholesky {
     private static final int DEBUG = 0; //0 = no debug, 1 = debug on PC, 2 = debug on brick
 
     // is symmetric
-    public static boolean isSymmetric(double[][] A) {
+    public static boolean isSymmetric(double[][] A) throws Exception{
 		debug("A = ");
     	debug(Matlab.MatrixToString(new Matrix(A)));
         int N = A.length;
@@ -35,10 +35,10 @@ public class Cholesky {
             for (int j = 0; j < i; j++) {
             	if (A[i][j] == Double.NaN || A[j][i] == Double.NaN)
             	{
-                	debug("isSymmetric: Matrix contains NaN");
+            		Logger.println("Error in Cholesky: Matrix contains NaN");
                 	debug("A = ");
                 	debug(Matlab.MatrixToString(new Matrix(A)));
-            		throw new RuntimeException("isSymmetric: Matrix contains NaN");	
+            		throw new Exception("Matrix contains NaN");	
             	}
                 if (A[i][j] - A[j][i] > EPSILON) 
                 	return false;  //updated so that rounding errors doesn't make it fail
@@ -60,19 +60,19 @@ public class Cholesky {
 
 
     // return Cholesky factor L of psd matrix A = L L^T
-    public static double[][] cholesky(double[][] A) {
+    public static double[][] cholesky(double[][] A) throws Exception{
     	debug("Entering Cholesky"); 
         if (!isSquare(A)) {
-        	debug("Matrix is not square");
+        	Logger.println("Error in Cholesky: Matrix is not square");
         	debug("A = ");
         	debug(Matlab.MatrixToString(new Matrix(A)));
-            throw new RuntimeException("Matrix is not square");
+            throw new Exception("Matrix is not square");
         }
         if (!isSymmetric(A)) {
-        	debug("Matrix is not symmetric");      	
+        	Logger.println("Error in Cholesky: Matrix is not symmetric");      	
         	debug("A = ");
         	debug(Matlab.MatrixToString(new Matrix(A)));
-            throw new RuntimeException("Matrix is not symmetric");
+            throw new Exception("Matrix is not symmetric");
         }
 
         int N  = A.length;
@@ -88,33 +88,30 @@ public class Cholesky {
                 else        L[i][j] = 1.0 / L[j][j] * (A[i][j] - sum);
             }
             if (L[i][i] <= 0) {
-            	debug("Matrix not positive definite: L["+i+"]["+i+"] = " + L[i][i] + " <= 0");
+            	Logger.println("Error in Cholesky: Matrix not positive definite: L["+i+"]["+i+"] = " + L[i][i] + " <= 0");
             	debug("L = ");
             	debug(Matlab.MatrixToString(new Matrix(L)));            	
             	debug("A = ");
             	debug(Matlab.MatrixToString(new Matrix(A)));
-                throw new RuntimeException("Matrix not positive definite");
+                throw new Exception("Matrix not positive definite");
             }
         }
-        
-    	debug("After calculations in Cholesky, L = ");
-    	debug(Matlab.MatrixToString(new Matrix(L)));    
         checkForNaN(L);
         debug("Leaving Cholesky"); 
         return L;
     }
     
-    private static void checkForNaN(double[][] A)
+    private static void checkForNaN(double[][] A) throws Exception
     {
     	int N = A.length;
     	for (int i = 0; i < N; i++) {
     		for (int j = 0; j < i; j++) {
     			if (Double.isNaN(A[i][j]))
     			{
-    				debug("checkForNaN: Matrix contains NaN");
+    				Logger.println("Error in Cholesky: Matrix contains NaN");
     				debug("A = ");
     				debug(Matlab.MatrixToString(new Matrix(A)));
-    				throw new RuntimeException("checkForNaN: Matrix contains NaN");	
+    				throw new Exception("Matrix contains NaN");	
     			}
     		}
     	}        

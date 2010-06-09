@@ -31,6 +31,9 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	 * x, y, vx, vy . (aka 'x'). */
 	private Matrix states;
 	
+	/** Number of variables in the mouse's state vector*/
+	private final int numberOfStates;
+	
 	/** state covariance */
 	private Matrix P;
 	
@@ -83,10 +86,10 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		// Call constructor of super class
 		super(id, T, billboard);
 		
-		int nz = billboard.getNoCats();  //number of cats
-		int nx = 4;  //number of variables in the mouse's state vector
+		int numberOfMeasurements = billboard.getNoCats();  //number of cats
+		numberOfStates = 4;  //number of variables in the mouse's state vector
 		
-		ufk_filter = new UnscentedKalmanFilter(nx,nz); 
+		ufk_filter = new UnscentedKalmanFilter(numberOfStates,numberOfMeasurements); 
 		float dt = T; //1.0f;  //sampling period
 		float q = 0.1f;//0.005f;  //std of expected process noise for the mouse
 		float stddegrees = 1f;//2.0f; //0.1f;
@@ -98,15 +101,15 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		Q = new Matrix(temp_Q);  //covariance of process for the mouse
 		Q.timesEquals(pow(q,2));
 		
-		R = eye(nz).timesEquals( pow(std_array[0],2) );  //covariance of measurement of the mouse
+		R = eye(numberOfMeasurements).timesEquals( pow(std_array[0],2) );  //covariance of measurement of the mouse
 
-		states = zeros(nx,1);  //initial estimated state
-		measurments = zeros(nz,1);  //initial estimated state
+		states = zeros(numberOfStates,1);  //initial estimated state
+		measurments = zeros(numberOfMeasurements,1);  //initial estimated state
 		
 		f = new FstateMouse(dt);  //nonlinear state equations
 		h = new HmeasMouse(billboard);  //measurement equation  
 		
-		P = eye(nx).timesEquals( pow(10,-3) ); //initial state covariance
+		P = eye(numberOfStates).timesEquals( pow(10,-3) ); //initial state covariance
 		
 		states_and_P = new Matrix[]{states, P};
 
@@ -337,12 +340,14 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		
 				
 		//One iteration with UKF
-		/*if (Double.isNaN(states_and_P[1].get(0, 0))) {
-			states_and_P[1] = eye(4).timesEquals( pow(10,-3) );
-		}*/
-		states_and_P = ufk_filter.run_ukf(f, states_and_P, h, measurments, Q, R);
-		states = states_and_P[0]; 
-		P = states_and_P[1];
+		try {
+			states_and_P = ufk_filter.run_ukf(f, states_and_P, h, measurments, Q, R);
+			states = states_and_P[0]; 
+			P = states_and_P[1];
+		} catch (Exception e) {//Cholesky can throw exception 
+			P = eye(numberOfStates).timesEquals( pow(10,-3) );  //initial state covariance
+			states_and_P[1] = P;
+		}
 		
 		if (DEBUG)
 		{
