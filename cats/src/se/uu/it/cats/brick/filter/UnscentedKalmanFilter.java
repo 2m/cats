@@ -90,9 +90,7 @@ public class UnscentedKalmanFilter
 	 * @return  "a posteriori" state estimate and P: "a posteriori" state covariance
 	 */
 	public Matrix[] run_ukf(IFunction f, Matrix[] x_and_P, IFunction h, Matrix z, Matrix Q, Matrix R)
-	{
-		Logger.println("Entering run_ukf"); 
-		
+	{	
 		//long time_start_run_ukf = System.currentTimeMillis();
 		
 		if (DEBUG != 0)
