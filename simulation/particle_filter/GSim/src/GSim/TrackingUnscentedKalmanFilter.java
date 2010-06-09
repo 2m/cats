@@ -322,13 +322,13 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			//use a mouse sighting if it's newer then lastCurrentTime (and older then currentTime?)
 			//System.out.println("SightingTS: "+sightings[(i - 1) * 4 + 3]+"lastCurrentTime: "+lastCurrentTime);
 						
-			//if (sightings[(i - 1) * 4 + 3] >= (float)lastCurrentTime)
-			//{
+			if (sightings[(i - 1) * 4 + 3] >= (float)lastCurrentTime)
+			{
 				//System.out.println("Cat " + id + " setting measurement for cat" + (i));
 				R.set(i-1, i-1, pow(std_array[0],2) );
 				measurments.set(i-1, 0, (sightings[(i - 1) * 4 + 2] + 2.0*PI) % (2.0*PI) );
 				
-			//}
+			}
 		}
 		if (DEBUG)
 		{
@@ -375,7 +375,6 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
-		System.out.println("Tracking.ukf update = " + getExecutionTime());
 	}
 	
 	private void debug(Object info)
