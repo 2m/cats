@@ -279,7 +279,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 	g2d.setColor(Color.magenta);
 	*/
 	
-	g2d.setColor(new Color((int) 200, (int) 0,(int) 0));
+	g2d.setColor(new Color((int) 200, (int) 200,(int) 0));
 	g2d.fillOval( centFix_X+ (int) (_mouse.getX()-5)*zk/50, centFix_Y - (int) (_mouse.getY()+5)*zk/50, 10, 10);
 	
 	
@@ -326,7 +326,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 			}
 			
 			// print sightings as long lines of different colors
-			g2d.setStroke(new BasicStroke(3)); // width of the lines
+			g2d.setStroke(new BasicStroke(2)); // width of the lines
 			for (int j = 0; j < _cats[i].getSightingCount(); j++) {
 				
 				if (_cats[i].getSightingDrawCount(j) <= 0)
@@ -337,7 +337,7 @@ public class PrintArea extends JPanel implements ChangeListener, MouseWheelListe
 				
 				g2d.setColor(lighthouseColors[j]);
 				
-				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(angle))*linelength*3), (int) (entityPosY + Math.sin(-(angle))*linelength*3));
+				g2d.drawLine( (int) entityPosX, (int) entityPosY, (int) (entityPosX + Math.cos(-(angle))*linelength*4), (int) (entityPosY + Math.sin(-(angle))*linelength*4));
 				
 				_cats[i].decreaseSightingDrawnCount(j);
 			}
