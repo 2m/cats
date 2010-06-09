@@ -50,7 +50,10 @@ public class HmeasMouse implements IFunction{
 				throw new RuntimeException("Hmeas: z is NaN");
 			}
 				
-		}	
+		}
+		Logger.println("Hmeas: x_pos = " + x_pos + ", y_pos = " + y_pos);
+		Logger.println("Hmeas: zm = ");
+		Logger.println(Matlab.MatrixToString(zm));
 
 		/*System.out.println("Debug, in HmeasCat: input (xm) = ");
 		printM(xm);	
