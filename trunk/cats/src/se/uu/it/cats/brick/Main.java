@@ -100,6 +100,8 @@ public class Main {
 			
 			// init guide
 			guide = new Guide(Identity.getId(), BillBoard.getInstance());
+			Thread guideThread = new Thread(guide);
+			guideThread.start();
 		}
 
 		while (!startYourEngines) {
@@ -188,7 +190,7 @@ public class Main {
 			{
 				if (Settings.USE_GUIDE)
 				{
-					float[] advice = guide.getAdvice();
+					float[] advice = Guide.advice;
 					if (!movementPilot.isProcessing() && advice[0] != -1) {
 						movementPilot.travel(advice[0], advice[1], positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
 						ConnectionManager.getInstance().sendPacketToAll(new MoveOrder(advice[0], advice[1]));
@@ -203,7 +205,7 @@ public class Main {
 				}
 			}
 			
-			if (numberOfCommands > 5) {
+			if (numberOfCommands >= 3) {
 				// wait until movement finishes
 				while (movementPilot.isProcessing()) {
 					Thread.sleep(100);

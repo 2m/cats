@@ -2,7 +2,10 @@ package se.uu.it.cats.brick;
 
 import se.uu.it.cats.brick.storage.BillBoard;
 
-public class Guide {
+public class Guide implements Runnable{
+	
+	public static float[] advice = new float[2];
+	
 	private BillBoard billboard;
 	private int id;
 	private float[] myPos;
@@ -258,5 +261,15 @@ public class Guide {
 			}
 		}
 		return Z3;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		while (true) {
+			advice = getAdvice();
+			try {Thread.sleep(1000);} catch(Exception ex) {}
+		}
+		
 	}
 }
