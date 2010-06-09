@@ -51,9 +51,9 @@ public class HmeasMouse implements IFunction{
 			}
 				
 		}
-		Logger.println("Hmeas: x_pos = " + x_pos + ", y_pos = " + y_pos);
+		/*Logger.println("Hmeas: x_pos = " + x_pos + ", y_pos = " + y_pos);
 		Logger.println("Hmeas: zm = ");
-		Logger.println(Matlab.MatrixToString(zm));
+		Logger.println(Matlab.MatrixToString(zm));*/
 
 		/*System.out.println("Debug, in HmeasCat: input (xm) = ");
 		printM(xm);	
