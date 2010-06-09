@@ -91,7 +91,6 @@ public class UnscentedKalmanFilter
 	 */
 	public Matrix[] run_ukf(IFunction f, Matrix[] x_and_P, IFunction h, Matrix z, Matrix Q, Matrix R)
 	{
-		Logger.println("Entering run_ukf"); 
 		
 		//long time_start_run_ukf = System.currentTimeMillis();
 		
