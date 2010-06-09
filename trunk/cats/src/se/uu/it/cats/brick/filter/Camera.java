@@ -321,6 +321,8 @@ public class Camera implements Runnable {
 			if (!camMotor.isMoving() && iterCounterSweep > maxIterCounter)
 				changeDirection(direction);
 			
+			iterCounterSweep++;
+			
 			try{Thread.sleep(dt);}catch(Exception ex){}
 		}
 		
@@ -340,7 +342,6 @@ public class Camera implements Runnable {
 	
 	// change direction to:	
 	public void changeDirection(int dir) {
-		Logger.println("in changeDirection:"+dir);
 		if (dir == COUNTER_CLOCKWISE) {
 			camMotor.backward();
 		}
@@ -351,7 +352,6 @@ public class Camera implements Runnable {
 	
 	public int checkForLandmark(int motorAng, int currentDirection) {
 		
-		iterCounterSweep++;
 		int captureAngle = -1;
 		
 		int numObjects = NXTcamera.getNumberOfObjects();

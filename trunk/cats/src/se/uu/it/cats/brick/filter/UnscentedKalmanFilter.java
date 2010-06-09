@@ -320,8 +320,8 @@ public class UnscentedKalmanFilter
 		{
 			System.out.println("Debug: ukf.sigmas, c = " + c);
 		}*/
-    	Logger.println("P = ");
-    	Logger.println(Matlab.MatrixToString(P));
+    	//Logger.println("P = ");
+    	//Logger.println(Matlab.MatrixToString(P));
 		Matrix A = new Matrix( Cholesky.cholesky( P.getArray() ) );
 		//A = (A.times(c)).transpose();  //Incorrect, not transposed...
 		A = A.times(c);

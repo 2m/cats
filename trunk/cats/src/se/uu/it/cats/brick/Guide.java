@@ -2,10 +2,10 @@ package se.uu.it.cats.brick;
 
 import se.uu.it.cats.brick.storage.BillBoard;
 
-public class Guide implements Runnable{
-	
+public class Guide implements Runnable {
+
 	public static float[] advice = new float[2];
-	
+
 	private BillBoard billboard;
 	private int id;
 	private float[] myPos;
@@ -14,17 +14,20 @@ public class Guide implements Runnable{
 	private boolean haveMousePosition = false;
 	private final float h = (float) 0.05;
 
-	public final float D1 = (float) 0.8; // Optimal distance from mouse
-	public final float D2 = (float) 0.40; // Minimal distance to objects
+	public final float D1 = (float) 0.90; // Optimal distance from mouse
+	public final float D2 = (float) 0.45; // Minimal distance to objects
 	public final float D3 = (float) 0.30; // Minimal distance from line of sight
-	public final float D4 = (float) 0.25; // Minimal distance from arena edges
-	public final float D5 = (float) 0.2; // Mouse distance "plateau" size
+	public final float D4 = (float) 0.15; // Minimal distance from arena edges
+	public final float D5 = (float) 0.25; // Mouse distance "plateau" size
 	// Weights on the different parts of the criterion function
 	public final float W1 = (float) 1.0; // Importance of distance from cats
 	public final float W2 = (float) 0.8; // Importance of distance from mouse
 	public final float W3 = (float) 1.0; // Importance of distance from edges
 	public final float W4 = (float) 0.8; // Importance of distance from LOS
 	public final float W5 = (float) 1.0; // Importance of distance from landm.
+
+	public final float maxMovement = (float) Math.pow(0.20, 2);
+	public final float minMovement = (float) Math.pow(0.10, 2);
 
 	public Guide(int id, BillBoard billboard) {
 		this.billboard = billboard;
@@ -41,18 +44,18 @@ public class Guide implements Runnable{
 		advice[1] = -1.0f;
 		float x = myPos[0];
 		float y = myPos[1];
+		float diffx = 0, diffy = 0;
 		if (x > -1.0f) {
 			int i = 0;
-			while ((i < 40)
-					&& (Math.sqrt((myPos[0] - x) * (myPos[0] - x)
-							+ (myPos[1] - y) * (myPos[1] - y)) < 0.25f)) {
+			while ((i < 40) && ((diffx * diffx + diffy * diffy) < maxMovement)) {
 				float[] grad = getGradient(x, y);
 				x += 0.01 * Math.signum(grad[0]);
 				y += 0.01 * Math.signum(grad[1]);
+				diffx = Math.abs(myPos[0] - x);
+				diffy = Math.abs(myPos[1] - y);
 				i++;
 			}
-			if (Math.sqrt((myPos[0] - x) * (myPos[0] - x) + (myPos[1] - y)
-					* (myPos[1] - y)) > 0.15f) {
+			if ((diffx * diffx + diffy * diffy) > minMovement) {
 				advice[0] = x;
 				advice[1] = y;
 			}
@@ -68,7 +71,6 @@ public class Guide implements Runnable{
 			if (i == id) {
 				myPos[0] = positions[i * 4];
 				myPos[1] = positions[i * 4 + 1];
-
 			} else {
 				otherCats[j][0] = positions[i * 4];
 				otherCats[j][1] = positions[i * 4 + 1];
@@ -93,8 +95,8 @@ public class Guide implements Runnable{
 	public float[] getGradient(float x, float y) {
 		// Finite difference approximation of the gradient and (x, y)
 		float[] ret = new float[2];
-		ret[0] = (sample(x + h, y) - sample(x - h, y)) / (2 * h);
-		ret[1] = (sample(x, y + h) - sample(x, y - h)) / (2 * h);
+		ret[0] = (sample(x + h, y) - sample(x - h, y));// / (2 * h);
+		ret[1] = (sample(x, y + h) - sample(x, y - h));// / (2 * h);
 		return ret;
 	}
 
@@ -141,15 +143,16 @@ public class Guide implements Runnable{
 	}
 
 	private float keepDistanceFromObject(float x0, float y0, float x1, float y1) {
-		float maxT = (float) Math.sqrt(Math.pow(D2, 2) + Math.pow(D2, 2));
-		float T = (float) Math.sqrt((x0 - x1) * (x0 - x1) + (y0 - y1)
-				* (y0 - y1));
-		if (T < D2) {
-			return T / maxT;
-		} else {
-			return (float) 1.0;
-
+		final float D2manhattan = D2 * 1.5f; // D2*sqrt(2)
+		float diffx = Math.abs(x0 - x1);
+		float diffy = Math.abs(y0 - y1);
+		if ((diffx + diffy) < D2manhattan) {
+			float distanceSquared = diffx * diffx + diffy * diffy;
+			if (distanceSquared < (D2 * D2)) {
+				return (float) (Math.sqrt(distanceSquared) / D2);
+			}
 		}
+		return (float) 1.0;
 
 	}
 
@@ -182,7 +185,7 @@ public class Guide implements Runnable{
 	 *            position in y direction
 	 */
 	private float keepDistanceFromMouse(float x, float y) {
-		float maxZ1 = (float) Math.sqrt(Math.pow(Settings.ARENA_MAX_X
+		final float maxZ1 = (float) Math.sqrt(Math.pow(Settings.ARENA_MAX_X
 				- Settings.ARENA_MIN_X, 2)
 				+ Math.pow(Settings.ARENA_MAX_Y - Settings.ARENA_MIN_Y, 2));
 		float Z1 = (float) Math.abs(Math.sqrt((mousePos[0] - x)
@@ -206,14 +209,12 @@ public class Guide implements Runnable{
 	 *            position in y direction
 	 */
 	private float keepDistanceFromEdges(float x, float y) {
-		float ret;
+		float ret = 1.0f;
 		// Function in x direction
 		if ((x - Settings.ARENA_MIN_X) < D4) {
 			ret = (x - Settings.ARENA_MIN_X) / D4;
 		} else if ((Settings.ARENA_MAX_X - x) < D4) {
 			ret = (Settings.ARENA_MAX_X - x) / D4;
-		} else {
-			ret = 1.0f;
 		}
 		// Function in y direction
 		if ((y - Settings.ARENA_MIN_Y) < D4) {
@@ -267,9 +268,14 @@ public class Guide implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 		while (true) {
+			long time = Clock.timestamp();
 			advice = getAdvice();
-			try {Thread.sleep(1000);} catch(Exception ex) {}
+			Logger.println("Guide time: " + (Clock.timestamp() - time));
+			try {
+				Thread.sleep(1500);
+			} catch (Exception ex) {
+			}
 		}
-		
+
 	}
 }

@@ -211,7 +211,7 @@ public class Main {
 					Thread.sleep(100);
 				}
 				
-				//Camera.doSweep = true;
+				Camera.doSweep = true;
 				numberOfCommands = 0;
 			}				
 
