@@ -106,7 +106,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		f = new FstateMouse(dt);  //nonlinear state equations
 		h = new HmeasMouse(billboard);  //measurement equation  
 		
-		P = eye(nx).timesEquals( pow(10,-3) );  //initial state covariance
+		P = eye(nx).timesEquals( pow(10,-3) ); //initial state covariance
 		
 		states_and_P = new Matrix[]{states, P};
 
@@ -300,10 +300,10 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		// Get time reference
 		currentTime = Clock.timestamp();
 		
-		if (DEBUG)
+		/*if (DEBUG)
 		{
 			debug("Debug: tracking.ukf.update for cat " +id + ", currentTime = " + currentTime + "(rounded " + (float)currentTime + "), lastCurrentTime = " + lastCurrentTime + "(rounded " + (float)lastCurrentTime + ")" );
-		}
+		}*/
 
 		// 
 		float[] sightings = billboard.getLatestSightings();
@@ -325,16 +325,19 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 				
 			//}
 		}
-		if (DEBUG)
+		/*if (DEBUG)
 		{
 			debug("Debug: tracking.ukf cat " +id + ", measurments dim: " + measurments.getRowDimension() + " x " + measurments.getColumnDimension() + ", mouse measurments:");
 			printM(measurments);
 			debug("Debug: tracking.ukf cat " +id + ", R dim: " + R.getRowDimension() + " x " + R.getColumnDimension() + ", mouse R:");
 			printM(R);
-		}
+		}*/
 		
 				
 		//One iteration with UKF
+		/*if (Double.isNaN(states_and_P[1].get(0, 0))) {
+			states_and_P[1] = eye(4).timesEquals( pow(10,-3) );
+		}*/
 		states_and_P = ufk_filter.run_ukf(f, states_and_P, h, measurments, Q, R);
 		states = states_and_P[0]; 
 		P = states_and_P[1];
@@ -343,8 +346,8 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		{
 			debug("Debug: tracking.ukf cat " +id + ", P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", mouse P:");
 			printM(P);
-			debug("Debug: tracking.ukf cat " +id + ", states dim: " + states.getRowDimension() + " x " + states.getColumnDimension() + ", mouse states:");
-			printM(states);
+			//debug("Debug: tracking.ukf cat " +id + ", states dim: " + states.getRowDimension() + " x " + states.getColumnDimension() + ", mouse states:");
+			//printM(states);
 		}
 		
 		// Check x and y so they keep inside the arena and also set velocity in that direction to zero if outside the arena
