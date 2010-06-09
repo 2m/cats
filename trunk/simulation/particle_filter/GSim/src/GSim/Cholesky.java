@@ -24,7 +24,7 @@ import lejos.util.Matrix;
  *************************************************************************/
 public class Cholesky {
     private static final double EPSILON = 1e-10;
-    private static final int DEBUG = 1; //0 = no debug, 1 = debug on PC, 2 = debug on brick
+    private static final int DEBUG = 0; //0 = no debug, 1 = debug on PC, 2 = debug on brick
 
     // is symmetric
     public static boolean isSymmetric(double[][] A) {

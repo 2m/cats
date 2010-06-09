@@ -51,8 +51,10 @@ public class HmeasMouse implements IFunction{
 			}*/
 				zm.set(i, 0, Math.atan2(y_pos - measured_y_pos, x_pos - measured_x_pos));
 				zm.set(i, 0, (zm.get(i,0)+2*Math.PI)%(2*Math.PI));
-				Logger.println("Hmeas: z is NaN");
-				throw new RuntimeException("Hmeas: z is NaN");
+				if (Double.isNaN(zm.get(i,0))){
+					Logger.println("Hmeas: z is NaN");
+					throw new RuntimeException("Hmeas: z is NaN");
+				}
 		}	
 
 		/*System.out.println("Debug, in HmeasCat: input (xm) = ");
