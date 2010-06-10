@@ -66,6 +66,10 @@ public abstract class TrackingFilter extends Thread {
 		}
 	}
 
+	public float getExecutionTime() {
+		return 0.0f;
+	}
+
 	/**
 	 * Pause the excution this many milliseconds
 	 * 
