@@ -2,7 +2,7 @@ package se.uu.it.cats.brick;
 
 import se.uu.it.cats.brick.storage.BillBoard;
 
-public class Guide implements Runnable {
+public class Guide {// implements Runnable {
 
 	public static float[] advice = new float[2];
 
@@ -246,8 +246,7 @@ public class Guide implements Runnable {
 				float v1 = mousePos[0] - otherCats[i][0];
 				float v2 = mousePos[1] - otherCats[i][1];
 				// v = v/norm(v); % Direction to mouse
-				float vnorm = (float) Math.sqrt(Math.pow(v1, 2)
-						+ Math.pow(v2, 2));
+				float vnorm = (float) Math.sqrt(v1 * v1 + v2 * v2);
 				v1 /= vnorm;
 				v2 /= vnorm;
 				// u = [v(2); -v(1)]; % Perpendicular to v
@@ -264,18 +263,12 @@ public class Guide implements Runnable {
 		return Z3;
 	}
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		while (true) {
-			long time = Clock.timestamp();
-			advice = getAdvice();
-			Logger.println("Guide time: " + (Clock.timestamp() - time));
-			try {
-				Thread.sleep(1500);
-			} catch (Exception ex) {
-			}
-		}
-
-	}
+	/*
+	 * @Override public void run() { // TODO Auto-generated method stub while
+	 * (true) { long time = Clock.timestamp(); advice = getAdvice();
+	 * Logger.println("Guide time: " + (Clock.timestamp() - time)); try {
+	 * Thread.sleep(1500); } catch (Exception ex) { } }
+	 * 
+	 * }
+	 */
 }

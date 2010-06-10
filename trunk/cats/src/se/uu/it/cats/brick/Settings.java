@@ -12,14 +12,17 @@ public class Settings {
 	// camera offset, measured in pixels
 	public static int CAMERA_OFFSET;
 
-	// positioning filter
+	// positioning filter (no checked = naive positioning)
 	public static final boolean USE_POSITIONING_GEOMETRIC_FILTER = true;
 	public static final boolean USE_POSITIONING_UNSCENTED_KALMAN_FILTER = false;
 	public static final boolean USE_POSITIONING_PARTICLE_FILTER  = false;
 	
 	// tracking filter
-	public static final boolean USE_TRACKING_UNSCENTED_KALMAN_FILTER = true;
-	public static final boolean USE_TRACKING_PARTICLE_FILTER = false;
+	public static final boolean USE_TRACKING_UNSCENTED_KALMAN_FILTER = false;
+	public static final boolean USE_TRACKING_PARTICLE_FILTER = true;
+	
+	// enable sweeps at some motor command count
+	public static final boolean ENABLE_SWEEPS = true;
 	
 	// guide
 	public static boolean USE_GUIDE = false; //Should always be enabled in the GUI instead
@@ -31,7 +34,7 @@ public class Settings {
 
 	// Settings for time slotted camera/guide settings
 	public static final int CAMERA_TIME_SLOTS = 3;
-	public static final int CAMERA_TIME_SLOT_LENGTH = 3000; // [ms]
+	public static final int CAMERA_TIME_SLOT_LENGTH = 2000; // [ms]
 	
 	// periods in ms 
 	public static final int PERIOD_POSITIONING_NAIVE = 330; //PC:500;
@@ -43,7 +46,7 @@ public class Settings {
 	public static final int PERIOD_MAIN = 5000; //TODO: Use in main! Aka PERIOD_GUIDE Estimated time needed for one iteration = 2500-8000ms (most often 4500)@ 2010-06-08
 	
 	// particle filter settings
-	public static final int N_TRACKING = 50; //PC:100;
+	public static final int N_TRACKING = 60; //PC:100;
 	public static final int N_POSITIONING = 200;
 
 	// Arena size

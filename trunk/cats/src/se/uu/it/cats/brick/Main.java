@@ -62,46 +62,52 @@ public class Main {
 			movementPilot = new MovementPilot(unifiedBuffer);
 			Thread movementThread = new Thread(movementPilot);
 			movementThread.start();
-				
+
 			if (Settings.USE_POSITIONING_PARTICLE_FILTER) {
-				positioningFilter = new AbsolutePositioningParticleFilter(Identity.getId(), 
-						Settings.N_POSITIONING, (float) (Settings.PERIOD_POSITIONING_PARTICLE) / 1000f,
+				positioningFilter = new AbsolutePositioningParticleFilter(
+						Identity.getId(), Settings.N_POSITIONING,
+						(float) (Settings.PERIOD_POSITIONING_PARTICLE) / 1000f,
 						unifiedBuffer, BillBoard.getInstance());
 			} else if (Settings.USE_POSITIONING_GEOMETRIC_FILTER) {
-				positioningFilter = new AbsolutePositioningGeometricFilter(Identity.getId(),
-						(float) (Settings.PERIOD_POSITIONING_GEOMETRIC) / 1000f, unifiedBuffer,
-						BillBoard.getInstance());
+				positioningFilter = new AbsolutePositioningGeometricFilter(
+						Identity.getId(),
+						(float) (Settings.PERIOD_POSITIONING_GEOMETRIC) / 1000f,
+						unifiedBuffer, BillBoard.getInstance());
 			} else {
-				positioningFilter = new AbsolutePositioningNaiveFilter(Identity.getId(),
-						(float) (Settings.PERIOD_POSITIONING_NAIVE) / 1000f, unifiedBuffer,
-						BillBoard.getInstance());
+				positioningFilter = new AbsolutePositioningNaiveFilter(Identity
+						.getId(),
+						(float) (Settings.PERIOD_POSITIONING_NAIVE) / 1000f,
+						unifiedBuffer, BillBoard.getInstance());
 			}
-			positioningFilter.initData(Settings.START_X, Settings.START_Y, Settings.START_ANGLE);
+			positioningFilter.initData(Settings.START_X, Settings.START_Y,
+					Settings.START_ANGLE);
 			Thread positioningFilterThread = new Thread(positioningFilter);
 			positioningFilterThread.start();
-			/*else if (Settings.USE_POSITIONING_UNSCENTED_KALMAN_FILTER) {
-			positioningFilter = new AbsolutePositioningUKF(Identity.getId(),
-					(float) Settings.PERIOD_POSITIONING_KALMAN / 1000f, unifiedBuffer,
-					BillBoard.getInstance());
-			}*/
-
+			/*
+			 * else if (Settings.USE_POSITIONING_UNSCENTED_KALMAN_FILTER) {
+			 * positioningFilter = new AbsolutePositioningUKF(Identity.getId(),
+			 * (float) Settings.PERIOD_POSITIONING_KALMAN / 1000f,
+			 * unifiedBuffer, BillBoard.getInstance()); }
+			 */
 
 			if (Settings.USE_TRACKING_PARTICLE_FILTER) {
-				trackingFilter = new TrackingParticleFilter(Identity.getId(), 
-						Settings.N_TRACKING, (float) (Settings.PERIOD_TRACKING_PARTICLE) / 1000f,
+				trackingFilter = new TrackingParticleFilter(Identity.getId(),
+						Settings.N_TRACKING,
+						(float) (Settings.PERIOD_TRACKING_PARTICLE) / 1000f,
 						BillBoard.getInstance());
 			} else if (Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER) {
-				trackingFilter = new TrackingUnscentedKalmanFilter(Identity.getId(),
-						(float) (Settings.PERIOD_TRACKING_KALMAN) / 1000f, 
+				trackingFilter = new TrackingUnscentedKalmanFilter(Identity
+						.getId(),
+						(float) (Settings.PERIOD_TRACKING_KALMAN) / 1000f,
 						BillBoard.getInstance());
 			}
 			Thread trackingFilterThread = new Thread(trackingFilter);
 			trackingFilterThread.start();
-			
+
 			// init guide
 			guide = new Guide(Identity.getId(), BillBoard.getInstance());
-			Thread guideThread = new Thread(guide);
-			guideThread.start();
+			//Thread guideThread = new Thread(guide);
+			//guideThread.start();
 		}
 
 		while (!startYourEngines) {
@@ -170,50 +176,63 @@ public class Main {
 		while (test == 0) {
 
 			int milisUntilNextSec = 2000 - (Clock.timestamp() % 2000);
-			Thread.sleep(milisUntilNextSec);
-
-			/*Logger.println("--- Latest sightings ---");
-			float[] s = BillBoard.getInstance().getLatestSightings();
-			for (int i = 0; i < BillBoard.getInstance().getNoCats(); i++) {
-				Logger.println("id: " + i + ", x:" + s[i * 4 + 0] + ", y:"
-						+ s[i * 4 + 1] + ", th:" + s[i * 4 + 2]);
+			try {
+				Thread.sleep(milisUntilNextSec);
+			} catch (Exception ex) {
 			}
+			//Logger.println("Track time:" + trackingFilter.getExecutionTime());
+			/*
+			 * Logger.println("--- Latest sightings ---"); float[] s =
+			 * BillBoard.getInstance().getLatestSightings(); for (int i = 0; i <
+			 * BillBoard.getInstance().getNoCats(); i++) { Logger.println("id: "
+			 * + i + ", x:" + s[i * 4 + 0] + ", y:" + s[i * 4 + 1] + ", th:" +
+			 * s[i * 4 + 2]); }
+			 * 
+			 * Logger.println("--- Absolute Positions ---"); float[] p =
+			 * BillBoard.getInstance().getAbsolutePositions(); for (int i = 0; i
+			 * < BillBoard.getInstance().getNoCats(); i++) {
+			 * Logger.println("id: " + i + ", x:" + p[i * 4 + 0] + ", y:" + p[i
+			 * * 4 + 1] + ", th:" + p[i * 4 + 2]); }
+			 */
 
-			Logger.println("--- Absolute Positions ---");
-			float[] p = BillBoard.getInstance().getAbsolutePositions();
-			for (int i = 0; i < BillBoard.getInstance().getNoCats(); i++) {
-				Logger.println("id: " + i + ", x:" + p[i * 4 + 0] + ", y:"
-						+ p[i * 4 + 1] + ", th:" + p[i * 4 + 2]);
-			}*/
-			
-			if (!Camera.doSweep)
-			{
-				if (Settings.USE_GUIDE)
-				{
-					float[] advice = Guide.advice;
-					if (!movementPilot.isProcessing() && advice[0] != -1) {
-						movementPilot.travel(advice[0], advice[1], positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
-						ConnectionManager.getInstance().sendPacketToAll(new MoveOrder(advice[0], advice[1]));
+			if (!Camera.doSweep) {
+				if (Clock.getTimeSlot() == Identity.getId()) {
+					if (Settings.USE_GUIDE) {
+						float[] advice = guide.getAdvice();
+						if (!movementPilot.isProcessing() && advice[0] != -1) {
+							movementPilot.travel(advice[0], advice[1],
+									positioningFilter.getX(), positioningFilter
+											.getY(), positioningFilter
+											.getAngle());
+							ConnectionManager.getInstance().sendPacketToAll(
+									new MoveOrder(advice[0], advice[1]));
+							numberOfCommands++;
+						}
+					} else if (!Settings.GUI_ORDER_PROCESSED) {
+						movementPilot.travel(Settings.GUI_ORDER_X,
+								Settings.GUI_ORDER_Y, positioningFilter.getX(),
+								positioningFilter.getY(), positioningFilter
+										.getAngle());
+						Settings.GUI_ORDER_PROCESSED = true;
 						numberOfCommands++;
 					}
 				}
-				else if (!Settings.GUI_ORDER_PROCESSED)
-				{
-					movementPilot.travel(Settings.GUI_ORDER_X, Settings.GUI_ORDER_Y, positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
-					Settings.GUI_ORDER_PROCESSED = true;
-					numberOfCommands++;
-				}
 			}
-			
+
 			if (numberOfCommands >= 3) {
 				// wait until movement finishes
 				while (movementPilot.isProcessing()) {
-					Thread.sleep(100);
+					try {
+						Thread.sleep(100);
+					} catch (Exception ex) {
+					}
 				}
+
+				if (Settings.ENABLE_SWEEPS)
+					Camera.doSweep = true;
 				
-				Camera.doSweep = true;
 				numberOfCommands = 0;
-			}				
+			}
 
 			// Logger.println("Buffer size:"+unifiedBuffer.getLength());
 			// Thread.sleep(100);
@@ -337,5 +356,5 @@ public class Main {
 		}
 
 		Logger.println("");
-	}	
+	}
 }
