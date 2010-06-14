@@ -244,8 +244,8 @@ public class Main {
 			RConsole.close();
 		
 		if (Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER) {
-			trackingFilter.kill();
 			if (Settings.USE_TRACKING_PARTICLE_FILTER) {		
+				trackingFilter.kill();
 				trackingFilter = new TrackingUnscentedKalmanFilter(Identity
 						.getId(),
 						(float) (Settings.PERIOD_TRACKING_KALMAN) / 1000f,
@@ -253,11 +253,12 @@ public class Main {
 				Thread trackingFilterThread = new Thread(trackingFilter);
 				trackingFilterThread.start();
 				Settings.USE_TRACKING_PARTICLE_FILTER = false;
-				Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER = true;
-
+				//Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER = true;
+				Logger.println("Using kalman");
 			}
+		}
 		else {
-			if (Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER) {
+			if (!Settings.USE_TRACKING_PARTICLE_FILTER) {
 				trackingFilter.kill();
 				trackingFilter = new TrackingParticleFilter(Identity.getId(),
 						Settings.N_TRACKING,
@@ -266,15 +267,13 @@ public class Main {
 				Thread trackingFilterThread = new Thread(trackingFilter);
 				
 				trackingFilterThread.start();
-				Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER = false;
+				//Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER = false;
 				Settings.USE_TRACKING_PARTICLE_FILTER = true;
-
+				Logger.println("Using particle");
 
 			} 
 		}
 
-			
-		}
 	}
 
 	public static void travelTest() {
