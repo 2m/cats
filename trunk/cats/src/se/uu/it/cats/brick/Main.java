@@ -137,7 +137,7 @@ public class Main {
 			}
 
 			public void buttonReleased(Button b) {
-				billboardTest();
+				//billboardTest();
 				travelTest();
 			}
 		});
@@ -247,86 +247,34 @@ public class Main {
 	public static void travelTest() {
 
 		// movementPilot.travel( 0, 3f, 0, 0f, (float)Math.PI/2f);
-		// while (movementPilot.isProcessing()) { Thread.yield(); }
-
-		for (int i = 0; i < 4; i++) { // turn in square
-			movementPilot.travel(0.05f, 0f, 0, 0f, 0);
-			while (movementPilot.isProcessing()) {
-				Thread.yield();
-			}
-			// Button.waitForPress();
-
-			movementPilot.travel(0.05f, 0.05f, 0.05f, 0, 0);
-			while (movementPilot.isProcessing()) {
-				Thread.yield();
-			}
-			// Button.waitForPress();
-
-			movementPilot.travel(-0.05f, 0.05f, 0.05f, 0.05f,
-					(float) Math.PI / 2f);
-			while (movementPilot.isProcessing()) {
-				Thread.yield();
-			}
-			// Button.waitForPress();
-
-			movementPilot.travel(-0.05f, 0f, -0.05f, 0.05f, (float) Math.PI);
-			while (movementPilot.isProcessing()) {
-				Thread.yield();
-			}
-			// Button.waitForPress();
-
-			movementPilot.travel(0, 0f, -0.05f, 0f, (float) Math.PI / 2f * 3);
-			while (movementPilot.isProcessing()) {
-				Thread.yield();
-			}
-			// Button.waitForPress();
-
-			System.out.println("BIG SQUARE FINISHED!");
-		}
-
+		
 		// the current hardcoded positions have to be changed with the
 		// approximated
 		// positions from the positioning filter
-		for (int i = 0; i < 4; i++) { // turn in square
-			movementPilot.travel(0.75f, 0f, 0, 0f, (float) Math.PI / 2f * 3);
+		float side = 1.0f;
+		for (int i = 0; i < 2; i++) { // turn in square
+			movementPilot.travel(side, 0f, 0, 0f, (float) Math.PI / 2f * 3);
 			while (movementPilot.isProcessing()) {
 				Thread.yield();
 			}
 
-			movementPilot.travel(0.75f, 0.75f, 0.75f, 0, 0);
+			movementPilot.travel(side, side, side, 0, 0);
 			while (movementPilot.isProcessing()) {
 				Thread.yield();
 			}
 
-			movementPilot.travel(0f, 0.75f, 0.75f, 0.75f, (float) Math.PI / 2f);
+			movementPilot.travel(0f, side, side, side, (float) Math.PI / 2f);
 			while (movementPilot.isProcessing()) {
 				Thread.yield();
 			}
 
-			movementPilot.travel(0f, 0f, 0, 0.75f, (float) Math.PI);
+			movementPilot.travel(0f, 0f, 0, side, (float) Math.PI);
 			while (movementPilot.isProcessing()) {
 				Thread.yield();
 			}
 
 			System.out.println("SQUARE FINISHED!");
 		}
-
-		/*
-		 * mPilot.travel(0f,.2f); mPilot.travel(0f,.4f); mPilot.travel(0f,.6f);
-		 * mPilot.travel(0f,.8f); mPilot.travel(0f,1f); mPilot.travel(0f,1.2f);
-		 * mPilot.travel(0f,1.4f); mPilot.travel(0f,1.6f);
-		 * mPilot.travel(0f,1.8f); mPilot.travel(0f,2f); mPilot.travel(0f,2.2f);
-		 * mPilot.travel(0f,2.4f); mPilot.travel(0f,2.6f);
-		 * mPilot.travel(0f,2.8f); mPilot.travel(0f,3f);
-		 */
-
-		// drive from (0,0) to (0,3) to (-1,4) to (-1,5) i steps
-		/*
-		 * mPilot.travel(0f,.5f); mPilot.travel(0f,1f); mPilot.travel(0f,1.5f);
-		 * mPilot.travel(0f,2.5f); mPilot.travel(0f,3f);
-		 * mPilot.travel(-.5f,3.5f); mPilot.travel(-1f,4f);
-		 * mPilot.travel(-1f,4.5f); mPilot.travel(-1f,5f);
-		 */
 	}
 
 	public static void billboardTest() {
