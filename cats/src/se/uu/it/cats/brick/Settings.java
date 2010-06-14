@@ -20,6 +20,7 @@ public class Settings {
 	// tracking filter
 	public static final boolean USE_TRACKING_UNSCENTED_KALMAN_FILTER = false;
 	public static final boolean USE_TRACKING_PARTICLE_FILTER = true;
+	public static boolean USE_KALMAN = false;
 	
 	// enable sweeps at some motor command count
 	public static final boolean ENABLE_SWEEPS = true;
