@@ -233,6 +233,39 @@ public class Main {
 				
 				numberOfCommands = 0;
 			}
+			
+			//Switch tracking filter if a change has been made in the GUI
+			if (Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER) {
+				if (Settings.USE_TRACKING_PARTICLE_FILTER) {		
+					trackingFilter.kill();
+					BillBoard.getInstance().clearAllExceptPosition();
+					trackingFilter = new TrackingUnscentedKalmanFilter(Identity
+							.getId(),
+							(float) (Settings.PERIOD_TRACKING_KALMAN) / 1000f,
+							BillBoard.getInstance());
+					Thread trackingFilterThread = new Thread(trackingFilter);
+					trackingFilterThread.start();
+					Settings.USE_TRACKING_PARTICLE_FILTER = false;
+					//Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER = true;
+					Logger.println("Switching to tracking with unscented kalman filter");
+				}
+			}
+			else {
+				if (!Settings.USE_TRACKING_PARTICLE_FILTER) {
+					trackingFilter.kill();
+					BillBoard.getInstance().clearAllExceptPosition();
+					trackingFilter = new TrackingParticleFilter(Identity.getId(),
+							Settings.N_TRACKING,
+							(float) (Settings.PERIOD_TRACKING_PARTICLE) / 1000f,
+							BillBoard.getInstance());
+					Thread trackingFilterThread = new Thread(trackingFilter);
+					
+					trackingFilterThread.start();
+					//Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER = false;
+					Settings.USE_TRACKING_PARTICLE_FILTER = true;
+					Logger.println("Switching to tracking with particle filter");
+				} 
+			}
 
 			// Logger.println("Buffer size:"+unifiedBuffer.getLength());
 			// Thread.sleep(100);
@@ -242,38 +275,6 @@ public class Main {
 
 		if (RConsole.isOpen())
 			RConsole.close();
-		
-		if (Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER) {
-			if (Settings.USE_TRACKING_PARTICLE_FILTER) {		
-				trackingFilter.kill();
-				trackingFilter = new TrackingUnscentedKalmanFilter(Identity
-						.getId(),
-						(float) (Settings.PERIOD_TRACKING_KALMAN) / 1000f,
-						BillBoard.getInstance());
-				Thread trackingFilterThread = new Thread(trackingFilter);
-				trackingFilterThread.start();
-				Settings.USE_TRACKING_PARTICLE_FILTER = false;
-				//Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER = true;
-				Logger.println("Using kalman");
-			}
-		}
-		else {
-			if (!Settings.USE_TRACKING_PARTICLE_FILTER) {
-				trackingFilter.kill();
-				trackingFilter = new TrackingParticleFilter(Identity.getId(),
-						Settings.N_TRACKING,
-						(float) (Settings.PERIOD_TRACKING_PARTICLE) / 1000f,
-						BillBoard.getInstance());
-				Thread trackingFilterThread = new Thread(trackingFilter);
-				
-				trackingFilterThread.start();
-				//Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER = false;
-				Settings.USE_TRACKING_PARTICLE_FILTER = true;
-				Logger.println("Using particle");
-
-			} 
-		}
-
 	}
 
 	public static void travelTest() {

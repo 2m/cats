@@ -199,4 +199,27 @@ public class BillBoard {
 		}
 		return ret;
 	}
+	public void clearAllExceptPosition() {
+		for (int i = 0; i < NUMBER_OF_CATS * 4; i++) {
+			sightings[i] = -1;
+			//positions[i] = -1;
+		}
+		for (int i = 0; i < NUMBER_OF_CATS; i++) {
+		data[i][0] = -1;
+		data[i][1] = -1;
+		data[i][2] = -1;
+		data[i][3] = -1;
+		data[i][4] = -1;
+		data[i][5] = -1;
+		data[i][6] = -1;
+		data[i][7] = -1;
+		data[i][8] = -1;
+		data[i][9] = -1;
+		data[i][10] = -1;
+		
+		}
+		latestDataUpdate = 0;
+		latestSightingUpdate = 0;
+		
+	}
 }
