@@ -16,6 +16,7 @@ public abstract class TrackingFilter extends Thread {
 	protected final int Tint;
 	/** Shared data object */
 	protected BillBoard billboard;
+	protected boolean alive = true; //Set to false to kill thread
 
 	public TrackingFilter(int id, float T, BillBoard billboard) {
 		/** Save id number */
@@ -58,9 +59,14 @@ public abstract class TrackingFilter extends Thread {
 	/** Reset filter with some initial data */
 	public void initData(float x, float y, float xv, float yv) {
 	}
+	
+	/** End run loop */
+	public void kill() {
+		alive = false;
+	}
 
 	public void run() {
-		while (true) {
+		while (alive) {
 			update();
 			pause((long) (Tint - (Clock.timestamp() % Tint)));
 		}

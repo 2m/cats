@@ -67,7 +67,7 @@ public class PacketManager
 						}
 						case SettingUpdate.USE_KALMAN:
 						{
-							Settings.USE_KALMAN = (value == 1 ? true : false);
+							Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER = (value == 1 ? true : false);
 							break;
 						}
 					}
