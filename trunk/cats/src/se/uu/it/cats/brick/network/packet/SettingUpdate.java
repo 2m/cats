@@ -3,6 +3,7 @@ package se.uu.it.cats.brick.network.packet;
 public class SettingUpdate extends Packet
 {
 	public static final int USE_GUIDE = 0;
+	public static final int USE_KALMAN = 1;
 	
 	public byte _type = 0x01;
 	

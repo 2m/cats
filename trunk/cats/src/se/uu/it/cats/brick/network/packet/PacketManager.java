@@ -65,6 +65,11 @@ public class PacketManager
 							Settings.USE_GUIDE = (value == 1 ? true : false);
 							break;
 						}
+						case SettingUpdate.USE_KALMAN:
+						{
+							Settings.USE_KALMAN = (value == 1 ? true : false);
+							break;
+						}
 					}
 				}
 				break;
@@ -173,7 +178,7 @@ public class PacketManager
 					Camera.doSweep = true;
 				}
 				break;
-			}
+			}		
 			case -1:
 			{
 				if (arrayEndIndex >= CloseConnection.LENGTH)
