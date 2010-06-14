@@ -98,11 +98,18 @@ public class DataPanel extends JPanel{ // implements ActionListener
 					JCheckBox checkBox = (JCheckBox)ae.getSource();
 					
 					SettingUpdate su = null;
-					if (checkBox.isSelected())
-						su = new SettingUpdate(SettingUpdate.USE_GUIDE, 1);
-					else
-						su = new SettingUpdate(SettingUpdate.USE_GUIDE, 0);
-					
+					if(checkBox.getText().compareTo("Use guide")==0) {
+						if (checkBox.isSelected())	
+							su = new SettingUpdate(SettingUpdate.USE_GUIDE, 1);
+						else
+							su = new SettingUpdate(SettingUpdate.USE_GUIDE, 0);
+						
+					}else if(checkBox.getText().compareTo("Use Kalman")==0) {
+						if (checkBox.isSelected())	
+							su = new SettingUpdate(SettingUpdate.USE_KALMAN, 1);
+						else
+							su = new SettingUpdate(SettingUpdate.USE_KALMAN, 0);
+					}
 					ConnectionManager.getInstance().sendPacketTo(id, su);
 				}
 			};
@@ -116,6 +123,14 @@ public class DataPanel extends JPanel{ // implements ActionListener
 			checkBox.setMargin(new Insets(0, 0, 0, 0));
 			checkBox.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
 			panel.add(checkBox);
+			
+			JCheckBox checkBox2 = new JCheckBox("Use Kalman");
+			checkBox2.setSelected(false);
+			checkBox2.setBackground(Color.white);
+			checkBox2.addActionListener(ae);
+			checkBox2.setMargin(new Insets(0, 0, 0, 0));
+			checkBox2.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
+			panel.add(checkBox2);
 			
 			JButton sweepButton = new JButton("Sweep");
 			sweepButton.setMargin(new Insets(0, 0, 0, 0));
