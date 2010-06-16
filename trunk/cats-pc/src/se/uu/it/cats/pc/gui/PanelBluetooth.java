@@ -24,6 +24,10 @@ import se.uu.it.cats.brick.network.packet.SimpleMeasurement;
 public class PanelBluetooth extends JPanel{
 
 	private static JTextArea _infoBox;
+	private static String AbsolutePositionUpdateText = "";
+	private static String MeanAndCovarianceUpdateText = "";
+	private static String SimpleMeasurementText = "";
+	private static String LatestSightingUpdateText = "";
 	
 	private ConnectionPanel[] _connectionPanels = new ConnectionPanel[Area.CAT_COUNT];
 
@@ -69,7 +73,8 @@ public class PanelBluetooth extends JPanel{
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				writeFile(_infoBox.getText());
+				//writeFile(_infoBox.getText());
+				writeFile(AbsolutePositionUpdateText+MeanAndCovarianceUpdateText+SimpleMeasurementText+LatestSightingUpdateText);
 			}
 		});
 		buttonPanel.add(savefileButton, BorderLayout.NORTH);
@@ -93,13 +98,34 @@ public class PanelBluetooth extends JPanel{
 	}
 
 	public static void updatePacket(String newPacket) {
+		
+		//AbsolutePositionUpdateText;
+		//MeanAndCovarianceUpdateText;
+		
+		//LatestSightingUpdateText;
+		
+		
+		char c = newPacket.charAt(0);
+		if(c == 'S') {
+			SimpleMeasurementText = SimpleMeasurementText + "\n" + newPacket ;
+		}
+		else if(c == 'A') {
+			AbsolutePositionUpdateText = AbsolutePositionUpdateText + "\n" + newPacket ;
+		}
+		else if(c == 'M') {
+			MeanAndCovarianceUpdateText = MeanAndCovarianceUpdateText + "\n" + newPacket ;
+		} else if(c == 'L') {
+			LatestSightingUpdateText = LatestSightingUpdateText + "\n" + newPacket ;
+		}
 		_infoBox.append(newPacket+"\n");
+		
 	}
 
 	// Write to a file
 	public void writeFile(String datatext) {
 		try
 		{
+			//datatext.
 			String file = "bluetooth_data.txt";
 			FileWriter fw = new FileWriter(file);
 			BufferedWriter bw = new BufferedWriter(fw);
