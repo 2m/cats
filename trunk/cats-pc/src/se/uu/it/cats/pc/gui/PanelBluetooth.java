@@ -89,6 +89,10 @@ public class PanelBluetooth extends JPanel{
 			public void actionPerformed(ActionEvent ae)
 			{
 				_infoBox.setText("");
+				AbsolutePositionUpdateText = "";
+				MeanAndCovarianceUpdateText = "";
+				SimpleMeasurementText = "";
+				LatestSightingUpdateText = "";
 			}
 		});
 		buttonPanel.add(clearButton, BorderLayout.SOUTH);
