@@ -96,7 +96,7 @@ public class AbsolutePositionUpdate extends Packet
 	}
 	public String toStringMatlab()
 	{
-		return "A,"+_type+","+_src+","+_x+","+_y+","+_theta+","+_timestamp;
+		return ""+_type+","+_src+","+_x+","+_y+","+_theta+","+_timestamp;
 	}
 	
 }
