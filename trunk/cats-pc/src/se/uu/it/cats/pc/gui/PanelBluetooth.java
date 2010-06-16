@@ -74,7 +74,10 @@ public class PanelBluetooth extends JPanel{
 			public void actionPerformed(ActionEvent ae)
 			{
 				//writeFile(_infoBox.getText());
-				writeFile(AbsolutePositionUpdateText+MeanAndCovarianceUpdateText+SimpleMeasurementText+LatestSightingUpdateText);
+				writeFile(AbsolutePositionUpdateText,"AbsolutePositionUpdate.txt");
+				writeFile(MeanAndCovarianceUpdateText,"MeanAndCovarianceUpdate.txt");
+				writeFile(SimpleMeasurementText,"SimpleMeasurement.txt");
+				writeFile(LatestSightingUpdateText,"LatestSightingUpdate.txt");
 			}
 		});
 		buttonPanel.add(savefileButton, BorderLayout.NORTH);
@@ -122,12 +125,12 @@ public class PanelBluetooth extends JPanel{
 	}
 
 	// Write to a file
-	public void writeFile(String datatext) {
+	public void writeFile(String datatext, String filename) {
 		try
 		{
 			//datatext.
-			String file = "bluetooth_data.txt";
-			FileWriter fw = new FileWriter(file);
+			//String file = "bluetooth_data.txt";
+			FileWriter fw = new FileWriter(filename);
 			BufferedWriter bw = new BufferedWriter(fw);
 			PrintWriter outFile = new PrintWriter(bw);
 
