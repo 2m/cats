@@ -84,7 +84,7 @@ public class Settings {
 
 			CAMERA_OFFSET = -10;
 
-			START_X = 0.5f;
+			START_X = 1f;
 			START_Y = 0;
 			START_ANGLE = 0;
 			break;
@@ -96,8 +96,8 @@ public class Settings {
 
 			CAMERA_OFFSET = -14;
 
-			START_X = 1f;
-			START_Y = 0;
+			START_X = 0.134f;
+			START_Y = 1.5f;
 			START_ANGLE = 0;
 			break;
 		}
@@ -108,8 +108,8 @@ public class Settings {
 
 			CAMERA_OFFSET = -3;
 
-			START_X = 1.5f;
-			START_Y = 0f;
+			START_X = 1.866f;
+			START_Y = 1.5f;
 			START_ANGLE = 0;
 			break;
 		}
