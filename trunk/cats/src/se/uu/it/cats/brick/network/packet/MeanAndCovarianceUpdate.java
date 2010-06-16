@@ -190,7 +190,7 @@ public class MeanAndCovarianceUpdate extends Packet
 	}
 	
 	public String toStringMatlab() {
-		return "" +_type+","+_src+
+		return "M," +_type+","+_src+
 		","+_mean_x+
 		","+_mean_y+
 		","+_mean_xv+

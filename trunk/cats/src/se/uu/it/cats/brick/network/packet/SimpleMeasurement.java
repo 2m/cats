@@ -92,6 +92,6 @@ public class SimpleMeasurement extends Packet {
 	}
 	public String toStringMatlab()
 	{
-		return ""+_type+","+_src+","+_id+","+_angle+","+_camAngle;
+		return "S,"+_type+","+_src+","+_id+","+_angle+","+_camAngle;
 	}
 }
