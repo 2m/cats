@@ -1,14 +1,14 @@
 package se.uu.it.cats.brick.network.packet;
 
-public class SyncTimeOrder extends Packet
+public class ChangeFilterOrder extends Packet
 {
-	public byte _type = 0x06;
+	public byte _type = 0x11;
 	
 	public static int LENGTH =
 		1		// _type - 1byte
 		+ 1;	// _src  - 1byte
 	
-	public SyncTimeOrder()
+	public ChangeFilterOrder()
 	{		
 	}
 	
@@ -37,11 +37,10 @@ public class SyncTimeOrder extends Packet
 	
 	public String toString()
 	{
-		return "SyncTimeOrder[_type:"+_type+", _src:"+_src+"]";
+		return "ChangeFilterOrder[_type:"+_type+", _src:"+_src+"]";
 	}
 	public String toStringMatlab()
 	{
-		return "E SyncTimeOrder[_type:"+_type+", _src:"+_src+"]";
+		return "E ChangeFilterOrder[_type:"+_type+", _src:"+_src+"]";
 	}
-
 }

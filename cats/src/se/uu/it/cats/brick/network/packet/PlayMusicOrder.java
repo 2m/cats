@@ -39,5 +39,9 @@ public class PlayMusicOrder extends Packet
 	{
 		return "PlayMusicOrder[_type:"+_type+", _src:"+_src+"]";
 	}
+	public String toStringMatlab()
+	{
+		return "E PlayMusicOrder[_type:"+_type+", _src:"+_src+"]";
+	}
 
 }

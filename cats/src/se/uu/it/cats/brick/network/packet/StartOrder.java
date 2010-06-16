@@ -39,5 +39,9 @@ public class StartOrder extends Packet
 	{
 		return "StartOrder[_type:"+_type+", _src:"+_src+"]";
 	}
+	public String toStringMatlab()
+	{
+		return "E StartOrder[_type:"+_type+", _src:"+_src+"]";
+	}
 
 }

@@ -24,6 +24,7 @@ public abstract class Packet
 	public abstract void readImpl(byte[] bArr);	
 	public abstract byte[] writeImpl();
 	public abstract int getLength();
+	public abstract String toStringMatlab();
 	
 	public byte readByte(byte[] bArr, int startIndex)
 	{

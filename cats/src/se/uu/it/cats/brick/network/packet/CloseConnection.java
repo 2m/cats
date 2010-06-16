@@ -46,5 +46,9 @@ public class CloseConnection extends Packet
 	{
 		return "CloseConnection[_type:"+_type+", _src:"+_src+"]";
 	}
+	public String toStringMatlab()
+	{
+		return "Err: toStringMatlab() CloseConnection[]";
+	}
 
 }
