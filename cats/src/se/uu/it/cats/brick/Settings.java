@@ -94,7 +94,7 @@ public class Settings {
 			TRACK_WIDTH = 0.165f;
 			DRIFT_BALANCE = 0.0004444f;
 
-			CAMERA_OFFSET = 0;
+			CAMERA_OFFSET = -14;
 
 			START_X = 1f;
 			START_Y = 0;
@@ -106,7 +106,7 @@ public class Settings {
 			TRACK_WIDTH = 0.16f;
 			DRIFT_BALANCE = -0.0003f;
 
-			CAMERA_OFFSET = -8;
+			CAMERA_OFFSET = -3;
 
 			START_X = 1.5f;
 			START_Y = 0f;
