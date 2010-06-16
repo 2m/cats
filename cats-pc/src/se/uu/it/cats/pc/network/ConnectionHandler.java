@@ -109,7 +109,7 @@ public class ConnectionHandler implements Runnable
 					packetCounter[p.getSource()]++;
 					
 					// add info to log panel
-					PanelBluetooth.updatePacket(p.toString());
+					PanelBluetooth.updatePacket(p.toStringMatlab());
 					
 					// forward packet to other cats, some packets do not need to be forwarded
 					if (!(p instanceof SimpleMeasurement) && !(p instanceof MoveOrder))
