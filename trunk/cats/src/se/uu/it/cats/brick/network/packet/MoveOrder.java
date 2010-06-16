@@ -67,5 +67,9 @@ public class MoveOrder extends Packet
 	{
 		return "MoveOrder[_type:"+_type+", _src:"+_src+"_x:"+_x+", _y:"+_y+"]";
 	}
+	public String toStringMatlab()
+	{
+		return "E MoveOrder[_type:"+_type+", _src:"+_src+"_x:"+_x+", _y:"+_y+"]";
+	}
 
 }

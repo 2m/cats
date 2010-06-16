@@ -39,5 +39,9 @@ public class SweepOrder extends Packet
 	{
 		return "SweepOrder[_type:"+_type+", _src:"+_src+"]";
 	}
+	public String toStringMatlab()
+	{
+		return "E SweepOrder[_type:"+_type+", _src:"+_src+"]";
+	}
 
 }

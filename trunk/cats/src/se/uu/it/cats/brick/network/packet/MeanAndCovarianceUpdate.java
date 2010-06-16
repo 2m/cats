@@ -188,4 +188,20 @@ public class MeanAndCovarianceUpdate extends Packet
 			", _timestamp:"+_timestamp+
 			"]";
 	}
+	
+	public String toStringMatlab() {
+		return "M," +_type+","+_src+
+		","+_mean_x+
+		","+_mean_y+
+		","+_mean_xv+
+		","+_mean_yv+
+		","+_var_xx+
+		","+_var_xy+
+		","+_var_yy+
+		","+_var_xvxv+
+		","+_var_xvyv+
+		","+_var_yvyv+
+		","+_weight+
+		","+_timestamp;
+	}
 }

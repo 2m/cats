@@ -94,4 +94,8 @@ public class LatestSightingUpdate extends Packet
 	{
 		return "LatestSightingUpdate[_type:"+_type+", _src:"+_src+", _x:"+_x+", _y:"+_y+", _theta:"+_theta+", _timestamp"+_timestamp+"]";
 	}
+	public String toStringMatlab()
+	{
+		return "L,"+_type+","+_src+","+_x+","+_y+","+_theta+","+_timestamp;
+	}
 }

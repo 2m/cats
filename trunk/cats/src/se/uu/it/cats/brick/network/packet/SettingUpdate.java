@@ -73,4 +73,8 @@ public class SettingUpdate extends Packet
 	{
 		return "SettingUpdate[_type:"+_type+", _src:"+_src+", _setting:"+_setting+", _value:"+_value+"]";
 	}
+	public String toStringMatlab()
+	{
+		return "E SettingUpdate[_type:"+_type+", _src:"+_src+", _setting:"+_setting+", _value:"+_value+"]";
+	}
 }

@@ -99,4 +99,9 @@ public class Timestamp extends Packet
 	{
 		return "Timestamp[_type:"+_type+", _src:"+_src+", _dst:"+_dst+" _clientTime:"+_clientTime+", _serverTime:"+_serverTime+"]";
 	}
+	
+	public String toStringMatlab()
+	{
+		return "E Timestamp[_type:"+_type+", _src:"+_src+", _dst:"+_dst+" _clientTime:"+_clientTime+", _serverTime:"+_serverTime+"]";
+	}
 }
