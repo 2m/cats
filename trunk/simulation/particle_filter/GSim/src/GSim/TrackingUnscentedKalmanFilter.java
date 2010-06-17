@@ -49,7 +49,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	private Matrix R;
 	
 	/** std of expected measurement noise for the mouse TODO: update comment(for bearing angle, x, y, orient., cam.ang respectivly)*/
-	private final double[] std_array;
+	private double[] std_array;
 	
 	/** Varible for time */
 	private int currentTime, lastCurrentTime;
@@ -59,7 +59,6 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	private int iterationTime = 0;
 	
 	private float large = (float)pow(10,10);
-	
 	
 	/**Toggle debug info*/
 	private final boolean DEBUG = false;
@@ -105,7 +104,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		f = new FstateMouse(dt);  //nonlinear state equations
 		h = new HmeasMouse(billboard);  //measurement equation  
 		
-		P = eye(numberOfStates).timesEquals( pow(10,-3) );  //initial state covariance
+		P = eye(numberOfStates).timesEquals( pow(10,-3) ); //initial state covariance
 		
 		states_and_P = new Matrix[]{states, P};
 
@@ -180,6 +179,8 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	{
 		return states;
 	}
+	
+	
 
 	/**
 	 * Returns time of the last update of the filter 
@@ -287,6 +288,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	
 	public void update() 
 	{
+		
 		// Get latest sighting
 		/*SightingData sens = null;
 		SightingData sens2 = (SightingData) sensorData.pop();
@@ -307,10 +309,10 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		// Get time reference
 		currentTime = Clock.timestamp();
 		
-		if (DEBUG)
+		/*if (DEBUG)
 		{
 			debug("Debug: tracking.ukf.update for cat " +id + ", currentTime = " + currentTime + "(rounded " + (float)currentTime + "), lastCurrentTime = " + lastCurrentTime + "(rounded " + (float)lastCurrentTime + ")" );
-		}
+		}*/
 
 		// 
 		float[] sightings = billboard.getLatestSightings();
@@ -318,27 +320,29 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		R.set(1,1, large);
 		R.set(2,2, large);
 		// Loop through cats in billboard
-		for (int i = 1; i <= billboard.getNoCats(); i++) {
+		for (int i = 0; i < billboard.getNoCats(); i++) {
 			//System.out.println("Cat" + id + " checking billboard for cat " + (i) + ": sighting timestamp = " + sightings[(i - 1) * 4 + 3] + ", lastCurrentTime = " + (float)lastCurrentTime);
 			
 			//use a mouse sighting if it's newer then lastCurrentTime (and older then currentTime?)
 			//System.out.println("SightingTS: "+sightings[(i - 1) * 4 + 3]+"lastCurrentTime: "+lastCurrentTime);
 						
-			if (sightings[(i - 1) * 4 + 3] >= (float)lastCurrentTime)
+			if (sightings[i * 4 + 3] >= (float)lastCurrentTime - Settings.PERIOD_TRACKING_KALMAN)
 			{
 				//System.out.println("Cat " + id + " setting measurement for cat" + (i));
-				R.set(i-1, i-1, pow(std_array[0],2) );
-				measurments.set(i-1, 0, (sightings[(i - 1) * 4 + 2] + 2.0*PI) % (2.0*PI) );
-				
+				R.set(i, i, pow(std_array[0],2) );
+				measurments.set(i, 0, (sightings[i * 4 + 2] + 2.0*PI) % (2.0*PI) );	
+				//Logger.println("Use meas. " + i + ", value = " + ( (sightings[i * 4 + 2] + 2.0*PI) % (2.0*PI) ) + ", timestamp = " + (sightings[i * 4 + 3]) + ", lastCurrentTime = " + ((float)lastCurrentTime));
 			}
+			//else
+				//Logger.println("Disc. meas. " + i + ", value = " + ( (sightings[i * 4 + 2] + 2.0*PI) % (2.0*PI) ) + ", timestamp = " + (sightings[i * 4 + 3]) + ", limit = " + ((float)lastCurrentTime - Settings.PERIOD_TRACKING_KALMAN));
 		}
-		if (DEBUG)
+		/*if (DEBUG)
 		{
 			debug("Debug: tracking.ukf cat " +id + ", measurments dim: " + measurments.getRowDimension() + " x " + measurments.getColumnDimension() + ", mouse measurments:");
 			printM(measurments);
 			debug("Debug: tracking.ukf cat " +id + ", R dim: " + R.getRowDimension() + " x " + R.getColumnDimension() + ", mouse R:");
 			printM(R);
-		}
+		}*/
 		
 				
 		//One iteration with UKF
@@ -347,6 +351,7 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			states = states_and_P[0]; 
 			P = states_and_P[1];
 		} catch (Exception e) {//Cholesky can throw exception 
+			Logger.println("Caught in Cholesky: Resetting P");
 			P = eye(numberOfStates).timesEquals( pow(10,-3) );  //initial state covariance
 			states_and_P[1] = P;
 		}
@@ -355,8 +360,8 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 		{
 			debug("Debug: tracking.ukf cat " +id + ", P dim: " + P.getRowDimension() + " x " + P.getColumnDimension() + ", mouse P:");
 			printM(P);
-			debug("Debug: tracking.ukf cat " +id + ", states dim: " + states.getRowDimension() + " x " + states.getColumnDimension() + ", mouse states:");
-			printM(states);
+			//debug("Debug: tracking.ukf cat " +id + ", states dim: " + states.getRowDimension() + " x " + states.getColumnDimension() + ", mouse states:");
+			//printM(states);
 		}
 		
 		// Check x and y so they keep inside the arena and also set velocity in that direction to zero if outside the arena
@@ -373,15 +378,20 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 			states.set(1, 0, Settings.ARENA_MAX_Y);
 		}
 
-		// Commit data to billboard ??
-		billboard.setMeanAndCovariance(id, (float)states.get(0, 0), (float)states.get(1, 0), (float)states.get(2, 0), (float)states.get(3, 0),
+		// Commit data to billboard from the leader
+		//if (id == 0)
+		{
+			billboard.setMeanAndCovariance(id, (float)states.get(0, 0), (float)states.get(1, 0), (float)states.get(2, 0), (float)states.get(3, 0),
 				0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+		}
 
 		// Increase iteration counter and timer (with full execution time)
 		iterationCounter++;
 		iterationTime += Clock.timestamp() - currentTime;
 		// Update public time
 		lastCurrentTime = currentTime;
+	    //long time_total = Clock.timestamp() - currentTime;
+	    //Logger.println("time_total tracking.ukf = " + time_total );
 	}
 	
 	private void debug(Object info)
@@ -390,4 +400,3 @@ public class TrackingUnscentedKalmanFilter extends TrackingFilter
 	}
 
 }//End of class
-
