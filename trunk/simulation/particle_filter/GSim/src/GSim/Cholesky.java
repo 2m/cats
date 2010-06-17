@@ -1,8 +1,6 @@
 package GSim;
 
 import lejos.util.Matrix;
-//import se.uu.it.cats.brick.filter.Matlab;
-//import se.uu.it.cats.brick.Logger;
 
 /*Below is the syntax highlighted version of Cholesky.java 
  *from 9.4 Numerical Solutions to Differential Equations. 
