@@ -10,7 +10,7 @@ import static java.lang.Math.*;
 import static GSim.Matlab.*;
 
 
-//FIXME: Find a bug where the mouse position estimate from one of the cats starts to quickly move around all over the map until that cat moves away from that position.
+//FIXME: Find a bug where the mouse position estimate from one of the cats starts to quickly move around all over the map until that cat moves away from that position. This is most likely due to atan2 in HmeasCat.
 
 /** Unscented Kalman filter for tracking (a mouse). */
 public class TrackingUnscentedKalmanFilter extends TrackingFilter
