@@ -107,7 +107,7 @@ public class KeepAlive extends LowLevelHandler
 				float byteBw = (float)bwSoFar / 3;				
 				
 				if (packetBw != 0)
-					Logger.println("Pck bw from "+getRemoteName()+":"+packetBw+"Pck/s");
+					//Logger.println("Pck bw from "+getRemoteName()+":"+packetBw+"Pck/s");
 				
 				sw.reset();
 			}
