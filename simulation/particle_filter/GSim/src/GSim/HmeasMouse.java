@@ -29,6 +29,7 @@ public class HmeasMouse implements IFunction{
 		//Calculates the bearing from the cats to the mouse
 		//xm is where the cats think the mouse is
 		//positions are where the cats thinks they are
+		//IMPORTANT: atan2 is not working good if the bearing is close to 0 (fluctuates between 0 and 2 PI)
 		//NB: All -1 in the indices are used to indicate the shift form the first array index in matlab = 1 to java's = 0.
 		//float[] positions = billboard.getAbsolutePositions();  //Gives incorrect/not relevant positions
 		float[] positions = billboard.getLatestSightings();
