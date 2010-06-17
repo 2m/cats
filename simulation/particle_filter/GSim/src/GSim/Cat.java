@@ -17,24 +17,6 @@ public class Cat extends Actor {
 	protected TrackingFilter trackingFilter;
 	private Guide guide;
 
-	private boolean usePositioningParticleFilter = false;
-	private boolean usePositioningGeometricFilter = false;
-	private boolean usePositioningUnscentedKalmanFilter = false;
-	private boolean useTrackingParticleFilter = false;
-	private boolean useTrackingUnscentedKalmanFilter = true;
-	private boolean useGuide = true;
-
-	/* Periods in ms */
-	private int positioningNaivePeriod = 500;// 200;
-	private int trackingKalmanPeriod = 50;// 50;
-	private int positioningKalmanPeriod = 200;// 500;
-	// NB: working ok @500ms with q = 0.5f and stddegrees = 1f,
-	// working somewhat ok @750ms with q = 0.005f and stddegrees = 1f
-
-	private int trackingParticlePeriod = 500;
-	private int positioningParticlePeriod = 800;
-	private int positioningGeometricPeriod = 500;
-
 	private int nexttrack, nextpos;
 	private int Ntracking = 100;
 	private int Npositioning = 200;
@@ -48,36 +30,36 @@ public class Cat extends Actor {
 		unifiedBuffer = sensors.register(this);
 		nexttrack = Clock.timestamp();
 		nextpos = Clock.timestamp();
-		if (usePositioningParticleFilter) {
+		if (Settings.USE_POSITIONING_PARTICLE_FILTER) {
 			positioningFilter = new AbsolutePositioningParticleFilter(id,
-					Npositioning, (float) positioningParticlePeriod / 1000f,
+					Npositioning, (float) (Settings.PERIOD_POSITIONING_PARTICLE) / 1000f,
 					unifiedBuffer, billboard);
-		} else if (usePositioningUnscentedKalmanFilter) {
+		} else if (Settings.USE_POSITIONING_UNSCENTED_KALMAN_FILTER) {
 			positioningFilter = new AbsolutePositioningUKF(id,
-					(float) positioningKalmanPeriod / 1000f, unifiedBuffer,
+					(float) (Settings.PERIOD_POSITIONING_KALMAN) / 1000f, unifiedBuffer,
 					billboard);
 
-		} else if (usePositioningGeometricFilter) {
+		} else if (Settings.USE_POSITIONING_GEOMETRIC_FILTER) {
 			positioningFilter = new AbsolutePositioningGeometricFilter(id,
-					(float) positioningGeometricPeriod / 1000f, unifiedBuffer,
+					(float) (Settings.PERIOD_POSITIONING_GEOMETRIC) / 1000f, unifiedBuffer,
 					billboard);
 		} else {
 			positioningFilter = new AbsolutePositioningNaiveFilter(id,
-					(float) positioningNaivePeriod / 1000f, unifiedBuffer,
+					(float) (Settings.PERIOD_POSITIONING_NAIVE) / 1000f, unifiedBuffer,
 					billboard);
 		}
 
-		if (useTrackingParticleFilter) {
+		if (Settings.USE_TRACKING_PARTICLE_FILTER) {
 			trackingFilter = new TrackingParticleFilter(id, Ntracking,
-					(float) trackingParticlePeriod / 1000f, billboard);
-		} else if (useTrackingUnscentedKalmanFilter) {
+					(float) (Settings.PERIOD_TRACKING_PARTICLE) / 1000f, billboard);
+		} else if (Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER) {
 			trackingFilter = new TrackingUnscentedKalmanFilter(id,
-					(float) trackingKalmanPeriod / 1000f, billboard);
+					(float) (Settings.PERIOD_TRACKING_KALMAN) / 1000f, billboard);
 		}
 
 		positioningFilter.initData((float) motor.getX(), (float) motor.getY(),
 				(float) motor.getAngle());
-		if (useGuide) {
+		if (Settings.USE_GUIDE) {
 			guide = new Guide(id, billboard);
 		}
 
@@ -110,7 +92,7 @@ public class Cat extends Actor {
 			sensors.update();
 		}
 		if ((iter % 10) == 0) {
-			if (useGuide) {
+			if (Settings.USE_GUIDE) {
 				if ((slot != id)
 						&& (guideCounter > 5)
 						&& (iter > 10)
@@ -133,21 +115,23 @@ public class Cat extends Actor {
 
 		if (nextpos < Clock.timestamp()) {
 			positioningFilter.update();
-			if (usePositioningParticleFilter) {
-				nextpos += positioningParticlePeriod;
-			} else if (usePositioningUnscentedKalmanFilter) {
-				nextpos += positioningKalmanPeriod;
+			if (Settings.USE_POSITIONING_PARTICLE_FILTER) {
+				nextpos += Settings.PERIOD_POSITIONING_PARTICLE;
+			} else if (Settings.USE_POSITIONING_UNSCENTED_KALMAN_FILTER) {
+				nextpos += Settings.PERIOD_POSITIONING_KALMAN;
+			} else if (Settings.USE_POSITIONING_GEOMETRIC_FILTER) {
+				nextpos += Settings.PERIOD_POSITIONING_GEOMETRIC;
 			} else {
-				nextpos += positioningNaivePeriod;
+				nextpos += Settings.PERIOD_POSITIONING_NAIVE;
 			}
 		}
 		if (nexttrack < Clock.timestamp()) {
-			if (useTrackingParticleFilter) {
+			if (Settings.USE_TRACKING_PARTICLE_FILTER) {
 				trackingFilter.update();
-				nexttrack += trackingParticlePeriod;
-			} else if (useTrackingUnscentedKalmanFilter) {
+				nexttrack += Settings.PERIOD_TRACKING_PARTICLE;
+			} else if (Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER) {
 				trackingFilter.update();
-				nexttrack += trackingKalmanPeriod;
+				nexttrack += Settings.PERIOD_TRACKING_KALMAN;
 			}
 		}
 		iter++;
@@ -155,10 +139,10 @@ public class Cat extends Actor {
 
 	public void drawMore(Graphics g) {
 		positioningFilter.draw(g);
-		if (useTrackingParticleFilter || useTrackingUnscentedKalmanFilter) {
+		if (Settings.USE_TRACKING_PARTICLE_FILTER || Settings.USE_TRACKING_UNSCENTED_KALMAN_FILTER) {
 			trackingFilter.draw(g);
 		}
-		if (useGuide) {
+		if (Settings.USE_GUIDE) {
 			guide.draw(g);
 		}
 
