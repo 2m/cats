@@ -131,7 +131,7 @@ public class Main {
 				Sound.playSample(new File("phaser.wav"), 100);
 			}
 		});
-
+		
 		Button.ENTER.addButtonListener(new ButtonListener() {
 			public void buttonPressed(Button b) {
 			}
@@ -219,7 +219,7 @@ public class Main {
 				}
 			}
 
-			if (numberOfCommands >= 3) {
+			if (numberOfCommands >= 3) { //Default = 3, NB use if(true) when testing the positioning filter
 				// wait until movement finishes
 				while (movementPilot.isProcessing()) {
 					try {
@@ -285,29 +285,126 @@ public class Main {
 		// approximated
 		// positions from the positioning filter
 		float side = 1.0f;
-		for (int i = 0; i < 2; i++) { // turn in square
-			movementPilot.travel(side, 0f, 0, 0f, (float) Math.PI / 2f * 3);
+		for (int i = 0; i < 3; i++) { // turn in square
+			movementPilot.travel(1.97f-side, 1.87f, 1.97f, 1.87f, (float) Math.PI / 2f);
 			while (movementPilot.isProcessing()) {
 				Thread.yield();
 			}
 
-			movementPilot.travel(side, side, side, 0, 0);
+			movementPilot.travel(1.97f-side, 1.87f-side, 1.97f-side, 1.87f, (float) Math.PI);
 			while (movementPilot.isProcessing()) {
 				Thread.yield();
 			}
 
-			movementPilot.travel(0f, side, side, side, (float) Math.PI / 2f);
+			movementPilot.travel(1.97f, 1.87f-side, 1.97f-side, 1.87f-side, (float) Math.PI / 2f * 3);
 			while (movementPilot.isProcessing()) {
 				Thread.yield();
 			}
 
-			movementPilot.travel(0f, 0f, 0, side, (float) Math.PI);
+			movementPilot.travel(1.97f, 1.87f, 1.97f, 1.87f-side, 0f);
 			while (movementPilot.isProcessing()) {
 				Thread.yield();
 			}
-
-			System.out.println("SQUARE FINISHED!");
 		}
+			
+			System.out.println("SQUARE FINISHED!");
+	}
+	
+
+	/**
+	 * Tests the positioning filter by driving in a square and
+	 *  correcting th eposition in each corner.
+	 */
+	public static void positioningTest() {	
+		//Important: Check the settings class before running the test	
+		/*START_X = 1.97f;
+		  START_Y = 1.875f;
+		  START_ANGLE = (float) Math.PI / 2f ;
+		 */
+
+		float side = 1.0f; //Length of sides
+
+		
+		Camera.doSweep = true;
+		while (Camera.doSweep){
+			try {
+				Thread.sleep(100);
+			} catch (Exception ex) {
+			}
+		}
+		try {
+			Thread.sleep(2000);
+		} catch (Exception ex) {
+		}
+		
+		for (int i = 0; i < 3; i++) { // turn in square
+			//Estimate position
+
+			movementPilot.travel(1.97f-side, 1.87f, positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
+			while (movementPilot.isProcessing()) {
+				Thread.yield();
+			}
+			Camera.doSweep = true;
+			while (Camera.doSweep){
+				try {
+					Thread.sleep(100);
+				} catch (Exception ex) {
+				}
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (Exception ex) {
+			}
+
+			movementPilot.travel(1.97f-side, 1.87f-side, positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
+			while (movementPilot.isProcessing()) {
+				Thread.yield();
+			}
+			Camera.doSweep = true;
+			while (Camera.doSweep){
+				try {
+					Thread.sleep(100);
+				} catch (Exception ex) {
+				}
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (Exception ex) {
+			}
+
+			movementPilot.travel(1.97f, 1.87f-side, positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
+			while (movementPilot.isProcessing()) {
+				Thread.yield();
+			}
+			Camera.doSweep = true;
+			while (Camera.doSweep){
+				try {
+					Thread.sleep(100);
+				} catch (Exception ex) {
+				}
+			}
+
+			try {
+				Thread.sleep(1000);
+			} catch (Exception ex) {
+			}
+			movementPilot.travel(1.97f, 1.87f, positioningFilter.getX(), positioningFilter.getY(), positioningFilter.getAngle());
+			while (movementPilot.isProcessing()) {
+				Thread.yield();
+			}
+			Camera.doSweep = true;
+			while (Camera.doSweep){
+				try {
+					Thread.sleep(100);
+				} catch (Exception ex) {
+				}
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (Exception ex) {
+			}
+		}
+		System.out.println("SQUARE FINISHED!");
 	}
 
 	public static void billboardTest() {
