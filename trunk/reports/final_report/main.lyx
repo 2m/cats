@@ -163,19 +163,14 @@ Simulation in Matlab
 \end_layout
 
 \begin_layout Standard
-Particle filter theory 
-\end_layout
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "particle_filter_theory.lyx"
 
-\begin_layout Standard
-Gaussian model 
-\end_layout
+\end_inset
 
-\begin_layout Standard
-Problems and changes to standard model 
-\end_layout
 
-\begin_layout Standard
-Matlab stuff 
 \end_layout
 
 \begin_layout Standard
@@ -252,15 +247,14 @@ Brick implementation
 \end_layout
 
 \begin_layout Standard
-Particle filters 
-\end_layout
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "particle_filter_implementation.lyx"
 
-\begin_layout Standard
-Java simulation 
-\end_layout
+\end_inset
 
-\begin_layout Standard
-Brick implementation 
+
 \end_layout
 
 \begin_layout Standard
@@ -275,19 +269,29 @@ filename "geometric_implementation.lyx"
 \end_layout
 
 \begin_layout Standard
-Guide
-\end_layout
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "guide_implementation.lyx"
 
-\begin_layout Standard
-Java simulation 
-\end_layout
+\end_inset
 
-\begin_layout Standard
-Brick implementation 
+
 \end_layout
 
 \begin_layout Standard
 GUI
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "GSim_implementation.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

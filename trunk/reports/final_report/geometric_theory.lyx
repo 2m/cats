@@ -44,7 +44,7 @@
 \begin_body
 
 \begin_layout Subsection
-Guide
+Geometric filter
 \end_layout
 
 \begin_layout Subsubsection
@@ -52,15 +52,154 @@ Theory
 \end_layout
 
 \begin_layout Standard
-Text
-\end_layout
-
-\begin_layout Subsubsection
-Simulation
+The need for a naive way of correcting the cat position arouse when simulation
+ of the other approaches to positioning failed.
+ The geometric filter is not really a filter in the ordinary sense.
+ It can not correct much and it is not stable, but it worked good enough
+ during tests.
 \end_layout
 
 \begin_layout Standard
-Text
+The basic question which gave rise to the geometric filter was 
+\begin_inset Quotes eld
+\end_inset
+
+what would Archimedes have done?
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+If the angles between to two landmarks are known the inscribed angle theorem
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+http://en.wikipedia.org/wiki/Inscribed_angle_theorem
+\end_layout
+
+\end_inset
+
+ gives that the double angle is the angles between the landmarks when standing
+ in the center of a circle (shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Inscribed_angle_theorem"
+
+\end_inset
+
+).
+ 
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/Inscribed_angle_theorem_1.png
+	lyxscale 60
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Inscribed_angle_theorem"
+
+\end_inset
+
+Plot of a circle showing the angles given by the inscribed angle theorem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+The positions of the landmarks are known, hence the solution to where the
+ cat is lies on a circle.
+ If one more landmark adjacent to the first (which it always is in our case
+ since we use 4 landmarks) another circle can be found.
+ There two circles intersect in two places and one of there solutions is
+ the position of the cat.
+\end_layout
+
+\begin_layout Standard
+A problem with this approach is that it does not filter out any noise from
+ the angle measurements.
+ If there is noise the most probable solution stops being a point a becomes
+ an area, as shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:geometric_circle_error"
+
+\end_inset
+
+.
+ The more noise the more this area grows.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/Inscribed_angle_theorem_2.gif
+	lyxscale 60
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:geometric_circle_error"
+
+\end_inset
+
+Plot of the error given by a noisy angle measurement to a landmark
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body

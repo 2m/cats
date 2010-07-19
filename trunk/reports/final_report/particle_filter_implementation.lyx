@@ -44,43 +44,15 @@
 \begin_body
 
 \begin_layout Subsection
-Guide
-\end_layout
-
-\begin_layout Subsubsection
-Theory 
+Particle filter
 \end_layout
 
 \begin_layout Standard
-Basic idea
+Java simulation 
 \end_layout
 
 \begin_layout Standard
-Describe criterion functions
-\end_layout
-
-\begin_layout Standard
-steepest descent
-\end_layout
-
-\begin_layout Standard
-finite differance approx
-\end_layout
-
-\begin_layout Standard
-Figure surface
-\end_layout
-
-\begin_layout Subsubsection
-Simulation
-\end_layout
-
-\begin_layout Standard
-occilations
-\end_layout
-
-\begin_layout Standard
-Figure plot of sim
+Brick implementation 
 \end_layout
 
 \end_body

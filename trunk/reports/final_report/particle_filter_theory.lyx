@@ -1,0 +1,154 @@
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass IEEEtran
+\use_default_options false
+\language english
+\inputencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\float_placement tbh
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 2
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+Particle filter
+\end_layout
+
+\begin_layout Standard
+The basic principle of a particle filter is to by a particle optimization
+ technique filter noisy data.
+\end_layout
+
+\begin_layout Standard
+The main advantages to particle filters is that they can handle non-linearity's
+ without compromising on accuracy??-citation needed.
+ Basically 
+\end_layout
+
+\begin_layout Enumerate
+Randomize initial values for the states in each particle within the possible
+ interval
+\end_layout
+
+\begin_layout Enumerate
+Compare the states of each particle with sensor data
+\end_layout
+
+\begin_layout Enumerate
+Calculate a weighted mean or similar method to get the estimated states
+ of the tracked object
+\end_layout
+
+\begin_layout Enumerate
+Re-sample the particles based on the estimation of the tracked object.
+\end_layout
+
+\begin_layout Enumerate
+GOTO 2
+\end_layout
+
+\begin_layout Standard
+In our specific case there was a need for two particle filters.
+ One for tracking and one fort positioning of the tracking robot.
+ Also since we did not have to take height of a target into account (i.e.
+ the arena for tracking was flat), all filters needed only take the two
+ dimensional case into account.
+\end_layout
+
+\begin_layout Standard
+The tracking filter needed to estimate the position of the tracked object
+ and, if possible, its speed.
+ A natural choice for state variables was then the position in the x and
+ y direction and velocity in the x and y direction.
+\end_layout
+
+\begin_layout Standard
+simplifications, 
+\end_layout
+
+\begin_layout Standard
+Abs pos.
+ tracking,choice of states
+\end_layout
+
+\begin_layout Standard
+optimizations
+\end_layout
+
+\begin_layout Subsubsection
+Simulation
+\end_layout
+
+\begin_layout Standard
+The tracking filter worked very well in simulation and did even estimate
+ the speed quite correctly.
+ 
+\end_layout
+
+\begin_layout Standard
+Figure tracking
+\end_layout
+
+\begin_layout Standard
+The positioning filter worked very well in simulation even though it, at
+ most, could only see two landmarks at a time.
+\end_layout
+
+\begin_layout Standard
+Figure tracking
+\end_layout
+
+\begin_layout Standard
+The good results from the simulation was a good indication that this filtering
+ technique was a feasible solution.
+ It was clear though that some optimization would be needed for the filtering
+ technique to work on our desired platform.
+\end_layout
+
+\begin_layout Standard
+*Gaussian model 
+\end_layout
+
+\begin_layout Standard
+*Problems and changes to standard model 
+\end_layout
+
+\begin_layout Standard
+*Matlab stuff 
+\end_layout
+
+\end_body
+\end_document
