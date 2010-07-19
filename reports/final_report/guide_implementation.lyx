@@ -47,40 +47,24 @@
 Guide
 \end_layout
 
-\begin_layout Subsubsection
-Theory 
+\begin_layout Standard
+Calc Speed problems
 \end_layout
 
 \begin_layout Standard
-Basic idea
+small updates
 \end_layout
 
 \begin_layout Standard
-Describe criterion functions
+future work, line search
 \end_layout
 
 \begin_layout Standard
-steepest descent
+Java simulation 
 \end_layout
 
 \begin_layout Standard
-finite differance approx
-\end_layout
-
-\begin_layout Standard
-Figure surface
-\end_layout
-
-\begin_layout Subsubsection
-Simulation
-\end_layout
-
-\begin_layout Standard
-occilations
-\end_layout
-
-\begin_layout Standard
-Figure plot of sim
+Brick implementation 
 \end_layout
 
 \end_body

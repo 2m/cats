@@ -44,43 +44,25 @@
 \begin_body
 
 \begin_layout Subsection
-Guide
-\end_layout
-
-\begin_layout Subsubsection
-Theory 
+Java simulation framework - GSim
 \end_layout
 
 \begin_layout Standard
-Basic idea
+It was clear from the start that the work of implementing and experimenting
+ with different filters would would be carried out parallel to implementing
+ the base system on the brick (networking, motors, camera etc.).
+ Since this would result in long waits for the filter implantation a simulation
+ framework would be needed.
+ This would also give an opportunity to weed out bugs and test robustness
+ in a controlled environment with good debugging tool available.
 \end_layout
 
 \begin_layout Standard
-Describe criterion functions
-\end_layout
-
-\begin_layout Standard
-steepest descent
-\end_layout
-
-\begin_layout Standard
-finite differance approx
-\end_layout
-
-\begin_layout Standard
-Figure surface
-\end_layout
-
-\begin_layout Subsubsection
-Simulation
-\end_layout
-
-\begin_layout Standard
-occilations
-\end_layout
-
-\begin_layout Standard
-Figure plot of sim
+The simulation is written in a way that the filter code would work with
+ no or minor modifications (i.e.
+ importing other libraries) on the brick.
+ During the work with the implementation the simulation was changed to reflect
+ the architectural decisions made for the brick.
 \end_layout
 
 \end_body
