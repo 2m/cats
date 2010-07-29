@@ -54,26 +54,74 @@ The basic principle of a particle filter is to by a particle optimization
 
 \begin_layout Standard
 The main advantages to particle filters is that they can handle non-linearity's
- without compromising on accuracy??-citation needed.
+ without compromising on accuracy
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+citation needed
+\end_layout
+
+\end_inset
+
+.
  Basically 
 \end_layout
 
 \begin_layout Enumerate
-Randomize initial values for the states in each particle within the possible
- interval
+Random hypotheses about the states in the tracked object (within a given
+ possible interval), visualized as particles 
 \end_layout
 
 \begin_layout Enumerate
-Compare the states of each particle with sensor data
+Update particles (integration or similar) according to the estimated objects
+ dynamics
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+show how
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Compare the states of each particle with sensor data and give each particle
+ a weight indicating how well it conforms to it.
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+show how
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Enumerate
 Calculate a weighted mean or similar method to get the estimated states
  of the tracked object
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+show how
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Enumerate
-Re-sample the particles based on the estimation of the tracked object.
+If needed, re-sample the particles based on the estimation of the tracked
+ object (i.e.
+ change the estimated PDF information contained in the particle swarm).
 \end_layout
 
 \begin_layout Enumerate
@@ -82,9 +130,9 @@ GOTO 2
 
 \begin_layout Standard
 In our specific case there was a need for two particle filters.
- One for tracking and one fort positioning of the tracking robot.
+ One for tracking and one for positioning of the tracking robot.
  Also since we did not have to take height of a target into account (i.e.
- the arena for tracking was flat), all filters needed only take the two
+ the arena for tracking was flat), all filters needed only to take the two
  dimensional case into account.
 \end_layout
 
@@ -96,16 +144,16 @@ The tracking filter needed to estimate the position of the tracked object
 \end_layout
 
 \begin_layout Standard
-simplifications, 
+For the positioning particle filter the states were chosen as x, y and heading
+ angle.
+ The camera, mounted on top of the robot, would sweep for targets, giving
+ angles in a local reference system.
+ These sightings could then be compared to the known positions of landmarks
+ and how well a particles states would conform to this data.
 \end_layout
 
 \begin_layout Standard
-Abs pos.
- tracking,choice of states
-\end_layout
-
-\begin_layout Standard
-optimizations
+A Gaussian model was chosen
 \end_layout
 
 \begin_layout Subsubsection
@@ -119,7 +167,32 @@ The tracking filter worked very well in simulation and did even estimate
 \end_layout
 
 \begin_layout Standard
-Figure tracking
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:particle_sim_tracking"
+
+\end_inset
+
+Plot from the simulation of the tracking particle filter
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -128,7 +201,36 @@ The positioning filter worked very well in simulation even though it, at
 \end_layout
 
 \begin_layout Standard
-Figure tracking
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:particle_sim_pos"
+
+\end_inset
+
+Plot from the simulation of the positioning particle filter
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -136,18 +238,6 @@ The good results from the simulation was a good indication that this filtering
  technique was a feasible solution.
  It was clear though that some optimization would be needed for the filtering
  technique to work on our desired platform.
-\end_layout
-
-\begin_layout Standard
-*Gaussian model 
-\end_layout
-
-\begin_layout Standard
-*Problems and changes to standard model 
-\end_layout
-
-\begin_layout Standard
-*Matlab stuff 
 \end_layout
 
 \end_body
