@@ -1,0 +1,690 @@
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+
+\series bold
+Problem solution
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+-Early ideas 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Magnetic fields 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Colour coding
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+-Design 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Kalman filter
+\series default
+ 
+\series bold
+theory
+\end_layout
+
+\begin_layout Standard
+The Kalman filter is a method of estimating state variables from noisy measureme
+nts.
+ With a provided state model of the system, a predicted state variable estimate
+ one time step ahead is computed.
+ The uncertainty of this prediction is also calculated.
+ A weighted average of the actual measurement and the predicted value is
+ then used as the output of the filter.
+ The weights are chosen so that higher uncertainties give smaller weights.
+ The Kalman filter models the errors in the measurements and state estimates
+ as Gaussian measurement noise and process noise, with a fixed standard
+ deviation.
+ These two standard deviations are use selectable parameters, which should
+ be chosen so that the filter achieves the best performance.
+ A lower measurement noise standard deviation means that the measurements
+ are trusted more and given a bigger weight, which should be the case if
+ the measurements are accurate.
+ The process noise standard deviation works similarly, representing how
+ much the state model should be trusted.
+\end_layout
+
+\begin_layout Standard
+For linear systems the Kalman filter is the optimal method to compute the
+ state estimates.
+ Non-linear state models can't be used directly in the standard Kalman filter.
+ One way to solve this is to linearize the model, which is done in the Extended
+ Kalman filter (EKF).
+ The approximations done the the linearization can however give significant
+ errors for highly non-linear systems.
+ An improvement of the EKF is the Unscented Kalman filter (UKF).
+ It is based on the unscented transform, which works by propagating a minimal
+ set of sampling points through the non-linear functions.
+ From this, the estimated mean and covariance of the state variables are
+ then recovered.
+ Just like in the EKF, the UKF uses approximations of the non-linear state
+ model, but the errors that arise from them are smaller.
+ The full algorithm of the UKF will not be presented here, since our project
+ used a pre-written implementation.
+ However, an important note is that the square root of the covariance matrix
+ is required in a step of the algorithm.
+ The square root of the matrix 
+\emph on
+B
+\emph default
+ is the matrix 
+\emph on
+A
+\emph default
+ satisfying 
+\begin_inset Formula $B=AA^{T}$
+\end_inset
+
+.
+ This can be computed in different ways, such as using the Cholesky decompositio
+n, which requires that the matrix B is both symmetric and positive-definite.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+---Chosen state model
+\end_layout
+
+\begin_layout Standard
+(a) 
+\emph on
+Tracking filter
+\end_layout
+
+\begin_layout Standard
+Using the UKF made it possible to use the true non-linear state measurement
+ equation given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $z_{k}=\left(\begin{array}{c}
+\theta_{1}\\
+\theta_{2}\\
+\theta_{3}\end{array}\right)_{k}=\left(\begin{array}{c}
+h_{1}(x_{k})\\
+h_{2}(x_{k})\\
+h_{2}(x_{k})\end{array}\right)+n_{k}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\theta_{i}$
+\end_inset
+
+ is the measured angle from cat 
+\emph on
+i.
+
+\emph default
+ Subscript 
+\emph on
+k
+\emph default
+ henceforth indicate the time step
+\emph on
+.
+
+\emph default
+ The states 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+ are chosen as 
+\begin_inset Formula \[
+x_{k}=\left(\begin{array}{c}
+x\\
+y\\
+v_{x}\\
+v_{y}\end{array}\right)_{k}\]
+
+\end_inset
+
+ where x and y are the 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+position of the mouse and 
+\begin_inset Formula $v_{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $v_{y}$
+\end_inset
+
+ are its velocities.
+ 
+\begin_inset Formula $h_{i}(x_{k})$
+\end_inset
+
+ is the non-linear measurement equation for cat 
+\family default
+\series default
+\shape default
+\size default
+\emph on
+\bar default
+\noun default
+\color inherit
+i
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+ given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+h_{i}(x_{k})=arctan(\frac{y-y_{i}}{x-x_{i}})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ are the position of cat 
+\emph on
+i
+\emph default
+.
+ 
+\begin_inset Formula $n_{k}$
+\end_inset
+
+ is the measurement noise with covariance matrix
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+R=r^{2}\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\emph on
+r
+\emph default
+ is the the standard deviation of the measurement noise.
+ We have assumed that the noise of the measurements are uncorrelated and
+ have equal power.
+\end_layout
+
+\begin_layout Standard
+The movement of the mouse is modeled with constant velocity.
+ This means that the acceleration of the mouse is modeled as process noise.
+ The process model, or update formula, is
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+\begin_inset Formula $x_{k}=F\cdot x_{k-1}+Gw_{k}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $w_{k}$
+\end_inset
+
+ is the process noise.
+ Using Newton's laws of motion we easily find that
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset Formula \[
+F=\left(\begin{array}{cccc}
+1 & 0 & T & 0\\
+0 & 1 & 0 & T\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1\end{array}\right),\; G=\left(\begin{array}{c}
+\frac{T^{2}}{2}\\
+\frac{T^{2}}{2}\\
+T\\
+T\end{array}\right)\]
+
+\end_inset
+
+ where 
+\emph on
+T
+\emph default
+ is the sampling time period.
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+The process noise covariance matrix 
+\family default
+\series default
+\shape default
+\size default
+\emph on
+\bar default
+\noun default
+\color inherit
+Q
+\emph default
+ becomes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+Q=E[Gw_{k}(Gw_{k})^{T}]=q^{2}\left(\begin{array}{cccc}
+\frac{T}{4}^{4} & 0 & \frac{T^{3}}{2} & 0\\
+0 & \frac{T}{4}^{4} & 0 & \frac{T}{2}^{3}\\
+\frac{T}{2}^{3} & 0 & T^{2} & 0\\
+0 & \frac{T}{2}^{3} & 0 & T^{2}\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\emph on
+q
+\emph default
+ is the standard deviation of the process noise.
+\end_layout
+
+\begin_layout Standard
+(b) 
+\emph on
+Absolute positioning filter
+\end_layout
+
+\begin_layout Standard
+The basic idea of the absolute positioning filter was that the problem of
+ locating the mouse with several cat angle measurements is very similar
+ to the problem of locating one cat using several landmark angle measurements.
+ The state vector then 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+ contains the cat position and velocity, the measurement vector 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $z_{k}$
+\end_inset
+
+ is comprised of the measurements to the different landmarks.
+ There are however some important differences between the two problems.
+ First, with our chosen landmark positions, only at most one landmark would
+ be seen at any given time.
+ Therefore no classical triangulation can be done.
+ The Matlab simulation showed that a filter implemented this way still could
+ correct the position of the cat quite nicely with only one landmark measurement.
+ More importantly, the 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+absolute positioning filter should also estimate the 
+\emph on
+orientation
+\emph default
+ of the cat as it is needed in order to calculate the absolute angular measureme
+nts to the mouse from relative measurements, given in the cat's coordinate
+ system.
+ Specifically, the absolute measurement to the mouse is given by 
+\begin_inset Formula \[
+\theta=\theta_{orient}+\theta_{rel}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\theta_{orient}$
+\end_inset
+
+ is the orientation of the cat and 
+\begin_inset Formula $\theta_{rel}$
+\end_inset
+
+ is the relative measurement to the mouse.
+ This means that errors in the cat's orientation will translate into a erroneous
+ estimation of the mouse's position.
+ Furthermore, we have additional sensors available, namely the motor tachometers.
+\end_layout
+
+\begin_layout Standard
+The data from those can be used to calculate the cat's traveled distance
+ and rotation.
+ However, it was quickly realized that only relying on tachometer data would
+ give a quite bad estimation of the cat's position after a while, as the
+ measurement error accumulate.
+ Therefore, the landmark measurements should be used as a way of correcting
+ the cat's position when necessary.
+ [Move to general section]
+\end_layout
+
+\begin_layout Standard
+Incorporating velocity measurements in the measurement vector made it possible
+ to use tachometer data.
+ The measurement vector now takes the form
+\begin_inset Formula \[
+z_{k}=\left(\begin{array}{c}
+\theta_{1}\\
+\theta_{2}\\
+\theta_{3}\\
+\theta_{4}\\
+v_{x}\\
+v_{y}\end{array}\right)\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\theta_{i}$
+\end_inset
+
+ is the absolute angular measurement to landmark 
+\emph on
+i.
+
+\emph default
+ 
+\begin_inset Formula $v_{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $v_{y}$
+\end_inset
+
+ are the x- and y-components of the cat's velocity.
+ This solution was implemented successfully in Matlab.
+ A more appropriate solution would be to use the velocity measurements in
+ polar form, given as speed and orientation (or it's derivative) instead
+ of x and y component of the velocity.
+ That way a higher uncertainty can be assigned to the orientation and a
+ lower to the speed, more closely mimicking the true dynamics of the system.
+ This formulation however yielded problems in the Matlab simulation and
+ was therefore not followed out.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+---Simulation in Matlab
+\end_layout
+
+\begin_layout Standard
+(a) 
+\emph on
+Tracking filter
+\end_layout
+
+\begin_layout Standard
+The measurements in our implementation are intermittent, i.e.
+ the cats cannot provide measurements all the time, and sometimes only a
+ few cats might have measurements available.
+ This has to be handled somehow as the standard formulation of the Kalman
+ filter assumes that the measurements are available all the time.
+ A simple way to take care of this is to set the element in the measurement
+ covariance matrix corresponding to the unavailable measurement to 
+\begin_inset Formula $\infty$
+\end_inset
+
+.
+ That way the measurement is given zero credibility and is weighted away.
+ That is if measurement 
+\emph on
+i
+\emph default
+ is unavailable then set 
+\begin_inset Formula $R_{ii}=\infty$
+\end_inset
+
+ instead of 
+\begin_inset Formula $r^{2}$
+\end_inset
+
+.
+ The measurement 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $z_{i,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ can then be set to anything.
+ 
+\begin_inset Formula $R_{ii}$
+\end_inset
+
+ can be set to 
+\emph on
+inf 
+\emph default
+in
+\emph on
+ 
+\emph default
+Matlab but since this is not possible in the brick implementation we instead
+ set it a very large number (
+\begin_inset Formula $10^{10}$
+\end_inset
+
+), about as large as double point arithmetic allows.
+ In the Matlab simulation it was verified that this was large enough for
+ the unavailable, and therefore incorrect measurements, to have no actual
+ impact.
+ Some further investigation showed that it is possible to modify the Kalman
+ filter algorithm to only do the update step for the unavailable measurements.
+ This would be a computationally more efficient solution and certainly more
+ elegant.
+ It was however concluded that it was simpler just to keep the previous
+ solution.
+\end_layout
+
+\begin_layout Standard
+(b) 
+\emph on
+Absolute positioning filter
+\end_layout
+
+\begin_layout Standard
+The previously mentioned form of the filter was implemented in Matlab.
+ That implementation used absolute angle measurements everywhere and could
+ therefore not simulate static errors in the cat's orientation.
+ The absolute
+\emph on
+ 
+\emph default
+positioning filter was also implemented together with the tracking filter
+ in order to get an idea of how the errors in the cat's position would translate
+ into errors in the mouse's position.
+\end_layout
+
+\begin_layout Standard
+The UKF filter also has a few user selectable parameters that were varied
+ to see their effect on performance.
+ The performance of the filter turned out to be almost the same no matter
+ how the parameters were chosen.
+ There was however a valid range for some of the parameters in which the
+ covariance matrix remained positive definite.
+ If the parameters were chosen badly the Cholesky factorization failed.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Implementation
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+-Kalman filters
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Java simulation
+\end_layout
+
+\begin_layout Standard
+The Java simulation showed that the stability of tracking filter was somewhat
+ sensitive to input data.
+ Some input data seemed to result in a situation where the covariance matrix
+ no longer remained positive definite, thereby failing the Cholesky factorizatio
+n and crashing the filter.
+ In normal operation, probably when measurements were available reasonably
+ often, this did not happen.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Brick implementation 
+\end_layout
+
+\end_body
+\end_document
