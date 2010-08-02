@@ -48,7 +48,8 @@ C.A.T.S.: Cooperative Autonomous Tracking System
 \end_layout
 
 \begin_layout Author
-Your Name, Your Co-Author
+Fredrik Wahlberg, Christian Ålander, Nils Törnblom, Martynas Mickevičius,
+ Edward Zak, Cheewin Pisanupoj
 \begin_inset Foot
 status collapsed
 
@@ -67,7 +68,7 @@ This paper presents a simple template for IEEEtran documents.
 \end_layout
 
 \begin_layout Keywords
-simplicity, beauty, elegance
+bearings-only, particle filter, unscented Kalman filter...
 \end_layout
 
 \begin_layout MarkBoth
@@ -117,6 +118,19 @@ PARstart{T}{here}
  Refer to the IEEEtran documentation (sample document) for more details.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+http://www.it.uu.se/edu/course/homepage/styrsystem/vt10/Projekt/CoLEGO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Previous Work
 \end_layout
@@ -127,6 +141,13 @@ overview of previous work
 
 \begin_layout Standard
 Some UKF paper...
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Takahashi2009"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -142,7 +163,7 @@ Magnetic fields
 \end_layout
 
 \begin_layout Standard
-Colour coding 
+Color coding 
 \end_layout
 
 \begin_layout Standard
@@ -159,7 +180,7 @@ Chosen state model
 \end_layout
 
 \begin_layout Standard
-Simulation in Matlab 
+Simulation in Matlab
 \end_layout
 
 \begin_layout Standard
@@ -417,54 +438,58 @@ future work
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Change this paragraphs style to 'Standard' to enable
+Better sensors! (really needed? shouldn't it be quite possible to solve
+ the task with current sensors?) 
 \end_layout
 
-\begin_layout Plain Layout
-BibTeX bibliography generation.
+\begin_layout Standard
+New orientation measurement sensor? 
 \end_layout
 
-\begin_layout Plain Layout
-Remember though that your final submission is supposed to have
+\begin_layout Standard
+Faster filters and guide 
 \end_layout
 
-\begin_layout Plain Layout
-all the bibliography entries embedded in the latex file.
- This means
+\begin_layout Standard
+All cats moving at the same time without risking to collide.
+ 
 \end_layout
 
-\begin_layout Plain Layout
-you eventually have to copy the .bbl file into the latex file and
+\begin_layout Standard
+Optimizing the java implementation of the kalman
 \end_layout
 
-\begin_layout Plain Layout
-remove the bibtex lines.
+\begin_layout Standard
+Kalman filters.
+ 
 \end_layout
 
-\end_inset
+\begin_layout Standard
+Positioning filter Kalman - how to make it work? Possible with current sensors
+ ? 
+\end_layout
 
+\begin_layout Standard
+Particle - how to make it work on brick? 
+\end_layout
 
+\begin_layout Standard
+Cat positioning while moving, correcting position and orientation on-line.
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "your_biblio_file"
-options "IEEEbib"
+bibfiles "references"
+options "bibtotoc,plain"
 
 \end_inset
 
 
 \end_layout
 
-\end_inset
-
-
+\begin_layout Section
+Biography
 \end_layout
 
 \begin_layout Biography
@@ -473,15 +498,15 @@ status collapsed
 
 \begin_layout Plain Layout
 
-[
+[{
 \end_layout
 
 \end_inset
 
 
 \begin_inset Graphics
-	filename images/code_diagram.png
-	lyxscale 20
+	filename images/Inscribed_angle_theorem_2.gif
+	lyxscale 10
 	scale 20
 
 \end_inset
@@ -492,7 +517,7 @@ status collapsed
 
 \begin_layout Plain Layout
 
-]
+}]
 \end_layout
 
 \end_inset
@@ -520,6 +545,14 @@ status collapsed
 \end_inset
 
  All about you and the what your interests are.
+ Project leader.
+ Particle filter (both tracking and positioning) theory, simulation and
+ implementation.
+ Software architecture and design.
+ Java simulation framework.
+ Geometric absolute positioning filter theory and implementation.
+ AI for robot positioning (maximizing sensor reading information and collision
+ avoidance).
 \end_layout
 
 \begin_layout --Separator--
@@ -527,36 +560,6 @@ status collapsed
 \end_layout
 
 \begin_layout Biography
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-[
-\end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename images/code_diagram.png
-	lyxscale 20
-	scale 20
-
-\end_inset
-
-
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-]
-\end_layout
-
-\end_inset
-
-
 \begin_inset ERT
 status collapsed
 
@@ -591,36 +594,6 @@ status collapsed
 
 \begin_layout Plain Layout
 
-[
-\end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename images/code_diagram.png
-	lyxscale 20
-	scale 20
-
-\end_inset
-
-
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-]
-\end_layout
-
-\end_inset
-
-
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
 {
 \end_layout
 
@@ -638,6 +611,10 @@ status collapsed
 \end_inset
 
  All about you and the what your interests are.
+ Kalman filter (simulation and implementation) - tracking and positioning.
+ Movement pilot regulator, camera tracking regulator, landmark design and
+ detection and some robot design.
+ Color coding.
 \end_layout
 
 \begin_layout --Separator--
@@ -645,36 +622,6 @@ status collapsed
 \end_layout
 
 \begin_layout Biography
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-[
-\end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename images/code_diagram.png
-	lyxscale 20
-	scale 20
-
-\end_inset
-
-
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-]
-\end_layout
-
-\end_inset
-
-
 \begin_inset ERT
 status collapsed
 
@@ -696,7 +643,9 @@ status collapsed
 
 \end_inset
 
- All about you and the what your interests are.
+ All about you and the what your interests are.Network communications implementat
+ion.
+ Robot and GUI software architecture design.
 \end_layout
 
 \begin_layout --Separator--
@@ -704,36 +653,6 @@ status collapsed
 \end_layout
 
 \begin_layout Biography
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-[
-\end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename images/code_diagram.png
-	lyxscale 20
-	scale 20
-
-\end_inset
-
-
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-]
-\end_layout
-
-\end_inset
-
-
 \begin_inset ERT
 status collapsed
 
@@ -756,6 +675,10 @@ status collapsed
 \end_inset
 
  All about you and the what your interests are.
+ Kalman filter (mostly Java implementation and testing for both tracking
+ and positioning.
+ Keeping an eye on the overall robot software architecture.
+ 
 \end_layout
 
 \begin_layout --Separator--
@@ -763,36 +686,6 @@ status collapsed
 \end_layout
 
 \begin_layout Biography
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-[
-\end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename images/code_diagram.png
-	lyxscale 20
-	scale 20
-
-\end_inset
-
-
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-]
-\end_layout
-
-\end_inset
-
-
 \begin_inset ERT
 status collapsed
 
@@ -815,10 +708,6 @@ status collapsed
 \end_inset
 
  All about you and the what your interests are.
-\end_layout
-
-\begin_layout --Separator--
-
 \end_layout
 
 \end_body
