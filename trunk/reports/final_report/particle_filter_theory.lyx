@@ -68,6 +68,35 @@ citation needed
  Basically 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Baysian recursive method
+\end_layout
+
+\begin_layout Plain Layout
+General priciple
+\end_layout
+
+\begin_layout Plain Layout
+Application to tracking
+\end_layout
+
+\begin_layout Plain Layout
+Application to positioning
+\end_layout
+
+\begin_layout Plain Layout
+Check references
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Enumerate
 Random hypotheses about the states in the tracked object (within a given
  possible interval), visualized as particles 

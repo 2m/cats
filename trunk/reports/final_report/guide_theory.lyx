@@ -47,28 +47,176 @@
 Guide
 \end_layout
 
+\begin_layout Standard
+When having mobile robots as in our case the need for positioning of them
+ arouse.
+ This was not a part of the given assignment and the used method was more
+ or less developed on a napkin and should be considered as a proof-of-concept.
+\end_layout
+
 \begin_layout Subsubsection
 Theory 
 \end_layout
 
 \begin_layout Standard
-Basic idea
+The basic idea of the guide is that is the rules to follow, like 
+\begin_inset Quotes eld
+\end_inset
+
+keep distance from others
+\begin_inset Quotes erd
+\end_inset
+
+, can be formulated mathematically then an optimization technique could
+ be used for positioning.
 \end_layout
 
 \begin_layout Standard
-Describe criterion functions
+The rules where formulated as functions who could generate a map of where
+ a good place for the cat would be.
+ This method could be compared with letting the functions generate a landscape
+ and telling the cat to try to keep in the valleys.
+ An exmeple of the map of the final function is shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:guide_surface"
+
+\end_inset
+
+.
+ To try to find the maximum (the most desired location) of the map a gradient
+ descent
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Wikipediaa"
+
+\end_inset
+
+ method was used.
+ Such a method is easy to implement and not so expensive to compute.
+ The problem with this kind of method is that it only finds a 
+\emph on
+local
+\emph default
+ maximum.
+ The decision was made to not expect the guide to find the optimal position
+ (with the given criterion function) but only to try to correct the position
+ to try to avoid situations which would make tracking too hard.
+ The method of gradient descent looks like:
 \end_layout
 
 \begin_layout Standard
-steepest descent
+\begin_inset Formula $r_{n+1}=r_{n}-\nabla f(x,y)$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-finite differance approx
+Where the derivative is approximated with finite difference scheme:
 \end_layout
 
 \begin_layout Standard
-Figure surface
+\begin_inset Formula $\nabla f(x,y)\approx(\frac{f(x+h,y)-f(x-h,y)}{2h},\frac{f(x,y+h)-f(x,y-h)}{2h})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The criterion function is composed of the multiplication of four functions
+ which each represents a separate 
+\begin_inset Quotes eld
+\end_inset
+
+rule
+\begin_inset Quotes erd
+\end_inset
+
+ to follow.
+ Those where the following:
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Keep an optimal distance to the estimated target position.
+
+\emph default
+ The penalty is the distance squared from the optimal distance to the target.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Keep distance from edges.
+
+\emph default
+ Where the distance to the edge is penalized linearly within a set minimal
+ distance to an edge.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Keep distance from other mobile objects.
+
+\emph default
+ Where the distance to the other object is penalized linearly within a set
+ minimal distance to that object.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Keep distance from another sensors line of sight to the target.
+
+\emph default
+ To avoid that cats block each others sight or stands opposite each other
+ (which gives no additional information than having only one observer) the
+ distance to the line of sight is penalized.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/guide_surface.png
+	lyxscale 25
+	scale 25
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:guide_surface"
+
+\end_inset
+
+Plot of criterion function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -76,11 +224,31 @@ Simulation
 \end_layout
 
 \begin_layout Standard
-occilations
+A problem with the gradient descent method is that it in some circumstances
+ starts to oscillate.
+ This was avoided by simply not correcting the position less than a couple
+ of centimeters and also setting a limit of iterations.
+ A batter solution would be to do a line search
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Wikipedia"
+
+\end_inset
+
+ but it was not finished due to lack of time.
 \end_layout
 
 \begin_layout Standard
-Figure plot of sim
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Figure plot of simulation
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body

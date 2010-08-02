@@ -55,6 +55,14 @@ It was clear from the start that the work of implementing and experimenting
  framework would be needed.
  This would also give an opportunity to weed out bugs and test robustness
  in a controlled environment with good debugging tool available.
+ A screen shot of the simulation is shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:GSim"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -63,6 +71,53 @@ The simulation is written in a way that the filter code would work with
  importing other libraries) on the brick.
  During the work with the implementation the simulation was changed to reflect
  the architectural decisions made for the brick.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/GSim.png
+	lyxscale 40
+	scale 40
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:GSim"
+
+\end_inset
+
+Java simulation framework in action showing three cats tracking a target
+ with the particle filter
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body

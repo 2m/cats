@@ -74,12 +74,9 @@ what would Archimedes have done?
 
 \begin_layout Standard
 If the angles between to two landmarks are known the inscribed angle theorem
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-http://en.wikipedia.org/wiki/Inscribed_angle_theorem
-\end_layout
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Wikipediab"
 
 \end_inset
 

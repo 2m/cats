@@ -48,23 +48,35 @@ Guide
 \end_layout
 
 \begin_layout Standard
-Calc Speed problems
+The communication between the cats would most of the time be slow so to
+ avoid collisions the cats where not allowed to move to far in one go.
+ Also they waited a while after a move to let the other cats have time to
+ recieve the new coordinates.
 \end_layout
 
 \begin_layout Standard
-small updates
+Normaly when using the gradient method something like line search
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Wikipedia"
+
+\end_inset
+
+ is used.
+ This was not implemented due to lack of time.
+ The calculation would probably be a lot faster if it was used.
 \end_layout
 
 \begin_layout Standard
-future work, line search
-\end_layout
-
-\begin_layout Standard
-Java simulation 
-\end_layout
-
-\begin_layout Standard
-Brick implementation 
+When implemented on the brick it was found our that the calculation where
+ painfully slow.
+ When running in the enviroment (as the lowest priority therad etc) the
+ calculation could take 4 seconds.
+ Some last minute optimization made then work on only 1 second even thou
+ that can not be called fast.
+ It was desciden to time slot the movement to avoid collisions.
+ Since all cats have a synced clock it was not hard to implement.
+ Each cat was given 3 seconds while the other ones waited for it to move.
 \end_layout
 
 \end_body
