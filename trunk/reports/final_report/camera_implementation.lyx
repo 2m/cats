@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -61,6 +61,16 @@ Modified camera firmware
 
 \begin_layout Standard
 Text
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Martins part!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -68,7 +78,42 @@ PD tracking-regulator
 \end_layout
 
 \begin_layout Standard
-Text
+We needed a regulator that would follow the movement of the mouse as good
+ as possible to allow for fast mouse movement.
+ Also, the regulator needed smart enough not to keep spinning the motor
+ in one direction.
+ Doing so resulted in that the camera cable got tangleled up, thereby stopping
+ the motor and hindering any further movement in that direction.
+ The soulotion to with was implementing a lower and higher bound of the
+ rotaion of the camera.
+ The bounds were chosen as [-180°, 180°] to allow a 360° field of view.
+ Whenever the camera motor tried to go outside this bound, the direction
+ of the motor changed.
+\end_layout
+
+\begin_layout Standard
+When designing a regulator a regualtor of this kind an error signal is necessary.
+ Since it is desirable to keep the mouse in the middle of the camera picture
+ (only horizontal direction concerned), the error was chosen to be the pixel
+ distance from the mouse to the center of the picture, i.e.
+ the difference between the mouse's location in the picture and the center.
+ This error signal limited in resolution by the resolution of the camera
+ and it is bounded by the field of view of the camera as well.
+ If the mouse disapperas outside of the picture, the error signal is set
+ to the same as the bound on the side of the picture of which the mouse
+ was last seen.
+ Also, a control signal is necessary.
+ The natural choice of the speed and direction of the motor was chosen.
+\end_layout
+
+\begin_layout Standard
+First a simple proportional resulator was tested.
+ It performed quite well, but became a bit oscillatory at high speeds, i.e.
+ at large values of the P-parameter.
+ Then a PID-controller was implemented, which yielded smoother and better
+ performance.
+ The integrating part was later dropped since it did not contribute to the
+ performance, giving the final PD-controller.
 \end_layout
 
 \end_body
