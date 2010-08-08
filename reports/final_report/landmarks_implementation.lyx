@@ -1,0 +1,112 @@
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass IEEEtran
+\use_default_options false
+\language english
+\inputencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\float_placement tbh
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 2
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+Landmarks
+\end_layout
+
+\begin_layout Subsubsection
+Construction
+\end_layout
+
+\begin_layout Standard
+We encountered several difficulties when selecting a suitable visual marker
+ for the landmarks and the mouse.
+ Because the image preocessing properties of the camera is rather limited,
+ it can only give the location of a few targets specified by a predetermined
+ color range.
+ The output is the size and location the of the bounding box around the
+ detected targets in view.
+ An ideal visual marker should have a color that is captured by the camera
+ to have a very specific color.
+ Furthermore, this color should be very unusual so that something else that
+ appears in the view isn't detected as the target.
+ First we tried one of the red balls that came with the Lego kit as a visual
+ marker.
+ Unfortunatley, the color of the ball was detected differently depending
+ of the lightning.
+ The color was different if the camera saw the side of the ball in shadow
+ compared to if it saw the side which was lit up.
+ One could compensate for this by allowing a bigger range of red color to
+ be considered at the target.
+ This however gave quite many erroneus detections of the target.
+ It was clear that a better visual marker was needed to allow acceptable
+ tracking of the mouse.
+\end_layout
+
+\begin_layout Standard
+The solution adopted involved the use of Cold Cathode Fluorescent Lamps
+ (CCFLs) of various colors.
+ As opposed to light emitting diodes (LEDs) they can be viewed from any
+ direction in a horizontal plane if placed standing.
+ LEDs on the other hand can only be viewed from one side.
+ Furthermore, the CCFLs have a much larger luminous area than the point-like
+ apprearance of LEDs.
+ This is neccesary of the visual marker should be detectable a large distances.
+ This criterion proved qiute difficult to satisfy even with the CCFLs.
+ The size of the lamp in the picture decreases with the square of the distance,
+ in analogy to the surface area of a sphere.
+ In combination with the limited resolution of the camera, this made the
+ CCFL no larger than a few pixels or not visible at all at distances much
+ larger than a meter.
+ Also, the CCFLs were quite bright compared to the ambient lighting which
+ made CCFLs overexposed.
+ Thus, the camera saw a white target with only a small colored halo instead
+ of a fully colored object.
+ As we had no direct control over the camera's exposure, this could not
+ be corrected in it's software.
+ The solution was to wrap the CCFL with a semi-translucent plastic sheet.
+ Chosing the plastic to be colored the same way as the CCFL gave the best
+ appearance to the marker.
+ This not only made the lamp appear to be less bright, and therefore recieve
+ a correct exposure, but also made the marker larger, permitting detection
+ at larger distances.
+ The final four landmarks had the colors blue, green, purple and white.
+ A similar red marker was affixed to the mouse.
+ Red was chosen because it was the easiest color to detect.
+\end_layout
+
+\end_body
+\end_document

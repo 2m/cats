@@ -1,0 +1,86 @@
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass IEEEtran
+\use_default_options false
+\language english
+\inputencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\float_placement tbh
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 2
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+Cat design
+\end_layout
+
+\begin_layout Subsubsection
+Locomotion
+\end_layout
+
+\begin_layout Standard
+Text
+\end_layout
+
+\begin_layout Subsubsection
+Camera module
+\end_layout
+
+\begin_layout Standard
+As the goal of this project is to track the mouse we wanted the cameras
+ on the cats to looking on the mouse most of the time.
+ In fact, apart from the landmark sweeps, the camera should be looking at
+ the mouse all the time.
+ The camera was first fitted direcly to a motor enabling the camera to rotate
+ and look around the arena.
+ Test showed that errors in the motor odometer were quite large, ut to 10°,
+ resulting in very bad angular reading.
+ The errors did not drift, so they could in theory be corrected by calibration.
+ However, this was made difficult since the error was not constant but varied
+ over the angular position of the motor.
+ In addition to this, the quite large dead zone of the motor also added
+ to the errors in the angular readings.
+ The solution to this was to gear down the rotation of the camera five times
+ with a large cog wheel.
+ That way the errors were reduced about five times.
+ The maximum speed of the camera rotation was of coure also reduced five
+ times, but the speed with the cog wheel showed to be sufficient.
+ In fact, limitations of the sensors permitted any rotation much faster
+ than this anyway.
+\end_layout
+
+\end_body
+\end_document

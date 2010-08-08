@@ -1,0 +1,1112 @@
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+
+\series bold
+Problem solution
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+-Early ideas 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Magnetic fields 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Color coding
+\end_layout
+
+\begin_layout Standard
+One suggestion to the problem of the cats knowing their own correct position
+ and orientation was using a color coded grid on the floor of the arena.
+ Using an available color sensor the idea was to detect whenever the cat
+ traveled over a colored strip.
+ With four colors printed on a white paper it should be possible to detect
+ in which direction the cat is moving and how far it has gone.
+ By having both horizontal and vertical lines with alternating colors one
+ can detect the x- and y-component of the cats velocity.
+ However it turned out that the color sensor sampeled its reading from quite
+ a large area, which meant that we had to use rather wide colored strips
+ for them to be detected correcly.
+ This presented the problem with the intersections of the horizontal and
+ the vertical lines.
+ When the color sensor crossed over such an intersection a mix of both colors
+ are detected instead of each separatley.
+ This meant that neither the x- or y-component of movement was updated,
+ resulting in an erroneus position estimate.
+ A solution to this could be to limit the cat to move only along in four
+ directions, parallell and perpendicular to the lines.
+ That would however require that the cat could correct its orientation from
+ time to time if it got off track.
+\end_layout
+
+\begin_layout Standard
+Another problem was that the color sensor was sensitive to the ambient lighting.
+ This could be accounted for in the software to some extent with some clever
+ programming, but not completely.
+ These limitations made us abandon the color coding altogether after some
+ time, even though we had put quite a bit of work in to it.
+ Instead we chose to use the camera and landmarks to locate the cats.
+ The color codes does however have the nice property of providing both position
+ and orientation very often, without having to look for any landmarks.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+-Design 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Kalman filter
+\series default
+ 
+\series bold
+theory
+\end_layout
+
+\begin_layout Standard
+The Kalman filter is a method of estimating state variables from noisy measureme
+nts.
+ With a provided state model of the system, a predicted state variable estimate
+ one time step ahead is computed.
+ The uncertainty of this prediction is also calculated using the previous
+ estimate.
+ A weighted average of the actual measurement and the predicted value is
+ then used as the output of the filter.
+ The weights are chosen so that higher uncertainties get smaller weights
+ and vice versa.
+ The Kalman filter models the errors in the measurements and state estimates
+ as Gaussian measurement noise and process noise respectively, with fixed
+ standard deviations.
+ These two standard deviations are user selectable parameters, which should
+ be chosen so that the filter achieves the best performance.
+ A lower measurement noise standard deviation means that the measurements
+ are trusted more and given a bigger weight, which should be the case if
+ the measurements are accurate.
+ The process noise standard deviation works similarly, representing how
+ much the state model should be trusted.
+\end_layout
+
+\begin_layout Standard
+For linear systems the Kalman filter is the optimal method to compute the
+ state estimates.
+ Non-linear state models can't be used directly in the standard Kalman filter.
+ One way to solve this is to linearize the model, which is done in the Extended
+ Kalman filter (EKF).
+ The approximation done in the linearization can however give significant
+ errors for highly non-linear systems.
+ An improvement of the EKF is the Unscented Kalman filter (UKF).
+ It is based on the unscented transform, which works by propagating a minimal
+ set of sampling points through the non-linear functions.
+ From this, the estimated mean and covariance of the state variables are
+ then recovered.
+ Just like in the EKF, the UKF uses approximations of the non-linear state
+ model, but the errors that arise from them are smaller.
+ The full algorithm of the UKF will not be presented here, since our project
+ used a pre-written implementation.
+ However, an important note is that the square root of the covariance matrix
+ is required in a step of the algorithm.
+ The square root of the matrix 
+\emph on
+B
+\emph default
+ is the matrix 
+\emph on
+A
+\emph default
+ satisfying 
+\begin_inset Formula $B=AA^{T}$
+\end_inset
+
+.
+ This can be computed in different ways, such as using the Cholesky decompositio
+n, which requires that the matrix B is both symmetric and positive-definite.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+---Chosen state model
+\end_layout
+
+\begin_layout Standard
+(a) 
+\emph on
+Tracking filter
+\end_layout
+
+\begin_layout Standard
+Using the UKF made it possible to use the true non-linear state measurement
+ equation given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $z_{k}=\left(\begin{array}{c}
+\theta_{1}\\
+\theta_{2}\\
+\theta_{3}\end{array}\right)_{k}=\left(\begin{array}{c}
+h_{1}(x_{k})\\
+h_{2}(x_{k})\\
+h_{2}(x_{k})\end{array}\right)+n_{k}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\theta_{i}$
+\end_inset
+
+ is the absolute measured angle, relative to the arena reference frame,
+ from cat 
+\emph on
+i.
+
+\emph default
+ Subscript 
+\emph on
+k
+\emph default
+ henceforth indicate the time step
+\emph on
+.
+
+\emph default
+ The states 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+ are chosen as 
+\begin_inset Formula \[
+x_{k}=\left(\begin{array}{c}
+x\\
+y\\
+v_{x}\\
+v_{y}\end{array}\right)_{k}\]
+
+\end_inset
+
+ where x and y are the 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+position of the mouse and 
+\begin_inset Formula $v_{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $v_{y}$
+\end_inset
+
+ are its velocities.
+ 
+\begin_inset Formula $h_{i}(x_{k})$
+\end_inset
+
+ is the non-linear measurement equation for cat 
+\family default
+\series default
+\shape default
+\size default
+\emph on
+\bar default
+\noun default
+\color inherit
+i
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+ given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+h_{i}(x_{k})=arctan(\frac{y-y_{i}}{x-x_{i}})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ are the position of cat 
+\emph on
+i
+\emph default
+.
+ 
+\begin_inset Formula $n_{k}$
+\end_inset
+
+ is the measurement noise with covariance matrix
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+R=r^{2}\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\emph on
+r
+\emph default
+ is the the standard deviation of the measurement noise.
+ It is assumed that the noise of the measurements are uncorrelated and have
+ equal power.
+\end_layout
+
+\begin_layout Standard
+The movement of the mouse is modeled with constant velocity.
+ This means that the acceleration of the mouse is modeled as process noise.
+ The process model, or update formula, is
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+\begin_inset Formula $x_{k}=F\cdot x_{k-1}+Gw_{k}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $w_{k}$
+\end_inset
+
+ is the process noise.
+ Using Newton's laws of motion we easily find that
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset Formula \[
+F=\left(\begin{array}{cccc}
+1 & 0 & T & 0\\
+0 & 1 & 0 & T\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1\end{array}\right),\; G=\left(\begin{array}{c}
+\frac{T^{2}}{2}\\
+\frac{T^{2}}{2}\\
+T\\
+T\end{array}\right)\]
+
+\end_inset
+
+ where 
+\emph on
+T
+\emph default
+ is the sampling time period.
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+The process noise covariance matrix 
+\family default
+\series default
+\shape default
+\size default
+\emph on
+\bar default
+\noun default
+\color inherit
+Q
+\emph default
+ becomes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+Q=E[Gw_{k}(Gw_{k})^{T}]=q^{2}\left(\begin{array}{cccc}
+\frac{T}{4}^{4} & 0 & \frac{T^{3}}{2} & 0\\
+0 & \frac{T}{4}^{4} & 0 & \frac{T}{2}^{3}\\
+\frac{T}{2}^{3} & 0 & T^{2} & 0\\
+0 & \frac{T}{2}^{3} & 0 & T^{2}\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\emph on
+q
+\emph default
+ is the standard deviation of the process noise.
+\end_layout
+
+\begin_layout Standard
+(b) 
+\emph on
+Absolute positioning filter
+\end_layout
+
+\begin_layout Standard
+The basic idea of the absolute positioning filter was that the problem of
+ locating the mouse with several cat angle measurements is very similar
+ to the problem of locating one cat using several landmark angle measurements.
+ The state vector then 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+ contains the cat position and velocity, the measurement vector 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $z_{k}$
+\end_inset
+
+ is comprised of the measurements to the different landmarks.
+ There are however some important differences between the two problems.
+ First, with our chosen landmark positions, only at most one landmark would
+ be seen at any given time.
+ Therefore no classical triangulation can be done.
+ The Matlab simulation showed that a filter implemented this way still could
+ correct the position of the cat quite well with only one landmark measurement
+ at a time.
+ More importantly, the 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+absolute positioning filter should also estimate the 
+\emph on
+orientation
+\emph default
+ of the cat as it is needed in order to calculate the absolute angular measureme
+nts to the mouse from relative measurements, given in the cat's coordinate
+ system.
+ Specifically, the absolute measurement from to the mouse is given by 
+\begin_inset Formula \[
+\theta=\theta_{orient}+\theta_{rel}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\theta_{orient}$
+\end_inset
+
+ is the orientation of the cat and 
+\begin_inset Formula $\theta_{rel}$
+\end_inset
+
+ is the relative measurement to the mouse.
+ The subscript 
+\emph on
+i
+\emph default
+ is dropped in the absolute positioning filter since it only considers one
+ cat.
+ The formula above means that errors in the cat's orientation will translate
+ into a erroneous estimation of the mouse's position.
+ 
+\end_layout
+
+\begin_layout Standard
+In contrast to the tracking filter, we have other sensors than the camera
+ available, namely the motor odometers.
+ The data from those can be used to calculate the cat's traveled distance
+ and rotation.
+ However, it was quickly realized that only relying on odometer data would
+ give a quite bad estimation of the cat's position after a while, as the
+ measurement errors accumulate.
+ Therefore, the landmark measurements should be used as a way of correcting
+ the cat's position when necessary.
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Move to general section
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Incorporating velocity measurements in the measurement vector made it possible
+ to use odometer data.
+ The measurement vector now takes the form
+\begin_inset Formula \[
+z_{k}=\left(\begin{array}{c}
+\theta_{1}\\
+\theta_{2}\\
+\theta_{3}\\
+\theta_{4}\\
+v_{x}\\
+v_{y}\end{array}\right)\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\theta_{i}$
+\end_inset
+
+ is the absolute angular measurement to landmark 
+\emph on
+i.
+
+\emph default
+ 
+\begin_inset Formula $v_{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $v_{y}$
+\end_inset
+
+ are the x- and y-components of the cat's velocity.
+ This solution was implemented successfully in Matlab.
+ A more appropriate solution would be to use the velocity measurements in
+ polar form, given as speed and orientation (or it's derivative) instead
+ of x and y component of the velocity.
+ That way a higher uncertainty can be assigned to the orientation and a
+ lower to the speed, more closely mimicking the true dynamics of the system.
+ This formulation however yielded undesirable results in the Matlab simulation
+ and was therefore not followed out.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+---Simulation in Matlab
+\end_layout
+
+\begin_layout Standard
+The UKF filter also has a few user selectable parameters (
+\begin_inset Formula $\alpha,\kappa,\beta$
+\end_inset
+
+) that were varied to see their effect on performance.
+ The performance of the filter turned out to be almost the same no matter
+ how the parameters were chosen.
+ There was however a valid range for some of the parameters in which the
+ covariance matrix remained positive definite.
+ If the parameters were chosen badly the Cholesky factorization failed.
+\end_layout
+
+\begin_layout Standard
+(a) 
+\emph on
+Tracking filter
+\end_layout
+
+\begin_layout Standard
+The measurements in our implementation are intermittent, i.e.
+ the cats cannot provide measurements all the time, and sometimes only a
+ few cats might have measurements available.
+ This has to be handled somehow as the standard formulation of the Kalman
+ filter assumes that the measurements are available all the time.
+ A simple way to take care of this is to set the elements in the measurement
+ covariance matrix corresponding to the unavailable measurements to 
+\begin_inset Formula $\infty$
+\end_inset
+
+.
+ That way the measurement is given zero credibility and is weighted away.
+ That is if measurement 
+\emph on
+i
+\emph default
+ is unavailable then set 
+\begin_inset Formula $R_{ii}=\infty$
+\end_inset
+
+ instead of 
+\begin_inset Formula $r^{2}$
+\end_inset
+
+.
+ The measurement 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $z_{i,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ can then be set to anything.
+ 
+\begin_inset Formula $R_{ii}$
+\end_inset
+
+ can be set to 
+\emph on
+inf 
+\emph default
+in
+\emph on
+ 
+\emph default
+Matlab but since this is not possible in the brick implementation we instead
+ set it a very large number (
+\begin_inset Formula $10^{10}$
+\end_inset
+
+), about as large as double point arithmetic allows.
+ In the Matlab simulation it was verified that this was large enough for
+ the unavailable, and therefore incorrect measurements, to have no actual
+ impact.
+ Some further investigation showed that it is possible to modify the Kalman
+ filter algorithm to only do the update step for the unavailable measurements.
+ This would be a computationally more efficient solution and certainly more
+ elegant.
+ It was however concluded that it was simpler just to keep the previous
+ solution.
+\end_layout
+
+\begin_layout Standard
+It also turned out that the formulation of the measurement function had
+ some problems with the discontinuous nature angles.
+ Only angles in the range 
+\begin_inset Formula $0-2\pi$
+\end_inset
+
+ were used.
+ If a cat was providing angles very close to 0 or 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $2\pi$
+\end_inset
+
+ the position of the mouse diverged until the cat reported other angles.
+ This seemed to get worse of the reported angles were fluctuating more,
+ so the problem was probably that the reported angles were fluctuating between
+ 0 and 
+\begin_inset Formula $2\pi$
+\end_inset
+
+.
+ Because this only seemed to happened at a very limited angle, and therefore
+ not very often, the formulation of the measurement function was kept to
+ the java simulation and the brick implementation.
+\end_layout
+
+\begin_layout Standard
+(b) 
+\emph on
+Absolute positioning filter
+\end_layout
+
+\begin_layout Standard
+The previously mentioned form of the filter was implemented in Matlab.
+ That implementation used absolute angle measurements everywhere and could
+ therefore not simulate static errors in the cat's orientation.
+ The absolute
+\emph on
+ 
+\emph default
+positioning filter was also implemented together with the tracking filter
+ in order to get an idea of how the errors in the cat's position would translate
+ into errors in the mouse's position.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Implementation
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+-Camera
+\end_layout
+
+\begin_layout Standard
+As the goal of this project is to track the mouse we wanted the cameras
+ on the cats to looking on the mouse most of the time.
+ In fact, apart from the landmark sweeps, the camera should be looking at
+ the mouse all the time.
+ The camera was first fitted direcly to a motor enabling the camera to rotate
+ and look around the arena.
+ Test showed that errors in the motor odometer were quite large, ut to 10°,
+ resulting in very bad angular reading.
+ The errors did not drift, so they could in theory be corrected by calibration.
+ However, this was made difficult since the error was not constant but varied
+ over the angular position of the motor.
+ In addition to this, the quite large dead zone of the motor also added
+ to the errors in the angular readings.
+ The solution to this was to gear down the rotation of the camera five times
+ with a large cog wheel.
+ That way the errors were reduced about five times.
+ The maximum speed of the camera rotation was of coure also reduced five
+ times, but the speed with the cog wheel showed to be sufficient.
+ In fact, limitations of the sensors permitted any rotation much faster
+ than this anyway.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--PD tracking regulator
+\end_layout
+
+\begin_layout Standard
+We needed a regulator that would follow the movement of the mouse as good
+ as possible to allow for fast mouse movement.
+ Also, the regulator needed smart enough not to keep spinning the motor
+ in one direction.
+ Doing so resulted in that the camera cable got tangleled up, thereby stopping
+ the motor and hindering any further movement in that direction.
+ The soulotion to with was implementing a lower and higher bound of the
+ rotaion of the camera.
+ The bounds were chosen as [-180°, 180°] to allow a 360° field of view.
+ Whenever the camera motor tried to go outside this bound, the direction
+ of the motor changed.
+\end_layout
+
+\begin_layout Standard
+When designing a regulator a regualtor of this kind an error signal is necessary.
+ Since it is desirable to keep the mouse in the middle of the camera picture
+ (only horizontal direction concerned), the error was chosen to be the pixel
+ distance from the mouse to the center of the picture, i.e.
+ the difference between the mouse's location in the picture and the center.
+ This error signal limited in resolution by the resolution of the camera
+ and it is bounded by the field of view of the camera as well.
+ If the mouse disapperas outside of the picture, the error signal is set
+ to the same as the bound on the side of the picture of which the mouse
+ was last seen.
+ Also, a control signal is necessary.
+ The natural choice of the speed and direction of the motor was chosen.
+\end_layout
+
+\begin_layout Standard
+First a simple proportional resulator was tested.
+ It performed quite well, but became a bit oscillatory at high speeds, i.e.
+ at large values of the P-parameter.
+ Then a PID-controller was implemented, which yielded smoother and better
+ performance.
+ The integrating part was later dropped since it did not contribute to the
+ performance, giving the final PD-controller.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+-Landmarks 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Construction
+\end_layout
+
+\begin_layout Standard
+We encountered several difficulties when selecting a suitable visual marker
+ for the landmarks and the mouse.
+ Because the image preocessing properties of the camera is rather limited,
+ it can only give the location of a few targets specified by a predetermined
+ color range.
+ The output is the size and location the of the bounding box around the
+ detected targets in view.
+ An ideal visual marker should have a color that is captured by the camera
+ to have a very specific color.
+ Furthermore, this color should be very unusual so that something else that
+ appears in the view isn't detected as the target.
+ First we tried one of the red balls that came with the Lego kit as a visual
+ marker.
+ Unfortunatley, the color of the ball was detected differently depending
+ of the lightning.
+ The color was different if the camera saw the side of the ball in shadow
+ compared to if it saw the side which was lit up.
+ One could compensate for this by allowing a bigger range of red color to
+ be considered at the target.
+ This however gave quite many erroneus detections of the target.
+ It was clear that a better visual marker was needed to allow acceptable
+ tracking of the mouse.
+\end_layout
+
+\begin_layout Standard
+The solution adopted involved the use of Cold Cathode Fluorescent Lamps
+ (CCFLs) of various colors.
+ As opposed to light emitting diodes (LEDs) they can be viewed from any
+ direction in a horizontal plane if placed standing.
+ LEDs on the other hand can only be viewed from one side.
+ Furthermore, the CCFLs have a much larger luminous area than the point-like
+ apprearance of LEDs.
+ This is neccesary of the visual marker should be detectable a large distances.
+ This criterion proved qiute difficult to satisfy even with the CCFLs.
+ The size of the lamp in the picture decreases with the square of the distance,
+ in analogy to the surface area of a sphere.
+ In combination with the limited resolution of the camera, this made the
+ CCFL no larger than a few pixels or not visible at all at distances much
+ larger than a meter.
+ Also, the CCFLs were quite bright compared to the ambient lighting which
+ made CCFLs overexposed.
+ Thus, the camera saw a white target with only a small colored halo instead
+ of a fully colored object.
+ As we had no direct control over the camera's exposure, this could not
+ be corrected in it's software.
+ The solution was to wrap the CCFL with a semi-translucent plastic sheet.
+ Chosing the plastic to be colored the same way as the CCFL gave the best
+ appearance to the marker.
+ This not only made the lamp appear to be less bright, and therefore recieve
+ a correct exposure, but also made the marker larger, permitting detection
+ at larger distances.
+ The final four landmarks had the colors blue, green, purple and white.
+ A similar red marker was affixed to the mouse.
+ Red was chosen because it was the easiest color to detect.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Modified camera firmware
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Martins part!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+-Cat movement regulator
+\end_layout
+
+\begin_layout Standard
+It was decided that a simple movement regulator would be sufficient for
+ the cats.
+ Therefore we limited the cats to travel in straight paths, with rotaion
+ between.
+ The cats were constucted so that they could rotate on a spot, i.e.
+ around an axis.
+ These choises also made it easier for the absolute positioning filter.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Calibration
+\end_layout
+
+\begin_layout Standard
+As it tured out, Lejos had a built in Pilot class, aiding the programming
+ of the movement regulator.
+ Given the diameter of the wheels, the traveled distance can be calculated
+ from the motor odometer data.
+ Furthermore, the distance between the wheels is used to calculate how much
+ the cat has rotated.
+ It turned out that the left and right motors weren't equally strong which
+ caused the cat to drift off course when trying to travel straigt.
+ However the specified size of the wheels was tweaked to compensate for
+ this.
+ The actual size of them was the same.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Smooth acceleration
+\end_layout
+
+\begin_layout Standard
+The provided Lejos movement pilot caused the cat to travel and rotate with
+ a more or less constant velocity, resulting in an abrupt start and stop
+ of each movement command.
+ This hard acceleration caused the wheels to slip, which in turn fooled
+ the odometer.
+ The Lejos pilot was therefore modified to allow smooth acceleration without
+ any wheel slip.
+ Both the travel and rotation velocity was implemented to have an ascending
+ and descending ramp.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+-Kalman filters
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Java simulation
+\end_layout
+
+\begin_layout Standard
+The 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $2\pi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+-discontinuity issue was detected in the java simulation too.
+ It seemed to occur a bit more often than in the Matlab simulation, though
+ still not often enough to be a big problem.
+\end_layout
+
+\begin_layout Standard
+The java simulations showed that the absolute positioning filter as implemented
+ in Matlab performed quite badly since it could not handle large errors
+ in the cat orientation.
+ An ad hoc solution to this was therefore tested.
+ The idea was to correct the cat's orientation using one landmark measurement,
+ assuming the cat's position is known and correct.
+ This correction should only be made while the cat has turned but not yet
+ begun traveling.
+ If the position of the cat was more or less correct before the rotation,
+ the error in the orientation could be corrected.
+ The correct orientation should mean that the position of the cat remained
+ accurate, enabling a correction of the orientation after the next turn.
+ This solution seem to perform reasonably well of the measurement errors
+ weren't too big.
+ Criticism of this circular reasoning were however rightly risen.
+ Therefore, the geometric filter was chosen in the brick implementation.
+ It also used the above method of correcting the orientation from one landmark
+ measurement.
+ It could however correct both the position and the orientation at once
+ if three landmark measurements were provided.
+ This seemed like a good method for 
+\begin_inset Quotes eld
+\end_inset
+
+getting back on track
+\begin_inset Quotes erd
+\end_inset
+
+ if the errors got too big.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+--Brick implementation
+\end_layout
+
+\begin_layout Standard
+Testing the tracking filter on the brick showed that the filter was somewhat
+ sensitive to input data.
+ Some input data seemed to result in a situation where the covariance matrix
+ no longer remained positive definite, thereby failing the Cholesky factorizatio
+n and crashing the filter.
+ This happened in Matlab if the filter diverged, which happened only very
+ seldom or not at all in the final code.
+ In the java simulation it happened somewhat more often, but it didn't seem
+ to be a problem once we sorted out the last bugs.
+ The brick implementation seemed to get this problem when the measurements
+ weren't available for some time, which happened more often than in the
+ java simulation.
+ It is believed that this caused an illegal covariance matrix to form.
+ In normal operation however, this did not occur.
+\end_layout
+
+\begin_layout Standard
+Again the 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $2\pi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+-discontinuity issue was detected but not deemed a critical issue.
+\end_layout
+
+\begin_layout Standard
+An important element in the brick implementation is how often the filter
+ can run, or how long each iteration takes.
+ A faster filter will be able to better estimate the position and movement
+ of a quickly moving and accelerating mouse.
+ Each iteration of the tracking filter was measured to take about 400 ms.
+ This was faster than the particle filter that took well over a second.
+ Still, it was not as fast as we had hoped.
+ Profiling the java code both on the brick and the PC showed that matrix
+ operations, mostly reading and writing, took a lot of time.
+ Improvements to this could be switching to a faster matrix class library.
+ One could also opt for single point arithmetic instead of double as it
+ more than enough of accuracy for our application anyway.
+ Even a integer point solution could be adopted, as was done with the particle
+ filter.
+ That could probably have made the run time a lot shorter.
+\end_layout
+
+\end_body
+\end_document

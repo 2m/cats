@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -163,7 +163,14 @@ Magnetic fields
 \end_layout
 
 \begin_layout Standard
-Color coding 
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "color_coding.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -172,15 +179,18 @@ o Approach Kalman, particle tracking and positioning.
 \end_layout
 
 \begin_layout Standard
-o Design Kalman filter theory 
+o Design
 \end_layout
 
 \begin_layout Standard
-Chosen state model 
-\end_layout
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "kalman_filter_theory.lyx"
 
-\begin_layout Standard
-Simulation in Matlab
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -224,6 +234,17 @@ implementation
 \begin_inset CommandInset include
 LatexCommand input
 preview true
+filename "cat_design_implementation.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
 filename "camera_implementation.lyx"
 
 \end_inset
@@ -232,19 +253,25 @@ filename "camera_implementation.lyx"
 \end_layout
 
 \begin_layout Standard
-Landmarks Construction
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "landmarks_implementation.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Cat movement regulator 
-\end_layout
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "cat_movement_regulator_implementation.lyx"
 
-\begin_layout Standard
-Calibration 
-\end_layout
+\end_inset
 
-\begin_layout Standard
-Smooth acceleration 
+
 \end_layout
 
 \begin_layout Standard
@@ -256,15 +283,14 @@ Network architecture (peer-to-peer, hub)
 \end_layout
 
 \begin_layout Standard
-Kalman filters 
-\end_layout
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "kalman_implementation.lyx"
 
-\begin_layout Standard
-Java simulation 
-\end_layout
+\end_inset
 
-\begin_layout Standard
-Brick implementation
+
 \end_layout
 
 \begin_layout Standard

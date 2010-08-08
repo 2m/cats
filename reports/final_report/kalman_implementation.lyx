@@ -1,0 +1,180 @@
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass IEEEtran
+\use_default_options false
+\language english
+\inputencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\float_placement tbh
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 2
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+Kalman filters
+\end_layout
+
+\begin_layout Subsubsection
+Java simulation
+\end_layout
+
+\begin_layout Standard
+The 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $2\pi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+-discontinuity issue was detected in the java simulation too.
+ It seemed to occur a bit more often than in the Matlab simulation, though
+ still not often enough to be a big problem.
+\end_layout
+
+\begin_layout Standard
+The java simulations showed that the absolute positioning filter as implemented
+ in Matlab performed quite badly since it could not handle large errors
+ in the cat orientation.
+ An ad hoc solution to this was therefore tested.
+ The idea was to correct the cat's orientation using one landmark measurement,
+ assuming the cat's position is known and correct.
+ This correction should only be made while the cat has turned but not yet
+ begun traveling.
+ If the position of the cat was more or less correct before the rotation,
+ the error in the orientation could be corrected.
+ The correct orientation should mean that the position of the cat remained
+ accurate, enabling a correction of the orientation after the next turn.
+ This solution seem to perform reasonably well of the measurement errors
+ weren't too big.
+ Criticism of this circular reasoning were however rightly risen.
+ Therefore, the geometric filter was chosen in the brick implementation.
+ It also used the above method of correcting the orientation from one landmark
+ measurement.
+ It could however correct both the position and the orientation at once
+ if three landmark measurements were provided.
+ This seemed like a good method for 
+\begin_inset Quotes eld
+\end_inset
+
+getting back on track
+\begin_inset Quotes erd
+\end_inset
+
+ if the errors got too big.
+\end_layout
+
+\begin_layout Subsubsection
+Brick implementation
+\end_layout
+
+\begin_layout Standard
+Testing the tracking filter on the brick showed that the filter was somewhat
+ sensitive to input data.
+ Some input data seemed to result in a situation where the covariance matrix
+ no longer remained positive definite, thereby failing the Cholesky factorizatio
+n and crashing the filter.
+ This happened in Matlab if the filter diverged, which happened only very
+ seldom or not at all in the final code.
+ In the java simulation it happened somewhat more often, but it didn't seem
+ to be a problem once we sorted out the last bugs.
+ The brick implementation seemed to get this problem when the measurements
+ weren't available for some time, which happened more often than in the
+ java simulation.
+ It is believed that this caused an illegal covariance matrix to form.
+ In normal operation however, this did not occur.
+\end_layout
+
+\begin_layout Standard
+Again the 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $2\pi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+-discontinuity issue was detected but not deemed a critical issue.
+\end_layout
+
+\begin_layout Standard
+An important element in the brick implementation is how often the filter
+ can run, or how long each iteration takes.
+ A faster filter will be able to better estimate the position and movement
+ of a quickly moving and accelerating mouse.
+ Each iteration of the tracking filter was measured to take about 400 ms.
+ This was faster than the particle filter that took well over a second.
+ Still, it was not as fast as we had hoped.
+ Profiling the java code both on the brick and the PC showed that matrix
+ operations, mostly reading and writing, took a lot of time.
+ Improvements to this could be switching to a faster matrix class library.
+ One could also opt for single point arithmetic instead of double as it
+ more than enough of accuracy for our application anyway.
+ Even a integer point solution could be adopted, as was done with the particle
+ filter.
+ That could probably have made the run time a lot shorter.
+\end_layout
+
+\end_body
+\end_document
