@@ -393,7 +393,7 @@ Absolute positioning filter
 The basic idea of the absolute positioning filter was that the problem of
  locating the mouse with several cat angle measurements is very similar
  to the problem of locating one cat using several landmark angle measurements.
- The state vector then 
+ The state vector 
 \begin_inset Formula $x_{k}$
 \end_inset
 
@@ -434,7 +434,7 @@ orientation
  of the cat as it is needed in order to calculate the absolute angular measureme
 nts to the mouse from relative measurements, given in the cat's coordinate
  system.
- Specifically, the absolute measurement from to the mouse is given by 
+ Specifically, the absolute measurement from to cat to the mouse is given by 
 \begin_inset Formula \[
 \theta=\theta_{orient}+\theta_{rel}\]
 

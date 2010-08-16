@@ -92,7 +92,7 @@ The java simulations showed that the absolute positioning filter as implemented
  the error in the orientation could be corrected.
  The correct orientation should mean that the position of the cat remained
  accurate, enabling a correction of the orientation after the next turn.
- This solution seem to perform reasonably well of the measurement errors
+ This solution seem to perform reasonably well if the measurement errors
  weren't too big.
  Criticism of this circular reasoning were however rightly risen.
  Therefore, the geometric filter was chosen in the brick implementation.
