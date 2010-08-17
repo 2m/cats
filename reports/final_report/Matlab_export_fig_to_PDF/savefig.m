@@ -118,7 +118,7 @@ function savefig(fname, varargin)
 	cmdEnd=			' -sDEVICE=%s -sOutputFile="%s"';					% Essential.
 	epsCmd=			'';
 	epsCmd=	[epsCmd ' -dSubsetFonts=true -dNOPLATFONTS'];				% Future support?
-	epsCmd=	[epsCmd ' -dUseCIEColor=true -dColorConversionStrategy=/UseDeviceIndependentColor'];
+	%epsCmd=	[epsCmd ' -dUseCIEColor=true -dColorConversionStrategy=/UseDeviceIndependentColor'];
 	epsCmd=	[epsCmd ' -dProcessColorModel=/%s'];						% Color conversion.
 	pdfCmd=	[epsCmd ' -dAntiAliasColorImages=false' cmdEnd];
 	epsCmd=	[epsCmd cmdEnd];
