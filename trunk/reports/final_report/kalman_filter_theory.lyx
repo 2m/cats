@@ -290,7 +290,7 @@ The movement of the mouse is modeled with constant velocity.
 \bar no
 \noun off
 \color none
-\begin_inset Formula $x_{k}=F\cdot x_{k-1}+Gw_{k}$
+\begin_inset Formula $x_{k}=Fx_{k-1}+Gw_{k}$
 \end_inset
 
 
@@ -397,7 +397,7 @@ The basic idea of the absolute positioning filter was that the problem of
 \begin_inset Formula $x_{k}$
 \end_inset
 
- contains the cat position and velocity, the measurement vector 
+ contains the cat position and velocity, while the measurement vector 
 \family roman
 \series medium
 \shape up
@@ -434,7 +434,8 @@ orientation
  of the cat as it is needed in order to calculate the absolute angular measureme
 nts to the mouse from relative measurements, given in the cat's coordinate
  system.
- Specifically, the absolute measurement from to cat to the mouse is given by 
+ Specifically, the absolute measurement from the cat to the mouse is given
+ by 
 \begin_inset Formula \[
 \theta=\theta_{orient}+\theta_{rel}\]
 
