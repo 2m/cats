@@ -1,0 +1,244 @@
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass IEEEtran
+\use_default_options false
+\language english
+\inputencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\float_placement tbh
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 2
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+Network
+\end_layout
+
+\begin_layout Subsubsection
+Data synchronization
+\end_layout
+
+\begin_layout Standard
+In order to make autonomous robot system cooperative some kind of communication
+ between robots had to be introduced.
+ Our choise was Bluetooth connection since every robot had such capability.
+ Connection to the PC can also be achieved with a simple Bluetooth dongle.
+ The choice of BT communication limits the distance that robots can be apart.
+ However robots were operating fine with distances up to 3 meters between
+ them.
+ 
+\end_layout
+
+\begin_layout Standard
+Two different kinds of data were defined that are going to flow through
+ the network.
+ 
+\end_layout
+
+\begin_layout Enumerate
+All the data that is vital to the robots internal systems belong to the
+ first group.
+\end_layout
+
+\begin_layout Enumerate
+All the additional data that can be used by the GUI on the PC for the visualazia
+tion and debugging of these systems.
+\end_layout
+
+\begin_layout Standard
+The synchronization rate of the first group actively limits the rate on
+ which tracking filters can run.
+ It also limits the accuracy that the guide can give us.
+ All the remaining bandwidth can be used for the second group of the data.
+ The first group can be split further into two parts:
+\end_layout
+
+\begin_layout Itemize
+measurements of the mouse and robot position from the positioning filter.
+ This is needed for the tracking filter and the guide.
+\end_layout
+
+\begin_layout Itemize
+the results of the tracking filter (the position of the mouse with uncertainties
+).
+ This is needed for the guide.
+\end_layout
+
+\begin_layout Standard
+The syncronization of the data mentioned above was achieved using a billboard
+ model.
+ Every robot had a spot on the billboard.
+ Whenever any robot changes a value on his spot, an update is sent to all
+ of the robots.
+ No updates are concatenated.
+ Every update has a timestamp and there is also a timestamp stored in the
+ billboard for every spot, so if a lost update comes after newer updates
+ were already applied, it is not used to update the spot with the old value.
+ What is more, a read from the billboard is never blocked.
+ However there is no mechanism to prevent old data to be read, so even if
+ new data is beeing trasmited through the network at that time, old data
+ will still be read.
+ There were 19 float values in the billboard for every robot which gives
+ 152 bytes for every robot.
+\end_layout
+
+\begin_layout Subsubsection
+Time synchronization
+\end_layout
+
+\begin_layout Standard
+Since measurements are timestamped there had to be a means of syncronizing
+ clocks on every robot.
+ We used the simplest, however not fool-proof protocol for time synchronization.
+ One robot has to be declared as a master, other robots which sync their
+ clocks with the master are called slaves.
+ The protocol then is as follows:
+\end_layout
+
+\begin_layout Itemize
+A slave initiates a sync request by sending a timestamp 
+\begin_inset Formula $TS$
+\end_inset
+
+ to the master.
+\end_layout
+
+\begin_layout Itemize
+On the data retrieval the master timestamps it 
+\begin_inset Formula $TS2$
+\end_inset
+
+ and sends it back to the slave.
+\end_layout
+
+\begin_layout Itemize
+The slave then calculates the current network latency.
+\begin_inset Formula \[
+latency:=(currentTime-TS)/2\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Then time offset delta is calculated and added to the current time offset.
+\begin_inset Formula \[
+currentDelta:=TS2-latency-currentTime\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+timeOffset=timeOffset+currentDelte\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is clear that the network latency is not constant and this kind of time
+ synchronization does not take into acount latency values from the previous
+ syncronizations.
+ Thus every synchronization can be equally good or bad.
+ Tests showed that most of the time no more than 3 synchronizations had
+ to be performed in order to achieve preferable clock synchronization.
+\end_layout
+
+\begin_layout Standard
+For the purpouse of seeing the clock synchronization in action we implemented
+ a music function into the robots.
+ When clocks are synchronized all robots can perform the same music piece
+ taking turns one after another.
+\end_layout
+
+\begin_layout Subsubsection
+Data packets
+\end_layout
+
+\begin_layout Standard
+We wanted to have a robust network which can be easily expanded.
+ We chose to implement packet system on top of the provided low level network
+ functions.
+ This allowed us easily to send and receive different kinds of data for
+ different purpouses.
+ It also allowed us to change the underlying low level network implementation
+ (you can access network from leJOS using Java buffered readers/writers
+ or low level functions) without any need to change any of the higher level
+ code.
+ Tests showed that Java buffered network readers/writers are more convienient
+ to use but unstable when dealing with multiple connections.
+\end_layout
+
+\begin_layout Standard
+All of the packets had a type field which lets to distinguish between different
+ packets and a source field which tells where the packet originally came
+ from.
+ Creating a new packet type means adding a new packet class definition and
+ writing a handler for that packet class.
+ Then this new packet can be sent from anywhere from the code and robot
+ on the other end will execute actions specified by the packet handler.
+\end_layout
+
+\begin_layout Standard
+We had thirteen different packets in total.
+ All of them were used in many different situations including but not limited
+ to:
+\end_layout
+
+\begin_layout Itemize
+billboard updates
+\end_layout
+
+\begin_layout Itemize
+time syncronization
+\end_layout
+
+\begin_layout Itemize
+orders from the GUI
+\end_layout
+
+\begin_layout Itemize
+visualization data for the GUI
+\end_layout
+
+\begin_layout Itemize
+on-the-fly settings change
+\end_layout
+
+\end_body
+\end_document
