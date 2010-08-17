@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -275,11 +275,23 @@ filename "cat_movement_regulator_implementation.lyx"
 \end_layout
 
 \begin_layout Standard
-Network 
+\begin_inset CommandInset include
+LatexCommand input
+filename "network_implementation.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Network architecture (peer-to-peer, hub) 
+\begin_inset CommandInset include
+LatexCommand input
+filename "network_architecture_implementation.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

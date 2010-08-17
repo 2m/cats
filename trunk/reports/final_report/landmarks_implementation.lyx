@@ -54,10 +54,10 @@ Construction
 \begin_layout Standard
 We encountered several difficulties when selecting a suitable visual marker
  for the landmarks and the mouse.
- Because the image preocessing properties of the camera is rather limited,
+ Because the image processing properties of the camera is rather limited,
  it can only give the location of a few targets specified by a predetermined
  color range.
- The output is the size and location the of the bounding box around the
+ The output is the size and the location of the bounding box around the
  detected targets in view.
  An ideal visual marker should have a color that is captured by the camera
  to have a very specific color.
@@ -70,7 +70,7 @@ We encountered several difficulties when selecting a suitable visual marker
  The color was different if the camera saw the side of the ball in shadow
  compared to if it saw the side which was lit up.
  One could compensate for this by allowing a bigger range of red color to
- be considered at the target.
+ be considered as the target.
  This however gave quite many erroneus detections of the target.
  It was clear that a better visual marker was needed to allow acceptable
  tracking of the mouse.
@@ -84,8 +84,8 @@ The solution adopted involved the use of Cold Cathode Fluorescent Lamps
  LEDs on the other hand can only be viewed from one side.
  Furthermore, the CCFLs have a much larger luminous area than the point-like
  apprearance of LEDs.
- This is neccesary of the visual marker should be detectable a large distances.
- This criterion proved qiute difficult to satisfy even with the CCFLs.
+ This is neccesary of the visual marker should be detectable at large distances.
+ This criterion proved quite difficult to satisfy even with the CCFLs.
  The size of the lamp in the picture decreases with the square of the distance,
  in analogy to the surface area of a sphere.
  In combination with the limited resolution of the camera, this made the
@@ -98,7 +98,7 @@ The solution adopted involved the use of Cold Cathode Fluorescent Lamps
  As we had no direct control over the camera's exposure, this could not
  be corrected in it's software.
  The solution was to wrap the CCFL with a semi-translucent plastic sheet.
- Chosing the plastic to be colored the same way as the CCFL gave the best
+ Choosing the plastic to be colored the same way as the CCFL gave the best
  appearance to the marker.
  This not only made the lamp appear to be less bright, and therefore recieve
  a correct exposure, but also made the marker larger, permitting detection

@@ -66,7 +66,7 @@ As the goal of this project is to track the mouse we wanted the cameras
  the mouse all the time.
  The camera was first fitted direcly to a motor enabling the camera to rotate
  and look around the arena.
- Test showed that errors in the motor odometer were quite large, ut to 10°,
+ Test showed that errors in the motor odometer were quite large, up to 10°,
  resulting in very bad angular reading.
  The errors did not drift, so they could in theory be corrected by calibration.
  However, this was made difficult since the error was not constant but varied
