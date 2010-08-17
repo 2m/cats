@@ -52,6 +52,66 @@ Stationary mouse
 \end_layout
 
 \begin_layout Standard
+bla bla (shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test1_tracking_static_line_kalman"
+
+\end_inset
+
+).
+ 
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/test1_tracking_static_line_kalman.png
+	lyxscale 60
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:test1_tracking_static_line_kalman"
+
+\end_inset
+
+Plot of a bla bla
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+Some text
+\end_layout
+
+
+
+
+
+
+
+\begin_layout Standard
 Kalman vs Particle
 Different scenarios with matlab plots
 \end_layout
