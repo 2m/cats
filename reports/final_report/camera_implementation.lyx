@@ -60,17 +60,54 @@ Modified camera firmware
 \end_layout
 
 \begin_layout Standard
-Text
-\begin_inset Note Note
-status open
+While observing the camera output using the NXTCamView software we have
+ noticed that tracked object is often split into two, four or even more
+ parts.
+ This effect can be seen even more significantly when lighting conditions
+ are poor.
+ The issue could be solved by taking into consideration all tracked objects
+ and calculating median coordinates.
+ This would have effectively introduced some overhead to the camera regulator
+ code.
+ We chose to modify camera firmware so that it does not split tracked objects
+ or rather merges them before transmitting data to robot.
+ We have found modified camera firmware called 
+\begin_inset Quotes eld
+\end_inset
 
-\begin_layout Plain Layout
-Martins part!
-\end_layout
-
+MergeBlob
+\begin_inset Quotes erd
 \end_inset
 
 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "MergeBlob"
+
+\end_inset
+
+ which does exactly that.
+ We have also tweaked the minimum and maximum size of the tracked objects.
+\end_layout
+
+\begin_layout Standard
+Since we have started to modify camera's firmware we thought that it is
+ good idea to put some more filtering logic to the camera so we can keep
+ camera's AVR processor busy.
+ We have added tracking object filtering by the Y coordinate
+\begin_inset CommandInset citation
+LatexCommand cite
+key "MergeBlobPatch"
+
+\end_inset
+
+.
+ So objects which are lower than certain minimum and higher then certain
+ maximum are not tracked.
+ This is true since we know the height of the mouse and the height of the
+ landmarks.
+ This helped us to remove any unnecessary noise such as windows and other
+ artificial light sources which could be mistakenly tracked.
 \end_layout
 
 \begin_layout Subsubsection
@@ -82,24 +119,24 @@ We needed a regulator that would follow the movement of the mouse as good
  as possible to allow for fast mouse movement.
  Also, the regulator needed smart enough not to keep spinning the motor
  in one direction.
- Doing so resulted in that the camera cable got tangleled up, thereby stopping
+ Doing so resulted in that the camera cable got tangled up, thereby stopping
  the motor and hindering any further movement in that direction.
- The soulotion to with was implementing a lower and higher bound of the
- rotaion of the camera.
+ The solution was implementing a lower and higher bound of the rotation
+ of the camera.
  The bounds were chosen as [-180°, 180°] to allow a 360° field of view.
  Whenever the camera motor tried to go outside this bound, the direction
  of the motor changed.
 \end_layout
 
 \begin_layout Standard
-When designing a regulator a regualtor of this kind an error signal is necessary.
+When designing a regulator a regulator of this kind an error signal is necessary.
  Since it is desirable to keep the mouse in the middle of the camera picture
  (only horizontal direction concerned), the error was chosen to be the pixel
  distance from the mouse to the center of the picture, i.e.
  the difference between the mouse's location in the picture and the center.
  This error signal limited in resolution by the resolution of the camera
  and it is bounded by the field of view of the camera as well.
- If the mouse disapperas outside of the picture, the error signal is set
+ If the mouse disappears outside of the picture, the error signal is set
  to the same as the bound on the side of the picture of which the mouse
  was last seen.
  Also, a control signal is necessary.
@@ -107,7 +144,7 @@ When designing a regulator a regualtor of this kind an error signal is necessary
 \end_layout
 
 \begin_layout Standard
-First a simple proportional resulator was tested.
+First a simple proportional regulator was tested.
  It performed quite well, but became a bit oscillatory at high speeds, i.e.
  at large values of the P-parameter.
  Then a PID-controller was implemented, which yielded smoother and better
