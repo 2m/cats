@@ -52,7 +52,7 @@ Limitations
 \end_layout
 
 \begin_layout Standard
-The robot's Bluetooth stack is limited to one incomming connection and three
+The robot's Bluetooth stack is limited to one incoming connection and three
  outgoing connections.
  Any robot can initiate and accept connections simultaneously as long as
  the above mentioned limit is not reached.
@@ -60,7 +60,7 @@ The robot's Bluetooth stack is limited to one incomming connection and three
  when robot was dealing with more than one connection.
  We have also measured that it takes about two and a half seconds to successfull
 y open a connection.
- The bandwidth tests showed that the maximum transimtion speed achieved
+ The bandwidth tests showed that the maximum transmission speed achieved
  was 7 kilobytes per second and only when streaming (sending data from on
  robot to another without waiting for any response) big chunks (512B) of
  data.
@@ -69,7 +69,58 @@ y open a connection.
 \end_layout
 
 \begin_layout Subsubsection
-Arch
+Network with a robot hub
+\end_layout
+
+\begin_layout Standard
+Two kinds of network architecture solutions were considered.
+ The first one is using one robot as a network hub.
+ In such way a small network consisting of three slaves connected to one
+ master can be constructed.
+ There can be no more than four robots in such a network because of the
+ limitations mentioned above.
+ However there could be a possibility to interconnect these small networks
+ and then have a network of any size.
+\end_layout
+
+\begin_layout Standard
+This was our first network architecture of choice and we started implementing
+ it.
+ After major parts were completed we have encountered some technical problems.
+ First of all we have noticed delays when master was dealing with multiple
+ outgoing connections.
+ It took great amount (sometimes up to two seconds) to switch from one connectio
+n to another.
+ This was unacceptable if we wanted to keep network fast and responsive.
+\end_layout
+
+\begin_layout Standard
+Another issue coherent with network robustness was small network interconnection.
+ We wanted to have a network architecture witch supports any number of robots
+ (even tho we had only three robots) and small network interconnection means
+ there would have to be a routing system implemented if we don't want to
+ have a fully interconnected peer to peer network (where every robot gets
+ every data even if it is not addressed to it).
+ This would have introduced quite an overhead which we do not want on weak
+ robots.
+\end_layout
+
+\begin_layout Subsubsection
+Network with a PC hub
+\end_layout
+
+\begin_layout Standard
+Our solution was to move the network hub from a robot to the PC.
+ PC can manage many connections with no noticeable delays.
+ There are practically no limits to the number of robots connected to one
+ PC so no small interconnected networks are needed.
+ Every robot has to manage only one connection to the PC eliminating multiple
+ connection managing delays.
+ Another advantage is that all the network traffic is going through the
+ PC and the data can be used for visualization on-the-fly without any special
+ code in the robots.
+ Another purpose for the GUI program was to manage connections to the robots
+ and packet forwarding from one robot to another.
 \end_layout
 
 \end_body
