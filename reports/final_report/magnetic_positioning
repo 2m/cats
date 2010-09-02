@@ -52,8 +52,8 @@ Absolute positioning with electromagnets
 \end_layout
 
 \begin_layout Standard
-An initial idea of robot positioning was to use two electromagnetes generating two 
-seperate magnetic fields, strong enough to cover a large enough area of interest 
+An initial idea of robot positioning was to use two electromagnets generating two 
+separate magnetic fields, strong enough to cover a large enough area of interest 
 (maybe 2x2 m). By shifting these fields on and off, we were hoping to extract 
 field-vectors of these fields with a magnetic sensor (compass), and triangulate the 
 position of the robot by calculating the direction of the magnetic source. 
@@ -63,7 +63,7 @@ been a much larger project than what we were about to execute - on its own.
 About the idea
 To cover the area required with a sufficient field, we first looked on the market 
 for purchasing an already existing electromagnet. However, we soon realized that 
-the strength of the fields they genereted was not adequate for our needs. To get 
+the strength of the fields they generated was not adequate for our needs. To get 
 enough strength we had to build our own electromagnets. By letting an iron core be 
 equiped with with some houndred laps of wire, and letting a strong current flow 
 through it, we figured that a large enough magnetic field for our needs could be 
