@@ -49,7 +49,7 @@ Java simulation framework - GSim
 
 \begin_layout Standard
 It was clear from the start that the work of implementing and experimenting
- with different filters would would be carried out parallel to implementing
+ with different filters would be carried out parallel to implementing
  the base system on the brick (networking, motors, camera etc.).
  Since this would result in long waits for the filter implantation a simulation
  framework would be needed.

@@ -52,12 +52,12 @@ Data synchronization
 \end_layout
 
 \begin_layout Standard
-In order to make autonomous robot system cooperative some kind of communication
- between robots had to be introduced.
+In order to make the autonomous robot system cooperative some kind of communication
+ between the robots had to be introduced.
  Our choise was Bluetooth connection since every robot had such capability.
- Connection to the PC can also be achieved with a simple Bluetooth dongle.
+ A connection to the PC can also be achieved with a simple Bluetooth dongle.
  The choice of BT communication limits the distance that robots can be apart.
- However robots were operating fine with distances up to 3 meters between
+ However the robots were operating fine with distances up to 3 meters between
  them.
  
 \end_layout
@@ -80,9 +80,9 @@ tion and debugging of these systems.
 
 \begin_layout Standard
 The synchronization rate of the first group actively limits the rate on
- which tracking filters can run.
+ which the tracking filters can run.
  It also limits the accuracy that the guide can give us.
- All the remaining bandwidth can be used for the second group of the data.
+ All the remaining bandwidth can be used for the second group of data.
  The first group can be split further into two parts:
 \end_layout
 
@@ -101,7 +101,7 @@ the results of the tracking filter (the position of the mouse with uncertainties
 The syncronization of the data mentioned above was achieved using a billboard
  model.
  Every robot had a spot on the billboard.
- Whenever any robot changes a value on his spot, an update is sent to all
+ Whenever any robot changes a value on its spot, an update is sent to all
  of the robots.
  No updates are concatenated.
  Every update has a timestamp and there is also a timestamp stored in the
@@ -182,7 +182,7 @@ It is clear that the network latency is not constant and this kind of time
 \begin_layout Standard
 For the purpouse of seeing the clock synchronization in action we implemented
  a music function into the robots.
- When clocks are synchronized all robots can perform the same music piece
+ When the clocks are synchronized all robots can perform the same music piece
  taking turns one after another.
 \end_layout
 
@@ -194,7 +194,7 @@ Data packets
 We wanted to have a robust network which can be easily expanded.
  We chose to implement packet system on top of the provided low level network
  functions.
- This allowed us easily to send and receive different kinds of data for
+ This allowed us to easily send and receive different kinds of data for
  different purpouses.
  It also allowed us to change the underlying low level network implementation
  (you can access network from leJOS using Java buffered readers/writers
@@ -210,7 +210,7 @@ All of the packets had a type field which lets to distinguish between different
  from.
  Creating a new packet type means adding a new packet class definition and
  writing a handler for that packet class.
- Then this new packet can be sent from anywhere from the code and robot
+ Then this new packet can be sent from anywhere in the code and the robot
  on the other end will execute actions specified by the packet handler.
 \end_layout
 

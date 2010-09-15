@@ -73,7 +73,7 @@ what would Archimedes have done?
 \end_layout
 
 \begin_layout Standard
-If the angles between to two landmarks are known the inscribed angle theorem
+If the angles between two landmarks are known the inscribed angle theorem
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Wikipediab"
@@ -135,14 +135,14 @@ The positions of the landmarks are known, hence the solution to where the
  cat is lies on a circle.
  If one more landmark adjacent to the first (which it always is in our case
  since we use 4 landmarks) another circle can be found.
- There two circles intersect in two places and one of there solutions is
+ There two circles intersect in two places and one of the solutions is
  the position of the cat.
 \end_layout
 
 \begin_layout Standard
 A problem with this approach is that it does not filter out any noise from
  the angle measurements.
- If there is noise the most probable solution stops being a point a becomes
+ If there is noise the most probable solution stops being a point and becomes
  an area, as shown in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -182,7 +182,8 @@ name "fig:geometric_circle_error"
 
 \end_inset
 
-Plot of the error given by a noisy angle measurement to a landmark
+Plot of the error given by a noisy angle measurement to a landmark.
+(e) shows ..., (f) shows....   P = ???
 \end_layout
 
 \end_inset

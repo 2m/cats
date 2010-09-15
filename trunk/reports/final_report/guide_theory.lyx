@@ -59,7 +59,7 @@ Theory
 \end_layout
 
 \begin_layout Standard
-The basic idea of the guide is that is the rules to follow, like 
+The basic idea of the guide is that if the rules to follow, like 
 \begin_inset Quotes eld
 \end_inset
 
@@ -76,7 +76,7 @@ The rules where formulated as functions who could generate a map of where
  a good place for the cat would be.
  This method could be compared with letting the functions generate a landscape
  and telling the cat to try to keep in the valleys.
- An exmeple of the map of the final function is shown in figure 
+ An example of the map of the final function is shown in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:guide_surface"
@@ -228,7 +228,7 @@ A problem with the gradient descent method is that it in some circumstances
  starts to oscillate.
  This was avoided by simply not correcting the position less than a couple
  of centimeters and also setting a limit of iterations.
- A batter solution would be to do a line search
+ A better solution would be to do a line search
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Wikipedia"
