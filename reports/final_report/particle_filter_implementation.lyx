@@ -52,14 +52,14 @@ Java simulation
 \end_layout
 
 \begin_layout Standard
-Simulations in java where implemented only to weed out bug.
+Simulations in java where implemented only to weed out bugs.
  This approach was very successfull since the filter, when on the brick,
  worked as intended.
  The filter could also be profiled to find where optimizations would do
  most good.
  Even though profiling did give a better insigt on how the filter worked
  in practice the benefits were limited due to the vast differences of hardware
- between a PC and an NXT.
+ between a PC and a NXT.
 \end_layout
 
 \begin_layout Subsubsection
@@ -68,7 +68,7 @@ Brick implementation
 
 \begin_layout Standard
 A problem with the particle filter approach was that it is very CPU intensive.
- It was clear from the beginning that some platform an problem specific
+ It was clear from the beginning that some platform and problem specific
  optimizations would be needed.
 \end_layout
 
@@ -80,7 +80,7 @@ A common approach to speeding up non-linear functions is look up tables.
  The cons of this approach is that a lot of memory is needed to give the
  table accuracy.
  Since we did not know until very late in the implementation phase how much
- memory would be available, look up tables was not preferred.
+ memory would be available, look up tables were not preferred.
 \end_layout
 
 \begin_layout Standard
@@ -259,7 +259,7 @@ slightly modified to be used with fixed point arithmetic.
 \begin_layout Standard
 Re-sampling the particles is not a hard or heavy task but can still be improved
  significantly.
- Most of the time the particles are good and the number who realy need to
+ Most of the time the particles are good and the number who really need to
  be re-sampled are small.
  If only the worst particles are resampled the filter would converge slower
  but would not need to do so much random sampling.??

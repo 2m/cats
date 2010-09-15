@@ -68,15 +68,15 @@ key "Wikipedia"
 \end_layout
 
 \begin_layout Standard
-When implemented on the brick it was found our that the calculation where
+When implemented on the brick it was found out that the calculation was
  painfully slow.
  When running in the enviroment (as the lowest priority therad etc) the
- calculation could take 4 seconds.
- Some last minute optimization made then work on only 1 second even thou
+ calculation could take four seconds.
+ Some last minute optimization then made it work in only one second even though
  that can not be called fast.
- It was desciden to time slot the movement to avoid collisions.
+ It was decided to time slot the movement to avoid collisions.
  Since all cats have a synced clock it was not hard to implement.
- Each cat was given 3 seconds while the other ones waited for it to move.
+ Each cat was given three seconds while the other ones waited for it to move.
 \end_layout
 
 \end_body

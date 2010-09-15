@@ -61,13 +61,13 @@ Camera module
 
 \begin_layout Standard
 As the goal of this project is to track the mouse we wanted the cameras
- on the cats to looking on the mouse most of the time.
+ on the cats to be looking on the mouse most of the time.
  In fact, apart from the landmark sweeps, the camera should be looking at
  the mouse all the time.
  The camera was first fitted direcly to a motor enabling the camera to rotate
  and look around the arena.
- Test showed that errors in the motor odometer were quite large, up to 10°,
- resulting in very bad angular reading.
+ Tests showed that errors in the motor odometer were quite large, up to 10°,
+ resulting in a very bad angular reading.
  The errors did not drift, so they could in theory be corrected by calibration.
  However, this was made difficult since the error was not constant but varied
  over the angular position of the motor.
@@ -78,7 +78,7 @@ As the goal of this project is to track the mouse we wanted the cameras
  That way the errors were reduced about five times.
  The maximum speed of the camera rotation was of coure also reduced five
  times, but the speed with the cog wheel showed to be sufficient.
- In fact, limitations of the sensors permitted any rotation much faster
+ In fact, limitations of the sensors precluded any rotation much faster
  than this anyway.
 \end_layout
 
