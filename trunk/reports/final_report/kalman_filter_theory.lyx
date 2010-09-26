@@ -524,7 +524,7 @@ i.
  This solution was implemented successfully in Matlab.
  A more appropriate solution would be to use the velocity measurements in
  polar form, given as speed and orientation (or it's derivative) instead
- of x and y component of the velocity.
+ of the x and y component of the velocity.
  That way a higher uncertainty can be assigned to the orientation and a
  lower to the speed, more closely mimicking the true dynamics of the system.
  This formulation however yielded undesirable results in the Matlab simulation
@@ -537,7 +537,7 @@ Simulation in Matlab
 
 \begin_layout Standard
 The UKF filter also has a few user selectable parameters (
-\begin_inset Formula $\alpha,\kappa,\beta$
+\begin_inset Formula $\alpha,\beta,\kappa$
 \end_inset
 
 ) that were varied to see their effect on performance.
@@ -623,7 +623,7 @@ Matlab but since this is not possible in the brick implementation we instead
 ), about as large as double point arithmetic allows.
  In the Matlab simulation it was verified that this was large enough for
  the unavailable, and therefore incorrect measurements, to have no actual
- impact.
+ effect on the sate estimates.
  Some further investigation showed that it is possible to modify the Kalman
  filter algorithm to only do the update step for the unavailable measurements.
  This would be a computationally more efficient solution and certainly more
@@ -664,6 +664,142 @@ It also turned out that the formulation of the measurement function had
  Because this only seemed to happened at a very limited angle, and therefore
  not very often, the formulation of the measurement function was kept to
  the java simulation and the brick implementation.
+\end_layout
+
+\begin_layout Standard
+The performance of the UKF tracking filter is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:UKF_linear"
+
+\end_inset
+
+ and Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:UKF_circular"
+
+\end_inset
+
+.
+ The cats are shown as black asterisks and their angular readings in the
+ last time step as black lines.
+ The true position of the mouse is shown as a red line, the estimated as
+ a blue line.
+ In both simulations three cats are observing the mouse at all times.
+ In angular measurements to the mouse have an additive Gaussian measurement
+ noise with a standard deviation of 2 degrees.
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:UKF_linear"
+
+\end_inset
+
+, the mouse is moving with a piecewise constant velocity, abruptly changing
+ direction from one time step to another.
+ We can see that the filter estimates converges to a value quite close to
+ the true position when the mouse is moving straight with constant velocity.
+ When the mouse changes direction, the acceleration is no longer zero as
+ modeled, but very large for a short time.
+ With this chosen process noise standard deviation this leads to an inertial
+ movement in the position estimates.
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:UKF_circular"
+
+\end_inset
+
+ shows a situation with a constant acceleration.
+ As expected the filter estimate can't converge as close as in the linear
+ case.
+ For comparison, static least squares estimates of the mouse's position
+ are shown as green dots.
+ Clearly, the UKF filter performs better than the latter, albeit the constant
+ process disturbance.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/UKF_tracking-linear.pdf
+	lyxscale 40
+	scale 65
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:UKF_linear"
+
+\end_inset
+
+UKF Tracking filter simulation.
+ Mouse is moving in a piecewise linear track.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/UKF_tracking-circular.pdf
+	lyxscale 40
+	scale 65
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:UKF_circular"
+
+\end_inset
+
+UKF Tracking filter simulation.
+ Mouse is moving in a circular track.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
