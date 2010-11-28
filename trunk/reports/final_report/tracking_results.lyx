@@ -52,7 +52,7 @@ Stationary mouse
 \end_layout
 
 \begin_layout Standard
-Both tracking filter implementations were first tested on a stationary mouse 
+Both tracking filter implementations of the final system were first tested on a stationary mouse 
 with the cats being set up in different formations.
  Figure 
 \begin_inset CommandInset ref
@@ -61,19 +61,17 @@ reference "fig:test1_tracking_static_line_kalman"
 
 \end_inset
 
- shows the result of the kalman filter when three cats are standing on a line while 
-figure 
+ shows the result of the kalman filter when three cats are standing on a line while Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test1_tracking_static_line_particle"
 
 \end_inset
 
- shows the corresponding result for the particle filter.
-It can be seen that BLA BLA ....
-Running the same tests but with the cats placed in optimal positions did not significantly improve the performance, 
-as can be seen in 
-figure 
+ shows the corresponding result for the particle filter. 
+ It can be seen that both filters converges to a similar static error level, although the particle filter is more noisy.
+ Running the same tests but with the cats placed in optimal positions did not significantly improve the performance, 
+ as can be seen in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test2_tracking_static_optimal_kalman"
@@ -89,7 +87,7 @@ reference "fig:test2_tracking_static_optimal_particle"
 
 .
  Tracking the static mouse with only two cats gave approximately the same
- result for the particle filter, as shown in figure 
+ result for the particle filter, as shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test3_tracking_static_two_cats_particle"
@@ -125,8 +123,8 @@ name "fig:test1_tracking_static_line_kalman"
 
 \end_inset
 
-Plot of the final system with three cats standing on a line tracking a static
- mouse with the unscented kalman filter.
+Plot of three cats standing on a line tracking a stationary
+ mouse with the unscented kalman filter. See FIGURE X for the arrangement.
  (test1_tracking_static_line_kalman)
 \begin_inset Newline newline
 \end_inset
@@ -190,7 +188,7 @@ name "fig:test1_tracking_static_line_particle"
 
 \end_inset
 
-Plot of the final system with three cats standing on a line tracking a static
+Plot of three cats standing on a line tracking a stationary
  mouse with the particle filter. 
 \begin_inset Newline newline
 \end_inset
@@ -250,8 +248,9 @@ name "fig:test2_tracking_static_optimal_kalman"
 
 \end_inset
 
-Plot of the final system with three cats standing on optimal positions tracking
- a static mouse with the unscented kalman filter.
+Plot of three cats standing on optimal positions tracking
+ a static mouse with the unscented kalman filter. 
+The graph is cut at 2.5 and 0.0 because the data on the bricks were not allowed to exceed theese values.
 \begin_inset Newline newline
 \end_inset
 test2_tracking_static_optimal_kalman 
@@ -466,7 +465,7 @@ name "fig:test4_tracking_moving_kalman2"
 \end_inset
 
 Plot of the final system with three stationary and decently placed cats
- tracking a mouse moving at a constant speed of roughly 0.19m/s with the
+ tracking a mouse moving at a constant speed of roughly 0.19 m/s with the
  unscented kalman filter.
 \begin_inset Newline newline
 \end_inset
