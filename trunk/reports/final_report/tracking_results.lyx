@@ -48,6 +48,16 @@ Mouse tracking
 \end_layout
 
 \begin_layout Subsubsection
+Setup
+\end_layout
+
+\begin_layout Standard
+All tests were conducted within a 2.5 by 2.5m arena.
+
+\end_layout
+
+
+\begin_layout Subsubsection
 Stationary mouse
 \end_layout
 
@@ -61,7 +71,15 @@ reference "fig:test1_tracking_static_line_kalman"
 
 \end_inset
 
- shows the result of the kalman filter when three cats are standing on a line while Figure 
+ shows the result of the kalman filter when three cats are standing on a line as shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
+\end_inset
+
+
+(a) while Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test1_tracking_static_line_particle"
@@ -70,7 +88,15 @@ reference "fig:test1_tracking_static_line_particle"
 
  shows the corresponding result for the particle filter. 
  It can be seen that both filters converges to a similar static error level, although the particle filter is more noisy.
- Running the same tests but with the cats placed in optimal positions did not significantly improve the performance, 
+ Running the same tests but with the cats placed in optimal positions as shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
+\end_inset
+
+
+(b) did not significantly improve the performance, 
  as can be seen in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -86,8 +112,15 @@ reference "fig:test2_tracking_static_optimal_particle"
 \end_inset
 
 .
- Tracking the static mouse with only two cats gave approximately the same
- result for the particle filter, as shown in Figure 
+ Tracking the static mouse with only two cats as shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
+\end_inset
+
+(c) gave approximately the same
+ result for the particle filter, as can be seen in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test3_tracking_static_two_cats_particle"
@@ -95,6 +128,52 @@ reference "fig:test3_tracking_static_two_cats_particle"
 \end_inset
 
 .
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/test_arrangement.pdf
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:test_arrangement"
+
+\end_inset
+
+An inlustration of the test arrangements.
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+
  
 \begin_inset Float figure
 wide false
@@ -104,9 +183,9 @@ status collapsed
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename images/test1_tracking_static_line_kalman.png
-	lyxscale 60
-	scale 60
+	filename images/test1_tracking_static_line_kalman.pdf
+	lyxscale 50
+	scale 50
 
 \end_inset
 
@@ -138,16 +217,6 @@ Need to further specify how the cats and the mouse were placed?? Distance
 \begin_inset Newline newline
 \end_inset
 
-What can be concluded from this plot?  
-\begin_inset Newline newline
-\end_inset
-
-Appropriate data range? Scale of axis?
-\begin_inset Newline newline
-\end_inset
-
-Other layout isssues?
-\end_layout
 
 \end_inset
 
@@ -169,9 +238,9 @@ status collapsed
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename images/test1_tracking_static_line_particle.png
-	lyxscale 60
-	scale 60
+	filename images/test1_tracking_static_line_particle.pdf
+	lyxscale 50
+	scale 50
 
 \end_inset
 
@@ -200,12 +269,6 @@ Test1_tracking_static_mouse_with_three_cats_on_line :
 \end_inset
 Need to further specify how the cats and the mouse were placed?? Distance between cats = 0.5m? Mouse placed
  1m infront of the middle cat? 
-\begin_inset Newline newline
-\end_inset
-What can be concluded from this plot?  
-\begin_inset Newline newline
-\end_inset
-Appropriate data range? Scale of axis? Other layout isssues?
 
 \end_layout
 
@@ -229,9 +292,9 @@ status collapsed
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename images/test2_tracking_static_optimal_kalman.png
-	lyxscale 60
-	scale 60
+	filename images/test2_tracking_static_optimal_kalman.pdf
+	lyxscale 50
+	scale 50
 
 \end_inset
 
@@ -260,12 +323,7 @@ Test2_tracking_static_mouse_with_three_cats_on_optimal_pos:
 \begin_inset Newline newline
 \end_inset
 Need to further specify how the cats and the mouse were placed?? Cats placed in triangle? Mouse placed in the middle? 
-\begin_inset Newline newline
-\end_inset
-What can be concluded from this plot?  
-\begin_inset Newline newline
-\end_inset
-Appropriate data range? Scale of axis? Other layout isssues?
+
 
 \end_layout
 
@@ -289,9 +347,9 @@ status collapsed
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename images/test2_tracking_static_optimal_particle.png
-	lyxscale 60
-	scale 60
+	filename images/test2_tracking_static_optimal_particle.pdf
+	lyxscale 50
+	scale 50
 
 \end_inset
 
@@ -321,13 +379,6 @@ Test2_tracking_static_mouse_with_three_cats_on_optimal_pos:
 Need to further specify how the cats and the mouse were placed?? Cats placed in triangle? Mouse placed in the middle?
 \begin_inset Newline newline
 \end_inset
-What can be concluded from this plot? 
-\begin_inset Newline newline
-\end_inset
-Appropriate data range? Scale of axis? 
-\begin_inset Newline newline
-\end_inset
-Other layout isssues?
 
 \end_layout
 
@@ -351,9 +402,9 @@ status collapsed
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename images/test3_tracking_static_two_cats_particle.png
-	lyxscale 60
-	scale 60
+	filename images/test3_tracking_static_two_cats_particle.pdf
+	lyxscale 50
+	scale 50
 
 \end_inset
 
@@ -383,13 +434,6 @@ Test3_tracking_static_mouse_with_two_cats_on_optimal_pos:
 Need to further specify how the cats and the mouse were placed?? Placed how??? Mouse placed in the middle? 
 \begin_inset Newline newline
 \end_inset
-What can be concluded from this plot?  
-\begin_inset Newline newline
-\end_inset
-Appropriate data range? Scale of axis?
-\begin_inset Newline newline
-\end_inset
-Other layout isssues?
 
 \end_layout
 
@@ -413,21 +457,28 @@ Moving mouse
 
 \begin_layout Standard
 The results for three stationary and decently placed cats tracking a mouse
- moving at a constant speed of roughly 0.19m/s is shown in figure 
+ moving at a constant speed of roughly 0.19m/s as illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
+\end_inset
+
+(d) is shown in Figure  
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test4_tracking_moving_kalman2"
 
 \end_inset
 
- for the kalman filter, figure  
+ for the kalman filter, Figure  
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test4_tracking_moving_particle2"
 
 \end_inset
 
- for the particle filter and figure 
+ for the particle filter and Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test4_tracking_moving_particle_slower_movement"
@@ -445,9 +496,9 @@ status collapsed
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename images/test4_tracking_moving_kalman2.png
-	lyxscale 60
-	scale 60
+	filename images/test4_tracking_moving_kalman2.pdf
+	lyxscale 50
+	scale 50
 
 \end_inset
 
@@ -473,18 +524,6 @@ test4_tracking_moving_kalman2
 \begin_inset Newline newline
 \end_inset
 Test4_tracking_moving_mouse_with_three_cats_on_optimal_pos:
-\begin_inset Newline newline
-\end_inset
-Need to further specify how the cats and the mouse were placed?? Cats in a trianle? Mouse moving through the middle? 
-\begin_inset Newline newline
-\end_inset
-What can be concluded from this plot?  
-\begin_inset Newline newline
-\end_inset
-Appropriate data range? Scale of axis? 
-\begin_inset Newline newline
-\end_inset
-Other layout isssues?
 
 \end_layout
 \end_inset
@@ -502,9 +541,9 @@ status collapsed
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename images/test4_tracking_moving_particle2.png
-	lyxscale 60
-	scale 60
+	filename images/test4_tracking_moving_particle2.pdf
+	lyxscale 50
+	scale 50
 
 \end_inset
 
@@ -534,13 +573,6 @@ Test4_tracking_moving_mouse_with_three_cats_on_optimal_pos:
 Need to further specify how the cats and the mouse were placed?? Cats in a trianle? Mouse moving through the middle?
 \begin_inset Newline newline
 \end_inset
-What can be concluded from this plot?  
-\begin_inset Newline newline
-\end_inset
-Appropriate data range? Scale of axis? 
-\begin_inset Newline newline
-\end_inset
-Other layout isssues?
 
 \end_layout
 \end_inset
@@ -558,9 +590,9 @@ status collapsed
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename images/test4_tracking_moving_particle_slower_movement.png
-	lyxscale 60
-	scale 60
+	filename images/test4_tracking_moving_particle_slower_movement.pdf
+	lyxscale 50
+	scale 50
 
 \end_inset
 
@@ -589,16 +621,6 @@ Test4_tracking_moving_mouse_with_three_cats_on_optimal_pos:
 Need to further specify how the cats and the mouse were placed?? Cats in a trianle? Mouse moving through the middle?
 \begin_inset Newline newline
 \end_inset
-Need some estimation of the "slower" speed ? 
-\begin_inset Newline newline
-\end_inset
-What can be concluded from this plot?  
-\begin_inset Newline newline
-\end_inset
-Appropriate data range? Scale of axis? 
-\begin_inset Newline newline
-\end_inset
-Other layout isssues?
 
 \end_layout
 \end_inset
