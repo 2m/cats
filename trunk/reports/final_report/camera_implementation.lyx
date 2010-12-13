@@ -79,7 +79,7 @@ MergeBlob
 \begin_inset Quotes erd
 \end_inset
 
-
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "MergeBlob"
@@ -94,7 +94,7 @@ key "MergeBlob"
 Since we have started to modify camera's firmware we thought that it is
  good idea to put some more filtering logic to the camera so we can keep
  camera's AVR processor busy.
- We have added tracking object filtering by the Y coordinate
+ We have added tracking object filtering by the Y coordinate 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "MergeBlobPatch"
