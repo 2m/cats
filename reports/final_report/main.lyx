@@ -159,14 +159,10 @@ o Early ideas
 \end_layout
 
 \begin_layout Standard
-Magnetic fields 
-\end_layout
-
-\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
 preview true
-filename "color_coding.lyx"
+filename "alternative_solutions2.lyx"
 
 \end_inset
 

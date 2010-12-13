@@ -50,11 +50,11 @@ Cat movement regulator
 \begin_layout Standard
 It was decided that a simple movement regulator would be sufficient for
  the cats.
- Therefore we limited the cats to travel in straight paths, with rotation
+ Therefore, we limited the cats to travel in straight paths, with turning
  in between.
  The cats were constructed so that they could rotate on a spot, i.e.
- around an axis.
- These choises also made it easier for the absolute positioning filter.
+ around a vertical axis between the wheels.
+ These choices also made it easier for the absolute positioning filter.
 \end_layout
 
 \begin_layout Subsubsection
@@ -69,7 +69,7 @@ As it turned out, Lejos had a built in Pilot class, aiding the programming
  Furthermore, the distance between the wheels is used to calculate how much
  the cat has rotated.
  It turned out that the left and right motors weren't equally strong which
- caused the cat to drift off course when trying to travel straigt.
+ caused the cat to drift off course when trying to travel straight.
  However the specified size of the wheels was tweaked to compensate for
  this.
  The actual size of them was the same.

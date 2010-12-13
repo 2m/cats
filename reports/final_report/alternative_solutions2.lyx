@@ -1,0 +1,132 @@
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass IEEEtran
+\use_default_options false
+\language english
+\inputencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\float_placement tbh
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 2
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+Alternative solutions
+\end_layout
+
+\begin_layout Subsubsection
+Absolute positioning with electromagnets
+\end_layout
+
+\begin_layout Standard
+An initial idea of robot positioning was to use two electromagnets generating
+ two separate magnetic fields, strong enough to cover a large enough area
+ of interest (maybe 2x2 m).
+ By shifting these fields on and off, we were hoping to extract field-vectors
+ of these fields with a magnetic sensor (compass), and triangulate the position
+ of the robot by calculating the direction of the magnetic source.
+ This ambitious concept proved hard to realize for numerous reasons, and
+ would probably been a much larger project than what we were about to execute
+ - on its own.
+ About the ideaTo cover the area required with a sufficient field, we first
+ looked on the market for purchasing an already existing electromagnet.
+ However, we soon realized that the strength of the fields they generated
+ was not adequate for our needs.
+ To get enough strength we had to build our own electromagnets.
+ By letting an iron core be equiped with with some houndred laps of wire,
+ and letting a strong current flow through it, we figured that a large enough
+ magnetic field for our needs could be obtained.
+ To get a position from the field vectors we hoped to be able to obtain
+ through the magnetic sensors, available in the LEGO Mindstorm kit, we needed
+ to switch the two magnetic fields on and off separately.
+ This because otherwise these field vectors would have merged into a single
+ one, with a complicated structure.
+ To get a good measurement of the generated field vector we wanted to have
+ them at least twice as large as Earths magnetic field, over the whole arena.
+ After running some calculations for our hypothetical electromagnets, we
+ were forced abandon this sub-project, since they showed that the size of
+ the field the electromagnets were required to regenerate far exceeded what
+ reasonably could have been achieved with available equipment.
+ Another reason to throw this idea in the trashbin, was the magnetic sensors
+ from LEGO that did not give good enough measurements for one with our ambitions
+ for application, to be satisfied.
+ A bad sensor with fluctuating readings would easily dismantle the purpose
+ of the system, by giving the sensitive system a high rate wrong values,
+ and make the calculations for the estimated position disastrous.
+\end_layout
+
+\begin_layout Subsubsection
+Color coding
+\end_layout
+
+\begin_layout Standard
+One suggestion to the problem of the cats knowing their own correct position
+ and orientation was using a color coded grid on the floor of the arena.
+ Using an available color sensor the idea was to detect whenever the cat
+ traveled over a colored strip.
+ With four colors printed on a white paper it should be possible to detect
+ in which direction the cat is moving and how far it has gone.
+ By having both horizontal and vertical lines with alternating colors, one
+ can detect the x- and y-component of the cat’s velocity.
+ However it turned out that the color sensor sampled its reading from quite
+ a large area, which meant that we had to use rather wide colored strips
+ for them to be detected correctly.
+ This presented the problem with the intersections of the horizontal and
+ the vertical lines.
+ When the color sensor crossed over such an intersection, a mix of both
+ colors was detected instead of each one separately.
+ This meant that neither the x- or y-component of movement was updated,
+ resulting in an erroneous position estimate.
+ A solution to this could be to limit the cat to move only along in four
+ directions, parallel and perpendicular to the lines.
+ That would however require that the cat could correct its orientation from
+ time to time if it got off track.
+\end_layout
+
+\begin_layout Standard
+Another problem was that the color sensor was sensitive to the ambient lighting.
+ This could be accounted for in the software to some extent with some clever
+ programming, but not completely.
+ These limitations made us abandon the color coding altogether after some
+ time, even though we had put quite a bit of work in to it.
+ Instead we chose to use the camera and landmarks to locate the cats.
+ The color codes do however have the nice property of providing both position
+ and orientation very often, without having to look for any landmarks.
+ 
+\end_layout
+
+\end_body
+\end_document
