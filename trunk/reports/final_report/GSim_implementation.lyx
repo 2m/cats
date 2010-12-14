@@ -49,12 +49,12 @@ Java simulation framework - GSim
 
 \begin_layout Standard
 It was clear from the start that the work of implementing and experimenting
- with different filters would be carried out parallel to implementing
- the base system on the brick (networking, motors, camera etc.).
- Since this would result in long waits for the filter implantation a simulation
- framework would be needed.
+ with different filters would be carried out parallel to implementing the
+ base system on the brick (networking, motors, camera etc.).
+ Since this would result in long waits for the filter implementation a simulatio
+n framework would be needed.
  This would also give an opportunity to weed out bugs and test robustness
- in a controlled environment with good debugging tool available.
+ in a controlled environment with good debugging tools available.
  A screen shot of the simulation is shown in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -74,14 +74,28 @@ The simulation is written in a way that the filter code would work with
 \end_layout
 
 \begin_layout Standard
+The class structure was built using a base class for each type of filter
+ that was slightly different on the brick and in the simulation but with
+ all interfaces looking the same on both platforms.
+ In the simulation a draw method was called at each graphics update to give
+ feedback to the user.
+ All noise in the simulation was, as often in simulations, ideal, but still
+ gave a opportunity to test the basic robustness of the filtering methods.
+\end_layout
+
+\begin_layout Standard
+Moving the code from the simulation to the brick was easy and development
+ of the different parts of the project could be made parallel.
+ At the end the simulation contained many thousands of lines of code.
+ It still saved time since almost no bugs where found when the filters were
+ on the brick.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
-
-\begin_layout Plain Layout
-
-\end_layout
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -102,8 +116,8 @@ name "fig:GSim"
 
 \end_inset
 
-Java simulation framework in action showing three cats tracking a target
- with the particle filter
+Java simulation framework in action showing three cats (red dots) tracking
+ a target with the particle filter (blue dot covered with green particles)
 \end_layout
 
 \end_inset

@@ -58,19 +58,20 @@ The filter was first implemented in our java simulation framework and shown
 \end_layout
 
 \begin_layout Standard
-The errors in the angle measurements had to me handled in some way.
+The errors in the angle measurements had to be handled in some way.
  An easy method to do this to some extent is using the assumption that the
- noise was Gaussian (same as for the other filters).
+ noise was a zero mean Gaussian process (same assumption as for the other
+ filters).
  This was implemented as a pre-filter who would mean all the measurements
  of each landmark seen.
  So if there would be many sightings of a certain landmark all information
  would be used.
- this method is not very robust because the mean of the samples from a Gaussian
+ This method is not very robust because the mean of the samples from a Gaussian
  process with mean zero would only go to zero with a large number of samples.
- this was not the case but the measurements did become better when running
+ This was not the case but the measurements did become better when running
  the filter with this pre-filtering method.
- All data would be invalidated if the cat would move and at least three
- landmarks had to be seen before correcting position.
+ All data would be invalidated if the cat would move and to further remove
+ errors at least three landmarks had to be seen before correcting position.
 \end_layout
 
 \begin_layout Standard
@@ -78,7 +79,7 @@ An other problem could be that the circles would not intersect or that there
  would be no obvious choice with of the intersections would be the correct
  one.
  The filter always tried to go for the closest intersection.
- If no decision was obvious the filter would be the decision not to correct.
+ If no decision was obvious the filter would make the decision not to correct.
 \end_layout
 
 \begin_layout Subsubsection
@@ -86,22 +87,30 @@ Brick implementation
 \end_layout
 
 \begin_layout Standard
-Since the simulation works almost the same way as the brick code, from the
- filters point of view, the brick implementation was painless.
+Since the simulation framework works almost the same way as the brick code,
+ from the filters point of view, the brick implementation was painless.
 \end_layout
 
 \begin_layout Standard
-One different between the brick and the simulation framework is how the
+One difference between the brick and the simulation framework is how the
  errors in turned angle work.
- the discovery was made early that looking for three landmarks to correct
+ The discovery was made early that looking for three landmarks to correct
  the turned angle would be tedious.
  It would simply take too much time to look for three landmarks every time
  the cat had turned.
 \end_layout
 
 \begin_layout Standard
-The compromise was made that the filter would correct angle with just one
- landmark, but only a very small amount at a time.
+The compromise was made that the filter would correct its angle estimate
+ with just one landmark, but only a very small amount at a time.
+ Most of the position error was found to come from errors in the angle turned
+ at the start of the execution of a move command.
+ Error in traveled distance and turning drift while going straight was found
+ to be very small.
+ Hence this method gave us a lot less error in the position after the cat
+ had traveled longer distances.
+ The error in the turning did not have as much opportunity to propagate
+ with distance traveled as before.
  The correcting was 1 degree per second and landmark seen.
  To complement this the decision was made to make the cat look for landmarks
  with even intervals but only if no other cat was sweeping for landmarks.

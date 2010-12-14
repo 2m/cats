@@ -45,6 +45,16 @@
 
 \begin_layout Subsection
 Particle filter
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Needs more work
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -84,18 +94,14 @@ A common approach to speeding up non-linear functions is look up tables.
 \end_layout
 
 \begin_layout Standard
-The steps who needed optimizations badly where
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-ref.
- presentation showing problems
-\end_layout
+The steps who needed optimizations badly
+\begin_inset CommandInset citation
+LatexCommand cite
+key "MiodragBolic2004-11-12"
 
 \end_inset
 
-:
+ where:
 \end_layout
 
 \begin_layout Enumerate
@@ -129,7 +135,7 @@ Re-sampling needs one random sample per state variable and particle from
 \end_layout
 
 \begin_layout Enumerate
-Floating point precision is not native to the NXT
+Floating point precision is not native to the NXT but implemented in fireware
 \end_layout
 
 \begin_layout Standard
@@ -203,6 +209,7 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename images/particle_filter_java_penalty_function.eps
 	lyxscale 50
@@ -259,8 +266,8 @@ slightly modified to be used with fixed point arithmetic.
 \begin_layout Standard
 Re-sampling the particles is not a hard or heavy task but can still be improved
  significantly.
- Most of the time the particles are good and the number who really need to
- be re-sampled are small.
+ Most of the time the particles are good and the number who really need
+ to be re-sampled are small.
  If only the worst particles are resampled the filter would converge slower
  but would not need to do so much random sampling.??
 \begin_inset Note Note
