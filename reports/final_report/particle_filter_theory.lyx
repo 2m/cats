@@ -60,10 +60,94 @@ Needs more work
 \begin_layout Standard
 The basic principle of a particle filter is to by a particle optimization
  technique filter noisy data.
+ It is a Bayesian recursive method which means it iteratively tries to estimate
+ a state vector by a probability distribution using data to evaluate and
+ update the same distribution.
+ The basic system looks like in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Particle filter state space 1"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Particle filter state space 2"
+
+\end_inset
+
+.
+ 
 \end_layout
 
 \begin_layout Standard
-The main advantages to particle filters is that they can handle non-linearity's
+\begin_inset Formula \begin{equation}
+x_{k}=f(x_{k-1})+w_{k}\label{eq:Particle filter state space 1}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+y_{k}=h(x_{k})+v_{k}\label{eq:Particle filter state space 2}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the function 
+\begin_inset Formula $f(\cdot)$
+\end_inset
+
+ and 
+\begin_inset Formula $h(\cdot)$
+\end_inset
+
+ where linear functions that could be seen as a matrix multiplication with
+ respective 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+ and 
+\begin_inset Formula $w$
+\end_inset
+
+ and 
+\begin_inset Formula $v$
+\end_inset
+
+ Gaussian distributed errors, the system would be the same used in the Kalman
+ filter.
+ However in many applications 
+\begin_inset Formula $f(\cdot)$
+\end_inset
+
+ and 
+\begin_inset Formula $h(\cdot)$
+\end_inset
+
+ are non-linear and 
+\begin_inset Formula $w$
+\end_inset
+
+ and 
+\begin_inset Formula $v$
+\end_inset
+
+ are not Gaussian.
+ 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+ is the state vector estimate at time k.
+ Around this vector there lies a probability distribution corresponding
+ to the uncertainty of the state vector.
+ The main advantages to particle filters is that they can handle non-linearity's
  without compromising on accuracy
 \begin_inset Note Note
 status collapsed
@@ -74,17 +158,16 @@ citation needed
 
 \end_inset
 
-.
- Basically 
+ or the need for linearisation.
+\end_layout
+
+\begin_layout Standard
+Basically 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Note Note
 status open
-
-\begin_layout Plain Layout
-Baysian recursive method
-\end_layout
 
 \begin_layout Plain Layout
 General priciple
@@ -180,6 +263,16 @@ The tracking filter needed to estimate the position of the tracked object
  and, if possible, its speed.
  A natural choice for state variables was then the position in the x and
  y direction and velocity in the x and y direction.
+\begin_inset Formula \begin{equation}
+x_{k}=\left(\begin{array}{c}
+r_{x}\\
+r_{y}\\
+v_{x}\\
+v_{y}\end{array}\right)\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -189,6 +282,15 @@ For the positioning particle filter the states were chosen as x, y and heading
  angles in a local reference system.
  These sightings could then be compared to the known positions of landmarks
  and how well a particles states would conform to this data.
+\begin_inset Formula \begin{equation}
+x_{k}=\left(\begin{array}{c}
+r_{x}\\
+r_{y}\\
+\theta\end{array}\right)\label{eq:Particle filter positioning states}\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -212,6 +314,14 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/particle_filter_simulation_tracking.png
+	lyxscale 25
+	scale 45
+
+\end_inset
+
+
 \begin_inset Caption
 
 \begin_layout Plain Layout
@@ -246,6 +356,14 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/particle_filter_simulation_positioning.png
+	lyxscale 25
+	scale 45
+
+\end_inset
+
+
 \begin_inset Caption
 
 \begin_layout Plain Layout
