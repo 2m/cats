@@ -48,35 +48,30 @@ Guide
 \end_layout
 
 \begin_layout Standard
-The communication between the cats would most of the time be slow so to
- avoid collisions the cats where not allowed to move to far in one go.
+The communication between the cats would most of the time be slow and hence
+ the delay in information on the others positions would lag considerably.
+ To avoid collisions the cats where not allowed to move too far in one go,
+ to increase the chances of each cat having time to filter and communicate
+ the information on position.
  Also they waited a while after a move to let the other cats have time to
- recieve the new coordinates.
-\end_layout
-
-\begin_layout Standard
-Normaly when using the gradient method something like line search
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Wikipedia"
-
-\end_inset
-
- is used.
- This was not implemented due to lack of time.
- The calculation would probably be a lot faster if it was used.
+ receive the new coordinates.
 \end_layout
 
 \begin_layout Standard
 When implemented on the brick it was found out that the calculation was
  painfully slow.
- When running in the enviroment (as the lowest priority therad etc) the
+ Sadly the implementation on the brick was late and the speed problems did
+ not show in the simulation framework.
+ When running in the environment (as the lowest priority thread etc) the
  calculation could take four seconds.
- Some last minute optimization then made it work in only one second even though
- that can not be called fast.
+ Some last minute optimization then made it work in only one second even
+ though that can not be called fast.
  It was decided to time slot the movement to avoid collisions.
  Since all cats have a synced clock it was not hard to implement.
- Each cat was given three seconds while the other ones waited for it to move.
+ Each cat was given three seconds while the other ones waited for it to
+ move.
+ A faster implementation would not have been hard to do but working (however
+ inefficient) code should never be changed at the last minute.
 \end_layout
 
 \end_body

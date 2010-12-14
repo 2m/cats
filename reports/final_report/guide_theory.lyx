@@ -85,14 +85,14 @@ reference "fig:guide_surface"
 
 .
  To try to find the maximum (the most desired location) of the map a gradient
- descent
+ descent method
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Wikipediaa"
 
 \end_inset
 
- method was used.
+ was used.
  Such a method is easy to implement and not so expensive to compute.
  The problem with this kind of method is that it only finds a 
 \emph on
@@ -102,25 +102,45 @@ local
  The decision was made to not expect the guide to find the optimal position
  (with the given criterion function) but only to try to correct the position
  to try to avoid situations which would make tracking too hard.
- The method of gradient descent looks like:
-\end_layout
+ The method of gradient descent tries to improve an initial value iteratively
+ as shown in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Guide gradient descent"
 
-\begin_layout Standard
-\begin_inset Formula $r_{n+1}=r_{n}-\nabla f(x,y)$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Where the derivative is approximated with finite difference scheme:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $\nabla f(x,y)\approx(\frac{f(x+h,y)-f(x-h,y)}{2h},\frac{f(x,y+h)-f(x,y-h)}{2h})$
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+r_{n+1}=r_{n}-\nabla f(x,y)\label{eq:Guide gradient descent}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where the derivative is approximated with finite difference scheme shown
+ in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Guide finite difference"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\nabla f(x,y)\approx\left(\frac{f(x+h,y)-f(x-h,y)}{2h},\frac{f(x,y+h)-f(x,y-h)}{2h}\right)\label{eq:Guide finite difference}\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -137,7 +157,7 @@ rule
  Those where the following:
 \end_layout
 
-\begin_layout Standard
+\begin_layout Enumerate
 
 \emph on
 Keep an optimal distance to the estimated target position.
@@ -146,7 +166,7 @@ Keep an optimal distance to the estimated target position.
  The penalty is the distance squared from the optimal distance to the target.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Enumerate
 
 \emph on
 Keep distance from edges.
@@ -156,7 +176,7 @@ Keep distance from edges.
  distance to an edge.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Enumerate
 
 \emph on
 Keep distance from other mobile objects.
@@ -166,7 +186,7 @@ Keep distance from other mobile objects.
  minimal distance to that object.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Enumerate
 
 \emph on
 Keep distance from another sensors line of sight to the target.
@@ -174,7 +194,7 @@ Keep distance from another sensors line of sight to the target.
 \emph default
  To avoid that cats block each others sight or stands opposite each other
  (which gives no additional information than having only one observer) the
- distance to the line of sight is penalized.
+ distance to the line of sight is penalized if too small.
 \end_layout
 
 \begin_layout Standard
@@ -202,7 +222,7 @@ name "fig:guide_surface"
 
 \end_inset
 
-Plot of criterion function
+Plot of the combined criterion function used by the guide
 \end_layout
 
 \end_inset
@@ -225,9 +245,13 @@ Simulation
 
 \begin_layout Standard
 A problem with the gradient descent method is that it in some circumstances
- starts to oscillate.
+ starts to oscillate around an optimum.
  This was avoided by simply not correcting the position less than a couple
- of centimeters and also setting a limit of iterations.
+ of centimeters at a time.
+ Convergence is often defined as when the distance between two iterations
+ are below a certain threshold.
+ When oscillating a limit to the number of iterations was used to avoid
+ loops going on for too long.
  A better solution would be to do a line search
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -239,11 +263,56 @@ key "Wikipedia"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+The first simulation was implemented in Matlab to test the concepts.
+ It worked fine and was ported to java shortly after that.
+\begin_inset Marginal
 status open
 
 \begin_layout Plain Layout
-Figure plot of simulation
+Should this be described in more detail?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/guide_simulation.png
+	lyxscale 30
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Guide simulation"
+
+\end_inset
+
+Plot of the Matlab simulation for the guide showing the criterion function
+ for each cat and where they are going (lower right)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset

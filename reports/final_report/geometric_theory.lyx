@@ -52,15 +52,18 @@ Theory
 \end_layout
 
 \begin_layout Standard
-The need for a naive way of correcting the cat position arouse when simulation
- of the other approaches to positioning failed.
+The need for a naive way of correcting the cat position arouse when implementati
+on of the other approaches to positioning failed.
  The geometric filter is not really a filter in the ordinary sense.
+ The name is inherited from the class it replaced in the code structure,
+ the positioning Kalman/particle filter.
  It can not correct much and it is not stable, but it worked good enough
- during tests.
+ during tests to use at the demonstration.
 \end_layout
 
 \begin_layout Standard
-The basic question which gave rise to the geometric filter was 
+After failing to utilize more modern approaches the basic question which
+ gave rise to the geometric filter was 
 \begin_inset Quotes eld
 \end_inset
 
@@ -93,7 +96,7 @@ reference "fig:Inscribed_angle_theorem"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -135,8 +138,8 @@ The positions of the landmarks are known, hence the solution to where the
  cat is lies on a circle.
  If one more landmark adjacent to the first (which it always is in our case
  since we use 4 landmarks) another circle can be found.
- There two circles intersect in two places and one of the solutions is
- the position of the cat.
+ There two circles intersect in two places and one of the solutions is the
+ position of the cat.
 \end_layout
 
 \begin_layout Standard
@@ -152,13 +155,15 @@ reference "fig:geometric_circle_error"
 
 .
  The more noise the more this area grows.
+ This could give rise to considerable drift in the filter estimate but would
+ still be better than the accumulated error from inexact motor information.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -182,8 +187,9 @@ name "fig:geometric_circle_error"
 
 \end_inset
 
-Plot of the error given by a noisy angle measurement to a landmark.
-(e) shows ..., (f) shows....   P = ???
+Plot of the error given by a noisy angle measurement to a landmark.(e) shows
+ ..., (f) shows....
+   P = ???
 \end_layout
 
 \end_inset
