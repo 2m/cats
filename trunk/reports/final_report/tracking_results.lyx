@@ -52,7 +52,7 @@ Setup
 \end_layout
 
 \begin_layout Standard
-All tests were conducted within a 2.5 by 2.5m arena.
+All tests were conducted within a 2.5 by 2.5m arena. The arena limits were also entered into the settings file on the bricks, meaning that the filters could limit estimates to 0.0 or 2.5m if outside this area. The period of the kalman filter was set to 500ms and the period of the particlefilter to 1000ms.
 
 \end_layout
 
@@ -120,7 +120,7 @@ reference "fig:test_arrangement"
 \end_inset
 
 (c) gave approximately the same
- result for the particle filter, as can be seen in Figure 
+ result for the particle filter, see Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test3_tracking_static_two_cats_particle"
@@ -203,20 +203,14 @@ name "fig:test1_tracking_static_line_kalman"
 \end_inset
 
 Plot of three cats standing on a line tracking a stationary
- mouse with the unscented kalman filter. See FIGURE X for the arrangement.
- (test1_tracking_static_line_kalman)
-\begin_inset Newline newline
+ mouse with the unscented kalman filter. See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
 \end_inset
 
-(Test1_tracking_static_mouse_with_three_cats_on_line): 
-\begin_inset Newline newline
-\end_inset
-
-Need to further specify how the cats and the mouse were placed?? Distance
- between cats = 0.5m? Mouse placed 1m infront of the middle cat? 
-\begin_inset Newline newline
-\end_inset
-
+(a) for furher details on the test arrangement.
 
 \end_inset
 
@@ -258,17 +252,14 @@ name "fig:test1_tracking_static_line_particle"
 \end_inset
 
 Plot of three cats standing on a line tracking a stationary
- mouse with the particle filter. 
-\begin_inset Newline newline
+ mouse with the particle filter. See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
 \end_inset
-test1_tracking_static_line_particle
-\begin_inset Newline newline
-\end_inset
-Test1_tracking_static_mouse_with_three_cats_on_line :
-\begin_inset Newline newline
-\end_inset
-Need to further specify how the cats and the mouse were placed?? Distance between cats = 0.5m? Mouse placed
- 1m infront of the middle cat? 
+
+(a) for furher details on the test arrangement.
 
 \end_layout
 
@@ -313,17 +304,14 @@ name "fig:test2_tracking_static_optimal_kalman"
 
 Plot of three cats standing on optimal positions tracking
  a static mouse with the unscented kalman filter. 
-The graph is cut at 2.5 and 0.0 because the data on the bricks were not allowed to exceed theese values.
-\begin_inset Newline newline
-\end_inset
-test2_tracking_static_optimal_kalman 
-\begin_inset Newline newline
-\end_inset
-Test2_tracking_static_mouse_with_three_cats_on_optimal_pos:
-\begin_inset Newline newline
-\end_inset
-Need to further specify how the cats and the mouse were placed?? Cats placed in triangle? Mouse placed in the middle? 
+The graph is cut at 0.0 and 2.5m because the data on the bricks were not allowed to exceed thoose values as that would be outside the arena. See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
 
+\end_inset
+
+(b) for furher details on the test arrangement.
 
 \end_layout
 
@@ -367,18 +355,13 @@ name "fig:test2_tracking_static_optimal_particle"
 \end_inset
 
 Plot of the final system with three cats standing on optimal positions tracking
- a static mouse with the particle filter.
-\begin_inset Newline newline
+ a static mouse with the particle filter. See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
 \end_inset
-test2_tracking_static_optimal_particle
-\begin_inset Newline newline
-\end_inset
-Test2_tracking_static_mouse_with_three_cats_on_optimal_pos:
-\begin_inset Newline newline
-\end_inset
-Need to further specify how the cats and the mouse were placed?? Cats placed in triangle? Mouse placed in the middle?
-\begin_inset Newline newline
-\end_inset
+(b) for furher details on the test arrangement.
 
 \end_layout
 
@@ -422,18 +405,13 @@ name "fig:test3_tracking_static_two_cats_particle"
 \end_inset
 
 Plot of the final system with two cats tracking a static mouse with the
- particle filter.
-\begin_inset Newline newline
+ particle filter. See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
 \end_inset
-test3_tracking_static_two_cats_particle
-\begin_inset Newline newline
-\end_inset
-Test3_tracking_static_mouse_with_two_cats_on_optimal_pos:
-\begin_inset Newline newline
-\end_inset
-Need to further specify how the cats and the mouse were placed?? Placed how??? Mouse placed in the middle? 
-\begin_inset Newline newline
-\end_inset
+(c) for furher details on the test arrangement.
 
 \end_layout
 
@@ -447,7 +425,6 @@ Need to further specify how the cats and the mouse were placed?? Placed how??? M
 \end_layout
 
 \end_inset
-
 
 \end_layout
 
@@ -517,13 +494,14 @@ name "fig:test4_tracking_moving_kalman2"
 
 Plot of the final system with three stationary and decently placed cats
  tracking a mouse moving at a constant speed of roughly 0.19 m/s with the
- unscented kalman filter.
-\begin_inset Newline newline
+ unscented kalman filter. See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
 \end_inset
-test4_tracking_moving_kalman2
-\begin_inset Newline newline
-\end_inset
-Test4_tracking_moving_mouse_with_three_cats_on_optimal_pos:
+
+(d) for an illustration of the test arrangement.
 
 \end_layout
 \end_inset
@@ -561,18 +539,14 @@ name "fig:test4_tracking_moving_particle2"
 \end_inset
 
 Plot of the final system with three stationary and decently placed cats
- tracking a mouse moving at a constant speed of roughly 0.19m/s with the particle filter.
-\begin_inset Newline newline
+ tracking a mouse moving at a constant speed of roughly 0.19m/s with the particle filter. See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
 \end_inset
-test4_tracking_moving_particle2 
-\begin_inset Newline newline
-\end_inset
-Test4_tracking_moving_mouse_with_three_cats_on_optimal_pos:
-\begin_inset Newline newline
-\end_inset
-Need to further specify how the cats and the mouse were placed?? Cats in a trianle? Mouse moving through the middle?
-\begin_inset Newline newline
-\end_inset
+
+(d) for an illustration of the test arrangement.
 
 \end_layout
 \end_inset
@@ -610,17 +584,15 @@ name "fig:test4_tracking_moving_particle_slower_movement"
 \end_inset
 
 Plot of the final system with three stationary and decently placed cats
- tracking a mouse moving at a constant speed slower than 0.19m/s with the
- particle filter.
-\begin_inset Newline newline
+ tracking a mouse moving at a constant speed significantly slower than 0.19m/s with the
+ particle filter. See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:test_arrangement"
+
 \end_inset
-test4_tracking_moving_particle_slower_movement 
-\begin_inset Newline newline
-\end_inset
-Test4_tracking_moving_mouse_with_three_cats_on_optimal_pos: 
-Need to further specify how the cats and the mouse were placed?? Cats in a trianle? Mouse moving through the middle?
-\begin_inset Newline newline
-\end_inset
+
+(d) for an illustration of the test arrangement.
 
 \end_layout
 \end_inset
