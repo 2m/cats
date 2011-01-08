@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -45,16 +45,6 @@
 
 \begin_layout Subsection
 Particle filter
-\begin_inset Marginal
-status collapsed
-
-\begin_layout Plain Layout
-Needs more work
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -63,6 +53,15 @@ The basic principle of a particle filter is to by a particle optimization
  It is a Bayesian recursive method which means it iteratively tries to estimate
  a state vector by a probability distribution using data to evaluate and
  update the same distribution.
+ It has been proven to be very useful on bearings-only problems localizing
+ robots
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rekleitis"
+
+\end_inset
+
+.
  The basic system looks like in equation 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -148,111 +147,136 @@ If the function
  Around this vector there lies a probability distribution corresponding
  to the uncertainty of the state vector.
  The main advantages to particle filters is that they can handle non-linearity's
- without compromising on accuracy
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-citation needed
-\end_layout
-
-\end_inset
-
- or the need for linearisation.
+ without compromising on accuracy or the need for linearization.
 \end_layout
 
 \begin_layout Standard
-Basically 
+Basically the algorithm looks like this:
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
 
-\begin_layout Plain Layout
-General priciple
+\series bold
+Draw random hypotheses 
+\series default
+about the states in the tracked object within a given probability density
+ function, called and visualized as particles.
+ This first step is only for initialization.
 \end_layout
 
-\begin_layout Plain Layout
-Application to tracking
+\begin_layout Standard
+
+\series bold
+Update particles
+\series default
+ (integration or similar) according to the estimated objects dynamics.
+ Note that different states can have non-linear relations.
 \end_layout
 
-\begin_layout Plain Layout
-Application to positioning
-\end_layout
+\begin_layout Standard
 
-\begin_layout Plain Layout
-Check references
-\end_layout
+\series bold
+Compare the states
+\series default
+ of each particle with sensor data (equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:particle-error"
+
+\end_inset
+
+) and give each particle a weight indicating how well it conforms to it
+ (equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:particle-weight"
+
+\end_inset
+
+).
+\begin_inset Formula \begin{equation}
+\theta_{error}=\theta_{sensor}-tan^{-1}\left(\frac{y_{particle}-y_{sensor}}{x_{particle}-x_{sensor}}\right)\label{eq:particle-error}\end{equation}
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Enumerate
-Random hypotheses about the states in the tracked object (within a given
- possible interval), visualized as particles 
-\end_layout
-
-\begin_layout Enumerate
-Update particles (integration or similar) according to the estimated objects
- dynamics
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-show how
-\end_layout
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+w_{i}=w_{i}\cdot e^{\frac{\theta_{error}^{2}}{2\sigma}}\label{eq:particle-weight}\end{equation}
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Enumerate
-Compare the states of each particle with sensor data and give each particle
- a weight indicating how well it conforms to it.
-\begin_inset Note Note
-status collapsed
+\begin_layout Standard
 
-\begin_layout Plain Layout
-show how
-\end_layout
+\series bold
+Calculate a weighted mean
+\series default
+ or similar method to get the estimated states of the tracked object (equation
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:particle-norm-weights"
+
+\end_inset
+
+-
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:particle-covariance"
+
+\end_inset
+
+).
+\begin_inset Formula \begin{equation}
+\sum_{i=0}^{N}w_{i}=1\label{eq:particle-norm-weights}\end{equation}
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Enumerate
-Calculate a weighted mean or similar method to get the estimated states
- of the tracked object
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-show how
-\end_layout
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mu=\sum_{i=0}^{N}w\cdot u_{i}\label{eq:particle-mean}\end{equation}
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Enumerate
-If needed, re-sample the particles based on the estimation of the tracked
- object (i.e.
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+C_{jk}=\sum_{i=0}^{N}\frac{(u_{i}^{j}-\mu^{j})(u_{i}^{k}-\mu^{k})}{1-\sum_{i=0}^{N}w_{i}^{2}}\label{eq:particle-covariance}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+If needed, re-sample
+\series default
+ the particles based on the estimation of the tracked object (i.e.
  change the estimated PDF information contained in the particle swarm).
 \end_layout
 
-\begin_layout Enumerate
-GOTO 2
+\begin_layout Standard
+The above described steps are repeated, hence the name recursive algorithm,
+ with information from the re-sampling step being the input of the update
+ step.
 \end_layout
 
 \begin_layout Standard
 In our specific case there was a need for two particle filters.
- One for tracking and one for positioning of the tracking robot.
+ One type for tracking the target and one type for positioning of the tracking
+ robots.
  Also since we did not have to take height of a target into account (i.e.
  the arena for tracking was flat), all filters needed only to take the two
  dimensional case into account.
@@ -268,7 +292,7 @@ x_{k}=\left(\begin{array}{c}
 r_{x}\\
 r_{y}\\
 v_{x}\\
-v_{y}\end{array}\right)\end{equation}
+v_{y}\end{array}\right)\label{eq:particle-tracking-states}\end{equation}
 
 \end_inset
 
@@ -294,7 +318,35 @@ r_{y}\\
 \end_layout
 
 \begin_layout Standard
-A Gaussian model was chosen
+A Gaussian noise model was chosen, hence the ease of parameterizing the
+ distribution in equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:particle-mean"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:particle-covariance"
+
+\end_inset
+
+.
+ A reason for choosing this model is that the data communication rate should
+ be as low as possible when doing the calculations distributed over the
+ cats.
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+More?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -304,7 +356,8 @@ Simulation
 \begin_layout Standard
 The tracking filter worked very well in simulation and did even estimate
  the speed quite correctly.
- 
+ The simulation was done in a 3x3 meter arena with 1 to 5 degrees of standard
+ deviation of the angular error of the bearing.
 \end_layout
 
 \begin_layout Standard
@@ -347,6 +400,8 @@ Plot from the simulation of the tracking particle filter
 \begin_layout Standard
 The positioning filter worked very well in simulation even though it, at
  most, could only see two landmarks at a time.
+ The simulation was done in a 3x3 meter arena with 1 to 5 degrees of standard
+ deviation of the angular error of the bearing.
 \end_layout
 
 \begin_layout Standard
@@ -395,6 +450,11 @@ The good results from the simulation was a good indication that this filtering
  technique was a feasible solution.
  It was clear though that some optimization would be needed for the filtering
  technique to work on our desired platform.
+ Also the code in the Matlab implementation was at first structured in a
+ way that is very complex to do in Java.
+ This came naturally since there was a great need to experiment.
+ The last step in the implementation of the Matlab code was to change it
+ so to use only statements which had equivalents in Java.
 \end_layout
 
 \end_body

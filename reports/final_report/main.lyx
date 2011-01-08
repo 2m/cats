@@ -63,15 +63,25 @@ Cooperative Autonomous Tracking System
 \end_layout
 
 \begin_layout Abstract
-This paper presents a simple template for IEEEtran documents.
- 
+This report describes the work of implementing a number of robots who cooperativ
+ely searches for a non-cooperative target.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Extent abstract
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Keywords
-Bearings-only Tracking, Farticle Filter, Unscented Kalman Filter, Robot
+Bearings-only Tracking, Particle Filter, Unscented Kalman Filter, Robot
  Platform
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 More keywords?
@@ -147,11 +157,20 @@ Previous Work
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 overview of previous work
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
-Some UKF paper...
+Robot platform 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Takahashi2009"
@@ -159,6 +178,22 @@ key "Takahashi2009"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Particle filters are a common appriach in non-linear tracking and been proven
+ effective for robot localization 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ISI:000222055900012,MiodragBolic2004-11-12,Rekleitis"
+
+\end_inset
+
+...
+\end_layout
+
+\begin_layout Standard
+Some UKF paper...
 \end_layout
 
 \begin_layout Section
@@ -629,7 +664,6 @@ status collapsed
 
 \end_inset
 
- All about you and the what your interests are.
  Project leader.
  Particle filter (both tracking and positioning) theory, simulation and
  implementation.
