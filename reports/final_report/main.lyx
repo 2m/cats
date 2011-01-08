@@ -1,4 +1,4 @@
-#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -68,7 +68,18 @@ This paper presents a simple template for IEEEtran documents.
 \end_layout
 
 \begin_layout Keywords
-bearings-only, particle filter, unscented Kalman filter...
+Bearings-only Tracking, Farticle Filter, Unscented Kalman Filter, Robot
+ Platform
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+More keywords?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout MarkBoth
@@ -335,7 +346,14 @@ filename "guide_implementation.lyx"
 \end_layout
 
 \begin_layout Standard
-GUI
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "gui.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
