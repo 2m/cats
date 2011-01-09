@@ -78,8 +78,8 @@ As the goal of this project is to track the mouse we wanted the cameras
  That way the errors were reduced about five times.
  The maximum speed of the camera rotation was of course also reduced five
  times, but the speed with the cog wheel showed to be sufficient.
- In fact, limitations of the sensors precluded any rotation much faster
- than this anyway.
+ In fact, the camera's susceptibility to motion blur prevented any rotation
+ much faster than this anyway.
 \end_layout
 
 \end_body
