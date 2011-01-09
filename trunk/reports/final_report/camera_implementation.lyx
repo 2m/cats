@@ -52,7 +52,201 @@ Extracting angle measurements
 \end_layout
 
 \begin_layout Standard
-Text
+To allow the mouse’s position to be calculated from angular measurements,
+ the angles have to be given in a common coordinate system.
+ We chose to use the fixed coordinate system of the arena.
+ The sensor readings only provide relative angular values however, so the
+ angles have to be converted.
+ This is done using:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\theta_{abs}=\theta_{cat}+\theta_{m}+\theta_{cam}\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\theta_{abs}$
+\end_inset
+
+ is the angle in the arena coordinate system, 
+\begin_inset Formula $\theta_{cat}$
+\end_inset
+
+ is the angle of the cat (i.e.
+ its orientation), 
+\begin_inset Formula $\theta_{m}$
+\end_inset
+
+ is the angle of the camera motor relative to its starting position.
+ Before program execution, the camera motor was always oriented so that
+ the camera was facing straight forward in the same direction as that of
+ the cat.
+ The cats 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+were
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+ also oriented pointing towards 0
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+° (along the x-axis) in the arena coordinate system, every time before
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+ program execution
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+.
+ That way we could use the assumed initial values of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\theta_{cat}=0\text{°}$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{m}=0\text{°}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\theta_{cam}$
+\end_inset
+
+ is the angle to the mouse (or landmark) relative to the camera's optical
+ axis.
+ This value has to be computed from the information available in the camera
+ image containing the mouse.
+ The mouse's horizontal pixel offset to the camera's optical axis can be
+ converted to an angular reading.
+ To investigate the relation between the pixel and the angular value, a
+ simple test was performed.
+ A set of markers was placed in the camera's entire field of view, with
+ a fixed angle between each marker.
+ Conveniently, the camera then rendered an image with a fixed horizontal
+ pixel distance between each marker.
+ Therefore, it was concluded that the following linear model to calculate
+ the 
+\begin_inset Formula $\theta_{cam}$
+\end_inset
+
+ would be used:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\theta_{cam}=ke+d\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $k$
+\end_inset
+
+ is a constant describing the horizontal angular span of one pixel, and
+ 
+\begin_inset Formula $e$
+\end_inset
+
+ the pixel offset.
+ The test showed that the camera's optical axis was not properly aligned
+ with the center of the camera sensor, so an angular offset 
+\begin_inset Formula $d$
+\end_inset
+
+ was added to the model.
+ This offset had to be tweaked to each of the different cameras as they
+ all showed different angular offsets (up to 19
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+°).
+ The angular field of view of the camera was given in the specifications,
+ and this value could also be verified in the test.
+ Using this value 
+\begin_inset Formula $a$
+\end_inset
+
+, 
+\begin_inset Formula $k$
+\end_inset
+
+ could easily be calculated as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+k=\frac{a}{p}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $p$
+\end_inset
+
+ is the number of pixels along the horizontal axis of the image.
+\end_layout
+
+\begin_layout Standard
+Retrieving the horizontal pixel coordinates of the mouse in an image of
+ the camera was easy since the LejOS API already has this feature implemented.
+ Since the camera can detect up to eight targets with different colors,
+ we chose to assign each landmark and the mouse with a unique color marker.
+ That way, we can easily get the correct pixel locations of the mouse and
+ the landmarks in the camera's field of view, even if several should appear
+ at the same time.
 \end_layout
 
 \begin_layout Subsubsection
@@ -93,7 +287,7 @@ key "MergeBlob"
 \begin_layout Standard
 Since we have started to modify camera's firmware we thought that it is
  good idea to put some more filtering logic to the camera so we can keep
- camera's AVR processor busy.
+ camera's AVR processor busy, offloading the NXT's CPU.
  We have added tracking object filtering by the Y coordinate 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -123,24 +317,24 @@ We needed a regulator that would follow the movement of the mouse as good
  the motor and hindering any further movement in that direction.
  The solution was implementing a lower and higher bound of the rotation
  of the camera.
- The bounds were chosen as [-180°, 180°] to allow a 360° field of view.
+ The bounds were chosen as [-180°, 180°] (relative to the starting position
+ of the camera motor), to allow a 360° field of view.
  Whenever the camera motor tried to go outside this bound, the direction
  of the motor changed.
 \end_layout
 
 \begin_layout Standard
 When designing a regulator a regulator of this kind an error signal is necessary.
- Since it is desirable to keep the mouse in the middle of the camera picture
- (only horizontal direction concerned), the error was chosen to be the pixel
- distance from the mouse to the center of the picture, i.e.
- the difference between the mouse's location in the picture and the center.
+ Since it is desirable to keep the mouse in the middle of the camera image
+ (only horizontal position regarded), the error was chosen to be the pixel
+ difference between the mouse's location in the image and the image center.
  This error signal limited in resolution by the resolution of the camera
- and it is bounded by the field of view of the camera as well.
+ and it is bounded by the field of view of the camera.
  If the mouse disappears outside of the picture, the error signal is set
- to the same as the bound on the side of the picture of which the mouse
- was last seen.
+ to the same as the bound value on the side of the picture of which the
+ mouse was last seen.
  Also, a control signal is necessary.
- The natural choice of the speed and direction of the motor was chosen.
+ The natural choice of the speed and direction of the motor, was chosen.
 \end_layout
 
 \begin_layout Standard
