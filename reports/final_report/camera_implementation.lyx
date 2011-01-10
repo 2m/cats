@@ -182,7 +182,7 @@ were
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\theta_{cam}=ke+d\end{equation}
+\theta_{cam}=k(e+d)\end{equation}
 
 \end_inset
 
@@ -195,15 +195,15 @@ where
 \begin_inset Formula $e$
 \end_inset
 
- the pixel offset.
+ the pixel offset signal.
  The test showed that the camera's optical axis was not properly aligned
- with the center of the camera sensor, so an angular offset 
+ with the center of the camera sensor, so a constant pixel offset 
 \begin_inset Formula $d$
 \end_inset
 
  was added to the model.
- This offset had to be tweaked to each of the different cameras as they
- all showed different angular offsets (up to 19
+ This value had to be tweaked to each of the different cameras as they all
+ showed different pixel offsets (up to 19
 \family roman
 \series medium
 \shape up
@@ -212,7 +212,7 @@ where
 \bar no
 \noun off
 \color none
-°).
+ pixels).
  The angular field of view of the camera was given in the specifications,
  and this value could also be verified in the test.
  Using this value 
@@ -240,9 +240,9 @@ where
 \end_layout
 
 \begin_layout Standard
-Retrieving the horizontal pixel coordinates of the mouse in an image of
- the camera was easy since the LejOS API already has this feature implemented.
- Since the camera can detect up to eight targets with different colors,
+Retrieving the horizontal pixel coordinates of the mouse marker in a camera
+ image was easy since the LejOS API already has this feature implemented.
+ Because the camera can detect up to eight targets with different colors,
  we chose to assign each landmark and the mouse with a unique color marker.
  That way, we can easily get the correct pixel locations of the mouse and
  the landmarks in the camera's field of view, even if several should appear
@@ -327,7 +327,12 @@ We needed a regulator that would follow the movement of the mouse as good
 When designing a regulator a regulator of this kind an error signal is necessary.
  Since it is desirable to keep the mouse in the middle of the camera image
  (only horizontal position regarded), the error was chosen to be the pixel
- difference between the mouse's location in the image and the image center.
+ difference between the mouse's location in the image and the image center
+ (corrected with an offset, i.e.
+\begin_inset Formula $e+d$
+\end_inset
+
+ above).
  This error signal limited in resolution by the resolution of the camera
  and it is bounded by the field of view of the camera.
  If the mouse disappears outside of the picture, the error signal is set
