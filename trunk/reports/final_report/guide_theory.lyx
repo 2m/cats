@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -201,7 +201,7 @@ Keep distance from another sensors line of sight to the target.
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -265,26 +265,15 @@ key "Wikipedia"
 \begin_layout Standard
 The first simulation was implemented in Matlab to test the concepts.
  It worked fine and was ported to java shortly after that.
-\begin_inset Marginal
-status open
-
-\begin_layout Plain Layout
-Should this be described in more detail?
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
-\align center
 \begin_inset Graphics
 	filename images/guide_simulation.png
 	lyxscale 30
