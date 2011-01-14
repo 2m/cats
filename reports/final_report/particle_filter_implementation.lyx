@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -45,16 +45,6 @@
 
 \begin_layout Subsection
 Particle filter
-\begin_inset Marginal
-status open
-
-\begin_layout Plain Layout
-Needs more work
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsubsection
@@ -62,12 +52,12 @@ Java simulation
 \end_layout
 
 \begin_layout Standard
-Simulations in java where implemented only to weed out bugs.
- This approach was very successfull since the filter, when on the brick,
+Simulations in Java where implemented only to weed out bugs.
+ This approach was very successful since the filter, when on the brick,
  worked as intended.
  The filter could also be profiled to find where optimizations would do
  most good.
- Even though profiling did give a better insigt on how the filter worked
+ Even though profiling did give a better insight on how the filter worked
  in practice the benefits were limited due to the vast differences of hardware
  between a PC and a NXT.
 \end_layout
@@ -135,42 +125,110 @@ Re-sampling needs one random sample per state variable and particle from
 \end_layout
 
 \begin_layout Enumerate
-Floating point precision is not native to the NXT but implemented in fireware
+Floating point precision is not native to the NXT but implemented in firmware
 \end_layout
 
 \begin_layout Standard
-Since the handling of floating point arithmetic is not native to the NXT,
- but emulated in the firmware
-\begin_inset Note Note
-status collapsed
 
-\begin_layout Plain Layout
-ref.
- forum?
-\end_layout
-
-\end_inset
-
-, a classic approach to embedded mathematics was used, the so called fixed
- point arithmetic.
- Explain fixed point??
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-ref.
- Apple paper
-\end_layout
+\series bold
+Since the handling of floating point
+\series default
+ arithmetic is not native to the NXT, but emulated in the firmware, a classic
+ approach to embedded mathematics was used, the so called fixed point arithmetic
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Yates2009-07-07"
 
 \end_inset
 
 .
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-12.20
+ Fixed point uses only integer operation which are much faster than floating
+ point, usually they are even so on processors with native floating point
+ support.
+ the basic idea is that all numbers are multiplied by a constant and then
+ truncating the floating point number into an integer.
+ If the constant is chosen as a power of two many important operations collapse
+ to a bit shift.
+ When doing a multiplication the result looks like the following.
 \end_layout
+
+\begin_layout Standard
+\begin_inset Formula $c=((a\cdot d)\cdot(b\cdot d))/d$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where d is the constant all numbers are multiplied by.
+ Now if d is chosen as 
+\begin_inset Formula $2^{BASE}$
+\end_inset
+
+ then and all numbers are represented as fixed point at all times the above
+ equation collapses to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $c=(a\cdot b)\gg BASE$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where the symbol 
+\begin_inset Formula $\gg$
+\end_inset
+
+ represents a bit shift effectively dividing with the factor 
+\begin_inset Formula $2^{BASE}$
+\end_inset
+
+.
+ The base used in the implementation was 20 and the format is called 12.20
+ fixed point.
+\end_layout
+
+\begin_layout Standard
+When normalizing vector represented in fixed point some kind of square root
+ algorithm was needed.
+ Since floating point is used on many embedded devices there have been a
+ lot of research on different algorithms.
+ A simple algorithm which searches for the right square was implemented
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Turkowski1994"
+
+\end_inset
+
+ and modified to suit the fixed point setup.
+\end_layout
+
+\begin_layout Standard
+For sine and cosine a simple look up table was used.
+ Because of symmetry in and between the two functions a high resolution
+ can be obtained using little memory.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+To replace the arc-tan and the exponential 
+\series default
+function a linearization technique was investigated.
+ The data given are coordinates on a plane which lead to the though of the
+ definition of inner product in 
+\begin_inset Formula $\mathbb{R}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+u\cdot v=\frac{cos\theta}{\left\Vert u\right\Vert \left\Vert v\right\Vert }\Longrightarrow\theta=acos\left(\frac{u\cdot v}{\left\Vert u\right\Vert \left\Vert v\right\Vert }\right)\label{eq:Particle vector product}\end{equation}
 
 \end_inset
 
@@ -178,35 +236,43 @@ status collapsed
 \end_layout
 
 \begin_layout Standard
-For the first problem a short cut was investigated to replace the arc-tan
- and the exponential function.
- The data given are coordinates on a plane
-\end_layout
+\begin_inset Formula \begin{equation}
+w=f_{weight}\left(\frac{v_{x}}{\left\Vert v\right\Vert }\right)\end{equation}
 
-\begin_layout Standard
-\begin_inset Formula $u\cdot v=\frac{cos\theta}{\left\Vert u\right\Vert \left\Vert v\right\Vert }\Longrightarrow\theta=acos\left(\frac{u\cdot v}{\left\Vert u\right\Vert \left\Vert v\right\Vert }\right)$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $w=f_{weight}\left(\frac{v_{x}}{\left\Vert v\right\Vert }\right)$
+If the evaluation function was plotted against 
+\begin_inset Formula $cos\theta$
 \end_inset
 
+ from the vector product as in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Particle vector product"
 
-\end_layout
+\end_inset
 
-\begin_layout Standard
-lut of sine: small because of symmetry, in pos.
- case this could be even more optimized
+ the result could be approximated with a piecewise linear function.
+ After some work trying to find the best segments to linearize the resulting
+ function is plotted against angular deviation in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:particle_weight_function"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -246,40 +312,17 @@ Plot of the linearized weight function and analytical values of the same
 \end_layout
 
 \begin_layout Standard
-This method gave raise to the problem of square root operations needed to
- normalize vectors.
- The solution could be found in an old algorithm for taking the square root
- of integers 
-\begin_inset Note Note
-status collapsed
 
-\begin_layout Plain Layout
-ref.
- Internet
-\end_layout
-
-\end_inset
-
-slightly modified to be used with fixed point arithmetic.
-\end_layout
-
-\begin_layout Standard
-Re-sampling the particles is not a hard or heavy task but can still be improved
- significantly.
+\series bold
+Re-sampling the particles
+\series default
+ is not a hard or heavy task but can still be improved significantly.
  Most of the time the particles are good and the number who really need
  to be re-sampled are small.
- If only the worst particles are resampled the filter would converge slower
- but would not need to do so much random sampling.??
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Is sorting needed elsewhere?
-\end_layout
-
-\end_inset
-
-
+ If only the worst particles are re-sampled the filter would converge slower
+ but would not need to do so much random sampling.
+ However this method might need some overhead in sorting the particles.
+ The methods worked but was never compared with respect to accuracy.
 \end_layout
 
 \end_body

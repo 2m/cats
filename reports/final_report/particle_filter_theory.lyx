@@ -337,16 +337,12 @@ reference "eq:particle-covariance"
  A reason for choosing this model is that the data communication rate should
  be as low as possible when doing the calculations distributed over the
  cats.
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-More?
-\end_layout
-
-\end_inset
-
-
+ A fairly naive approach was used to do a weighted mean and covariance matrix
+ when merging the information from the different cats.
+ The mean is quite simple as it is obvious that the means can just be weighted
+ since all nodes had the same starting weight.
+ The covariance matrix was also just weighted together in a linear way.
+ This turned out to work but we did not do a formal proof.
 \end_layout
 
 \begin_layout Subsubsection

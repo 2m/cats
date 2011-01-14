@@ -1,8 +1,24 @@
-#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
 \textclass IEEEtran
+\begin_preamble
+\RequirePackage{colortbl, tabularx}
+\@ifundefined{comment}{}% do nothing if the comment environment is not defined
+  {% redefine the comment environment if it is defined
+   \renewenvironment{comment}
+    {% replaces \begin{comment}
+     \par\medskip\noindent
+     \tabularx{\columnwidth}{|>{\columncolor[gray]{0.9}}X|}
+     \hline
+     \emph{\textbf{Comment:}}% You can use any other text instead of "Comment:" or leave it
+    }
+    {% replaces \end{comment}
+     \endtabularx\hrule\par\medskip
+    }
+  }%
+\end_preamble
 \use_default_options false
 \language english
 \inputencoding default
@@ -65,7 +81,7 @@ Cooperative Autonomous Tracking System
 \begin_layout Abstract
 This report describes the work of implementing a number of robots who cooperativ
 ely searches for a non-cooperative target.
-\begin_inset Note Note
+\begin_inset Note Comment
 status open
 
 \begin_layout Plain Layout
@@ -79,42 +95,24 @@ Extent abstract
 
 \begin_layout Keywords
 Bearings-only Tracking, Particle Filter, Unscented Kalman Filter, Robot
- Platform
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-More keywords?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout MarkBoth
-This is for left pages
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-}{
-\end_layout
-
-\end_inset
-
-and this is for right pages
+ Platform, Embedded platform
 \end_layout
 
 \begin_layout Section
 Introduction
-\begin_inset Note Note
-status collapsed
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
 
 \begin_layout Plain Layout
 In the form requested on the course web page: http://www.it.uu.se/edu/course/homepa
-ge/styrsystem/vt09/Nyheter/guidelines_report.pdf
+ge/...
+\end_layout
+
+\begin_layout Plain Layout
+styrsystem/vt09/Nyheter/guidelines_report.pdf
 \end_layout
 
 \end_inset
@@ -123,6 +121,10 @@ ge/styrsystem/vt09/Nyheter/guidelines_report.pdf
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
 \begin_inset ERT
 status collapsed
 
@@ -139,12 +141,12 @@ PARstart{T}{here}
  Refer to the IEEEtran documentation (sample document) for more details.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
+\begin_layout Plain Layout
+http://www.it.uu.se/edu/course/homepage/styrsystem/...
+\end_layout
 
 \begin_layout Plain Layout
-http://www.it.uu.se/edu/course/homepage/styrsystem/vt10/Projekt/CoLEGO
+vt10/Projekt/CoLEGO
 \end_layout
 
 \end_inset
@@ -157,7 +159,7 @@ Previous Work
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Comment
 status open
 
 \begin_layout Plain Layout
@@ -181,7 +183,11 @@ key "Takahashi2009"
 \end_layout
 
 \begin_layout Standard
-Particle filters are a common appriach in non-linear tracking and been proven
+Some UKF paper...
+\end_layout
+
+\begin_layout Standard
+Particle filters are a common appoach in non-linear tracking and been proven
  effective for robot localization 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -189,11 +195,12 @@ key "ISI:000222055900012,MiodragBolic2004-11-12,Rekleitis"
 
 \end_inset
 
-...
-\end_layout
-
-\begin_layout Standard
-Some UKF paper...
+.
+ It is a computationaly heavy technique and hence there would have to be
+ a lot of work doing optimizations.
+ The target platform was quite limited in computational power but since
+ we also would try the Kalman filter, which is a standard technique, it
+ was decided that there would be time to test both.
 \end_layout
 
 \begin_layout Section
@@ -216,12 +223,21 @@ filename "alternative_solutions2.lyx"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
 o Approach Kalman, particle tracking and positioning.
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 o Design
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -439,162 +455,57 @@ filename "guide_results.lyx"
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-placement htbp
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\align center
-
-\family sans
-A single column figure goes here
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Captions go 
-\emph on
-under
-\emph default
- the figure
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float table
-placement htbp
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Table captions go 
-\emph on
-above
-\emph default
- the table
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="2" columns="2">
-<features>
-<column alignment="center" valignment="top" width="0pt">
-<column alignment="center" valignment="top" width="0pt">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-delete
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-this
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-example
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-table
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 future work
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
 Better sensors! (really needed? shouldn't it be quite possible to solve
  the task with current sensors?) 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 New orientation measurement sensor? 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Faster filters and guide 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 All cats moving at the same time without risking to collide.
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Optimizing the java implementation of the kalman
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Kalman filters.
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Positioning filter Kalman - how to make it work? Possible with current sensors
  ? 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Particle - how to make it work on brick? 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Cat positioning while moving, correcting position and orientation on-line.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -665,13 +576,19 @@ status collapsed
 \end_inset
 
  Project leader.
- Particle filter (both tracking and positioning) theory, simulation and
- implementation.
- Software architecture and design.
- Java simulation framework.
- Geometric absolute positioning filter theory and implementation.
- AI for robot positioning (maximizing sensor reading information and collision
- avoidance).
+ Worked on the Particle filter (both tracking and positioning) and Geometric
+ 
+\begin_inset Quotes eld
+\end_inset
+
+filter
+\begin_inset Quotes erd
+\end_inset
+
+ theory, simulation and implementation.
+ Participated in software architecture and design.
+ Wrote most of the Java simulation framework and the AI for robot positioning
+ (maximizing sensor reading information and collision avoidance).
 \end_layout
 
 \begin_layout --Separator--
