@@ -1,4 +1,4 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -84,7 +84,7 @@ A common approach to speeding up non-linear functions is look up tables.
 \end_layout
 
 \begin_layout Standard
-The steps who needed optimizations badly
+The steps who needed optimizations badly 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "MiodragBolic2004-11-12"
@@ -135,6 +135,7 @@ Since the handling of floating point
 \series default
  arithmetic is not native to the NXT, but emulated in the firmware, a classic
  approach to embedded mathematics was used, the so called fixed point arithmetic
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Yates2009-07-07"
@@ -145,7 +146,7 @@ key "Yates2009-07-07"
  Fixed point uses only integer operation which are much faster than floating
  point, usually they are even so on processors with native floating point
  support.
- the basic idea is that all numbers are multiplied by a constant and then
+ The basic idea is that all numbers are multiplied by a constant and then
  truncating the floating point number into an integer.
  If the constant is chosen as a power of two many important operations collapse
  to a bit shift.
@@ -160,8 +161,16 @@ key "Yates2009-07-07"
 \end_layout
 
 \begin_layout Standard
-Where d is the constant all numbers are multiplied by.
- Now if d is chosen as 
+Where 
+\begin_inset Formula $d$
+\end_inset
+
+ is the constant all numbers are multiplied by.
+ Now if 
+\begin_inset Formula $d$
+\end_inset
+
+ is chosen as 
 \begin_inset Formula $2^{BASE}$
 \end_inset
 
@@ -196,6 +205,7 @@ When normalizing vector represented in fixed point some kind of square root
  Since floating point is used on many embedded devices there have been a
  lot of research on different algorithms.
  A simple algorithm which searches for the right square was implemented
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Turkowski1994"
@@ -258,7 +268,7 @@ reference "eq:Particle vector product"
 
  the result could be approximated with a piecewise linear function.
  After some work trying to find the best segments to linearize the resulting
- function is plotted against angular deviation in figure 
+ function is plotted against angular deviation in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:particle_weight_function"

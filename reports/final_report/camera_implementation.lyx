@@ -329,6 +329,7 @@ When designing a regulator a regulator of this kind an error signal is necessary
  (only horizontal position regarded), the error was chosen to be the pixel
  difference between the mouse's location in the image and the image center
  (corrected with an offset, i.e.
+ 
 \begin_inset Formula $e+d$
 \end_inset
 
