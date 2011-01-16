@@ -84,10 +84,21 @@ The solution adopted involved the use of Cold Cathode Fluorescent Lamps
  LEDs on the other hand can only be viewed from one side.
  Furthermore, the CCFLs have a much larger luminous area than the point-like
  apprearance of LEDs.
- This is neccesary of the visual marker should be detectable at large distances.
+ This is neccesary if the visual marker should be detectable at large distances.
  This criterion proved quite difficult to satisfy even with the CCFLs.
- The size of the lamp in the picture decreases with the square of the distance,
- in analogy to the surface area of a sphere.
+ The size of the lamp in the picture decreases approximatley with the inverse
+ of the distance 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Insert citation here - Wikipedia, Magnification.
+ How?
+\end_layout
+
+\end_inset
+
+.
  In combination with the limited resolution of the camera, this made the
  CCFL no larger than a few pixels or not visible at all at distances much
  larger than a meter.
