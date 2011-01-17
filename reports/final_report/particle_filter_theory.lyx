@@ -1,4 +1,4 @@
-#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -45,19 +45,6 @@
 
 \begin_layout Subsection
 Particle filter
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Define used variables.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -198,12 +185,33 @@ reference "eq:particle-error"
 
 \end_inset
 
-) and give each particle a weight indicating how well it conforms to it
- (equation 
+) and give each particle a weight (
+\begin_inset Formula $w_{i}$
+\end_inset
+
+) indicating how well it conforms to it (equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:particle-weight"
 
+\end_inset
+
+).
+ 
+\begin_inset Formula $\theta_{error}$
+\end_inset
+
+ is the error between the sensoe data 
+\begin_inset Formula $\theta_{sensor}$
+\end_inset
+
+ and the expected angle (i.e.
+ the angle to the particle 
+\begin_inset Formula $\left(x_{particle},y_{particle}\right)$
+\end_inset
+
+ from the sensor given by 
+\begin_inset Formula $\left(x_{sensor},y_{sensor}\right)$
 \end_inset
 
 ).
@@ -244,7 +252,24 @@ reference "eq:particle-covariance"
 
 \end_inset
 
-).
+) which is also the parameterization of the PDF.
+ 
+\begin_inset Formula $u_{i}^{k}$
+\end_inset
+
+ signifies the 
+\begin_inset Formula $k$
+\end_inset
+
+:th state in the state variable 
+\begin_inset Formula $u$
+\end_inset
+
+ of the 
+\begin_inset Formula $i$
+\end_inset
+
+:th particle.
 \begin_inset Formula \begin{equation}
 \sum_{i=0}^{N}w_{i}=1\label{eq:particle-norm-weights}\end{equation}
 
@@ -299,7 +324,15 @@ In our specific case there was a need for two particle filters.
 The tracking filter needed to estimate the position of the tracked object
  and, if possible, its speed.
  A natural choice for state variables was then the position in the x and
- y direction and velocity in the x and y direction.
+ y direction and velocity in the x and y direction (state vector is shown
+ in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:particle-tracking-states"
+
+\end_inset
+
+).
 \begin_inset Formula \begin{equation}
 x_{k}=\left(\begin{array}{c}
 r_{x}\\
@@ -314,7 +347,14 @@ v_{y}\end{array}\right)\label{eq:particle-tracking-states}\end{equation}
 
 \begin_layout Standard
 For the positioning particle filter the states were chosen as x, y and heading
- angle.
+ angle (state vector is shown in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Particle filter positioning states"
+
+\end_inset
+
+).
  The camera, mounted on top of the robot, would sweep for targets, giving
  angles in a local reference system.
  These sightings could then be compared to the known positions of landmarks
