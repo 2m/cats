@@ -416,6 +416,14 @@ filename "GSim_implementation.lyx"
 \end_inset
 
 
+\begin_inset Note Comment
+status open
+\begin_layout Plain Layout
+I (Edvard) could attempt to create a overview diagram of the software architecture if it's needed?
+\end_layout
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -431,6 +439,14 @@ filename "tracking_results.lyx"
 \end_inset
 
 
+\begin_inset Note Comment
+status open
+\begin_layout Plain Layout
+I (Edvard) will update the illustration of test arrangements as it currently is incorrect.
+\end_layout
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -439,6 +455,14 @@ LatexCommand input
 preview true
 filename "positioning_results.lyx"
 
+\end_inset
+
+
+\begin_inset Note Comment
+status open
+\begin_layout Plain Layout
+I (Edvard) am uncertain how to present the positioning results, as averages or as 2-3 independent runs? I'm also unsure what to conclude from the test.
+\end_layout
 \end_inset
 
 
@@ -451,6 +475,15 @@ preview true
 filename "guide_results.lyx"
 
 \end_inset
+
+
+\begin_inset Note Comment
+status open
+\begin_layout Plain Layout
+I (Edvard) never conducted any test on the Java implementation as I thought we agreed that there was no point of doing that as it wasn't fully optimized.
+\end_layout
+\end_inset
+
 
 
 \end_layout
@@ -699,7 +732,7 @@ status collapsed
 
 \end_inset
 
-Edward Zak
+Edvard Zak
 \begin_inset ERT
 status collapsed
 
@@ -710,10 +743,9 @@ status collapsed
 
 \end_inset
 
- All about you and the what your interests are.
- Kalman filter (mostly Java implementation and testing for both tracking
- and positioning.
- Keeping an eye on the overall robot software architecture.
+ Worked on the Unscented Kalman filters for tracking and positioning, mainly the Java implementation and its testing.
+ Active in robot software architecture and design.
+ Worked on the final testing.
  
 \end_layout
 
