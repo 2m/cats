@@ -52,7 +52,7 @@ Cat moving without external interference
 \end_layout
 
 \begin_layout Standard
-The geometric positioning filter was tested against positioning solely based on tachometer data. The robot was programmed to travel around a square of size one by one meter three times and the error between the estimated and the actual position was then measured. The robot only turned at the corners of the square and it estimated it position after each turn.
+The geometric positioning filter was tested against positioning solely based on tachometer data. The robot was programmed to travel around a square of size one by one meter three times and the error between the estimated and the actual position was then measured. The robot only turned at the corners of the square and it estimated its own position after each turn.
 The result of positioning without a filter can be seen in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
