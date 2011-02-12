@@ -52,8 +52,8 @@ Data synchronization
 \end_layout
 
 \begin_layout Standard
-In order to make the autonomous robot system cooperative some kind of communication
- between the robots had to be introduced.
+In order to make the autonomous robot system cooperative some kind of communicat
+ion between the robots had to be introduced.
  Our choise was Bluetooth connection since every robot had such capability.
  A connection to the PC can also be achieved with a simple Bluetooth dongle.
  The choice of BT communication limits the distance that robots can be apart.
@@ -182,8 +182,8 @@ It is clear that the network latency is not constant and this kind of time
 \begin_layout Standard
 For the purpouse of seeing the clock synchronization in action we implemented
  a music function into the robots.
- When the clocks are synchronized all robots can perform the same music piece
- taking turns one after another.
+ When the clocks are synchronized all robots can perform the same music
+ piece taking turns one after another.
 \end_layout
 
 \begin_layout Subsubsection

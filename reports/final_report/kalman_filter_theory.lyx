@@ -75,8 +75,8 @@ nts.
 \end_layout
 
 \begin_layout Standard
-For linear systems the Kalman filter is the optimal method to compute the
- state estimates.
+For Gaussian linear systems the Kalman filter is the optimal method to compute
+ the state estimates.
  Non-linear state models can't be used directly in the standard Kalman filter.
  One way to solve this is to linearize the model, which is done in the Extended
  Kalman filter (EKF).
