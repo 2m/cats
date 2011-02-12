@@ -52,21 +52,30 @@ Cat moving without external interference
 \end_layout
 
 \begin_layout Standard
-The geometric positioning filter was tested against positioning solely based on tachometer data. The robot was programmed to travel around a square of size one by one meter three times and the error between the estimated and the actual position was then measured. The robot only turned at the corners of the square and it estimated its own position after each turn.
-The result of positioning without a filter can be seen in Table 
+The geometric positioning filter was tested against positioning solely based
+ on tachometer data.
+ The robot was programmed to travel around a square of size one by one meter
+ three times and the error between the estimated and the actual position
+ was then measured.
+ The robot only turned at the corners of the square and it estimated its
+ own position after each turn.The result of positioning without a filter
+ can be seen in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:positioning_without_filter"
+
 \end_inset
 
- and the corresponding result for the geometric positioning filter can be seen in Table 
-
+ and the corresponding result for the geometric positioning filter can be
+ seen in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:geometric_positioning_filter"
+
 \end_inset
 
- . The result shows THAT...
+ .
+ The result shows THAT...
 \end_layout
 
 \begin_layout Subsubsection
@@ -74,37 +83,22 @@ Cat standing still and then being displaced
 \end_layout
 
 \begin_layout Standard
-The robot was first standing still and then manually displaced. The result is shown in Table 
+The robot was first standing still and then manually displaced.
+ The result is shown in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:geometric_positioning_manually_displaced"
+
 \end_inset
+
  .
-
-
-
-
 \begin_inset Float table
 placement htbp
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:positioning_without_filter"
-
-\end_inset
-
-Positioning without a filter by using tachometerdata only.
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
@@ -134,7 +128,6 @@ Average error between actual and estimated x-position [m]
 
 \end_inset
 </cell>
-
 </row>
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
@@ -157,11 +150,32 @@ Average error between actual and estimated y-position [m]
 </cell>
 </row>
 </lyxtabular>
+
 \end_inset
+
+
 \end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:positioning_without_filter"
+
+\end_inset
+
+Positioning without a filter by using tachometerdata only.
+\end_layout
+
 \end_inset
 
 
+\end_layout
+
+\end_inset
 
 
 \begin_inset Float table
@@ -179,6 +193,7 @@ LatexCommand label
 name "tab:geometric_positioning_filter"
 
 \end_inset
+
 Positioning with the geometric positioning filter.
 \end_layout
 
@@ -213,7 +228,6 @@ Average error between actual and estimated x-position [m]
 
 \end_inset
 </cell>
-
 </row>
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
@@ -236,11 +250,13 @@ Average error between actual and estimated y-position [m]
 </cell>
 </row>
 </lyxtabular>
+
 \end_inset
+
+
 \end_layout
+
 \end_inset
-
-
 
 
 \begin_inset Float table
@@ -258,6 +274,7 @@ LatexCommand label
 name "tab:geometric_positioning_manually_displaced"
 
 \end_inset
+
 Positioning with the geometric positioning filter when being manually displaced.
 \end_layout
 
@@ -292,7 +309,6 @@ Average error between actual and estimated x-position [m]
 
 \end_inset
 </cell>
-
 </row>
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
@@ -335,26 +351,16 @@ Average error between actual and estimated orientation [degrees]
 </cell>
 </row>
 </lyxtabular>
+
 \end_inset
+
+
 \end_layout
+
 \end_inset
 
 
-
-
-
-
-
-
 \end_layout
-
-
-
-
-
-
-\end_layout
-
 
 \end_body
 \end_document
