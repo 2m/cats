@@ -121,33 +121,10 @@ styrsystem/vt09/Nyheter/guidelines_report.pdf
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-
-\backslash
-PARstart{T}{here}
-\end_layout
-
-\end_inset
-
- is a need for a little Evil Red Text in the first paragraph.
- Refer to the IEEEtran documentation (sample document) for more details.
-\end_layout
-
-\begin_layout Plain Layout
-http://www.it.uu.se/edu/course/homepage/styrsystem/...
-\end_layout
-
-\begin_layout Plain Layout
-vt10/Projekt/CoLEGO
-\end_layout
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "introduction.lyx"
 
 \end_inset
 

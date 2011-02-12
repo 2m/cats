@@ -52,8 +52,8 @@ Data synchronization
 \end_layout
 
 \begin_layout Standard
-In order to make the autonomous robot system cooperative some kind of communicat
-ion between the robots had to be introduced.
+In order to make the autonomous robot system cooperative, some kind of communica
+tion between the robots had to be introduced.
  Our choise was Bluetooth connection since every robot had such capability.
  A connection to the PC can also be achieved with a simple Bluetooth dongle.
  The choice of BT communication limits the distance that robots can be apart.
