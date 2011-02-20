@@ -60,21 +60,21 @@ PARstart{T}{his}
  mobile cooperating robots using on-line bearings-only measurements.
  The target is non-cooperative and moving within a bounded environment with
  potentally occluded areas.
- Cooperation between the robots is achived by communication over a wireless
+ Cooperation between the robots is achieved by communication over a wireless
  network and data storage on a PC working as a base station.
  Our solution implements two different tracking filters; the Unscented Kalman
  Filter (UKF) and a (distributed?) particle filter.
  All calulations are made on the chosen mobile Lego® Mindstorms® NXT robots,
- which have somewhat limited computational resources, and no calcultions
- relating to the actual positioning are made on the PC as it was used for
- data sharing and visualizaion only.
+ which have somewhat limited computational resources.
+ It is important to note that no calcultions relating to the actual positioning
+ are made on the PC as it was used for data sharing and visualizaion only.
  The bearings only measurements are aquired using a set of video cameras
  connected to the robots.
  In addition, the motors used for propulsion and camera rotation also have
- a built in tachometer.
- The desired positions of the cats are determided using the guidance algorithm
+ a built in tachometers.
+ The desired positions of the cats are determined using the guidance algorithm
  (guide).
- Prof of concepts of the suggested solutions were simulated in Matlab before
+ Proof of concepts of the suggested solutions were simulated in Matlab before
  the Lego implementation was started.
  The robots are hereafter called cats and the target they are tracking is
  called the mouse.
@@ -83,8 +83,8 @@ PARstart{T}{his}
 \begin_layout Standard
 Following this introduction, an overview of some previous work relating
  to particle and unscented kalman filters is given in Section 2.
- In the following Methodology section, a brief description of the mathematical
- theory behind the filters as well as the guide.
+ In the following Methodology section, a brief description is given of the
+ mathematical theory behind the filters as well as the guide.
  We also present some results from the Matlab simulations here.
  Section 4 descibes our implementation, including the overall software architect
 ure, physical design of the cats and the landmarks, control algorithms for

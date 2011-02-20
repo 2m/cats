@@ -74,15 +74,15 @@ All the data that is vital to the robots internal systems belong to the
 \end_layout
 
 \begin_layout Enumerate
-All the additional data that can be used by the GUI on the PC for the visualazia
-tion and debugging of these systems.
+All the additional data that can be used by the GUI on the PC for the visualzati
+on and debugging of these systems.
 \end_layout
 
 \begin_layout Standard
 The synchronization rate of the first group actively limits the rate on
  which the tracking filters can run.
  It also limits the accuracy that the guide can give us.
- All the remaining bandwidth can be used for the second group of data.
+ All the remaining bandwidth can be used for data visualzation and debugging.
  The first group can be split further into two parts:
 \end_layout
 
@@ -108,11 +108,11 @@ The syncronization of the data mentioned above was achieved using a billboard
  billboard for every spot, so if a lost update comes after newer updates
  were already applied, it is not used to update the spot with the old value.
  What is more, a read from the billboard is never blocked.
- However there is no mechanism to prevent old data to be read, so even if
- new data is beeing trasmited through the network at that time, old data
+ Therefore there is no mechanism to prevent old data to be read, so even
+ if new data is beeing trasmited through the network at that time, old data
  will still be read.
- There were 19 float values in the billboard for every robot which gives
- 152 bytes for every robot.
+ There were 19 float point variables stored in the billboard for every robot
+ which gives 152 bytes for every robot.
 \end_layout
 
 \begin_layout Subsubsection
@@ -183,7 +183,7 @@ It is clear that the network latency is not constant and this kind of time
 For the purpouse of seeing the clock synchronization in action we implemented
  a music function into the robots.
  When the clocks are synchronized all robots can perform the same music
- piece taking turns one after another.
+ piece in parralel where every next note is played by a different robot.
 \end_layout
 
 \begin_layout Subsubsection
@@ -237,7 +237,7 @@ visualization data for the GUI
 \end_layout
 
 \begin_layout Itemize
-on-the-fly settings change
+changing various itnernal settings on-the-fly
 \end_layout
 
 \end_body

@@ -89,20 +89,21 @@ This was our first network architecture of choice and we started implementing
  After major parts were completed we encountered some technical problems.
  First of all we noticed delays when a master was dealing with multiple
  outgoing connections.
- It took a great amount of time (sometimes up to two seconds) to switch from one connectio
-n to another.
+ It took a great amount of time (sometimes up to two seconds) to switch
+ from one connection to another.
  This was unacceptable if we wanted to keep the network fast and responsive.
 \end_layout
 
 \begin_layout Standard
 Another issue coherent with network robustness was small network interconnection.
  We wanted to have a network architecture witch supports any number of robots
- (even though we only had three robots) and small network interconnection means
- there would have to be a routing system implemented if we don't want to
- have a fully interconnected peer to peer network (where every robot gets
- every data even if it is not addressed to it).
- This would have introduced quite an overhead which we do not want on weak
- robots.
+ (even though we only had three robots).
+ This meant that there would have to be a routing system implemented since
+ the network stack in the robot is not suitable for a fully interconnected
+ peer to peer network (where every robot gets every data even if it is not
+ addressed to it).
+ This would have introduced quite an overhead which is not desirable on
+ slow networks.
 \end_layout
 
 \begin_layout Subsubsection
@@ -119,8 +120,8 @@ Our solution was to move the network hub from a robot to the PC.
  Another advantage is that all the network traffic is going through the
  PC and the data can be used for visualization on-the-fly without any special
  code in the robots.
- Another purpose for the GUI program was to manage connections to the robots
- and packet forwarding from one robot to another.
+ Next to data visualization PC was also managing connections to the robots
+ and forwarding packets from one robot to another.
 \end_layout
 
 \end_body

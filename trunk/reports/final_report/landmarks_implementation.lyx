@@ -54,7 +54,7 @@ Construction
 \begin_layout Standard
 We encountered several difficulties when selecting a suitable visual marker
  for the landmarks and the mouse.
- Because the image processing properties of the camera is rather limited,
+ Because the image processing properties of the camera are rather limited,
  it can only give the location of a few targets specified by a predetermined
  color range.
  The output is the size and the location of the bounding box around the

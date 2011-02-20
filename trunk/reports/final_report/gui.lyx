@@ -44,35 +44,28 @@
 \begin_body
 
 \begin_layout Subsection
-Subsection title
-\end_layout
-
-\begin_layout Subsubsection
 Graphical user interface
 \end_layout
 
 \begin_layout Standard
-For creating a visual representation of the system we sent all the information that was running through 
-the bluetooth communication to a computer. With Java, we made a 2d representation of fixed beacons in 
-the corners, a red dot for the mouse, and three black dots with different ID-numbers for identification 
-of the cats. The 2d-representation automatically updates when a new packet arrives to the computer. The
-data being presented in this visualization 
-\end_layout
-
-\begin_layout Subsubsection
-Sub-subsection title
-\end_layout
-
-\begin_layout Standard
-Text
-\end_layout
-
-\begin_layout Subsubsection
-Sub-subsection title
+The filter data going from one cat to another was succsessfully used also
+ for visual representation of the inner workings of the system.
+ A GUI written in Java was created for this purpose.
+ It had a 2D representation of fixed beacons in the corners, a red dot for
+ the mouse, and three black dots with different ID numbers for identification
+ of the cats.
+ The 2D representation of the area automatically updated when a new packet
+ arrived to the PC.
 \end_layout
 
 \begin_layout Standard
-Text
+Robust network implementation allowed robots to send other usefull information
+ to the PC.
+ One could monitor the landmark or mouse measurements that robots took and
+ used for calculations.
+ Likewise the desicions of the guide were also sent to the GUI.
+ Guide and other parts of the robots were also able to be controlled from
+ the GUI.
 \end_layout
 
 \end_body
