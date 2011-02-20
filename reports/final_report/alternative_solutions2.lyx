@@ -59,30 +59,30 @@ An initial idea of robot positioning was to use two electromagnets generating
  of these fields with a magnetic sensor (compass), and triangulate the position
  of the robot by calculating the direction of the magnetic source.
  This ambitious concept proved hard to realize for numerous reasons, and
- would probably been a much larger project than what we were about to execute
- - on its own.
- About the ideaTo cover the area required with a sufficient field, we first
- looked on the market for purchasing an already existing electromagnet.
+ would probably been on its own a much larger project than what we were
+ about to execute.
+ To cover the area required with a sufficient field, we first looked on
+ the market for purchasing an already existing electromagnet.
  However, we soon realized that the strength of the fields they generated
  was not adequate for our needs.
  To get enough strength we had to build our own electromagnets.
- By letting an iron core be equiped with with some houndred laps of wire,
- and letting a strong current flow through it, we figured that a large enough
+ By letting an iron core be equiped with some houndred laps of wire, and
+ letting a strong current flow through it, we figured that a large enough
  magnetic field for our needs could be obtained.
- To get a position from the field vectors we hoped to be able to obtain
- through the magnetic sensors, available in the LEGO Mindstorm kit, we needed
- to switch the two magnetic fields on and off separately.
- This because otherwise these field vectors would have merged into a single
- one, with a complicated structure.
+ To get a position from the field vectors we hoped to be able to use the
+ magnetic sensors, available in the LEGO Mindstorm kit, we needed to switch
+ the two magnetic fields on and off separately.
+ Otherwise these field vectors would have merged into a single one, with
+ a complicated structure.
  To get a good measurement of the generated field vector we wanted to have
  them at least twice as large as Earths magnetic field, over the whole arena.
  After running some calculations for our hypothetical electromagnets, we
- were forced abandon this sub-project, since they showed that the size of
- the field the electromagnets were required to regenerate far exceeded what
- reasonably could have been achieved with available equipment.
- Another reason to throw this idea in the trashbin, was the magnetic sensors
- from LEGO that did not give good enough measurements for one with our ambitions
- for application, to be satisfied.
+ were forced to abandon this sub-project, since they showed that the size
+ of the field the electromagnets were required to regenerate far exceeded
+ what reasonably could have been achieved with available equipment.
+ Another reason to reject this idea was the magnetic sensors from LEGO that
+ did not give good enough measurements for our ambitions for application
+ to be satisfied.
  A bad sensor with fluctuating readings would easily dismantle the purpose
  of the system, by giving the sensitive system a high rate wrong values,
  and make the calculations for the estimated position disastrous.
@@ -93,8 +93,9 @@ Color coding
 \end_layout
 
 \begin_layout Standard
-One suggestion to the problem of the cats knowing their own correct position
- and orientation was using a color coded grid on the floor of the arena.
+Another suggestion to the problem of the cats knowing their own correct
+ position and orientation was using a color coded grid on the floor of the
+ arena.
  Using an available color sensor the idea was to detect whenever the cat
  traveled over a colored strip.
  With four colors printed on a white paper it should be possible to detect
@@ -102,7 +103,7 @@ One suggestion to the problem of the cats knowing their own correct position
  By having both horizontal and vertical lines with alternating colors, one
  can detect the x- and y-component of the cat’s velocity.
  However it turned out that the color sensor sampled its reading from quite
- a large area, which meant that we had to use rather wide colored strips
+ a large area, which meant that we had to use rather wide colored stripes
  for them to be detected correctly.
  This presented the problem with the intersections of the horizontal and
  the vertical lines.
@@ -110,8 +111,8 @@ One suggestion to the problem of the cats knowing their own correct position
  colors was detected instead of each one separately.
  This meant that neither the x- or y-component of movement was updated,
  resulting in an erroneous position estimate.
- A solution to this could be to limit the cat to move only along in four
- directions, parallel and perpendicular to the lines.
+ A solution to this could be to limit the cat to move only in four directions,
+ parallel and perpendicular to the lines.
  That would however require that the cat could correct its orientation from
  time to time if it got off track.
 \end_layout

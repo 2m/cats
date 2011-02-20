@@ -327,12 +327,12 @@ Plot of the linearized weight function and analytical values of the same
 Re-sampling the particles
 \series default
  is not a hard or heavy task but can still be improved significantly.
- Most of the time the particles are good and the number who really need
- to be re-sampled are small.
+ Most of the time the particles are good and the number of particles which
+ really need to be re-sampled is small.
  If only the worst particles are re-sampled the filter would converge slower
  but would not need to do so much random sampling.
  However this method might need some overhead in sorting the particles.
- The methods worked but was never compared with respect to accuracy.
+ The method worked but was never compared with respect to accuracy.
 \end_layout
 
 \end_body

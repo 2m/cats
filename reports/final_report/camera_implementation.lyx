@@ -48,7 +48,7 @@ Camera
 \end_layout
 
 \begin_layout Subsubsection
-Extracting angle measurements 
+Extracting angle measurements
 \end_layout
 
 \begin_layout Standard
@@ -250,7 +250,7 @@ Retrieving the horizontal pixel coordinates of the mouse marker in a camera
 \end_layout
 
 \begin_layout Subsubsection
-Modified camera firmware 
+Modified camera firmware
 \end_layout
 
 \begin_layout Standard
@@ -305,14 +305,14 @@ key "MergeBlobPatch"
 \end_layout
 
 \begin_layout Subsubsection
-PD tracking-regulator 
+PD tracking-regulator
 \end_layout
 
 \begin_layout Standard
 We needed a regulator that would follow the movement of the mouse as good
  as possible to allow for fast mouse movement.
- Also, the regulator needed smart enough not to keep spinning the motor
- in one direction.
+ Also, the regulator needed to be smart enough not to keep spinning the
+ motor in one direction.
  Doing so resulted in that the camera cable got tangled up, thereby stopping
  the motor and hindering any further movement in that direction.
  The solution was implementing a lower and higher bound of the rotation
@@ -324,7 +324,7 @@ We needed a regulator that would follow the movement of the mouse as good
 \end_layout
 
 \begin_layout Standard
-When designing a regulator a regulator of this kind an error signal is necessary.
+When designing a regulator of this kind an error signal is necessary.
  Since it is desirable to keep the mouse in the middle of the camera image
  (only horizontal position regarded), the error was chosen to be the pixel
  difference between the mouse's location in the image and the image center
