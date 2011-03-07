@@ -75,22 +75,20 @@ nts.
 \end_layout
 
 \begin_layout Standard
-For Gaussian linear systems the Kalman filter is the optimal method to compute
- the state estimates.
- Non-linear state models can't be used directly in the standard Kalman filter.
- One way to solve this is to linearize the model, which is done in the Extended
- Kalman filter (EKF).
- The approximation done in the linearization can however give significant
- errors for highly non-linear systems.
- An improvement of the EKF is the Unscented Kalman filter (UKF).
- It is based on the unscented transform, which works by propagating a minimal
- set of sampling points through the non-linear functions.
- From this, the estimated mean and covariance of the state variables are
- then recovered.
- Just like in the EKF, the UKF uses approximations of the non-linear state
- model, but the errors that arise from them are smaller.
+Given the low computational complexity of the nonlinear Kalman filters and
+ the target platform's limited processing speed, we decided that it would
+ be a interesting alternative to the particle filter to try out.
+ The UKF was chosen over the EKF because of its advantage both regarding
+ accuracy and ease of implementation.
  The full algorithm of the UKF will not be presented here, since our project
- used a pre-written implementation.
+ used a pre-written Matlab implementation 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "UKFimple"
+
+\end_inset
+
+, later converted to Java.
  However, an important note is that the square root of the covariance matrix
  is required in a step of the algorithm.
  The square root of the matrix 

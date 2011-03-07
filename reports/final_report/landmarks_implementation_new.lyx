@@ -54,7 +54,7 @@ Construction
 \begin_layout Standard
 We encountered several difficulties when selecting a suitable visual marker
  for the landmarks and the mouse.
- Because the image processing properties of the camera are rather limited,
+ Because the image processing properties of the camera is rather limited,
  it can only give the location of a few targets specified by a predetermined
  color range.
  The output is the size and the location of the bounding box around the
@@ -88,13 +88,9 @@ The solution adopted involved the use of Cold Cathode Fluorescent Lamps
  This criterion proved quite difficult to satisfy even with the CCFLs.
  The size of the lamp in the picture decreases approximatley with the inverse
  of the distance 
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Insert citation here - Wikipedia, Magnification.
- How?
-\end_layout
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Magnification"
 
 \end_inset
 

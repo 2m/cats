@@ -168,12 +168,6 @@ An important element in the brick implementation is how often the filter
  Still, it was not as fast as we had hoped.
  Profiling the java code both on the brick and the PC showed that matrix
  operations, mostly reading and writing, took a lot of time.
- Improvements to this could be switching to a faster matrix class library.
- One could also opt for single point arithmetic instead of double as it
- more than enough of accuracy for our application anyway.
- Even a integer point solution could be adopted, as was done with the particle
- filter.
- That could probably have made the run time a lot shorter.
 \end_layout
 
 \end_body

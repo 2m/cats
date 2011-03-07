@@ -160,7 +160,79 @@ key "Takahashi2009"
 \end_layout
 
 \begin_layout Standard
-Some UKF paper...
+Since its published formulation in 1960, the Kalman filter has been a widely
+ used method for estimating the true states of a linear dynamical system
+ from a series of noisy measurements.
+ For linear systems with a Gaussin noise distribution, the Kalman filter
+ is the optimal method to compute the state estimates.
+ Non-linear state models can not be used directly in the standard Kalman
+ filter.
+ One way to circumvent this is to linearize the model, which is done in
+ the Extended Kalman filter (EKF).
+ The EKF has long been the de facto standard in nonlinear state estimation
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "EKF"
+
+\end_inset
+
+.
+ The approximation done in the linearization can give significant errors
+ for highly non-linear systems though.
+ An improvement of the EKF is the Unscented Kalman filter (UKF), introduced
+ in 1997 by Simon J.
+ Julier and Jerrey K.
+ Uhlmann 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Julier97anew"
+
+\end_inset
+
+.
+ It is based on the unscented transform, which works by propagating a minimal
+ set of sampling points through the non-linear functions.
+ From this, the estimated mean and covariance of the state variables are
+ then recovered.
+ Just like in the EKF, the UKF uses approximations of the non-linear state
+ model, but the errors that arise from them are smaller 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "UKF"
+
+\end_inset
+
+.
+ Where the EKF captures the mean and the covariance accuratley to the first
+ order (Taylor series expansion), the approximations of the UKF are accurate
+ to the third order (assuming Gaussian random variable) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Wan00theunscented"
+
+\end_inset
+
+.
+ Moreover, the EKF requires the derivation of the Jacobian maticies which
+ can be difficult to find.
+ The UFK does not use the Jacobian 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Julier97anew"
+
+\end_inset
+
+.
+ It has also been shown that the UKF consistently achieves a better level
+ of accuracy than the EKF at a comparable level of complexity 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Wan00theunscented"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -169,6 +241,20 @@ Particle filters are a common appoach in non-linear tracking and been proven
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ISI:000222055900012,MiodragBolic2004-11-12,Rekleitis"
+
+\end_inset
+
+.
+ It is a model estimation technique based on simulation.
+ With a sufficient samples (
+\emph on
+particles
+\emph default
+) particle filters approach the Bayesian optimal estimate, so they can be
+ made more accurate than Kalman filter variants 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Particle"
 
 \end_inset
 
@@ -211,12 +297,8 @@ o Design
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
-preview true
 filename "kalman_filter_theory.lyx"
 
 \end_inset
@@ -298,7 +380,7 @@ filename "camera_implementation.lyx"
 \begin_inset CommandInset include
 LatexCommand input
 preview true
-filename "landmarks_implementation.lyx"
+filename "landmarks_implementation_new.lyx"
 
 \end_inset
 
@@ -438,7 +520,7 @@ filename "guide_results.lyx"
 
 
 \begin_inset Note Comment
-status open
+status collapsed
 
 \begin_layout Plain Layout
 I (Edvard) never conducted any test on the Java implementation as I thought
@@ -456,7 +538,7 @@ future work
 
 \begin_layout Standard
 \begin_inset Note Comment
-status collapsed
+status open
 
 \begin_layout Plain Layout
 Better sensors! (really needed? shouldn't it be quite possible to solve
@@ -474,10 +556,6 @@ Faster filters and guide
 \begin_layout Plain Layout
 All cats moving at the same time without risking to collide.
  
-\end_layout
-
-\begin_layout Plain Layout
-Optimizing the java implementation of the kalman
 \end_layout
 
 \begin_layout Plain Layout
@@ -501,6 +579,51 @@ Cat positioning while moving, correcting position and orientation on-line.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The brick implementation of the Kalman filter can be improved by switching
+ to a faster matrix class library to reduce the iteration runtime.
+ One could switch to using single point arithmetic instead of double, as
+ it has more than enough of accuracy for our application anyway.
+ Even a integer point solution could be adopted, as was done with the particle
+ filter.
+ That could probably have made the iteration runtime a lot shorter.
+\end_layout
+
+\begin_layout Standard
+The UKF can be used in conjunction with the particle filter to improve its
+ performance.
+ This was demonstrated by 
+\emph on
+Yong Rui
+\emph default
+ and 
+\emph on
+Yunqiang
+\emph default
+ 
+\emph on
+Chen
+\emph default
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rui01betterproposal"
+
+\end_inset
+
+.
+
+\emph on
+ 
+\emph default
+By using the UKF for proposal distribution, the generated particles are
+ placed closer to the true states.
+ The increase in accuracy can also be traded for a lower iteration time
+ by using fewer particles.
+ This should be an interesting and the natural continuation of our work
+ with the filters.
 \end_layout
 
 \begin_layout Standard
@@ -641,11 +764,11 @@ status collapsed
 
 \end_inset
 
- All about you and the what your interests are.
- Kalman filter (simulation and implementation) - tracking and positioning.
- Movement pilot regulator, camera tracking regulator, landmark design and
- detection and some robot design.
- Color coding.
+ Worked on the Kalman filters; modelling, simulation and implementation.
+ Also the person charge of the movement pilot regulator, camera tracking
+ regulator, landmark design and detection.
+ Was involved some of the robot design and construction.
+ Co-developed the color coding.
 \end_layout
 
 \begin_layout --Separator--
