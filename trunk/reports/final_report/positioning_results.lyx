@@ -99,6 +99,21 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:positioning_without_filter"
+
+\end_inset
+
+Positioning without a filter by using tachometerdata only.
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -156,25 +171,6 @@ Average error between actual and estimated y-position [m]
 
 \end_layout
 
-\begin_layout Plain Layout
-\align center
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:positioning_without_filter"
-
-\end_inset
-
-Positioning without a filter by using tachometerdata only.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -182,7 +178,7 @@ Positioning without a filter by using tachometerdata only.
 placement htbp
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption
@@ -263,7 +259,7 @@ Average error between actual and estimated y-position [m]
 placement htbp
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption

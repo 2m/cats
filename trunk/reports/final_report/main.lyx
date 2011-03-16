@@ -81,16 +81,27 @@ Cooperative Autonomous Tracking System
 \begin_layout Abstract
 This report describes the work of implementing a number of robots who cooperativ
 ely searches for a non-cooperative target.
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Extent abstract
+ Robots collect data using low resolution cameras and odometers mounted
+ inside the wheel motors.
+ Collected data is then processed and used for robot positioning and target
+ tracking.
 \end_layout
 
-\end_inset
+\begin_layout Abstract
+Report describes two target tracking filters.
+ First one is based on Kalman filter theory and the other one is based on
+ Particle filter theory.
+ Both filters were developed side by side to compare different mathematical
+ tools implemented in an embedded device.
+\end_layout
 
-
+\begin_layout Abstract
+Tracking can only be done successfully if robots know their approximate
+ position.
+ Relying only on odometer data gave positioning results with an error steadily
+ increasing over time.
+ This problem was solved with an Geometric filter which uses data collected
+ about landmarks which are light emitting towers standing at known locations.
 \end_layout
 
 \begin_layout Keywords
