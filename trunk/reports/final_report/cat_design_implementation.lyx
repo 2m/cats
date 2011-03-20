@@ -52,7 +52,13 @@ Locomotion
 \end_layout
 
 \begin_layout Standard
-Text
+ We have tried some difference design for the tracking cats and found one 
+ which was most suited for the task, using 3 Interactive Servo Motor.
+ At first we used 2 driving wheels on the side of the brick and a wheel for 
+ back support for the cats in which we believed would help easy the rotation.
+ However, we soon found out after the design was done that it made the rotation 
+ inaccurate. Therefore we use a LEGO-piece as a back support instead. We use the
+ the last motor for camera rotation which we placed on top of the brick.
 \end_layout
 
 \begin_layout Subsubsection
