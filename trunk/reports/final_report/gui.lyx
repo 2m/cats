@@ -48,7 +48,7 @@ Graphical user interface
 \end_layout
 
 \begin_layout Standard
-The filter data going from one cat to another was succsessfully used also
+The filter data going from one cat to another was successfully used also
  for visual representation of the inner workings of the system.
  A GUI written in Java was created for this purpose.
  It had a 2D representation of fixed beacons in the corners, a red dot for
@@ -59,11 +59,11 @@ The filter data going from one cat to another was succsessfully used also
 \end_layout
 
 \begin_layout Standard
-Robust network implementation allowed robots to send other usefull information
+Robust network implementation allowed robots to send other useful information
  to the PC.
  One could monitor the landmark or mouse measurements that robots took and
  used for calculations.
- Likewise the desicions of the guide were also sent to the GUI.
+ Likewise the decisions of the guide were also sent to the GUI.
  Guide and other parts of the robots were also able to be controlled from
  the GUI.
 \end_layout
