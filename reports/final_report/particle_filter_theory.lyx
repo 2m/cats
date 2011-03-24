@@ -450,7 +450,7 @@ Plot from the simulation of the tracking particle filter
 The positioning filter worked very well in simulation even though it, at
  most, could only see two landmarks at a time.
  The simulation was done in a 3x3 meter arena with 1 to 5 degrees of standard
- deviation of the angular error of the bearing.
+ deviation of the angular error in the bearing.
 \end_layout
 
 \begin_layout Standard
