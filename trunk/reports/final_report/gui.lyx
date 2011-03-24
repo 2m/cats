@@ -61,10 +61,10 @@ The filter data going from one cat to another was successfully used also
 \begin_layout Standard
 Robust network implementation allowed robots to send other useful information
  to the PC.
- One could monitor the landmark or mouse measurements that robots took and
- used for calculations.
- Likewise the decisions of the guide were also sent to the GUI.
- Guide and other parts of the robots were also able to be controlled from
+ One could monitor the landmark and/or mouse measurements that the robots took and
+ used for further calculations.
+ One could also monitor the decisions from the guide, which were sent to the GUI.
+ Guide and other parts of the robots, such as which filter to use, were also able to be controlled from
  the GUI.
 \end_layout
 
