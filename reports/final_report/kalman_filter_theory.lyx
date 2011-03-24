@@ -55,8 +55,8 @@ The Kalman filter
 The Kalman filter is a method of estimating state variables from noisy measureme
 nts.
  With a provided state model of the system, a predicted state variable estimate
- one time step ahead is computed.
- The uncertainty of this prediction is also calculated using the previous
+ of one time step ahead is computed.
+ The uncertainty for this prediction is also calculated using the previous
  estimate.
  A weighted average of the actual measurement and the predicted value is
  then used as the output of the filter.
