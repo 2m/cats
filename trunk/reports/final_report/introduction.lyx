@@ -59,16 +59,16 @@ PARstart{T}{his}
   report suggests two ways of autonomous target tracking for a group of
  mobile cooperating robots using on-line bearings-only measurements.
  The target is non-cooperative and moving within a bounded environment with
- potentally occluded areas.
+ potentially occluded areas.
  Cooperation between the robots is achieved by communication over a wireless
  network and data storage on a PC working as a base station.
  Our solution implements two different tracking filters; the Unscented Kalman
  Filter (UKF) and a (distributed?) particle filter.
- All calulations are made on the chosen mobile Lego® Mindstorms® NXT robots,
+ All calculations are made on the chosen mobile Lego® Mindstorms® NXT robots,
  which have somewhat limited computational resources.
- It is important to note that no calcultions relating to the actual positioning
- are made on the PC as it was used for data sharing and visualizaion only.
- The bearings only measurements are aquired using a set of video cameras
+ It is important to note that no calculations relating to the actual positioning
+ are made on the PC as it was used for data sharing and visualization only.
+ The bearings only measurements are acquired using a set of video cameras
  connected to the robots.
  In addition, the motors used for propulsion and camera rotation also have
  a built in tachometers.
@@ -82,11 +82,11 @@ PARstart{T}{his}
 
 \begin_layout Standard
 Following this introduction, an overview of some previous work relating
- to particle and unscented kalman filters is given in Section 2.
+ to particle and unscented Kalman filters is given in Section 2.
  In the following Methodology section, a brief description is given of the
  mathematical theory behind the filters as well as the guide.
  We also present some results from the Matlab simulations here.
- Section 4 descibes our implementation, including the overall software architect
+ Section 4 describes our implementation, including the overall software architect
 ure, physical design of the cats and the landmarks, control algorithms for
  the movements of the cats, network architecture, java implementation of
  the filters and the guide, the graphical user interface on the PC, as well
