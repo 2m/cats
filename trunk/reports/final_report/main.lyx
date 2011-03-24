@@ -174,7 +174,7 @@ key "Takahashi2009"
 Since its published formulation in 1960, the Kalman filter has been a widely
  used method for estimating the true states of a linear dynamical system
  from a series of noisy measurements.
- For linear systems with a Gaussin noise distribution, the Kalman filter
+ For linear systems with a Gaussian noise distribution, the Kalman filter
  is the optimal method to compute the state estimates.
  Non-linear state models can not be used directly in the standard Kalman
  filter.
@@ -215,7 +215,7 @@ key "UKF"
 \end_inset
 
 .
- Where the EKF captures the mean and the covariance accuratley to the first
+ Where the EKF captures the mean and the covariance accurately to the first
  order (Taylor series expansion), the approximations of the UKF are accurate
  to the third order (assuming Gaussian random variable) 
 \begin_inset CommandInset citation
@@ -225,9 +225,9 @@ key "Wan00theunscented"
 \end_inset
 
 .
- Moreover, the EKF requires the derivation of the Jacobian maticies which
+ Moreover, the EKF requires the derivation of the Jacobian matrices which
  can be difficult to find.
- The UFK does not use the Jacobian 
+ The UKF does not use the Jacobian 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Julier97anew"
@@ -247,7 +247,7 @@ key "Wan00theunscented"
 \end_layout
 
 \begin_layout Standard
-Particle filters are a common appoach in non-linear tracking and been proven
+Particle filters are a common approach in non-linear tracking and been proven
  effective for robot localization 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -270,11 +270,11 @@ key "Particle"
 \end_inset
 
 .
- It is a computationaly heavy technique and hence there would have to be
+ It is a computationally heavy technique and hence there would have to be
  a lot of work doing optimizations.
- The target platform was quite limited in computational power but since
+ The target platform was quite limited in computational power, but since
  we also would try the Kalman filter, which is a standard technique, it
- was decided that there would be time to test both.
+ was decided that there would be enough time to test both.
 \end_layout
 
 \begin_layout Section
