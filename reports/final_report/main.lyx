@@ -79,29 +79,31 @@ Cooperative Autonomous Tracking System
 \end_layout
 
 \begin_layout Abstract
-This report describes the work of implementing a number of robots who cooperativ
-ely searches for a non-cooperative target.
+This report describes the work of implementing a team of robots which cooperativ
+ely tracks a non-cooperative target using bearings-only measurements.
  Robots collect data using low resolution cameras and odometers mounted
  inside the wheel motors.
- Collected data is then processed and used for robot positioning and target
- tracking.
+ The collected data is then processed and used for robot positioning and
+ target tracking.
 \end_layout
 
 \begin_layout Abstract
-Report describes two target tracking filters.
- First one is based on Kalman filter theory and the other one is based on
- Particle filter theory.
- Both filters were developed side by side to compare different mathematical
- tools implemented in an embedded device.
+We have chosen to implement two target tracking filters – an Unscented Kalman
+ filter as well as a particle filter.
+ Both filters were developed side by side to compare the implementation
+ of the differing mathematical models in the embedded device.
 \end_layout
 
 \begin_layout Abstract
-Tracking can only be done successfully if robots know their approximate
- position.
- Relying only on odometer data gave positioning results with an error steadily
- increasing over time.
- This problem was solved with an Geometric filter which uses data collected
- about landmarks which are light emitting towers standing at known locations.
+Tracking can only be done successfully if robots know their own position.
+ With a known starting position, the current position of the robot can be
+ calculated using odometer readings.
+ Unfortunately, the errors in those readings will be integrated over time,
+ resulting in a position error steadily increasing over time.
+ This problem was by using a set of landmarks standing at known positions.
+ By making bearings measurements to the landmarks, the accumulated error
+ in the position of the robots can be corrected.
+ 
 \end_layout
 
 \begin_layout Keywords
@@ -111,24 +113,6 @@ Bearings-only Tracking, Particle Filter, Unscented Kalman Filter, Robot
 
 \begin_layout Section
 Introduction
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-In the form requested on the course web page: http://www.it.uu.se/edu/course/homepa
-ge/...
-\end_layout
-
-\begin_layout Plain Layout
-styrsystem/vt09/Nyheter/guidelines_report.pdf
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -147,36 +131,12 @@ Previous Work
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-overview of previous work
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Robot platform 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Takahashi2009"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Since its published formulation in 1960, the Kalman filter has been a widely
  used method for estimating the true states of a linear dynamical system
  from a series of noisy measurements.
  For linear systems with a Gaussian noise distribution, the Kalman filter
  is the optimal method to compute the state estimates.
- Non-linear state models can not be used directly in the standard Kalman
+ Non-linear state models cannot be used directly in the standard Kalman
  filter.
  One way to circumvent this is to linearize the model, which is done in
  the Extended Kalman filter (EKF).
@@ -257,12 +217,9 @@ key "ISI:000222055900012,MiodragBolic2004-11-12,Rekleitis"
 
 .
  It is a model estimation technique based on simulation.
- With a sufficient samples (
-\emph on
-particles
-\emph default
-) particle filters approach the Bayesian optimal estimate, so they can be
- made more accurate than Kalman filter variants 
+ With a sufficient number of samples (particles), the particle filters approach
+ the Bayesian optimal estimate, so they can be made more accurate than Kalman
+ filter variants 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Particle"
@@ -293,21 +250,6 @@ filename "alternative_solutions2.lyx"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-o Approach Kalman, particle tracking and positioning.
- 
-\end_layout
-
-\begin_layout Plain Layout
-o Design
-\end_layout
-
-\end_inset
-
-
 \begin_inset CommandInset include
 LatexCommand input
 filename "kalman_filter_theory.lyx"
@@ -552,39 +494,8 @@ future work
 status open
 
 \begin_layout Plain Layout
-Better sensors! (really needed? shouldn't it be quite possible to solve
- the task with current sensors?) 
-\end_layout
-
-\begin_layout Plain Layout
-New orientation measurement sensor? 
-\end_layout
-
-\begin_layout Plain Layout
-Faster filters and guide 
-\end_layout
-
-\begin_layout Plain Layout
-All cats moving at the same time without risking to collide.
- 
-\end_layout
-
-\begin_layout Plain Layout
-Kalman filters.
- 
-\end_layout
-
-\begin_layout Plain Layout
-Positioning filter Kalman - how to make it work? Possible with current sensors
- ? 
-\end_layout
-
-\begin_layout Plain Layout
-Particle - how to make it work on brick? 
-\end_layout
-
-\begin_layout Plain Layout
-Cat positioning while moving, correcting position and orientation on-line.
+Should we discuss the results in more detail? E.g.
+ compare kalman and particle?
 \end_layout
 
 \end_inset
@@ -593,13 +504,50 @@ Cat positioning while moving, correcting position and orientation on-line.
 \end_layout
 
 \begin_layout Standard
-The brick implementation of the Kalman filter can be improved by switching
- to a faster matrix class library to reduce the iteration runtime.
+In this project we completed our goal of tracking a moving target using
+ an autonomous team of mobile robots, allowed to take bearings-only measurements.
+ All of the included subsystems are working on the designated Lego® Mindstorms®
+ NXT platform.
+ Some of the subsystems needs more work to achieve a good overall tracking
+ performance.
+ Primarily, the guide system should be considered a proof of concept.
+ A faster computation time of the guide would make the cats’ movement much
+ more responsive and better adopted to tracking a fast target.
+ This should also allow us to drop the time slotted movement as well, without
+ risking collisions between the cats.
+\end_layout
+
+\begin_layout Standard
+Secondly, the filters can be improved substantially by decreasing their
+ computation time.
+ When tracking the target during a limited time period, the tracking filters
+ limit the overall performance to the greatest extent.
+ The computation time of both the particle filter and the UKF can be reduced,
+ allowing better tracking performance.
+ Especially the UKF should be possible optimize greatly, given its relatively
+ low computational complexity.
+ In particular, the brick implementation can be improved by switching to
+ a faster matrix class library to reduce the iteration time.
  One could switch to using single point arithmetic instead of double, as
- it has more than enough of accuracy for our application anyway.
- Even a integer point solution could be adopted, as was done with the particle
+ the former has more than enough of accuracy for our application anyway.
+ Even an integer point solution could be adopted, as was done with the particle
  filter.
- That could probably have made the iteration runtime a lot shorter.
+ That could probably have made the iteration time a lot faster.
+ Ultimately, the network iteration frequency puts a limit on how much increase
+ in overall system performance we can expect by reducing the filter iteration
+ times.
+ But since each network cycle took __ ms, there is quite a large room for
+ improvement.
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+How long was it?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -625,16 +573,97 @@ key "Rui01betterproposal"
 \end_inset
 
 .
-
-\emph on
- 
-\emph default
-By using the UKF for proposal distribution, the generated particles are
+ By using the UKF for proposal distribution, the generated particles are
  placed closer to the true states.
- The increase in accuracy can also be traded for a lower iteration time
- by using fewer particles.
- This should be an interesting and the natural continuation of our work
- with the filters.
+ The increased accuracy can also be traded for a faster iteration time by
+ using fewer particles.
+ This should be an interesting and quite straightforward continuation of
+ our work with the filters.
+\end_layout
+
+\begin_layout Standard
+During longer tracking periods the absolute positioning filter becomes more
+ important.
+ A working UKF or particle filter of this kind should improve the performance
+ greatly.
+ With the used landmark positions, each cat should have landmark in its
+ field of view at all times while tracking the mouse.
+ This is assuming the mouse does not travel too close to the edges of the
+ arena, and that the mouse does not occlude the landmarks.
+ It should be possible to minimize these cases by adding appropriate terms
+ to the criterion function of the guide.
+ Under these circumstances, a well implemented absolute positioning filter
+ should be able to position the cats accurately at all times, even given
+ a large error in the odometer readings.
+ Ideally, the filter should be able to correct the cats’ position and orientatio
+n while they are moving.
+ This was achieved in the Matlab filter simulations, so a brick implementation
+ with this feature should be within the realm of possibility.
+\end_layout
+
+\begin_layout Standard
+An interesting possibility is to enable feedback from the tracking filter
+ to the absolute positioning filter.
+ When three or more cats are tracking the mouse the conformity of their
+ bearing readings is likely to vary with the accuracy of their estimated
+ position.
+ The covariance matrix of the estimated taget position can be used to measure
+ this conformity.
+ If the conformity becomes too low, the cats should improve their own position
+ estimate, e.g.
+ by sweeping for landmarks, thus enabling on-demand absolute positioning.
+ This can be extended when four (or more) cats are used.
+ By examining the conformity of all the different subsets containing three
+ cats, it should be possible isolate a cat that has bad absolute position
+ estimate (assuming the others are accurate).
+ This is similar to cross-validation in statistics.
+\end_layout
+
+\begin_layout Standard
+Another way of improving the tracking performance is by using better and/or
+ more sensors than the ones we had access to.
+ The camera we used had a very low resolution, making long range target
+ detection difficult.
+ Also, using predetermined color ranges to detect the target and the landmarks
+ has its limitations – it becomes very sensitive to changes in the surrounding
+ scene and the ambient lightning.
+ An alternative could be to use patterns instead of colored lights as beacons.
+ This would however be computationally more complex and probably require
+ a higher resolution camera.
+ 
+\end_layout
+
+\begin_layout Standard
+What could be interesting is to replace the camera totally with something
+ else, for example an IR-detection module, and use different IR-codes (i.e.
+ blinking in different speeds) as beacons.
+ Another suggestion could be to use an ultra sonic sensor to detect object
+ close to the brick for localization of the other cats and mouse.
+ Some improvements to the absolute positioning filter could possibly be
+ achieved by adding data from a compass.
+ Regarding the movement pilot, it could be interesting to achieve arc-movement
+ for the robot implemented with the guidance system.
+ This could result in smoother movement, but would ideally require Ackermann’s
+ steering correction, to avoid wheel slip and incorrect odometer readings
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Ackermann"
+
+\end_inset
+
+.
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Original formulation seemed slightly exaggerated
+\end_layout
+
+\end_inset
+
+ Unfortunately, such a construction would be hard to build with Lego.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -652,227 +681,136 @@ options "bibtotoc,plain"
 Biography
 \end_layout
 
-\begin_layout Biography
-\begin_inset ERT
-status collapsed
+\begin_layout Standard
+\noindent
 
-\begin_layout Plain Layout
-
-[{
-\end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename images/Inscribed_angle_theorem_2.gif
-	lyxscale 10
-	scale 20
-
-\end_inset
-
-
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-}]
-\end_layout
-
-\end_inset
-
-
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-{
-\end_layout
-
-\end_inset
-
+\series bold
 Fredrik Wahlberg
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-}
+\series default
+ 
 \end_layout
 
-\end_inset
-
- Project leader.
+\begin_layout Standard
+\noindent
+Project leader.
  Worked on the Particle filter (both tracking and positioning) and Geometric
- 
-\begin_inset Quotes eld
-\end_inset
-
-filter
-\begin_inset Quotes erd
-\end_inset
-
- theory, simulation and implementation.
+ “filter” theory, simulation and implementation.
  Participated in software architecture and design.
  Wrote most of the Java simulation framework and the AI for robot positioning
  (maximizing sensor reading information and collision avoidance).
 \end_layout
 
-\begin_layout --Separator--
-
-\end_layout
-
-\begin_layout Biography
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-{
-\end_layout
-
+\begin_layout Standard
+\begin_inset VSpace bigskip
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
 Christian Ålander
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-}
+\series default
+ 
 \end_layout
 
+\begin_layout Standard
+\noindent
+All about you and the what your interests are.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace bigskip
 \end_inset
 
- All about you and the what your interests are.
-\end_layout
-
-\begin_layout --Separator--
 
 \end_layout
 
-\begin_layout Biography
-\begin_inset ERT
-status collapsed
+\begin_layout Standard
+\noindent
 
-\begin_layout Plain Layout
-
-{
-\end_layout
-
-\end_inset
-
+\series bold
 Nils Törnblom
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-}
+\series default
+ 
 \end_layout
 
-\end_inset
-
- Worked on the Kalman filters; modelling, simulation and implementation.
+\begin_layout Standard
+\noindent
+Worked on the Kalman filters; modelling, simulation and implementation.
  Also the person charge of the movement pilot regulator, camera tracking
  regulator, landmark design and detection.
- Was involved some of the robot design and construction.
+ Involved in some of the robot design and construction.
  Co-developed the color coding.
 \end_layout
 
-\begin_layout --Separator--
-
-\end_layout
-
-\begin_layout Biography
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-{
-\end_layout
-
+\begin_layout Standard
+\begin_inset VSpace bigskip
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
 Martynas Mickevičius
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-}
+\series default
+ 
 \end_layout
 
-\end_inset
-
- All about you and the what your interests are.Network communications implementat
-ion.
+\begin_layout Standard
+\noindent
+Network communications implementation.
  Robot and GUI software architecture design.
 \end_layout
 
-\begin_layout --Separator--
-
-\end_layout
-
-\begin_layout Biography
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-{
-\end_layout
-
+\begin_layout Standard
+\begin_inset VSpace bigskip
 \end_inset
 
-Edvard Zak
-\begin_inset ERT
-status collapsed
 
-\begin_layout Plain Layout
-
-}
 \end_layout
 
-\end_inset
+\begin_layout Standard
+\noindent
 
- Worked on the Unscented Kalman filters for tracking and positioning, mainly
+\series bold
+Edvard Zak 
+\end_layout
+
+\begin_layout Standard
+\noindent
+Worked on the Unscented Kalman filters for tracking and positioning, mainly
  the Java implementation and its testing.
  Active in robot software architecture and design.
  Worked on the final testing.
  
 \end_layout
 
-\begin_layout --Separator--
-
-\end_layout
-
-\begin_layout Biography
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-{
-\end_layout
-
+\begin_layout Standard
+\begin_inset VSpace bigskip
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
 Cheewin Pisanupoj
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-}
+\series default
+ 
 \end_layout
 
-\end_inset
-
- All about you and the what your interests are.
+\begin_layout Standard
+\noindent
+All about you and the what your interests are.
+ 
 \end_layout
 
 \end_body

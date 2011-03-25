@@ -52,13 +52,64 @@ Locomotion
 \end_layout
 
 \begin_layout Standard
- We have tried different designs for the tracking cats and found one 
- which was most suited for the task, using three interactive servo-motors.
- First we tried to use two driving wheels on the side of the brick and a wheel for 
- back support for the cats, which we believed would help the rotation.
- However, we soon found out after the design was done that it made the rotation 
- inaccurate. Therefore we use a LEGO-piece as a back support instead. We used the
- the last motor available in the kit for camera rotation, and which we placed on top of the brick.
+We have tried some different designs for the locomotion of the cats, and
+ found a simple construction which was most suited for the task.
+ At first we used two motors with attached wheels placed on both sides of
+ the brick, and a single support wheel which we believed would help ease
+ the rotation.
+ However, we soon found out that the support wheel impaired accurate rotation
+ of the cat.
+ This is because we want to rotate the cat around and axis placed between
+ the two propelling wheels.
+ This is done by rotating the wheels in opposite direction.
+ Nevertheless, we needed a third supporting point for the cat to be stable.
+ Ideally, this contact point should have a coefficient of friction of zero
+ to the ground.
+ We found a small slippery LEGO-piece to use as a contact point, which preformed
+ better than the support wheel.
+ The final cat design can be seen in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:cat"
+
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/cat.jpg
+	lyxscale 30
+	width 85col%
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:cat"
+
+\end_inset
+
+One of the constructed cats.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -72,7 +123,7 @@ As the goal of this project is to track the mouse we wanted the cameras
  the mouse all the time.
  The camera was first fitted directly to a motor enabling the camera to
  rotate and look around the arena.
- Tests showed that errors in the motors odometer were quite large, up to
+ Tests showed that errors in the motor odometer were quite large, up to
  10°, resulting in a very bad angular reading.
  The errors did not drift, so they could in theory be corrected by calibration.
  However, this was made difficult since the error was not constant but varied
