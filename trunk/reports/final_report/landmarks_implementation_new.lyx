@@ -108,11 +108,55 @@ key "Magnification"
  Choosing the plastic to be colored the same way as the CCFL gave the best
  appearance to the marker.
  This not only made the lamp appear to be less bright, and therefore receive
- a correct exposure, but also made the marker larger, permitting detection
+ a correct exposure, but also made the marker larger, enabling detection
  at larger distances.
  The final four landmarks had the colors blue, green, purple and white.
+ One of them can be seen in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:landmark"
+
+\end_inset
+
+.
  A similar red marker was affixed to the mouse.
  Red was chosen because it was the easiest color to detect.
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/landmark.jpg
+	lyxscale 40
+	height 100col%
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:landmark"
+
+\end_inset
+
+One of the constructed landmarks viewed under standard operating ambient
+ lighting.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body

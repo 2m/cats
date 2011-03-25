@@ -1,4 +1,4 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -48,8 +48,7 @@ Guide
 \end_layout
 
 \begin_layout Standard
-When having mobile robots as in our case the need for positioning them
- arouse.
+When having mobile robots as in our case the need for positioning them arouse.
  This was not a part of the given assignment and the used method was more
  or less developed on a napkin and should be considered as a proof-of-concept.
 \end_layout
@@ -135,8 +134,8 @@ reference "eq:Guide finite difference"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \begin{equation}
-\nabla f(x,y)\approx\left(\frac{f(x+h,y)-f(x-h,y)}{2h},\frac{f(x,y+h)-f(x,y-h)}{2h}\right)\label{eq:Guide finite difference}\end{equation}
+\begin_inset Formula \begin{eqnarray}
+\nabla f(x,y)\approx & \left(\frac{f(x+h,y)-f(x-h,y)}{2h},\frac{f(x,y+h)-f(x,y-h)}{2h}\right)\label{eq:Guide finite difference}\end{eqnarray}
 
 \end_inset
 
@@ -208,7 +207,7 @@ status open
 \begin_inset Graphics
 	filename images/guide_surface.png
 	lyxscale 25
-	scale 25
+	width 100col%
 
 \end_inset
 
@@ -277,7 +276,8 @@ status open
 \begin_inset Graphics
 	filename images/guide_simulation.png
 	lyxscale 30
-	scale 50
+	width 100col%
+	clip
 
 \end_inset
 
