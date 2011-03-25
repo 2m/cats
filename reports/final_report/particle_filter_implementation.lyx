@@ -73,8 +73,8 @@ A problem with the particle filter approach was that it is very CPU intensive.
 \end_layout
 
 \begin_layout Standard
-A common approach to speeding up non-linear functions is look up tables.
- The up side of these is that they take little time to do.
+A common approach to speeding up non-linear functions is look up-tables.
+ The up side of these is that they take little time to check.
  The only operations necessary is a rounding to the tables precision and
  then a look up in an array.
  The cons of this approach is that a lot of memory is needed to give the
@@ -143,7 +143,7 @@ key "Yates2009-07-07"
 \end_inset
 
 .
- Fixed point uses only integer operation which are much faster than floating
+ Fixed point uses only integer operations which are much faster than floating
  point, usually they are even so on processors with native floating point
  support.
  The basic idea is that all numbers are multiplied by a constant and then
