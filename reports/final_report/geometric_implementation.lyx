@@ -111,7 +111,7 @@ The compromise was made that the filter would correct its angle estimate
  had traveled longer distances.
  The error in the turning did not have as much opportunity to propagate
  with distance traveled as before.
- The correcting was 1 degree per second and landmark seen.
+ The correcting was one degree per second and landmark seen.
  To complement this the decision was made to make the cat look for landmarks
  with even intervals but only if no other cat was sweeping for landmarks.
  
