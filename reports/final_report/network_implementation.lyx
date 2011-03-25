@@ -54,16 +54,16 @@ Data synchronization
 \begin_layout Standard
 In order to make the autonomous robot system cooperative, some kind of communica
 tion between the robots had to be introduced.
- Our choise was Bluetooth connection since every robot had such capability.
+ Our choice was Bluetooth connection since every robot had such capability.
  A connection to the PC can also be achieved with a simple Bluetooth dongle.
- The choice of BT communication limits the distance that robots can be apart.
- However the robots were operating fine with distances up to 3 meters between
+ The choice of BT communication limits the distance that the robots can be apart from each other.
+ However, the robots were operating fine with distances up to 3 meters between
  them.
  
 \end_layout
 
 \begin_layout Standard
-Two different kinds of data were defined that are going to flow through
+Two different kinds of data were defined that was going to flow through
  the network.
  
 \end_layout
@@ -74,15 +74,14 @@ All the data that is vital to the robots internal systems belong to the
 \end_layout
 
 \begin_layout Enumerate
-All the additional data that can be used by the GUI on the PC for the visualzati
-on and debugging of these systems.
+All the additional data that can be used by the GUI on the PC for the visualization and debugging of these systems.
 \end_layout
 
 \begin_layout Standard
 The synchronization rate of the first group actively limits the rate on
  which the tracking filters can run.
  It also limits the accuracy that the guide can give us.
- All the remaining bandwidth can be used for data visualzation and debugging.
+ All the remaining bandwidth can be used for data visualization and debugging.
  The first group can be split further into two parts:
 \end_layout
 
@@ -98,7 +97,7 @@ the results of the tracking filter (the position of the mouse with uncertainties
 \end_layout
 
 \begin_layout Standard
-The syncronization of the data mentioned above was achieved using a billboard
+The synchronization of the data mentioned above was achieved using a billboard
  model.
  Every robot had a spot on the billboard.
  Whenever any robot changes a value on its spot, an update is sent to all
@@ -109,7 +108,7 @@ The syncronization of the data mentioned above was achieved using a billboard
  were already applied, it is not used to update the spot with the old value.
  What is more, a read from the billboard is never blocked.
  Therefore there is no mechanism to prevent old data to be read, so even
- if new data is beeing trasmited through the network at that time, old data
+ if new data is being transmitted through the network at that time, old data
  will still be read.
  There were 19 float point variables stored in the billboard for every robot
  which gives 152 bytes for every robot.
@@ -120,10 +119,10 @@ Time synchronization
 \end_layout
 
 \begin_layout Standard
-Since measurements are timestamped there had to be a means of syncronizing
+Since measurements are time-stamped there had to be a means of synchronizing
  clocks on every robot.
  We used the simplest, however not fool-proof protocol for time synchronization.
- One robot has to be declared as a master, other robots which sync their
+ One robot has to be declared as a master, and other robots which sync their
  clocks with the master are called slaves.
  The protocol then is as follows:
 \end_layout
@@ -172,18 +171,18 @@ timeOffset=timeOffset+currentDelte\]
 
 \begin_layout Standard
 It is clear that the network latency is not constant and this kind of time
- synchronization does not take into acount latency values from the previous
- syncronizations.
+ synchronization does not take into account latency values from the previous
+ synchronizations.
  Thus every synchronization can be equally good or bad.
- Tests showed that most of the time no more than 3 synchronizations had
+ Tests showed that most of the time no more than three synchronizations had
  to be performed in order to achieve preferable clock synchronization.
 \end_layout
 
 \begin_layout Standard
-For the purpouse of seeing the clock synchronization in action we implemented
+For the purpose of seeing the clock synchronization in action we implemented
  a music function into the robots.
  When the clocks are synchronized all robots can perform the same music
- piece in parralel where every next note is played by a different robot.
+ piece in parallel where every next note is played by a different robot.
 \end_layout
 
 \begin_layout Subsubsection
@@ -195,12 +194,12 @@ We wanted to have a robust network which can be easily expanded.
  We chose to implement packet system on top of the provided low level network
  functions.
  This allowed us to easily send and receive different kinds of data for
- different purpouses.
+ different purposes.
  It also allowed us to change the underlying low level network implementation
- (you can access network from leJOS using Java buffered readers/writers
+ (you can access network from Lejos using Java buffered readers/writers
  or low level functions) without any need to change any of the higher level
  code.
- Tests showed that Java buffered network readers/writers are more convienient
+ Tests showed that Java buffered network readers/writers are more convenient
  to use but unstable when dealing with multiple connections.
 \end_layout
 
@@ -215,8 +214,8 @@ All of the packets had a type field which lets to distinguish between different
 \end_layout
 
 \begin_layout Standard
-We had thirteen different packets in total.
- All of them were used in many different situations including but not limited
+We had 13 different packets in total.
+ All of them were used in many different situations including - but not limited
  to:
 \end_layout
 
@@ -225,7 +224,7 @@ billboard updates
 \end_layout
 
 \begin_layout Itemize
-time syncronization
+time synchronization
 \end_layout
 
 \begin_layout Itemize
@@ -237,7 +236,7 @@ visualization data for the GUI
 \end_layout
 
 \begin_layout Itemize
-changing various itnernal settings on-the-fly
+changing various internal settings on-the-fly
 \end_layout
 
 \end_body
