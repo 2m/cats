@@ -75,7 +75,7 @@ Network with a robot hub
 \begin_layout Standard
 Two kinds of network architecture solutions were considered.
  The first one is using one robot as a network hub.
- In such way a small network consisting of three slaves connected to one
+ That way, a small network consisting of three slaves connected to one
  master can be constructed.
  There can be no more than four robots in such a network because of the
  limitations mentioned above.
