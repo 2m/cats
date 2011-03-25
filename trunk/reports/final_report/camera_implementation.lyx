@@ -263,9 +263,9 @@ While observing the camera output using the NXTCamView software we have
  and calculating median coordinates.
  This would have effectively introduced some overhead to the camera regulator
  code.
- We chose to modify camera firmware so that it does not split tracked objects
+ We chose to modify the camera firmware so that it does not split tracked objects
  or rather merges them before transmitting data to robot.
- We have found modified camera firmware called 
+ We have found a modified camera firmware called 
 \begin_inset Quotes eld
 \end_inset
 
