@@ -65,13 +65,13 @@ We encountered several difficulties when selecting a suitable visual marker
  appears in the view isn't detected as the target.
  First we tried one of the red balls that came with the Lego kit as a visual
  marker.
- Unfortunatley, the color of the ball was detected differently depending
+ Unfortunately, the color of the ball was detected differently depending
  of the lightning.
  The color was different if the camera saw the side of the ball in shadow
  compared to if it saw the side which was lit up.
  One could compensate for this by allowing a bigger range of red color to
  be considered as the target.
- This however gave quite many erroneus detections of the target.
+ This however gave quite many erroneous detections of the target.
  It was clear that a better visual marker was needed to allow acceptable
  tracking of the mouse.
 \end_layout
@@ -83,10 +83,10 @@ The solution adopted involved the use of Cold Cathode Fluorescent Lamps
  direction in a horizontal plane if placed standing.
  LEDs on the other hand can only be viewed from one side.
  Furthermore, the CCFLs have a much larger luminous area than the point-like
- apprearance of LEDs.
- This is neccesary if the visual marker should be detectable at large distances.
+ appearance of LEDs.
+ This is necessary if the visual marker should be detectable at large distances.
  This criterion proved quite difficult to satisfy even with the CCFLs.
- The size of the lamp in the picture decreases approximatley with the inverse
+ The size of the lamp in the picture decreases approximately with the inverse
  of the distance 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -107,7 +107,7 @@ key "Magnification"
  The solution was to wrap the CCFL with a semi-translucent plastic sheet.
  Choosing the plastic to be colored the same way as the CCFL gave the best
  appearance to the marker.
- This not only made the lamp appear to be less bright, and therefore recieve
+ This not only made the lamp appear to be less bright, and therefore receive
  a correct exposure, but also made the marker larger, permitting detection
  at larger distances.
  The final four landmarks had the colors blue, green, purple and white.
