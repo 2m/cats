@@ -52,13 +52,13 @@ Locomotion
 \end_layout
 
 \begin_layout Standard
- We have tried some difference design for the tracking cats and found one 
- which was most suited for the task, using 3 Interactive Servo Motor.
- At first we used 2 driving wheels on the side of the brick and a wheel for 
- back support for the cats in which we believed would help easy the rotation.
+ We have tried different designs for the tracking cats and found one 
+ which was most suited for the task, using three interactive servo-motors.
+ First we tried to use two driving wheels on the side of the brick and a wheel for 
+ back support for the cats, which we believed would help the rotation.
  However, we soon found out after the design was done that it made the rotation 
- inaccurate. Therefore we use a LEGO-piece as a back support instead. We use the
- the last motor for camera rotation which we placed on top of the brick.
+ inaccurate. Therefore we use a LEGO-piece as a back support instead. We used the
+ the last motor available in the kit for camera rotation, and which we placed on top of the brick.
 \end_layout
 
 \begin_layout Subsubsection
@@ -72,7 +72,7 @@ As the goal of this project is to track the mouse we wanted the cameras
  the mouse all the time.
  The camera was first fitted directly to a motor enabling the camera to
  rotate and look around the arena.
- Tests showed that errors in the motor odometer were quite large, up to
+ Tests showed that errors in the motors odometer were quite large, up to
  10°, resulting in a very bad angular reading.
  The errors did not drift, so they could in theory be corrected by calibration.
  However, this was made difficult since the error was not constant but varied
