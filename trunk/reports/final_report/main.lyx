@@ -605,7 +605,7 @@ n while they are moving.
 An interesting possibility is to enable feedback from the tracking filter
  to the absolute positioning filter.
  When three or more cats are tracking the mouse the conformity of their
- bearing readings is likely to vary with the accuracy of their estimated
+ bearing readings is likely to vary with the accuracy of their own estimated
  position.
  The covariance matrix of the estimated taget position can be used to measure
  this conformity.
@@ -614,8 +614,8 @@ An interesting possibility is to enable feedback from the tracking filter
  by sweeping for landmarks, thus enabling on-demand absolute positioning.
  This can be extended when four (or more) cats are used.
  By examining the conformity of all the different subsets containing three
- cats, it should be possible isolate a cat that has bad absolute position
- estimate (assuming the others are accurate).
+ cats, it should be possible isolate a cat that has a bad absolute position
+ estimate (assuming the others are more or less accurate).
  This is similar to cross-validation in statistics.
 \end_layout
 
