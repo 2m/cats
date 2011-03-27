@@ -62,7 +62,7 @@ Calibration
 \end_layout
 
 \begin_layout Standard
-As it turned out, Lejos had a built in Pilot class, aiding the programming
+As it turned out, leJOS had a built in Pilot class, aiding the programming
  of the movement regulator.
  Given the diameter of the wheels, the traveled distance can be calculated
  from the motor odometer data.
@@ -80,12 +80,12 @@ Smooth acceleration
 \end_layout
 
 \begin_layout Standard
-The provided Lejos movement pilot caused the cat to travel and rotate with
+The provided leJOS movement pilot caused the cat to travel and rotate with
  a more or less constant velocity, resulting in an abrupt start and stop
  of each movement command.
  This hard acceleration caused the wheels to slip, which in turn fooled
  the odometer.
- The Lejos pilot was therefore modified to allow smooth acceleration without
+ The leJOS pilot was therefore modified to allow smooth acceleration without
  any wheel slip.
  Both the travel and rotation velocity was implemented to have an ascending
  and descending ramp.
