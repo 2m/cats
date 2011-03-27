@@ -57,7 +57,7 @@ reference "tab:positioning_results"
 \end_inset
 
  .
- The result shows that the magnitude of the positioning error is more then halved when using the geometric filter, although the it differs greatly in x- and y-position.
+ The result shows that the magnitude of the positioning error is more then halved when using the geometric filter, although it differs greatly in x- and y-position.
 
 
 \begin_inset Float table
