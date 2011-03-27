@@ -196,7 +196,7 @@ We wanted to have a robust network which can be easily expanded.
  This allowed us to easily send and receive different kinds of data for
  different purposes.
  It also allowed us to change the underlying low level network implementation
- (you can access network from Lejos using Java buffered readers/writers
+ (you can access network from leJOS using Java buffered readers/writers
  or low level functions) without any need to change any of the higher level
  code.
  Tests showed that Java buffered network readers/writers are more convenient

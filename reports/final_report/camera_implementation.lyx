@@ -241,7 +241,7 @@ where
 
 \begin_layout Standard
 Retrieving the horizontal pixel coordinates of the mouse marker in a camera
- image was easy since the LejOS API already has this feature implemented.
+ image was easy since the leJOS API already has this feature implemented.
  Because the camera can detect up to eight targets with different colors,
  we chose to assign each landmark and the mouse with a unique color marker.
  That way, we can easily get the correct pixel locations of the mouse and
