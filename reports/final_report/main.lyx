@@ -1,4 +1,4 @@
-#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -100,7 +100,7 @@ Tracking can only be done successfully if robots know their own position.
  calculated using odometer readings.
  Unfortunately, the errors in those readings will be integrated over time,
  resulting in a position error steadily increasing over time.
- This problem was by using a set of landmarks standing at known positions.
+ This problem was solved by using a set of landmarks standing at known positions.
  By making bearings measurements to the landmarks, the accumulated error
  in the position of the robots can be corrected.
  
