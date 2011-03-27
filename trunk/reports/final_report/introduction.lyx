@@ -80,7 +80,7 @@ distributed or not?
  The bearings only measurements are acquired using a set of video cameras
  connected to the robots.
  In addition, the motors used for propulsion and camera rotation also have
- a built in tachometers.
+ a built in odometers.
  The desired positions of the cats are determined using the guidance algorithm
  (guide).
  Proof of concepts of the suggested solutions were simulated in Matlab before
