@@ -52,7 +52,7 @@ Setup
 \end_layout
 
 \begin_layout Standard
-All tests were conducted within a 2.5 by 2.5m arena. The arena limits were also entered into the settings file on the bricks, meaning that the filters could limit estimates to 0.0 or 2.5m if outside this area. The period of the kalman filter was set to 500ms and the period of the particlefilter to 1000ms.
+All tests were conducted within a 2.5 by 2.5m arena. The arena limits were also entered into the settings file of the robots, meaning that the filters could limit estimates to 0.0 or 2.5m if outside this area. The period of the UKF was set to 500ms and the period of the particle filter to 1000ms.
 
 \end_layout
 
@@ -71,7 +71,7 @@ reference "fig:test1_tracking_static_line_kalman"
 
 \end_inset
 
- shows the result of the kalman filter when three cats are standing on a line as shown in Figure 
+ shows the result of the UKF when three cats are standing on a line as shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
@@ -203,7 +203,7 @@ name "fig:test1_tracking_static_line_kalman"
 \end_inset
 
 Plot of three cats standing on a line tracking a stationary
- mouse with the unscented kalman filter. See Figure 
+ mouse with the Unscented Kalman Filter. See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
@@ -303,7 +303,7 @@ name "fig:test2_tracking_static_optimal_kalman"
 \end_inset
 
 Plot of three cats standing on optimal positions tracking
- a static mouse with the unscented kalman filter. 
+ a static mouse with the Unscented Kalman Filter. 
 The graph is cut at 0.0 and 2.5m because the data on the bricks were not allowed to exceed thoose values as that would be outside the arena. See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -448,7 +448,7 @@ reference "fig:test4_tracking_moving_kalman2"
 
 \end_inset
 
- for the kalman filter, Figure  
+ for the UKF, Figure  
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test4_tracking_moving_particle2"
@@ -494,7 +494,7 @@ name "fig:test4_tracking_moving_kalman2"
 
 Plot of the final system with three stationary and decently placed cats
  tracking a mouse moving at a constant speed of roughly 0.19 m/s with the
- unscented kalman filter. See Figure 
+ Unscented Kalman Filter. See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"

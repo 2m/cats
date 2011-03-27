@@ -89,7 +89,7 @@ ely tracks a non-cooperative target using bearings-only measurements.
 
 \begin_layout Abstract
 We have chosen to implement two target tracking filters – an Unscented Kalman
- filter as well as a particle filter.
+ Filter as well as a particle filter.
  Both filters were developed side by side to compare the implementation
  of the differing mathematical models in the embedded device.
 \end_layout
@@ -207,8 +207,8 @@ key "Wan00theunscented"
 \end_layout
 
 \begin_layout Standard
-Particle filters are a common approach in non-linear tracking and been proven
- effective for robot localization 
+Particle filters are a common approach in non-linear tracking and have been
+ proven effective for robot localization 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ISI:000222055900012,MiodragBolic2004-11-12,Rekleitis"
