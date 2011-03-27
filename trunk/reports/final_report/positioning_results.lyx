@@ -47,51 +47,19 @@
 Cat positioning
 \end_layout
 
-\begin_layout Subsubsection
-Cat moving without external interference
-\end_layout
-
 \begin_layout Standard
-The geometric positioning filter was tested against positioning solely based
- on tachometer data.
- The robot was programmed to travel around a square of size one by one meter
- three times and the error between the estimated and the actual position
- was then measured.
- The robot only turned at the corners of the square and it estimated its
- own position after each turn.The result of positioning without a filter
- can be seen in Table 
+The geometric positioning filter was tested against positioning solely based on tachometer data. The robot was programmed to travel around a square of size one by one meter three times and the error between the estimated and the actual position was then measured. The robot only turned at the corners of the square and it estimated its own position after each turn.
+The result of positioning without a filter and the corresponding result for the geometric positioning filter can be seen in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab:positioning_without_filter"
-
-\end_inset
-
- and the corresponding result for the geometric positioning filter can be
- seen in Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:geometric_positioning_filter"
+reference "tab:positioning_results"
 
 \end_inset
 
  .
- The result shows THAT...
-\end_layout
+ The result shows that the magnitude of the positioning error is more then halved when using the geometric filter, although the it differs greatly in x- and y-position.
 
-\begin_layout Subsubsection
-Cat standing still and then being displaced
-\end_layout
 
-\begin_layout Standard
-The robot was first standing still and then manually displaced.
- The result is shown in Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:geometric_positioning_manually_displaced"
-
-\end_inset
-
- .
 \begin_inset Float table
 placement htbp
 wide false
@@ -105,11 +73,11 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:positioning_without_filter"
+name "tab:positioning_results"
 
 \end_inset
 
-Positioning without a filter by using tachometerdata only.
+Positioning without a filter compared to positioning with a geometric filter.
 \end_layout
 
 \end_inset
@@ -120,21 +88,51 @@ Positioning without a filter by using tachometerdata only.
 \begin_layout Plain Layout
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="2" columns="2">
+<lyxtabular version="3" rows="3" columns="3">
 <features>
-<column alignment="center" valignment="top" width="0pt">
-<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-Average error between actual and estimated x-position [m]
+Average error (magnitude) [m]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Without a filter
 \end_layout
 
 \end_inset
 </cell>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+With geometric filter
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+x-position
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -143,79 +141,7 @@ Average error between actual and estimated x-position [m]
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Average error between actual and estimated y-position [m]
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.11
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float table
-placement htbp
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:geometric_positioning_filter"
-
-\end_inset
-
-Positioning with the geometric positioning filter.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="2" columns="2">
-<features>
-<column alignment="center" valignment="top" width="0pt">
-<column alignment="center" valignment="top" width="0pt">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Average error between actual and estimated x-position [m]
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -230,7 +156,16 @@ Average error between actual and estimated x-position [m]
 \begin_inset Text
 
 \begin_layout Plain Layout
-Average error between actual and estimated y-position [m]
+y-position
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.11
 \end_layout
 
 \end_inset
@@ -255,105 +190,7 @@ Average error between actual and estimated y-position [m]
 \end_inset
 
 
-\begin_inset Float table
-placement htbp
-wide false
-sideways false
-status open
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:geometric_positioning_manually_displaced"
-
-\end_inset
-
-Positioning with the geometric positioning filter when being manually displaced.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="2">
-<features>
-<column alignment="center" valignment="top" width="0pt">
-<column alignment="center" valignment="top" width="0pt">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Average error between actual and estimated x-position [m]
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.04
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Average error between actual and estimated y-position [m]
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.04
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Average error between actual and estimated orientation [degrees]
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.67
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
 
 
 \end_layout
