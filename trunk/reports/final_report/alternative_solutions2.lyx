@@ -1,4 +1,4 @@
-#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -59,8 +59,8 @@ An initial idea of robot positioning was to use two electromagnets generating
  of these fields with a magnetic sensor (compass), and triangulate the position
  of the robot by calculating the direction of the magnetic source.
  This ambitious concept proved hard to realize for numerous reasons, and
- would probably just on its own have been a much larger project than what we were
- about to execute.
+ would probably just on its own have been a much larger project than what
+ we were about to execute.
  To cover the area required with a sufficient field, we first looked on
  the market for purchasing an already existing electromagnet.
  However, we soon realized that the strength of the fields they generated
@@ -69,20 +69,21 @@ An initial idea of robot positioning was to use two electromagnets generating
  By letting an iron core be equipped with some hundred laps of wire, and
  letting a strong current flow through it, we figured that a large enough
  magnetic field for our needs could be obtained.
- To get a position from the field vectors which we hoped to be able to get from the
- magnetic sensors, available in the LEGO Mindstorm kit, we needed to switch
- the two magnetic fields on and off separately.
+ To get a position from the field vectors which we hoped to be able to get
+ from the magnetic sensors, available in the LEGO Mindstorms kit, we needed
+ to switch the two magnetic fields on and off separately.
  Otherwise these field vectors would have merged into a single one, with
  a complicated structure.
  To get a good measurement of the generated field vector we wanted to have
  them at least twice as large as Earths magnetic field, over the whole arena.
- This due to enabling us to distinguish it at all. 
- After running some calculations for our hypothetical electromagnets, we
+ This due to enabling us to distinguish it at all.
+  After running some calculations for our hypothetical electromagnets, we
  were forced to abandon this sub-project, since they showed that the size
  of the field the electromagnets were required to generate far exceeded
  what reasonably could have been achieved with available equipment.
  Another reason to reject this idea was the magnetic sensors from LEGO that
- did not give good enough measurements to satisfy our ambitions for this application.
+ did not give good enough measurements to satisfy our ambitions for this
+ application.
  A bad sensor with fluctuating readings would easily dismantle the purpose
  of the system, by giving the sensitive system a high rate of wrong values,
  and make the calculations for the estimated position disastrous.

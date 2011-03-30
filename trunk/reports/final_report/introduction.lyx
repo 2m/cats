@@ -1,4 +1,4 @@
-#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -63,16 +63,7 @@ PARstart{W}{ith}
  Cooperation between the robots is achieved by communication over a wireless
  network and data storage on a PC working as a base station.
  Our solution implements two different tracking filters; the Unscented Kalman
- Filter (UKF) and a (distributed?) particle filter.
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-distributed or not?
-\end_layout
-
-\end_inset
-
+ Filter (UKF) and a distributed particle filter.
  All calculations are made on the chosen mobile Lego® Mindstorms® NXT robots,
  which have somewhat limited computational resources.
  It is important to note that no calculations relating to the actual positioning
@@ -80,7 +71,7 @@ distributed or not?
  The bearings only measurements are acquired using a set of video cameras
  connected to the robots.
  In addition, the motors used for propulsion and camera rotation also have
- a built in odometers.
+ built in odometers.
  The desired positions of the cats are determined using the guidance algorithm
  (guide).
  Proof of concepts of the suggested solutions were simulated in Matlab before
@@ -97,9 +88,9 @@ Following this introduction, an overview of some previous work relating
  We also present some results from the Matlab simulations here.
  Section 4 describes our implementation, including the overall software
  architecture, physical design of the cats and the landmarks, control algorithms
- for the movements of the cats, network architecture, java implementation
+ for the movements of the cats, network architecture, Java implementation
  of the filters and the guide, the graphical user interface on the PC, as
- well as the java simulation framework.
+ well as the Java simulation framework.
  The results are given in Section 5, showing benchmarks of the different
  subsystems.
  A discussion of the results are given in Section 6, as well as some suggestions

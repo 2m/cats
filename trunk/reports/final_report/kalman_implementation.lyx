@@ -1,4 +1,4 @@
-#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -74,13 +74,13 @@ The
 \bar default
 \noun default
 \color inherit
--discontinuity issue was detected in the java simulation too.
+-discontinuity issue was detected in the Java simulation too.
  It seemed to occur a bit more often than in the Matlab simulation, though
  still not often enough to be a big problem.
 \end_layout
 
 \begin_layout Standard
-The java simulations showed that the absolute positioning filter as implemented
+The Java simulations showed that the absolute positioning filter as implemented
  in Matlab performed quite badly since it could not handle large errors
  in the cat orientation.
  An ad hoc solution to this was therefore tested.
@@ -123,11 +123,11 @@ Testing the tracking filter on the brick showed that the filter was somewhat
 n and crashing the filter.
  This happened in Matlab if the filter diverged, which happened only very
  seldom or not at all in the final code.
- In the java simulation it happened somewhat more often, but it didn't seem
+ In the Java simulation it happened somewhat more often, but it didn't seem
  to be a problem once we sorted out the last bugs.
  The brick implementation seemed to get this problem when the measurements
  weren't available for some time, which happened more often than in the
- java simulation.
+ Java simulation.
  It is believed that this caused an illegal covariance matrix to form.
  In normal operation however, this did not occur.
 \end_layout
@@ -166,7 +166,7 @@ An important element in the brick implementation is how often the filter
  Each iteration of the tracking filter was measured to take about 400 ms.
  This was faster than the particle filter that took well over a second.
  Still, it was not as fast as we had hoped.
- Profiling the java code both on the brick and the PC showed that matrix
+ Profiling the Java code both on the brick and the PC showed that matrix
  operations, mostly reading and writing, took a lot of time.
 \end_layout
 

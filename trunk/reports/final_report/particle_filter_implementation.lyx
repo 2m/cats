@@ -1,4 +1,4 @@
-#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -154,7 +154,7 @@ key "Yates2009-07-07"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $c=((a\cdot d)\cdot(b\cdot d))/d$
+\begin_inset Formula $c\cdot d=((a\cdot d)\cdot(b\cdot d))/d$
 \end_inset
 
 

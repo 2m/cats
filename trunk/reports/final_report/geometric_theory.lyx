@@ -1,4 +1,4 @@
-#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -103,7 +103,7 @@ status open
 \begin_inset Graphics
 	filename images/Inscribed_angle_theorem_1.png
 	lyxscale 60
-	scale 60
+	width 60col%
 
 \end_inset
 
@@ -170,7 +170,7 @@ status open
 \begin_inset Graphics
 	filename images/Inscribed_angle_theorem_2.gif
 	lyxscale 60
-	scale 60
+	width 80col%
 
 \end_inset
 
@@ -187,9 +187,9 @@ name "fig:geometric_circle_error"
 
 \end_inset
 
-Plot of the error given by a noisy angle measurement to a landmark.(e) shows
- ..., (f) shows....
-   P = ???
+Plot of the probable positions of a cat using noisy measurements to two
+ landmarks (left) to three landmarks giving an overlap of the probable areas
+ (right)
 \end_layout
 
 \end_inset
