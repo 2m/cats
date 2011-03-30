@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -66,16 +66,6 @@ C.A.T.S.: Cooperative Autonomous Tracking System
 \begin_layout Author
 Fredrik Wahlberg, Christian Ålander, Nils Törnblom, Martynas Mickevičius,
  Edvard Zak, Cheewin Pisanupoj
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Cooperative Autonomous Tracking System
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Abstract
@@ -98,7 +88,7 @@ We have chosen to implement two target tracking filters – an Unscented Kalman
 Tracking can only be done successfully if robots know their own position.
  With a known starting position, the current position of the robot can be
  calculated using odometer readings.
- Unfortunately, the errors in those readings will be integrated over time,
+ Unfortunately, the errors in those readings will be accumulated over time,
  resulting in a position error steadily increasing over time.
  This problem was solved by using a set of landmarks standing at known positions.
  By making bearings measurements to the landmarks, the accumulated error
@@ -216,8 +206,8 @@ key "ISI:000222055900012,MiodragBolic2004-11-12,Rekleitis"
 \end_inset
 
 .
- It is a model estimation technique based on simulation.
- With a sufficient number of samples (particles), the particle filters approach
+ It is a model estimation technique based on a Monte Carlo approach.
+ With a sufficient number of samples (particles) the particle filters approach
  the Bayesian optimal estimate, so they can be made more accurate than Kalman
  filter variants 
 \begin_inset CommandInset citation
@@ -228,7 +218,7 @@ key "Particle"
 
 .
  It is a computationally heavy technique and hence there would have to be
- a lot of work doing optimizations.
+ a lot of work spent optimizing the code.
  The target platform was quite limited in computational power, but since
  we also would try the Kalman filter, which is a standard technique, it
  was decided that there would be enough time to test both.
@@ -464,6 +454,10 @@ filename "positioning_results.lyx"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand input
 preview true
@@ -472,7 +466,12 @@ filename "guide_results.lyx"
 \end_inset
 
 
-\begin_inset Note Comment
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
 status collapsed
 
 \begin_layout Plain Layout
@@ -486,16 +485,16 @@ I (Edvard) never conducted any test on the Java implementation as I thought
 \end_layout
 
 \begin_layout Section
-future work
+Future work
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
+\begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
 Should we discuss the results in more detail? E.g.
- compare kalman and particle?
+ compare Kalman and particle?
 \end_layout
 
 \end_inset
@@ -530,15 +529,15 @@ Secondly, the filters can be improved substantially by decreasing their
  a faster matrix class library to reduce the iteration time.
  One could switch to using single point arithmetic instead of double, as
  the former has more than enough of accuracy for our application anyway.
- Even an integer point solution could be adopted, as was done with the particle
+ Even a fixed point solution could be adopted, as was done with the particle
  filter.
  That could probably have made the iteration time a lot faster.
  Ultimately, the network iteration frequency puts a limit on how much increase
  in overall system performance we can expect by reducing the filter iteration
  times.
- But since each network cycle took __ ms, there is quite a large room for
+ But since each network cycle took 700 ms, there is quite a large room for
  improvement.
-\begin_inset Note Comment
+\begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
@@ -607,7 +606,7 @@ An interesting possibility is to enable feedback from the tracking filter
  When three or more cats are tracking the mouse the conformity of their
  bearing readings is likely to vary with the accuracy of their own estimated
  position.
- The covariance matrix of the estimated taget position can be used to measure
+ The covariance matrix of the estimated target position can be used to measure
  this conformity.
  If the conformity becomes too low, the cats should improve their own position
  estimate, e.g.
@@ -653,7 +652,7 @@ key "Ackermann"
 \end_inset
 
 .
-\begin_inset Note Comment
+\begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
@@ -670,7 +669,7 @@ Original formulation seemed slightly exaggerated
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "references"
-options "bibtotoc,plain"
+options "bibtotoc,ieeetr"
 
 \end_inset
 
@@ -697,7 +696,7 @@ Project leader.
  “filter” theory, simulation and implementation.
  Participated in software architecture and design.
  Wrote most of the Java simulation framework and the AI for robot positioning
- (maximizing sensor reading information and collision avoidance).
+ (guide, maximizing sensor reading information and avoiding collision).
 \end_layout
 
 \begin_layout Standard
@@ -718,7 +717,7 @@ Christian Ålander
 
 \begin_layout Standard
 \noindent
-All about you and the what your interests are.
+Wrote most of the GUI code.
 \end_layout
 
 \begin_layout Standard
@@ -739,7 +738,7 @@ Nils Törnblom
 
 \begin_layout Standard
 \noindent
-Worked on the Kalman filters; modelling, simulation and implementation.
+Worked on the Kalman filters; modeling, simulation and implementation.
  Also the person charge of the movement pilot regulator, camera tracking
  regulator, landmark design and detection.
  Involved in some of the robot design and construction.
@@ -809,8 +808,7 @@ Cheewin Pisanupoj
 
 \begin_layout Standard
 \noindent
-All about you and the what your interests are.
- 
+Worked on building the robots.
 \end_layout
 
 \end_body

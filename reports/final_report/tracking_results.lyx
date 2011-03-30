@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -52,18 +52,21 @@ Setup
 \end_layout
 
 \begin_layout Standard
-All tests were conducted within a 2.5 by 2.5m arena. The arena limits were also entered into the settings file of the robots, meaning that the filters could limit estimates to 0.0 or 2.5m if outside this area. The period of the UKF was set to 500ms and the period of the particle filter to 1000ms.
-
+All tests were conducted within a 2.5 by 2.5m arena.
+ The arena limits were also entered into the settings file of the robots,
+ meaning that the filters could limit estimates to 0.0 or 2.5m if outside
+ this area.
+ The period of the UKF was set to 500ms and the period of the particle filter
+ to 1000ms.
 \end_layout
-
 
 \begin_layout Subsubsection
 Stationary mouse
 \end_layout
 
 \begin_layout Standard
-Both tracking filter implementations of the final system were first tested on a stationary mouse 
-with the cats being set up in different formations.
+Both tracking filter implementations of the final system were first tested
+ on a stationary mouse with the cats being set up in different formations.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -71,13 +74,13 @@ reference "fig:test1_tracking_static_line_kalman"
 
 \end_inset
 
- shows the result of the UKF when three cats are standing on a line as shown in Figure 
+ shows the result of the UKF when three cats are standing on a line as shown
+ in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
 
 \end_inset
-
 
 (a) while Figure 
 \begin_inset CommandInset ref
@@ -86,18 +89,19 @@ reference "fig:test1_tracking_static_line_particle"
 
 \end_inset
 
- shows the corresponding result for the particle filter. 
- It can be seen that both filters converges to a similar static error level, although the particle filter is more noisy.
- Running the same tests but with the cats placed in optimal positions as shown in Figure 
+ shows the corresponding result for the particle filter.
+  It can be seen that both filters converges to a similar static error level,
+ although the particle filter is more noisy.
+ Running the same tests but with the cats placed in optimal positions as
+ shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
 
 \end_inset
 
-
-(b) did not significantly improve the performance, 
- as can be seen in Figure 
+(b) did not significantly improve the performance,  as can be seen in Figure
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test2_tracking_static_optimal_kalman"
@@ -119,8 +123,8 @@ reference "fig:test_arrangement"
 
 \end_inset
 
-(c) gave approximately the same
- result for the particle filter, see Figure 
+(c) gave approximately the same result for the particle filter, see Figure
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test3_tracking_static_two_cats_particle"
@@ -128,8 +132,6 @@ reference "fig:test3_tracking_static_two_cats_particle"
 \end_inset
 
 .
-
-
 \begin_inset Float figure
 wide false
 sideways false
@@ -157,8 +159,7 @@ name "fig:test_arrangement"
 
 \end_inset
 
-An inlustration of the test arrangements.
-
+An illustration of the test arrangements.
 \end_layout
 
 \end_inset
@@ -171,8 +172,6 @@ An inlustration of the test arrangements.
 \end_layout
 
 \end_inset
-
-
 
  
 \begin_inset Float figure
@@ -202,15 +201,17 @@ name "fig:test1_tracking_static_line_kalman"
 
 \end_inset
 
-Plot of three cats standing on a line tracking a stationary
- mouse with the Unscented Kalman Filter. See Figure 
+Plot of three cats standing on a line tracking a stationary mouse with the
+ Unscented Kalman Filter.
+ See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
 
 \end_inset
 
-(a) for furher details on the test arrangement.
+(a) for further details on the test arrangement.
+\end_layout
 
 \end_inset
 
@@ -251,16 +252,16 @@ name "fig:test1_tracking_static_line_particle"
 
 \end_inset
 
-Plot of three cats standing on a line tracking a stationary
- mouse with the particle filter. See Figure 
+Plot of three cats standing on a line tracking a stationary mouse with the
+ particle filter.
+ See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
 
 \end_inset
 
-(a) for furher details on the test arrangement.
-
+(a) for further details on the test arrangement.
 \end_layout
 
 \end_inset
@@ -302,17 +303,18 @@ name "fig:test2_tracking_static_optimal_kalman"
 
 \end_inset
 
-Plot of three cats standing on optimal positions tracking
- a static mouse with the Unscented Kalman Filter. 
-The graph is cut at 0.0 and 2.5m because the data on the bricks were not allowed to exceed thoose values as that would be outside the arena. See Figure 
+Plot of three cats standing on optimal positions tracking a static mouse
+ with the Unscented Kalman Filter.
+ The graph is cut at 0.0 and 2.5m because the data on the bricks were not
+ allowed to exceed those values as that would be outside the arena.
+ See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
 
 \end_inset
 
-(b) for furher details on the test arrangement.
-
+(b) for further details on the test arrangement.
 \end_layout
 
 \end_inset
@@ -355,14 +357,15 @@ name "fig:test2_tracking_static_optimal_particle"
 \end_inset
 
 Plot of the final system with three cats standing on optimal positions tracking
- a static mouse with the particle filter. See Figure 
+ a static mouse with the particle filter.
+ See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
 
 \end_inset
-(b) for furher details on the test arrangement.
 
+(b) for further details on the test arrangement.
 \end_layout
 
 \end_inset
@@ -405,14 +408,15 @@ name "fig:test3_tracking_static_two_cats_particle"
 \end_inset
 
 Plot of the final system with two cats tracking a static mouse with the
- particle filter. See Figure 
+ particle filter.
+ See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
 
 \end_inset
-(c) for furher details on the test arrangement.
 
+(c) for further details on the test arrangement.
 \end_layout
 
 \end_inset
@@ -425,6 +429,7 @@ reference "fig:test_arrangement"
 \end_layout
 
 \end_inset
+
 
 \end_layout
 
@@ -494,7 +499,8 @@ name "fig:test4_tracking_moving_kalman2"
 
 Plot of the final system with three stationary and decently placed cats
  tracking a mouse moving at a constant speed of roughly 0.19 m/s with the
- Unscented Kalman Filter. See Figure 
+ Unscented Kalman Filter.
+ See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
@@ -502,12 +508,17 @@ reference "fig:test_arrangement"
 \end_inset
 
 (d) for an illustration of the test arrangement.
+\end_layout
+
+\end_inset
+
 
 \end_layout
-\end_inset
-\end_layout
+
 \begin_layout Plain Layout
+
 \end_layout
+
 \end_inset
 
 
@@ -539,7 +550,9 @@ name "fig:test4_tracking_moving_particle2"
 \end_inset
 
 Plot of the final system with three stationary and decently placed cats
- tracking a mouse moving at a constant speed of roughly 0.19m/s with the particle filter. See Figure 
+ tracking a mouse moving at a constant speed of roughly 0.19m/s with the
+ particle filter.
+ See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
@@ -547,12 +560,17 @@ reference "fig:test_arrangement"
 \end_inset
 
 (d) for an illustration of the test arrangement.
+\end_layout
+
+\end_inset
+
 
 \end_layout
-\end_inset
-\end_layout
+
 \begin_layout Plain Layout
+
 \end_layout
+
 \end_inset
 
 
@@ -584,8 +602,9 @@ name "fig:test4_tracking_moving_particle_slower_movement"
 \end_inset
 
 Plot of the final system with three stationary and decently placed cats
- tracking a mouse moving at a constant speed significantly slower than 0.19m/s with the
- particle filter. See Figure 
+ tracking a mouse moving at a constant speed significantly slower than 0.19m/s
+ with the particle filter.
+ See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test_arrangement"
@@ -593,12 +612,17 @@ reference "fig:test_arrangement"
 \end_inset
 
 (d) for an illustration of the test arrangement.
+\end_layout
+
+\end_inset
+
 
 \end_layout
-\end_inset
-\end_layout
+
 \begin_layout Plain Layout
+
 \end_layout
+
 \end_inset
 
 

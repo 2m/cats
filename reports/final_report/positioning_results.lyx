@@ -1,4 +1,4 @@
-#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -48,8 +48,15 @@ Cat positioning
 \end_layout
 
 \begin_layout Standard
-The geometric positioning filter was tested against positioning solely based on odometer data. The robot was programmed to travel around a square of size one by one meter three times and the error between the estimated and the actual position was then measured. The robot only turned at the corners of the square and it estimated its own position after each turn.
-The result of positioning without a filter and the corresponding result for the geometric positioning filter can be seen in Table 
+The geometric positioning filter was tested against positioning solely based
+ on odometer data.
+ The robot was programmed to travel around a square of size one by one meter
+ three times and the error between the estimated and the actual position
+ was then measured.
+ The robot only turned at the corners of the square and it estimated its
+ own position after each turn.
+ The result of positioning without a filter and the corresponding result
+ for the geometric positioning filter can be seen in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:positioning_results"
@@ -57,9 +64,9 @@ reference "tab:positioning_results"
 \end_inset
 
  .
- The result shows that the magnitude of the positioning error is more then halved when using the geometric filter, although it differs greatly in x- and y-position.
-
-
+ The result shows that the magnitude of the positioning error is more then
+ halved when using the geometric filter, although it differs greatly in
+ x- and y-position.
 \begin_inset Float table
 placement htbp
 wide false
@@ -188,9 +195,6 @@ y-position
 \end_layout
 
 \end_inset
-
-
-
 
 
 \end_layout
