@@ -1,4 +1,4 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.6.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -532,21 +532,11 @@ Secondly, the filters can be improved substantially by decreasing their
  Even a fixed point solution could be adopted, as was done with the particle
  filter.
  That could probably have made the iteration time a lot faster.
- Ultimately, the network iteration frequency puts a limit on how much increase
- in overall system performance we can expect by reducing the filter iteration
- times.
- But since each network cycle took 700 ms, there is quite a large room for
- improvement.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-How long was it?
-\end_layout
-
-\end_inset
-
-
+ Ultimately, the network transmission overhead puts a limit on how much
+ of a increase in overall system performance we can expect by reducing the
+ filter iteration times.
+ But since the network overhead for one cycle was about 50 ms, there is
+ quite a large room for improvement.
 \end_layout
 
 \begin_layout Standard
@@ -652,15 +642,6 @@ key "Ackermann"
 \end_inset
 
 .
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Original formulation seemed slightly exaggerated
-\end_layout
-
-\end_inset
-
  Unfortunately, such a construction would be hard to build with Lego.
  
 \end_layout
