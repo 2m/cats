@@ -1,0 +1,49 @@
+# Introduction #
+
+We need a way of getting the bearing of the mouse and probably need to know the absolute positions of the cats.
+
+As the ultrasonic sensor included in the Lego NXT-kit had insufficient range (maximum measured distance is 0.5 m) some alternative have to be found.
+
+**NXTCAMs have been ordered!** (2010-02-24)
+
+# Sensors #
+
+We have discussed three different sensor approaches for locating the target.
+
+## Video camera ##
+
+**Pros:**
+  * Available API for object tracking.
+  * Probably good angular resolution.
+**Cons:**
+  * Limited field of view.
+
+The NXTCAM from mindsensors can track 8 "colourful" objects and has lejos API. This means that it will work out of the box.
+
+## IR-sensor with target marked with an IR-light ##
+
+**Pros:**
+  * Cheaper that video camera
+  * Computationally cheap
+**Cons:**
+  * Only point measurements are available, if the target moves we have to scan for it.
+  * Angular resolution unknown.
+
+We could use two sensors with a wide field of view.
+
+## Compass sensor with a electro magnet on the target ##
+**Pros:**
+  * 360 degree "view", no need to scan for the target
+  * Good angular resolution of the compass (1 degree)
+  * Cheap sensor.
+**Cons:**
+  * Need electromagnets, potentially quite strong.
+  * For absolute positioning, we need to multiple synchronized electromagnets (only one switched on at a time). Probably we need relays to control the current to the electro magnets.
+
+# Discussion #
+
+The video camera and the IR-camera could also be used for absolute positioning of the targeting robots as well. Then we need some stationary landmarks or beacons to triangulate the robots position. The disadvantage is again that the robots need to look for these landmarks when they need their position.
+
+In addition we have another option for absolute positioning using the available color/light sensor. We could print out a grid covering the whole arena. When the robot crosses the lines we can get a sense of direction and relative position. Given the starting position is known, we can get the absolute position.
+> Another way would be to use a color sensor and print out a 2D-spectrum with one color channel on the x-axis and another on the y-axis. The different intensities of the two colors will then pinpoint a position on the arena.
+> Finally we could use some kind of bar code system. Instead of using different width of the bars, you could use different colors to code for the different positions.

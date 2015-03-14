@@ -1,0 +1,51 @@
+# Number of connections #
+
+According to [this source](http://lejos.sourceforge.net/forum/viewtopic.php?t=1964&highlight=The%20NXT%20can%20have%20one%20inbound) NXT can handle only three concurrent connections to other devices, which are:
+
+  * one incoming connection
+
+  * three outgoing connections
+
+I have tested incoming connections, and it seems until the one accepted connection is closed down, no other connections can be accepted. More tests have to be done in order to see what connection scenarios are available and are usable.
+
+# Communication speeds #
+
+According to [this source](http://lejos.sourceforge.net/forum/viewtopic.php?t=1331) BT communication speed between NXT bricks is:
+
+  * **One byte forward, one byte back**
+
+> BT NXT->NXT : 46.6ms
+
+  * **512 bytes forward, one byte back**
+
+> BT NXT->NXT : 132.4ms (3.9KB/s)
+
+  * **512 bytes forward, no bytes back (streaming with no acknowledgements)**
+
+> BT NXT->NXT : 45.2ms (11.3KB/s)
+
+## Our tests ##
+
+Each column represents either round trip time or bandwidth. It also tells what data primitives were used to transfer the data: **byte**, **int** or **long**.
+
+| **Test** | **Roundtrip byte** | **B/W byte** | **Roundtrip int** | **B/W int** | **Roundtrip long** | **B/W long** |
+|:---------|:-------------------|:-------------|:------------------|:------------|:-------------------|:-------------|
+| 1B -->, 1B <-- | 110ms | 18B/s | N/A | N/A | N/A | N/A |
+| 512B -->, 1B <-- | 260ms | 1.9kB/s | N/A | N/A | N/A | N/A |
+| Streaming |
+| 2B -->, 0B <-- | 2ms | 442B/s | N/A | N/A | N/A | N/A |
+| 4B -->, 0B <-- | 2ms | 1.7kB/s | 3ms | 1.1kB/s | N/A | N/A |
+| 8B -->, 0B <-- | 5ms | 1.5kB/s | 4ms | 1.6kB/s | 4ms | 1.8kB/s |
+| 16B -->, 0B <-- | 6ms | 2.3kB/s | 5ms | 3.1kB/s | 5ms | 3.2kB/s |
+| 32B -->, 0B <-- | 11ms | 2.7kB/s | 7ms | 4.2kB/s | 6ms | 4.9kB/s |
+| 64B -->, 0B <-- | 19ms | 3.2kB/s | 12ms | 5.1kB/s | 12ms | 5.2kB/s |
+| 128B -->, 0B <-- | 34ms | 3.6kB/s | 22ms | 5.6kB/s | 19ms | 6.7kB/s |
+| 256B -->, 0B <-- | 67ms | 3.8kB/s | 38ms | 6.6kB/s | 38ms | 6.6kB/s |
+| 512B -->, 0B <-- | 133ms | 3.8kB/s | 82ms | 6.1kB/s | 68ms | 7.4kB/s |
+| 1024B -->, 0B <-- | 273ms | 3.7kB/s | 170ms | 6.0kB/s | 143ms | 7.1kB/s |
+
+Connection establishement varies alot. It takes from 2 to 3 seconds.
+
+To send 512B and wait nothing takes less time than sending one byte and waiting for one byte to get back. It seems that waiting for other end to respond is very time consuming.
+
+These are promising results. However these properties still have to be tested by ourselves in order to see if these speeds are really available. Connection when dealing with more than one active connection still needs to be tested.

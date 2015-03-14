@@ -1,0 +1,59 @@
+# Introduction #
+
+We need to find a feasible solution to our problem. Here our different approaches and preliminary results are presented. All sub projects have owners that are responsible for delivering a viable solution (if it can be found) until Monday 2010-03-01.
+
+The solution proposed does only have to be feasible, we can not know which one will be best until after simulation.
+
+# Robot design #
+**Owner: Cheewin**
+
+Designing and building a robot capable of turning a specified angle and driving a given distance with only minor errors. The information from the motors must be good enough to fuse with sensor information.
+
+# Absolute positioning #
+## Magnetic fields ##
+**Owner: Christian**
+
+An initial idea of robot positioning with two electromagnetes generating two seperate magnetic fields, strong enough to cover a large enough area of interest (maybe 2x2 m). By shifting these fields on and off, we were hoping to extract field-vectors of these fields with a magnetic sensor (compass), and triangulate the position of the robot by calculating the direction of the magnetic source.
+
+## Particle filter ##
+**Owner: Fredrik**
+
+Find a filter that with some kind of landmarks and information from the driver class can find the cats absolute position. It does not need to be able to find the absolute position in it self at every instant but use old knowledge and just update it. There are plenty of information coming from the motors about movement and the filter fixes errors in the state estimation when it sees a landmark. More landmarks are not necessarily better than fewer since the brick must guess which landmarks it sees.
+
+## Kalman filters ##
+**Owner: Nils**
+
+Enter description here
+
+## Grid positioning ##
+**Owner: Nils and Christian**
+
+Using color or light sensor, construct a grid that can accurately find the position (and orientation) of the cats. Also this can be used to position the mouse so we can compare with our bearings only position later on.
+
+# Mouse tracking #
+
+## IR ##
+
+Can this be done without knowing more about the sensors?
+
+## Particle filter ##
+**Owner: Fredrik**
+
+Finding a particle filter that tracks the mouse with tolerable error using 2 or more sensor readings.
+
+## Kalman filters ##
+**Owner: Nils**
+
+Given the measurements of the bearings with realistic errors, find a Kalman filter that can run on the bricks with good accuracy. First find a mathematical model, simulate it in Matlab and finally benchmark it on the bricks.
+
+## Magnetic fields ##
+**Owner: Christian**
+
+Enter description here
+
+# Networking #
+**Owner: Martin**
+
+Benchmark communication and see how much data can be sent and at what speed. [Networking](Networking.md)
+
+Hierarchical or distributed model?

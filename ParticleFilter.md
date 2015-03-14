@@ -1,0 +1,91 @@
+# Basic idea #
+
+  * Randomise hypotheses about the states in the tracked object, visualised as particles.
+  * Value the particles from 0 to 1 according to how well they conform with evidence from the sensors.
+  * Let the good particle reproduce and remove the worst ones or re-sample all.
+  * The more descriptive states are probably x, y, dx/dt and dy/dt.
+
+# Getting it to work on 48MHz #
+
+  * Make the penalty a function of cos
+  * Linearised penalty function
+  * Use fixed point math (floats are emulated in firmware on the NXT)
+  * Approximate FP sqrt (binary sqrt algorithm)
+  * Use survival of the fittest as an alternative to complete resampling
+  * Use quicksort with some extra conditions from exit
+  * Adaptive amount of particles?
+  * Gaussian approximations for distributed filter?
+
+# Distributed algorithm #
+
+Making particles for one filter live on many nodes. The computationally heavy parts are the evaluation of particle weights, re-sampling, calculation of means, sorting (if needed) and integration.
+
+**Basic idea:**
+
+  1. Random generation and precalc
+    * Take knowledge of initial position in account? (not necessary)
+  1. Transmit sensor data
+    * Time stamp, cat id, x and y coordinate, angle toward mouse needs to be transmitted
+  1. Integrate particles
+    * Poll from buffer or just use particle data
+  1. Receive sensor data
+    * Timestamp, x and y coordinates, angle toward mouse needs to be transmitted
+  1. Compare particles to sensor readings and generate weights
+    * Linear approximation instead of exponential function
+  1. Transmit sum of probability mass from weight generation
+    * Cats id, time stamp and sun
+  1. Normalise
+    * from local sum only?
+  1. Parametrise the distribution of particles
+    * Calculate mean and std/var or similar
+  1. Transmit probability distribution parameters
+    * Time stamp, id and parameters (which depends on parameterisation method) needs to be transmitted
+  1. Sort particle according to weights
+    * modified quicksort?
+  1. Reset weights to 1/N
+    * All particles are now equally likely.
+  1. Receive probability distribution parameters
+    * Time stamp, id and parameters
+  1. Re-sample
+    * Do full resampling or perhaps just the worst 12.5%-25%
+  1. GOTO 2
+
+# Network #
+
+In a distributed algorithm it is not necessary to transmit all particle data. The particles of one node could for example be described by two parameters per dimension, if a Gaussian approximation is used.  Which type of parameters that are feasible of course depends on how fast the parametrisation can be done.
+
+Data transfer rate could be a bottle neck, but that is probably not the case here.
+
+# Benchmarks #
+
+**Using stack variables**
+
+  * 200000 intv add: 564 ms  354609/sec
+  * 200000 intv sub: 563 ms  355239/sec
+  * 200000 intv mul: 595 ms  336134/sec
+  * 200000 intv div: 852 ms  234741/sec
+  * 200000 longv add: 1044 ms  191570/sec
+  * 200000 longv sub: 1053 ms  189933/sec
+  * 200000 longv mul: 1499 ms  133422/sec
+  * 200000 longv div: 2436 ms  82101/sec
+  * 200000 float add: 1127 ms  177462/sec
+  * 200000 float sub: 1136 ms  176056/sec
+  * 200000 float mul: 1014 ms  197238/sec
+  * 200000 float div: 1862 ms  107411/sec
+  * 200000 double add: 1702 ms  117508/sec
+  * 200000 double sub: 1766 ms  113250/sec
+  * 200000 double mul: 1658 ms  120627/sec
+  * 200000 double div: 6065 ms  32976/sec
+
+**Using class variables**
+
+  * 200000 intc add: 2248 ms  88967/sec
+  * 200000 intc sub: 2248 ms  88967/sec
+  * 200000 intc mul: 2280 ms  87719/sec
+  * 200000 intc div: 2541 ms  78709/sec
+
+From http://lejos.sourceforge.net/forum/viewtopic.php?t=1685&highlight=fixed+point
+
+# Links #
+
+http://en.wikipedia.org/wiki/Particle_filter

@@ -1,0 +1,15 @@
+# Introduction #
+Info about phases
+
+# Next deadline #
+2010-03-01 see Proposed\_Solutions
+
+# State of the art #
+
+  * Presentation on the current state of the field we are studying.
+  * Make a 10 min presentation 2010-02-17
+
+# Proposed solution #
+  * We need to examine what solution we will use Proposed\_Solutions
+  * Make a short presentation
+  * Our approach to a solution must be finished then

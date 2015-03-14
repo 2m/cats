@@ -1,0 +1,39 @@
+# Meetings #
+
+2010-05-11 15:00 Design meeting in P1457
+
+2010-05-03 13:00 Design meeting in P1457
+
+2010-04-26 13:00 Design meeting in P1457
+
+**2010-04-19 13:00 Design meeting in P1457**
+
+2010-04-07 10:00 Design meeting in P1457
+([Notes](http://code.google.com/p/cats/wiki/Meeting_Notes_20100407))
+
+2010-03-29 13:00 Design meeting in P1457 ([Notes](http://code.google.com/p/cats/wiki/Meeting_Notes_20100329))
+
+2010-03-23 15:00 Design meeting in P1457
+([Notes](http://code.google.com/p/cats/wiki/Meeting_Notes_20100323))
+
+2010-03-18 10:00 Design meeting in P1457 ([Notes](http://code.google.com/p/cats/wiki/Meeting_20100318))
+
+2010-03-03 08:00 Design meeting in P1457
+
+2010-03-01 08:00 Design meeting in P1457
+
+2010-02-12 Design meeting in P1457
+
+# Schedules #
+
+This is a link to the timeedit website with most of the courses we are taking.
+Please change this link to include all courses project members are taking.
+
+http://schema.angstrom.uu.se/4DACTION/WebShowSearch/2/1-0?wv_type=4&wv_ts=20100322T114109X0-12&wv_search=1TT577&wv_startWeek=1012&wv_stopWeek=1025&wv_first=0&wv_addObj=&wv_delObj=&wv_obj1=418000&wv_obj2=309000&wv_obj3=2382000&wv_obj4=2381000&wv_obj5=487000&wv_graphic=Grafiskt+format
+
+Included courses are as of now:
+
+Inbyggda styrsystem (1TT901), Digital kommunikation II: Trådlösa system (1TT852), Kryptologi (1DT026), Maskininlärning (1DT022), Projektkurs i adaptiv signalbehandling (1TT577)
+
+To edit use:
+http://schema.angstrom.uu.se/4DACTION/WebShowSearch/2/1-0?wv_type=4&wv_ts=20100322T114108X%3C%3C%3C%3C&wv_search=1TT577&wv_startWeek=1011&wv_stopWeek=1013&wv_first=0&wv_addObj=487000&wv_delObj=&wv_obj1=418000&wv_obj2=309000&wv_obj3=2382000&wv_obj4=2381000

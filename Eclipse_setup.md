@@ -1,0 +1,30 @@
+# Eclipse #
+
+You can find eclipse at http://www.eclipse.org/downloads/ . Use the classic version (should work better).
+
+# Subclipse #
+
+Can be found at: http://subclipse.tigris.org/servlets/ProjectProcess?pageID=p4wYuA . Follow instuctions on the website.
+
+Eclipse update site URL: http://subclipse.tigris.org/update_1.6.x
+
+You need to have subversion installed. Can be found at: http://subversion.tigris.org/ .
+
+# leJOS eclipse plugin #
+
+Instructions from: http://lejos.sourceforge.net/ .
+
+  * Name: leJOS NXJ (or whatever you like)
+  * URL: http://lejos.sourceforge.net/tools/eclipse/plugin/nxj/
+
+# Green UML #
+
+Useful UML tool.
+
+http://green.sourceforge.net/builds.html
+
+Dependency: http://www.eclipse.org/gef/
+
+# Links #
+
+The IT project wiki: http://code.google.com/p/projectit/wiki/tipsAndTricksMain

@@ -1,0 +1,7 @@
+# Basic assignment #
+
+http://www.it.uu.se/edu/course/homepage/styrsystem/vt10/Projekt/CoLEGO
+
+# Hardware #
+
+Three base sets of lego (more or less) and six NXTCAMs to share with two other groups.

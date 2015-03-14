@@ -1,0 +1,163 @@
+# Introduction #
+
+This is a description of the system we will use. The different components here should not be interpreted as classes. All estimated times are in work weeks and should be overestimated rather that underestimated (multiply first estimate by pi ;) ).
+
+
+
+# Priorities #
+
+  1. Simulation and prototyping
+    * ~~Particle filter (matlab)~~
+    * ~~Non-linear Kalman filter for tracking (matlab)~~
+    * ~~Non-linear Kalman filter for absolute positioning (matlab)~~
+    * Simulation of both absolute positioning and tracking (matlab)
+    * ~~Prototype for colour positioning system~~ (suspended)
+    * ~~Linear Kalman for positioning colour system~~ (suspended)
+    * ~~Basic networking (with benchmarks)~~
+  1. System implementation phase 1
+    * Particle filter (java)
+    * ~~Colour positioning system (java, no filter)~~  (suspended)
+    * Basic data synchronisation (positions)
+    * Basic movement (just relative)
+    * Basic visualisation (positions of cats)
+    * Basic camera (no correction for lens, track ball)
+    * Sync data through network with 2 cats
+    * Integration and testing of completed Java code
+  1. System implementation phase 2
+    * Filters implemented in Java
+    * ~~Colour positioning system (with filter)~~ (suspended)
+    * Visualisation (positions of cats and mouse)
+    * Basic camera (with correction for lens)
+    * Sync data through network with 3 cats + PC
+    * Integration and testing of completed Java code
+  1. System implementation phase 3
+    * Visualisation (uncertainties and commands to cats)
+
+# Other problems #
+
+Some problems that needs attention but are not a part of any specific component.
+
+  * Figure out priorities and execution times.
+  * Design structure of classes and interfaces between them.
+  * Testing of both individual components and the whole system.
+  * Avoid collisions between robots
+
+# System components #
+
+## Main controller / AI ##
+**Owner: Cheewin**
+
+**Estimated time: Not decided**
+
+Get the robot to decide where to move and possibly where to look.
+
+Move on MovementAI.
+
+## Eyes ##
+**Owner: NA**
+
+**Estimated time: 2 weeks**
+
+We need a camera to start this work.
+
+Camera control
+  1. Outputs data of how the world looks.
+  1. Can take input on where to look.
+  1. Control motor on which the motor is mounted.
+  1. Decide where to look.
+
+### NXTCAM ###
+
+Compensate for distortions due to the lens.
+
+## Feet ##
+**Owner: Cheewin**
+
+**Estimated time: 2 weeks**
+
+Movement control (in priority order)
+  1. Moving to a relative location
+  1. Record relative movements (for filters)
+  1. Minimise CPU consumption (check for I/O waits)
+  1. Moving to specified location (i.e. path finding)
+
+## Data storage ##
+**Owner: Martin**
+
+**Estimated time: see networking**
+
+Some kind of data storage for feeding the filters data from other nodes, sharing estimates etc. This should present the data from the other nodes so that no other component needs to worry about networking.
+
+## Shared real time clock ##
+**Owner: Martin**
+
+**Estimated time: 1 week**
+
+We would like a clock with ms precision. Syncing between nodes is done by the network component.
+
+More on ClockSync.
+
+## Network ##
+**Owner: Martin**
+
+**Estimated time: 2 weeks**
+
+Build a network and try to get different networks so sync. The bluetooth can only handle 1 outgoing and 3 incoming connections so the most basic network will be small.
+
+  * Needs to be able to get data to all nodes as fast as possible (hopefully exchange data many times per second.
+  * Synchronise time between nodes (BSD algorithm?)
+  * Re-establish network if a node disconnects or disappears.
+  * Minimise CPU consumption (check for waits)
+
+## Colour sensors ##
+**Owner: Nils**
+
+**Estimated time: 1 week**
+
+  * Estimate velocity of a cat
+  * Estimate position of a cat
+  * Filter noise
+
+## Filters ##
+
+### Particle filter ###
+**Owner: Fredrik**
+
+**Estimated time: 3 weeks**
+
+Particle filter for estimating the position of cats and mouse (i.e. two different filters).
+
+  * Estimate position of mouse
+  * Estimate position of cat
+  * Distribute work over 2+ nodes
+
+More on ParticleFilter.
+
+### Non-linear Kalman filter ###
+**Owner: Edward**
+
+**Estimated time: 3 weeks**
+
+Filter for estimating the position of the mouse.
+
+# GUI #
+
+## Visualisation ##
+**Owner: Christian**
+
+Basic visualisation of where the cats this they are and where the mouse is. All data used here will pass through the data storage component, even the "commands".
+
+  * Should contain information on landmarks to download to the cats
+  * Should show positions of objects
+  * Should be able to visualise uncertainty of filters
+  * Basic UI for setting stuff like waypoints or selecting objects (to show their states etc)
+
+## Data storage ##
+**Owner: Martin**
+
+Same as above.
+
+## Network ##
+**Owner: Martin**
+
+Same as above.
